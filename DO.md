@@ -8,6 +8,28 @@
 
 ## 2026-05
 
+### 2026-05-21
+
+- **Prototipo visible: landing + búsqueda con mapa funcionando en Vercel** (https://beauly-ten.vercel.app). Construido en paralelo por 2 agentes coordinados por verticales sin solape de archivos.
+- **Vertical de búsqueda (`/buscar`):**
+  - Datos fake creíbles de Barcelona: 10 proveedores con coordenadas reales (Eixample, Gràcia, Sant Antoni, Born, Sarrià, Poblenou, Pedralbes, Raval, Sant Gervasi), 30 servicios con precios calibrados a BCN 2026, generador determinista de disponibilidad (~40% ahora / ~30% pronto / ~30% ocupado) por hash de providerId.
+  - Capa de servicios Supabase-ready en `src/lib/services/providers/`: `providers.repository.ts` es la frontera de swap (hoy fake, mañana Prisma, misma firma), `providers.service.ts` con `searchProviders` (filtros + Haversine + ordenación), Zod schemas, errores tipados.
+  - Página `/buscar` como Server Component con searchParams (Next 16 async) que pasa snapshot inicial a `SearchView` (Client). Cambios de filtros vía URL state + `useTransition`, sin Server Actions. URL compartible.
+  - 8 componentes en `src/components/features/search/` con estructura §6.bis. Mapa con `react-leaflet` + tiles OSM gratis, cargado vía `next/dynamic({ ssr: false })`. Pines coloreados verde/ámbar/gris.
+  - Mobile-first responsive: <768px tabs Lista/Mapa, ≥1024px split 50/50 lista+mapa.
+  - Tipos compartidos en `src/types/domain.ts` para la futura app móvil.
+  - Deps añadidas: `zod`, `react-leaflet@5`, `leaflet@1.9`, `@types/leaflet`.
+- **Shell de app + landing:**
+  - Header sticky (logo Beauly, nav, LangSwitcher es/ca, botones placeholder, hamburguesa mobile), MobileNav bottom tab bar con safe-area-inset iOS (4 tabs), Footer (3 columnas + redes + copyright), LangSwitcher pill que preserva pathname con `useRouter().replace(pathname, { locale })`.
+  - Layout `[locale]/layout.tsx` integra el shell preservando `setRequestLocale`, `NextIntlClientProvider`, `generateStaticParams`, `hasLocale`. Padding inferior en `<main>` para no quedar tapado por el MobileNav.
+  - Landing `/` con 5 secciones premium-cálidas (paleta stone): Hero (título 2 líneas + buscador estilo Airbnb que navega a `/buscar` con searchParams), CategoryGrid (8 categorías scroll horizontal mobile / grid 4 col desktop), HowItWorks (3 pasos), DifferentiatorCards (3 ventajas), FinalCTA.
+  - Imágenes Unsplash con `background-image` CSS (no `next/image`) para evitar configurar `remotePatterns` y porque son decorativas sin carga semántica. URLs verificadas con curl HTTP 200.
+  - Iconos sociales sustituidos por genéricos: `lucide-react@1.16` retiró Instagram/Twitter/Linkedin por licencia. Cuando definamos cuentas reales meteremos SVGs custom de Simple Icons.
+- **Decisiones arquitectónicas clave para Supabase futuro:**
+  - El **repository pattern** ya está aplicado: cuando lleguemos a Bloque B (Supabase + Prisma), solo se sustituye el cuerpo de `providers.repository.ts` sin tocar service ni componentes.
+  - El **service layer** ya valida con Zod, lanza errores tipados y no toca infraestructura — agnóstico de la fuente de datos.
+  - Los **tipos de dominio** ya están en `src/types/domain.ts` desacoplados de Prisma — cuando se genere el cliente Prisma, mapearemos sus tipos a estos (o usaremos selecciones tipadas).
+
 ### 2026-05-20
 
 - **Deploy en Vercel funcionando: https://beauly-ten.vercel.app**

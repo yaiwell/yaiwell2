@@ -32,33 +32,33 @@
 
 ### Bloque C — Sistema de diseño base
 
-- [ ] Definir paleta de colores (CSS variables en `globals.css`).
-- [ ] Definir tipografías (importar de Google Fonts via `next/font`).
-- [ ] Configurar tokens en `tailwind.config.ts`.
-- [ ] Crear componentes shadcn/ui necesarios: Button, Card, Input, Badge, Avatar, Dialog, Sheet, Tabs, Skeleton, Toast.
-- [ ] Crear componentes propios: `Header`, `Footer`, `MobileNav`, `CategoryPill`, `ProviderCard`, `ServiceCard`, `AvailabilityBadge`, `RatingStars`.
+- [x] Definir paleta de colores (paleta stone aplicada en `globals.css`).
+- [x] Definir tipografías (Geist sans + mono ya integrados).
+- [x] Componentes propios mínimos: `Header`, `Footer`, `MobileNav`, `LangSwitcher`, `ProviderCard`, `AvailabilityBadge`.
+- [ ] Completar componentes shadcn/ui: Card, Input, Badge, Avatar, Dialog, Sheet, Tabs, Skeleton, Toast (añadir según se necesiten).
+- [ ] Componentes propios pendientes: `CategoryPill`, `ServiceCard`, `RatingStars` (extraer cuando aparezca el caso de uso).
 - [ ] Crear página de prueba `/_design-system` listando todos los componentes.
 
 ### Bloque D — Datos fake creíbles
 
-- [ ] Crear `src/lib/fake-data/` con generadores tipados.
-- [ ] Generar 10 proveedores fake repartidos por Barcelona (categorías mezcladas).
-- [ ] Generar 30-40 servicios fake con descripciones realistas.
-- [ ] Generar disponibilidad fake creíble (slots libres y ocupados).
-- [ ] Generar 50-100 reseñas fake con nombres y textos variados.
-- [ ] Imágenes via Unsplash con URLs estables (categorizar por tipo de negocio).
+- [x] `src/lib/fake-data/` con generadores tipados (categories, providers, services, availability).
+- [x] 10 proveedores fake repartidos por Barcelona (categorías mezcladas).
+- [x] 30 servicios fake con descripciones realistas (es/ca).
+- [x] Disponibilidad fake determinista (available_now / available_soon / busy).
+- [x] Imágenes Unsplash con URLs estables verificadas.
+- [ ] 50-100 reseñas fake con nombres y textos variados (pendiente cuando hagamos ficha de proveedor).
 
 ### Bloque E — Vistas públicas navegables
 
-- [ ] Landing pública (`/`) con hero, propuesta de valor, categorías destacadas, footer.
-- [ ] Listado de búsqueda (`/buscar`) con filtros, lista de resultados y mapa lateral.
-- [ ] Mapa interactivo con pines de colores (verde/ámbar/gris) según disponibilidad.
-- [ ] Toggle "Solo disponibles ahora" en filtros.
+- [x] Landing pública (`/`) con hero + buscador, categorías populares, cómo funciona, diferencial, CTA final, footer.
+- [x] Listado de búsqueda (`/buscar`) con filtros, lista de resultados y mapa lateral.
+- [x] Mapa interactivo con pines de colores (verde/ámbar/gris) según disponibilidad.
+- [x] Toggle "Solo disponibles ahora" en filtros.
 - [ ] Ficha de proveedor (`/centro/[slug]-[id]`) con galería, servicios, valoraciones, mapa, info.
 - [ ] Ficha de servicio individual con descripción, profesional asignado, precio, duración, cláusulas.
 - [ ] Selector de slot disponible (calendario simple navegable).
 - [ ] Flujo de "reserva" simulado: confirmar datos → resumen → "pago" (mock) → confirmación.
-- [ ] Buscador principal con input grande, sugerencias mientras escribes (autocomplete con resultados fake), filtros activos en chips.
+- [ ] Autocomplete de búsqueda mientras escribes (resultados fake), filtros activos visibles como chips.
 - [ ] Página 404 personalizada.
 
 ### Bloque F — Áreas privadas (mock visual)
@@ -143,4 +143,4 @@
 
 ---
 
-*Última actualización: 2026-05-20.*
+*Última actualización: 2026-05-21.*
