@@ -1,26 +1,66 @@
+import type { CategoryTone } from './CategoryGrid.types';
+
 /**
  * Estilos del componente CategoryGrid.
  *
  * Patrón visual:
- * - Mobile: scroll horizontal con snap. Cards anchas (~70vw) que invitan
- *   a deslizar y mantienen el ritmo táctil tipo app nativa.
- * - Desktop: grid 4 columnas en pantallas grandes, 2 en tablet.
+ * - Cards pastel sólidas, icono y nombre siempre visibles (sin truco hover).
+ * - Mobile: grid 2 columnas que aprovechan el ancho. Mucho más legible que
+ *   un scroll horizontal donde el usuario perdía la mitad de las opciones.
+ * - Desktop: grid 4 columnas. Hover sutil (lift + sombra), no tapa info.
  */
 export const categoryGridStyles = {
   root: 'bg-background py-16 md:py-24',
   container: 'mx-auto max-w-7xl px-6 md:px-8',
   header: 'mb-8 flex flex-col gap-2 md:mb-12',
-  title: 'text-3xl font-semibold tracking-tight text-foreground md:text-4xl lg:text-5xl',
+  title: 'text-3xl font-medium tracking-tight text-foreground md:text-4xl lg:text-5xl',
   subtitle: 'max-w-xl text-sm text-muted-foreground md:text-base',
-  scroller:
-    'flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] md:grid md:snap-none md:grid-cols-2 md:overflow-visible md:pb-0 lg:grid-cols-4',
-  card: 'group relative aspect-[4/5] w-[70vw] shrink-0 snap-center overflow-hidden rounded-3xl bg-muted shadow-sm transition-transform duration-300 hover:-translate-y-0.5 hover:shadow-md md:w-auto',
-  cardImage:
-    'absolute inset-0 -z-10 h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.04]',
-  cardOverlay:
-    'absolute inset-0 -z-0 bg-gradient-to-t from-stone-900/80 via-stone-900/20 to-transparent',
-  cardContent: 'relative z-10 flex h-full flex-col items-start justify-end gap-2 p-5',
-  cardIcon:
-    'inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-foreground shadow-sm',
-  cardTitle: 'text-lg font-semibold text-white md:text-xl',
+  grid: 'grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5',
+  card: 'group relative flex aspect-square flex-col items-start justify-between overflow-hidden rounded-3xl p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg md:p-6',
+  iconWrap:
+    'inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white/80 shadow-sm transition-transform duration-300 group-hover:scale-105 md:h-12 md:w-12',
+  title2: 'text-base font-medium leading-tight md:text-lg',
+  arrowWrap:
+    'absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-white/70 text-foreground opacity-0 transition-opacity duration-300 group-hover:opacity-100',
 } as const;
+
+/**
+ * Mapeo de tono pastel a clases Tailwind concretas.
+ * Mantener aquí (no inline) para que los tonos sean fácilmente auditables
+ * y reutilizables desde otros componentes (filtros, fichas, etc.).
+ */
+export const categoryToneStyles: Record<
+  CategoryTone,
+  { card: string; icon: string; title: string }
+> = {
+  rose: {
+    card: 'bg-brand-rose-soft',
+    icon: 'text-brand-rose',
+    title: 'text-[oklch(0.32_0.07_350)]',
+  },
+  sky: {
+    card: 'bg-brand-sky-soft',
+    icon: 'text-brand-sky',
+    title: 'text-[oklch(0.3_0.08_230)]',
+  },
+  peach: {
+    card: 'bg-brand-peach-soft',
+    icon: 'text-brand-peach',
+    title: 'text-[oklch(0.34_0.08_50)]',
+  },
+  sage: {
+    card: 'bg-brand-sage-soft',
+    icon: 'text-brand-sage',
+    title: 'text-[oklch(0.32_0.06_145)]',
+  },
+  butter: {
+    card: 'bg-brand-butter-soft',
+    icon: 'text-brand-butter',
+    title: 'text-[oklch(0.34_0.07_90)]',
+  },
+  lilac: {
+    card: 'bg-brand-lilac-soft',
+    icon: 'text-brand-lilac',
+    title: 'text-[oklch(0.32_0.08_300)]',
+  },
+};

@@ -1,7 +1,7 @@
 import { CalendarDays, MapPin, Sparkle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { howItWorksStyles as s } from './HowItWorks.styles';
+import { howItWorksStyles as s, howItWorksToneStyles } from './HowItWorks.styles';
 import type { HowItWorksStep } from './HowItWorks.types';
 
 /**
@@ -38,7 +38,7 @@ export function HowItWorks() {
                 <span className={s.stepIndex} aria-hidden="true">
                   0{step.index + 1}
                 </span>
-                <span className={s.stepIconWrap} aria-hidden="true">
+                <span className={howItWorksToneStyles[step.index]} aria-hidden="true">
                   <Icon className="size-6" />
                 </span>
                 <h3 className={s.stepTitle}>{t(`steps.${step.index}.title`)}</h3>

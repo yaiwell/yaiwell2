@@ -1,7 +1,10 @@
 import { BadgeCheck, Clock, ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { differentiatorCardsStyles as s } from './DifferentiatorCards.styles';
+import {
+  differentiatorCardsStyles as s,
+  differentiatorToneStyles,
+} from './DifferentiatorCards.styles';
 import type { DifferentiatorCard } from './DifferentiatorCards.types';
 
 /**
@@ -37,7 +40,7 @@ export function DifferentiatorCards() {
             const Icon = card.icon;
             return (
               <article key={card.index} className={s.card}>
-                <span className={s.iconWrap} aria-hidden="true">
+                <span className={differentiatorToneStyles[card.index]} aria-hidden="true">
                   <Icon className="size-6" />
                 </span>
                 <h3 className={s.cardTitle}>{t(`cards.${card.index}.title`)}</h3>
