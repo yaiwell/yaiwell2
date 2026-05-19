@@ -1,0 +1,36 @@
+# Build / outputs
+.next/
+out/
+build/
+dist/
+coverage/
+
+# Dependencies
+node_modules/
+
+# Generated
+next-env.d.ts
+*.tsbuildinfo
+
+# Lockfiles (las gestiona npm/pnpm/yarn, no Prettier)
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Logs
+*.log
+
+# Env
+.env*
+!.env.example
+
+# Documentación del proyecto: la mantenemos formateada a mano
+# (tablas, saltos manuales, jerarquía cuidada en castellano).
+# Si en el futuro quisiéramos pasarlos por Prettier, quitar estas líneas.
+AGENTS.md
+CLAUDE.md
+VISION.md
+TODO.md
+DO.md
+README.md
+docs/**/*.md
