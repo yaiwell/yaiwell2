@@ -8,7 +8,19 @@
 
 ## 2026-05
 
-### 2026-05-21
+### 2026-05-19
+
+- **Rediseño UI iteración 2 — categorías con foto, buscador desktop, identificadores universales.**
+  - **CategoryGrid:** rediseño de las 8 categorías. Antes: bloques planos con color en hover. Ahora: card con imagen Unsplash en el 60% superior + bloque pastel (rotando entre `brand-rose`/`brand-sky`/`brand-sage`/`brand-peach`/`brand-lilac`/`brand-butter`) en el 40% inferior con icono + nombre siempre visibles. Imágenes verificadas HTTP 200.
+  - **Hero (buscador desktop):** el form en escritorio se veía raro (selects nativos dentro de pill rounded-full). Reemplazado por 3 campos icono+label+valor con divisores verticales (`Tags`, `MapPin`, `CalendarClock`), `ChevronDown` indicadores y botón submit circular (`md:h-12 md:w-12 md:rounded-full`). Mobile mantiene layout vertical compacto.
+  - **Header mobile cleanup:** eliminado botón hamburguesa redundante con MobileNav inferior. Acciones mobile reducidas a `<LangSwitcher compact />`.
+  - **Sistema de identificadores universal:** ~95 atributos `data-component` en kebab-case añadidos en toda la UI (header, hero, search, footer, mobile-nav, lang-switcher, category-grid, how-it-works, differentiator-cards, final-cta, search-view, search-bar, filters-bar, filters-sheet, provider-list, provider-card, availability-badge, search-map). Glosario completo en `COMPONENTS.md` (raíz). Esto permite al usuario decir "modifica el `hero-search-submit`" sin ambigüedad.
+  - **Auditoría de diseño (Agent D):** purga total de `stone-*` en componentes de búsqueda (`ProviderCard`, `FiltersBar`, `FiltersSheet`, `SearchView`, `SearchBar`, `SearchMap`, `AvailabilityBadge`) — reemplazado por tokens semánticos (`text-foreground`, `text-muted-foreground`, `bg-card`, `bg-muted`, `bg-primary`, `text-primary-foreground`, `border-border`). `font-serif` → `font-display` para consistencia con la decisión Fraunces. `focus-visible:ring-2 focus-visible:ring-primary/40` en elementos interactivos.
+  - **AvailabilityBadge:** contraste reforzado en variante `subtle` (`emerald-900` sobre `emerald-100`, `amber-900` sobre `amber-100`) tras audit de accesibilidad. Variante `solid` mantenida para fondos oscuros.
+  - **ProviderList:** estilos inline movidos a `ProviderList.styles.ts` (cumplimiento CLAUDE.md §6.bis).
+  - **i18n:** claves `search.card.typeAutonomous` / `typeCenter` (es/ca) reemplazan strings hardcodeados en JSX.
+
+
 
 - **Prototipo visible: landing + búsqueda con mapa funcionando en Vercel** (https://beauly-ten.vercel.app). Construido en paralelo por 2 agentes coordinados por verticales sin solape de archivos.
 - **Vertical de búsqueda (`/buscar`):**
