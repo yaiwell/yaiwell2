@@ -10,8 +10,7 @@
 
 ### Bloque A — Bootstrapping del repo
 
-- [ ] Conectar el repo a Vercel y verificar deploy preview funcionando.
-- [ ] Configurar dominio o subdominio temporal en Vercel.
+✅ Bloque A completado el 2026-05-20.
 
 ### Bloque B — Infraestructura real (sin lógica todavía)
 

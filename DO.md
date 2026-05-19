@@ -10,6 +10,10 @@
 
 ### 2026-05-20
 
+- **Deploy en Vercel funcionando: https://beauly-ten.vercel.app**
+  - `/` sirve castellano ("Belleza, bienestar y deporte cuando tú quieras"), `/ca` sirve catalán ("Bellesa, benestar i esport quan tu vulguis"). Build de producción con Turbopack.
+  - Obstáculo resuelto en el camino: Vercel Hobby bloquea deploys cuyo commit author no está vinculado a la cuenta. Los commits iniciales usaban `jgraells@vteq.es` (email del trabajo) en lugar de `jorgegraellsgarcia@gmail.com` (cuenta de Vercel/GitHub). Solución aplicada: reescritura del author de los 7 commits con `git filter-branch --env-filter` y force-push a `main`. Repo fresco sin colaboradores, riesgo cero. Configurado `git config --local user.email "jorgegraellsgarcia@gmail.com"` para que los commits futuros desde este entorno salgan correctos sin volver a tocar nada.
+  - ✅ **Bloque A de TODO.md completado.**
 - **Repositorio publicado en GitHub:** [jorgegraells/beauly](https://github.com/jorgegraells/beauly). Branch renombrado `master` → `main`. Estado anterior (initial commit + bootstrap + tooling + shadcn) reagrupado en 4 commits temáticos siguiendo Conventional Commits en castellano: `chore: añadir documentación base`, `style: reformatear archivos generados por create-next-app`, `build: configurar tooling de calidad`, `feat: instalar shadcn/ui con paleta stone`. Añadido `.claude/` al `.gitignore` (preferencias locales del cliente).
 - **next-intl configurado con `es` (por defecto) y `ca`.**
   - Instalado `next-intl ^4.12.0` como dependencia de producción.
