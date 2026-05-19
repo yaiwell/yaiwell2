@@ -31,7 +31,12 @@ export function AvailabilityBadge({
   const variantClasses = variant === 'solid' ? s.solid[status] : s.subtle[status];
 
   return (
-    <span className={cn(s.base, variantClasses)} role="status" aria-label={label}>
+    <span
+      className={cn(s.base, variantClasses)}
+      role="status"
+      aria-label={label}
+      data-component={`availability-badge-${status.replace('_', '-')}`}
+    >
       <span className={cn(s.dot, s.dotColor[status])} aria-hidden />
       {label}
     </span>

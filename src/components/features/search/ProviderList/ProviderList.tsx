@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 
 import { ProviderCard } from '../ProviderCard';
+import { providerListStyles as s } from './ProviderList.styles';
 import type { ProviderListProps } from './ProviderList.types';
 
 /**
@@ -22,17 +23,17 @@ export function ProviderList({
 
   if (providers.length === 0) {
     return (
-      <div className="flex flex-col items-start gap-2 rounded-3xl border border-dashed border-stone-200 bg-stone-50/50 p-8 text-stone-700">
-        <h3 className="font-serif text-xl">{t('title')}</h3>
-        <p className="text-sm text-stone-600">{t('subtitle')}</p>
+      <div className={s.empty} data-component="provider-list-empty">
+        <h3 className={s.emptyTitle}>{t('title')}</h3>
+        <p className={s.emptySubtitle}>{t('subtitle')}</p>
       </div>
     );
   }
 
   return (
-    <ul className="flex flex-col gap-5">
+    <ul className={s.list} data-component="provider-list">
       {providers.map((provider) => (
-        <li key={provider.id}>
+        <li key={provider.id} data-component={`provider-list-item-${provider.slug ?? provider.id}`}>
           <ProviderCard
             provider={provider}
             fromPriceCents={fromPriceMap[provider.id] ?? null}

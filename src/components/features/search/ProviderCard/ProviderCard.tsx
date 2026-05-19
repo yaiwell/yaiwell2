@@ -31,11 +31,12 @@ export function ProviderCard({
   return (
     <article
       data-provider-id={provider.id}
+      data-component={`provider-card-${provider.slug}`}
       className={cn(s.root, highlighted && s.rootHighlighted)}
       onMouseEnter={() => onHover?.(provider.id)}
       onMouseLeave={() => onHover?.(null)}
     >
-      <div className={s.imageWrapper}>
+      <div className={s.imageWrapper} data-component="provider-card-image">
         {/* Foto principal (Unsplash). Usamos <img> nativo porque las
             URLs externas y next/image requeriría configurar dominios. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -46,53 +47,65 @@ export function ProviderCard({
           decoding="async"
           className={s.image}
         />
-        <span className={s.badgeOverlay}>
+        <span className={s.badgeOverlay} data-component="provider-card-availability">
           <AvailabilityBadge
             status={provider.availability.status}
             minutesUntilNext={minutesUntilNext}
           />
         </span>
-        <span className={s.priceTag}>{provider.priceRange}</span>
+        <span className={s.priceTag} data-component="provider-card-price-range">
+          {provider.priceRange}
+        </span>
       </div>
 
-      <div className={s.body}>
+      <div className={s.body} data-component="provider-card-body">
         <div className={s.headerRow}>
           <div className="flex flex-col gap-1">
-            <span className={s.type}>{provider.type === 'autonomo' ? 'Autónomo' : 'Centro'}</span>
-            <h3 className={s.name}>{provider.name}</h3>
+            <span className={s.type} data-component="provider-card-type">
+              {t(provider.type === 'autonomo' ? 'typeAutonomous' : 'typeCenter')}
+            </span>
+            <h3 className={s.name} data-component="provider-card-name">
+              {provider.name}
+            </h3>
           </div>
         </div>
 
-        <p className={s.address}>{provider.address}</p>
+        <p className={s.address} data-component="provider-card-address">
+          {provider.address}
+        </p>
 
-        <div className={s.metaRow}>
-          <span className={s.rating}>
+        <div className={s.metaRow} data-component="provider-card-meta">
+          <span className={s.rating} data-component="provider-card-rating">
             <Star className={s.ratingStar} aria-hidden />
             {provider.rating.toFixed(1)}
           </span>
-          <span className={s.reviews}>{t('reviews', { count: provider.reviewsCount })}</span>
+          <span className={s.reviews} data-component="provider-card-reviews">
+            {t('reviews', { count: provider.reviewsCount })}
+          </span>
           {provider.distanceKm !== null && (
             <>
               <span className={s.separator} aria-hidden>
                 ·
               </span>
-              <span className={s.distance}>
+              <span className={s.distance} data-component="provider-card-distance">
                 {t('distance', { km: provider.distanceKm.toFixed(1) })}
               </span>
             </>
           )}
         </div>
 
-        <div className={s.footerRow}>
+        <div className={s.footerRow} data-component="provider-card-footer">
           {fromPriceCents !== null ? (
-            <div className={s.fromPrice}>
+            <div className={s.fromPrice} data-component="provider-card-from-price">
               <span className={s.fromPriceLabel}>{t('from')}</span>
               <span className={s.fromPriceValue}>{formatPriceCents(fromPriceCents, locale)}</span>
             </div>
           ) : (
             <span />
           )}
-          <span className={s.ctaLink}>{t('viewDetail')}</span>
+          <span className={s.ctaLink} data-component="provider-card-cta">
+            {t('viewDetail')}
+          </span>
         </div>
       </div>
     </article>

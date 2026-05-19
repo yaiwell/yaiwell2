@@ -15,6 +15,11 @@ const steps: HowItWorksStep[] = [
   { index: 2, icon: Sparkle },
 ];
 
+// Slugs estables para `data-component` de cada paso. Coinciden con el
+// glosario en COMPONENTS.md y permiten referenciar cada paso en
+// conversaciones aunque cambien los textos i18n.
+const stepSlugs = ['buscar', 'reservar', 'disfrutar'] as const;
+
 /**
  * Sección "Cómo funciona" — tres pasos breves para explicar el flujo.
  *
@@ -24,17 +29,18 @@ export function HowItWorks() {
   const t = useTranslations('home.howItWorks');
 
   return (
-    <section className={s.root}>
+    <section className={s.root} data-component="how-it-works">
       <div className={s.container}>
-        <header className={s.header}>
+        <header className={s.header} data-component="how-it-works-header">
           <h2 className={s.title}>{t('title')}</h2>
         </header>
 
         <ol className={s.grid}>
           {steps.map((step) => {
             const Icon = step.icon;
+            const slug = stepSlugs[step.index];
             return (
-              <li key={step.index} className={s.step}>
+              <li key={step.index} className={s.step} data-component={`how-it-works-step-${slug}`}>
                 <span className={s.stepIndex} aria-hidden="true">
                   0{step.index + 1}
                 </span>

@@ -6,9 +6,9 @@
  */
 export const searchMapStyles = {
   wrapper:
-    'relative h-full min-h-[60dvh] w-full overflow-hidden rounded-3xl border border-stone-200 bg-stone-100',
+    'relative h-full min-h-[60dvh] w-full overflow-hidden rounded-3xl border border-border bg-muted',
   attribution:
-    'pointer-events-none absolute bottom-2 right-3 rounded-full bg-white/80 px-2 py-0.5 text-[0.65rem] text-stone-600 backdrop-blur',
+    'pointer-events-none absolute bottom-2 right-3 rounded-full bg-white/80 px-2 py-0.5 text-[0.65rem] text-muted-foreground backdrop-blur',
 } as const;
 
 /**

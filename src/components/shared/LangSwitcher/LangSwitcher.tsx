@@ -17,7 +17,7 @@ export function LangSwitcher({ compact = false }: LangSwitcherProps) {
   const { locales, currentLocale, changeLocale, isPending } = useLangSwitcher();
 
   return (
-    <div className={s.root} role="group" aria-label="Language">
+    <div className={s.root} role="group" aria-label="Language" data-component="lang-switcher">
       {locales.map((locale) => {
         const isActive = locale === currentLocale;
         // En modo compacto solo dejamos visible el activo y el primer
@@ -34,6 +34,7 @@ export function LangSwitcher({ compact = false }: LangSwitcherProps) {
             disabled={isPending}
             aria-pressed={isActive}
             className={cn(s.button, isActive && s.buttonActive)}
+            data-component={`lang-switcher-option-${locale}`}
           >
             {locale}
           </button>

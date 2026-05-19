@@ -79,5 +79,9 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
     },
   };
 
-  return <SearchView initial={initial} />;
+  return (
+    <div data-component="search-page" className="contents">
+      <SearchView initial={initial} />
+    </div>
+  );
 }

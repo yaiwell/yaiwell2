@@ -13,10 +13,12 @@ export type CategoryTone = 'rose' | 'sky' | 'peach' | 'sage' | 'butter' | 'lilac
  * Tipos del componente CategoryGrid.
  *
  * Cada categoría queda definida por: slug (clave i18n + valor de query
- * param hacia `/buscar?cat=...`), icono Lucide y tono pastel asignado.
+ * param hacia `/buscar?cat=...`), icono Lucide, foto Unsplash verificada
+ * y tono pastel asignado.
  */
 export interface CategoryItem {
   slug: HeroCategorySlug;
   icon: LucideIcon;
   tone: CategoryTone;
+  imageUrl: string;
 }

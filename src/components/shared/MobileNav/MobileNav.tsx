@@ -34,7 +34,7 @@ export function MobileNav() {
   const t = useTranslations('nav');
 
   return (
-    <nav className={s.root} aria-label={t('home')}>
+    <nav className={s.root} aria-label={t('home')} data-component="mobile-nav">
       <ul className={s.inner}>
         {items.map((item) => (
           <MobileNavLink key={item.href} item={item} label={t(item.labelKey)} />
@@ -66,6 +66,7 @@ function MobileNavLink({ item, label }: MobileNavLinkProps) {
         href={item.href}
         className={cn(s.link, isActive && s.linkActive)}
         aria-current={isActive ? 'page' : undefined}
+        data-component={`mobile-nav-tab-${item.labelKey}`}
       >
         <span className={cn(s.iconWrap, isActive && s.iconWrapActive)}>
           <Icon className="size-5" aria-hidden="true" />

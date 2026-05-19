@@ -21,6 +21,11 @@ const cards: DifferentiatorCard[] = [
   { index: 2, icon: ShieldCheck },
 ];
 
+// Slugs estables para `data-component` de cada card. Reflejan la
+// promesa central (disponibilidad / curación / sin-compromiso) y
+// están documentados en COMPONENTS.md.
+const cardSlugs = ['availability', 'curation', 'no-commitment'] as const;
+
 /**
  * Sección "Por qué Beauly" — tres cards con el diferencial frente a la
  * competencia (Treatwell/Booksy/Fresha).
@@ -29,17 +34,22 @@ export function DifferentiatorCards() {
   const t = useTranslations('home.differentiator');
 
   return (
-    <section className={s.root}>
+    <section className={s.root} data-component="differentiator-cards">
       <div className={s.container}>
-        <header className={s.header}>
+        <header className={s.header} data-component="differentiator-cards-header">
           <h2 className={s.title}>{t('title')}</h2>
         </header>
 
         <div className={s.grid}>
           {cards.map((card) => {
             const Icon = card.icon;
+            const slug = cardSlugs[card.index];
             return (
-              <article key={card.index} className={s.card}>
+              <article
+                key={card.index}
+                className={s.card}
+                data-component={`differentiator-card-${slug}`}
+              >
                 <span className={differentiatorToneStyles[card.index]} aria-hidden="true">
                   <Icon className="size-6" />
                 </span>

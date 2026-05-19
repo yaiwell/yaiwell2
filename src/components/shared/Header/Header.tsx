@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl';
-import { Menu, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
@@ -23,20 +23,25 @@ const navItems: HeaderNavItem[] = [
  * Header principal de la app.
  *
  * Sticky en top, sirve de ancla visual de marca en todas las páginas. En
- * desktop muestra nav central + acciones a la derecha; en mobile colapsa a
- * logo + cambio de idioma + botón hamburguesa (placeholder visual sin
- * lógica de menú lateral todavía — se abordará cuando definamos el flujo
- * autenticado completo).
+ * desktop muestra nav central + acciones a la derecha; en mobile la
+ * navegación principal se delega al `MobileNav` fijo en el bottom, por lo
+ * que aquí sólo aparecen logo + `LangSwitcher`. (Decisión post-feedback:
+ * el botón hamburguesa duplicaba navegación y se eliminó.)
  */
 export function Header() {
   const tNav = useTranslations('nav');
   const tCommon = useTranslations('common');
 
   return (
-    <header className={s.root}>
+    <header className={s.root} data-component="header">
       <div className={s.container}>
         {/* Marca: logotipo a la izquierda. */}
-        <Link href="/" className={s.brand} aria-label={tCommon('appName')}>
+        <Link
+          href="/"
+          className={s.brand}
+          aria-label={tCommon('appName')}
+          data-component="header-brand"
+        >
           <span className={s.brandMark} aria-hidden="true">
             <Sparkles className="size-4" />
           </span>
@@ -44,36 +49,41 @@ export function Header() {
         </Link>
 
         {/* Navegación central (solo desktop). */}
-        <nav className={s.desktopNav} aria-label={tNav('home')}>
+        <nav className={s.desktopNav} aria-label={tNav('home')} data-component="header-nav">
           {navItems.map((item) => (
-            <Link key={item.href} href={item.href} className={s.navLink}>
+            <Link
+              key={item.href}
+              href={item.href}
+              className={s.navLink}
+              data-component={`header-nav-${item.labelKey}`}
+            >
               {tNav(item.labelKey)}
             </Link>
           ))}
         </nav>
 
         {/* Acciones a la derecha en desktop. */}
-        <div className={s.desktopActions}>
-          <Link href="/profesionales" className={s.desktopProvidersLink}>
+        <div className={s.desktopActions} data-component="header-desktop-actions">
+          <Link
+            href="/profesionales"
+            className={s.desktopProvidersLink}
+            data-component="header-providers-link"
+          >
             {tNav('forProviders')}
           </Link>
           <LangSwitcher />
-          <Button asChild variant="outline" size="lg">
+          <Button asChild variant="outline" size="lg" data-component="header-sign-in">
             <Link href="/entrar">{tNav('signIn')}</Link>
           </Button>
-          <Button asChild size="lg">
+          <Button asChild size="lg" data-component="header-sign-up">
             <Link href="/registro">{tNav('signUp')}</Link>
           </Button>
         </div>
 
-        {/* Acciones compactas en mobile. */}
-        <div className={s.mobileActions}>
+        {/* Acciones compactas en mobile: solo cambio de idioma. La
+            navegación principal vive en `MobileNav` (bottom tab bar). */}
+        <div className={s.mobileActions} data-component="header-mobile-actions">
           <LangSwitcher compact />
-          {/* Placeholder visual: el menú lateral lo implementaremos cuando
-              tengamos el flujo autenticado real. */}
-          <button type="button" className={s.iconButton} aria-label={tNav('openMenu')}>
-            <Menu className="size-5" />
-          </button>
         </div>
       </div>
     </header>

@@ -38,12 +38,12 @@ export default async function HomePage({ params }: HomePageProps) {
   setRequestLocale(locale);
 
   return (
-    <>
+    <div data-component="home-page" className="contents">
       <Hero />
       <CategoryGrid />
       <HowItWorks />
       <DifferentiatorCards />
       <FinalCTA />
-    </>
+    </div>
   );
 }

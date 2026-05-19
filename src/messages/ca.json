@@ -143,7 +143,9 @@
       "from": "des de",
       "reviews": "{count, plural, one {# valoració} other {# valoracions}}",
       "distance": "a {km} km",
-      "viewDetail": "Veure detall"
+      "viewDetail": "Veure detall",
+      "typeAutonomous": "Autònom",
+      "typeCenter": "Centre"
     },
     "availability": {
       "now": "Disponible ara",

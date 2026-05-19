@@ -14,12 +14,12 @@ export function FinalCTA() {
   const t = useTranslations('home.finalCta');
 
   return (
-    <section className={s.root}>
+    <section className={s.root} data-component="final-cta">
       <div className={s.container}>
-        <div className={s.banner}>
+        <div className={s.banner} data-component="final-cta-banner">
           <h2 className={s.title}>{t('title')}</h2>
           <p className={s.subtitle}>{t('subtitle')}</p>
-          <Link href="/buscar" className={s.button}>
+          <Link href="/buscar" className={s.button} data-component="final-cta-button">
             {t('button')}
           </Link>
         </div>

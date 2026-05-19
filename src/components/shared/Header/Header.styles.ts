@@ -10,7 +10,7 @@ export const headerStyles = {
   brand:
     'flex items-center gap-2 font-medium tracking-tight text-foreground transition-opacity hover:opacity-80',
   brandMark:
-    'inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-brand-rose to-brand-peach text-white shadow-sm',
+    'inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-brand-rose to-brand-peach text-white shadow-sm ring-1 ring-white/20 dark:ring-white/30',
   brandText: 'font-display text-xl md:text-2xl tracking-tight',
   desktopNav: 'hidden items-center gap-7 md:flex',
   navLink: 'text-sm font-medium text-muted-foreground transition-colors hover:text-foreground',

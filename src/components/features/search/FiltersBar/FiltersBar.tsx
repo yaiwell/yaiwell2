@@ -33,14 +33,20 @@ export function FiltersBar({
   const rootCategories = getRootCategories();
 
   return (
-    <div className={s.root}>
-      <div className={s.chipsScroll} role="tablist" aria-label={t('title')}>
+    <div className={s.root} data-component="filters-bar">
+      <div
+        className={s.chipsScroll}
+        role="tablist"
+        aria-label={t('title')}
+        data-component="filters-bar-categories"
+      >
         <button
           type="button"
           role="tab"
           aria-selected={activeCategorySlug === null}
           onClick={() => onCategoryChange(null)}
           className={cn(s.chipBase, activeCategorySlug === null ? s.chipActive : s.chipIdle)}
+          data-component="filters-bar-category-all"
         >
           {tc('all')}
         </button>
@@ -54,6 +60,7 @@ export function FiltersBar({
               aria-selected={isActive}
               onClick={() => onCategoryChange(isActive ? null : cat.slug)}
               className={cn(s.chipBase, isActive ? s.chipActive : s.chipIdle)}
+              data-component={`filters-bar-category-${cat.slug}`}
             >
               {tc(cat.slug as 'belleza' | 'estetica' | 'bienestar' | 'deporte')}
             </button>
@@ -66,6 +73,7 @@ export function FiltersBar({
         aria-pressed={availabilityOnly}
         onClick={() => onAvailabilityToggle(!availabilityOnly)}
         className={cn(s.toggleNow, availabilityOnly ? s.toggleNowActive : s.toggleNowIdle)}
+        data-component="filters-availability-toggle"
       >
         <Zap className="size-4" aria-hidden />
         <span className="hidden sm:inline">{t('availableNowToggle')}</span>
@@ -76,6 +84,7 @@ export function FiltersBar({
         onClick={onOpenFiltersSheet}
         className={s.filterButton}
         aria-label={t('filters.button')}
+        data-component="filters-bar-open-sheet"
       >
         <SlidersHorizontal className="size-4" aria-hidden />
         <span className="hidden sm:inline">{t('filters.button')}</span>

@@ -28,23 +28,29 @@ export function FiltersSheet({ open, onOpenChange, value, onApply, onClear }: Fi
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className={s.overlay} />
-        <Dialog.Content className={s.content}>
-          <header className={s.header}>
+        <Dialog.Overlay className={s.overlay} data-component="filters-sheet-overlay" />
+        <Dialog.Content className={s.content} data-component="filters-sheet">
+          <header className={s.header} data-component="filters-sheet-header">
             <div className={s.titleBlock}>
               <Dialog.Title className={s.title}>{t('title')}</Dialog.Title>
               <Dialog.Description className={s.description}>{t('description')}</Dialog.Description>
             </div>
-            <Dialog.Close aria-label={t('close')} className={s.closeButton}>
+            <Dialog.Close
+              aria-label={t('close')}
+              className={s.closeButton}
+              data-component="filters-sheet-close"
+            >
               <X className="size-4" />
             </Dialog.Close>
           </header>
 
-          <section className={s.section}>
+          <section className={s.section} data-component="filters-sheet-section-price">
             <span className={s.sectionLabel}>{t('price')}</span>
             <div className={s.priceRow}>
               {PRICE_OPTIONS.map((range) => {
                 const active = draft.priceRange.includes(range);
+                // Slug ASCII a partir del símbolo (€ → 1, €€ → 2, €€€ → 3).
+                const slug = range.length;
                 return (
                   <button
                     key={range}
@@ -52,6 +58,7 @@ export function FiltersSheet({ open, onOpenChange, value, onApply, onClear }: Fi
                     onClick={() => togglePrice(range)}
                     aria-pressed={active}
                     className={cn(s.priceChip, active ? s.priceChipActive : s.priceChipIdle)}
+                    data-component={`filters-sheet-price-${slug}`}
                   >
                     {range}
                   </button>
@@ -60,7 +67,7 @@ export function FiltersSheet({ open, onOpenChange, value, onApply, onClear }: Fi
             </div>
           </section>
 
-          <section className={s.section}>
+          <section className={s.section} data-component="filters-sheet-section-rating">
             <span className={s.sectionLabel}>{t('minRating')}</span>
             <div className={s.ratingRow}>
               <button
@@ -71,6 +78,7 @@ export function FiltersSheet({ open, onOpenChange, value, onApply, onClear }: Fi
                   s.ratingChip,
                   draft.minRating === null ? s.ratingChipActive : s.ratingChipIdle,
                 )}
+                data-component="filters-sheet-rating-any"
               >
                 {t('anyRating')}
               </button>
@@ -83,6 +91,7 @@ export function FiltersSheet({ open, onOpenChange, value, onApply, onClear }: Fi
                     onClick={() => setRating(rating)}
                     aria-pressed={active}
                     className={cn(s.ratingChip, active ? s.ratingChipActive : s.ratingChipIdle)}
+                    data-component={`filters-sheet-rating-${rating.toString().replace('.', '-')}`}
                   >
                     <Star className="size-3.5" aria-hidden />
                     {rating.toFixed(1)}+
@@ -92,11 +101,21 @@ export function FiltersSheet({ open, onOpenChange, value, onApply, onClear }: Fi
             </div>
           </section>
 
-          <footer className={s.footer}>
-            <button type="button" onClick={onClear} className={s.clearButton}>
+          <footer className={s.footer} data-component="filters-sheet-footer">
+            <button
+              type="button"
+              onClick={onClear}
+              className={s.clearButton}
+              data-component="filters-sheet-clear"
+            >
               {t('clear')}
             </button>
-            <button type="button" onClick={handleApply} className={s.applyButton}>
+            <button
+              type="button"
+              onClick={handleApply}
+              className={s.applyButton}
+              data-component="filters-sheet-apply"
+            >
               {t('apply')}
             </button>
           </footer>

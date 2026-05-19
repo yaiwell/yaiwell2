@@ -21,9 +21,7 @@ import type { SearchViewProps } from './SearchView.types';
  */
 const SearchMapLazy = dynamic(() => import('../SearchMap/SearchMap').then((m) => m.SearchMap), {
   ssr: false,
-  loading: () => (
-    <div className="h-full min-h-[60dvh] w-full animate-pulse rounded-3xl bg-stone-100" />
-  ),
+  loading: () => <div className="bg-muted h-full min-h-[60dvh] w-full animate-pulse rounded-3xl" />,
 });
 
 /**
@@ -55,12 +53,12 @@ export function SearchView({ initial }: SearchViewProps) {
   } = useSearchView(initial);
 
   return (
-    <div className={s.root}>
-      <div className={s.stickyTop}>
+    <div className={s.root} data-component="search-view">
+      <div className={s.stickyTop} data-component="search-sticky-top">
         <div className={s.topInner}>
-          <div className={s.headerRow}>
+          <div className={s.headerRow} data-component="search-header-row">
             <h1 className={s.headerTitle}>{t('title')}</h1>
-            <span className={s.resultsCount}>
+            <span className={s.resultsCount} data-component="search-results-count">
               {t('resultsCount', { count: initial.providers.length })}
             </span>
           </div>
@@ -77,7 +75,7 @@ export function SearchView({ initial }: SearchViewProps) {
           />
 
           {/* Tabs solo visibles en móvil; en desktop el split muestra ambos. */}
-          <div className={s.mobileTabs} role="tablist">
+          <div className={s.mobileTabs} role="tablist" data-component="search-mobile-tabs">
             <button
               type="button"
               role="tab"
@@ -87,6 +85,7 @@ export function SearchView({ initial }: SearchViewProps) {
                 s.mobileTabBase,
                 mobileTab === 'list' ? s.mobileTabActive : s.mobileTabIdle,
               )}
+              data-component="search-mobile-tab-list"
             >
               <List className="size-4" aria-hidden />
               {t('tabs.list')}
@@ -100,6 +99,7 @@ export function SearchView({ initial }: SearchViewProps) {
                 s.mobileTabBase,
                 mobileTab === 'map' ? s.mobileTabActive : s.mobileTabIdle,
               )}
+              data-component="search-mobile-tab-map"
             >
               <MapPin className="size-4" aria-hidden />
               {t('tabs.map')}
@@ -108,10 +108,13 @@ export function SearchView({ initial }: SearchViewProps) {
         </div>
       </div>
 
-      <div className={s.body}>
+      <div className={s.body} data-component="search-body">
         <div className={s.splitGrid}>
           {/* Columna lista: siempre montada en desktop, condicionada en móvil. */}
-          <div className={cn(s.listColumn, mobileTab === 'list' ? 'block' : 'hidden', 'lg:block')}>
+          <div
+            className={cn(s.listColumn, mobileTab === 'list' ? 'block' : 'hidden', 'lg:block')}
+            data-component="search-list-column"
+          >
             <ProviderList
               providers={initial.providers}
               fromPriceMap={initial.fromPriceMap}
@@ -123,6 +126,7 @@ export function SearchView({ initial }: SearchViewProps) {
           {/* Columna mapa: sticky en desktop, condicionada en móvil. */}
           <div
             className={cn(s.mapColumn, mobileTab === 'map' ? s.mobileMapPanel : 'hidden lg:block')}
+            data-component="search-map-column"
           >
             <SearchMapLazy
               providers={initial.providers}

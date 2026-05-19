@@ -60,26 +60,43 @@ export function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className={s.root}>
+    <footer className={s.root} data-component="footer">
       <div className={s.container}>
         <div className={s.top}>
           {/* Columna de marca. */}
-          <div className={s.brandCol}>
-            <span className={s.brand}>
+          <div className={s.brandCol} data-component="footer-col-brand">
+            <span className={s.brand} data-component="footer-brand">
               <span className={s.brandMark} aria-hidden="true">
                 <Sparkles className="size-4" />
               </span>
               {tCommon('appName')}
             </span>
-            <p className={s.tagline}>{tFooter('tagline')}</p>
-            <div className={s.socials}>
-              <a href="#" className={s.socialButton} aria-label="Instagram">
+            <p className={s.tagline} data-component="footer-tagline">
+              {tFooter('tagline')}
+            </p>
+            <div className={s.socials} data-component="footer-socials">
+              <a
+                href="#"
+                className={s.socialButton}
+                aria-label="Instagram"
+                data-component="footer-social-instagram"
+              >
                 <Camera className="size-4" />
               </a>
-              <a href="#" className={s.socialButton} aria-label="X / Twitter">
+              <a
+                href="#"
+                className={s.socialButton}
+                aria-label="X / Twitter"
+                data-component="footer-social-twitter"
+              >
                 <AtSign className="size-4" />
               </a>
-              <a href="#" className={s.socialButton} aria-label="Contacto">
+              <a
+                href="#"
+                className={s.socialButton}
+                aria-label="Contacto"
+                data-component="footer-social-contact"
+              >
                 <Send className="size-4" />
               </a>
             </div>
@@ -90,13 +107,21 @@ export function Footer() {
               TypeScript pueda estrechar el tipo de `labelKey` y validar
               en compile-time la clave i18n combinada. */}
           {linkGroups.map((group) => (
-            <div key={group.titleKey} className={s.group}>
+            <div
+              key={group.titleKey}
+              className={s.group}
+              data-component={`footer-col-${group.titleKey}`}
+            >
               <h2 className={s.groupTitle}>{tFooter(`${group.titleKey}.title`)}</h2>
               <ul className={s.groupList}>
                 {group.titleKey === 'product' &&
                   group.links.map((link) => (
                     <li key={`product-${link.labelKey}`}>
-                      <a href={link.href} className={s.groupLink}>
+                      <a
+                        href={link.href}
+                        className={s.groupLink}
+                        data-component={`footer-link-product-${link.labelKey}`}
+                      >
                         {tFooter(`product.${link.labelKey}`)}
                       </a>
                     </li>
@@ -104,7 +129,11 @@ export function Footer() {
                 {group.titleKey === 'company' &&
                   group.links.map((link) => (
                     <li key={`company-${link.labelKey}`}>
-                      <a href={link.href} className={s.groupLink}>
+                      <a
+                        href={link.href}
+                        className={s.groupLink}
+                        data-component={`footer-link-company-${link.labelKey}`}
+                      >
                         {tFooter(`company.${link.labelKey}`)}
                       </a>
                     </li>
@@ -112,7 +141,11 @@ export function Footer() {
                 {group.titleKey === 'legal' &&
                   group.links.map((link) => (
                     <li key={`legal-${link.labelKey}`}>
-                      <a href={link.href} className={s.groupLink}>
+                      <a
+                        href={link.href}
+                        className={s.groupLink}
+                        data-component={`footer-link-legal-${link.labelKey}`}
+                      >
                         {tFooter(`legal.${link.labelKey}`)}
                       </a>
                     </li>
@@ -122,9 +155,9 @@ export function Footer() {
           ))}
         </div>
 
-        <div className={s.bottom}>
-          <span>{tFooter('copyright', { year })}</span>
-          <span>{tFooter('madeIn', { city: 'Barcelona' })}</span>
+        <div className={s.bottom} data-component="footer-bottom">
+          <span data-component="footer-copyright">{tFooter('copyright', { year })}</span>
+          <span data-component="footer-made-in">{tFooter('madeIn', { city: 'Barcelona' })}</span>
         </div>
       </div>
     </footer>

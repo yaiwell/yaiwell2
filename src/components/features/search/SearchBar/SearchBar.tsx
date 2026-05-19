@@ -19,7 +19,7 @@ export function SearchBar({ initialValue = '', onSubmit }: SearchBarProps) {
   const { value, setValue, handleSubmit, handleClear } = useSearchBar(initialValue, onSubmit);
 
   return (
-    <form role="search" onSubmit={handleSubmit} className={s.form}>
+    <form role="search" onSubmit={handleSubmit} className={s.form} data-component="search-bar">
       <span className={s.iconLeft} aria-hidden>
         <Search className="size-5" />
       </span>
@@ -32,6 +32,7 @@ export function SearchBar({ initialValue = '', onSubmit }: SearchBarProps) {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         className={s.input}
+        data-component="search-bar-input"
       />
       {value.length > 0 && (
         <button
@@ -39,6 +40,7 @@ export function SearchBar({ initialValue = '', onSubmit }: SearchBarProps) {
           aria-label={t('filters.clear')}
           onClick={handleClear}
           className={s.clearButton}
+          data-component="search-bar-clear"
         >
           <X className="size-4" />
         </button>

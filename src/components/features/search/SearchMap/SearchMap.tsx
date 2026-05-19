@@ -33,7 +33,7 @@ export function SearchMap({
   const t = useTranslations('search.map');
 
   return (
-    <div className={s.wrapper}>
+    <div className={s.wrapper} data-component="search-map">
       <MapContainer
         center={[initialCenter.lat, initialCenter.lng]}
         zoom={initialZoom}
@@ -66,7 +66,9 @@ export function SearchMap({
           );
         })}
       </MapContainer>
-      <span className={s.attribution}>{t('attribution')}</span>
+      <span className={s.attribution} data-component="search-map-attribution">
+        {t('attribution')}
+      </span>
     </div>
   );
 }
