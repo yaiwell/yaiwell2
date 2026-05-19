@@ -63,11 +63,6 @@ export function Hero() {
       <div className={s.overlay} aria-hidden="true" />
 
       <div className={s.content}>
-        <span className={s.badge} data-component="hero-badge">
-          <span className={s.badgeDot} aria-hidden="true" />
-          {t('searchBar.now')}
-        </span>
-
         <h1 className={s.titleLine1}>
           {t('title.line1')} <span className={s.titleLine2}>{t('title.line2')}</span>
         </h1>

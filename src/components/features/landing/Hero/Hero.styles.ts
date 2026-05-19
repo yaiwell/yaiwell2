@@ -58,10 +58,4 @@ export const heroStyles = {
   submit:
     'inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-md transition-all hover:bg-primary/90 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 md:h-12 md:w-12 md:rounded-full md:px-0',
   submitLabel: 'md:sr-only',
-
-  // Píldora discreta "Ahora · disponible" para enfatizar el diferencial
-  // de disponibilidad inmediata por encima del título.
-  badge:
-    'inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/15 px-3 py-1 text-xs font-medium uppercase tracking-wide text-white backdrop-blur',
-  badgeDot: 'h-1.5 w-1.5 rounded-full bg-brand-sage animate-pulse',
 } as const;

@@ -21,7 +21,6 @@
 ### `hero` — Sección principal con buscador
 
 - `hero` — `<section>` raíz del hero.
-- `hero-badge` — píldora "Belleza, bienestar y deporte".
 - `hero-search-card` — tarjeta del buscador con 3 campos + botón.
 - `hero-search-category` — campo "¿Qué buscas?".
 - `hero-search-location` — campo de localización.
