@@ -5,6 +5,7 @@ import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 
 import { routing } from '@/i18n/routing';
+import { Footer, Header, MobileNav } from '@/components/shared';
 
 import '../globals.css';
 
@@ -45,6 +46,9 @@ interface RootLayoutProps {
  *   por props.
  * - Envolver el árbol en `NextIntlClientProvider` para que los Client
  *   Components hereden los mensajes y el locale.
+ * - Componer el shell visual común (Header / MobileNav / Footer) alrededor
+ *   del contenido. El padding-bottom en mobile evita que el contenido
+ *   quede tapado por el MobileNav fixed.
  */
 export default async function RootLayout({ children, params }: RootLayoutProps) {
   const { locale } = await params;
@@ -64,7 +68,15 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <Header />
+          {/* El padding inferior en mobile reserva espacio para el bottom
+              tab bar (MobileNav). En desktop el tab bar se oculta y no
+              hace falta el padding extra. */}
+          <main className="flex flex-1 flex-col pb-20 md:pb-0">{children}</main>
+          <Footer />
+          <MobileNav />
+        </NextIntlClientProvider>
       </body>
     </html>
   );
