@@ -33,12 +33,10 @@
 - `category-grid` — `<section>` raíz.
 - `category-card-peluqueria`
 - `category-card-masajes`
-- `category-card-padel`
 - `category-card-manicura`
 - `category-card-gimnasio`
 - `category-card-estetica`
 - `category-card-yoga`
-- `category-card-depilacion`
 
 ### `how-it-works` — Cómo funciona (3 pasos)
 

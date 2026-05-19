@@ -6,7 +6,6 @@ import {
   Heart,
   Scissors,
   Sparkles,
-  Trophy,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -38,13 +37,6 @@ const categories: CategoryItem[] = [
       'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80&auto=format&fit=crop',
   },
   {
-    slug: 'padel',
-    icon: Trophy,
-    tone: 'sage',
-    imageUrl:
-      'https://images.unsplash.com/photo-1554244933-d876deb6b2ff?w=800&q=80&auto=format&fit=crop',
-  },
-  {
     slug: 'manicura',
     icon: Sparkles,
     tone: 'peach',
@@ -61,23 +53,16 @@ const categories: CategoryItem[] = [
   {
     slug: 'estetica',
     icon: Heart,
-    tone: 'rose',
+    tone: 'sage',
     imageUrl:
       'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80&auto=format&fit=crop',
   },
   {
     slug: 'yoga',
     icon: Flower2,
-    tone: 'sage',
-    imageUrl:
-      'https://images.unsplash.com/photo-1545389336-cf090694435e?w=800&q=80&auto=format&fit=crop',
-  },
-  {
-    slug: 'depilacion',
-    icon: Sparkles,
     tone: 'butter',
     imageUrl:
-      'https://images.unsplash.com/photo-1599447421416-3414500d18a5?w=800&q=80&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1545389336-cf090694435e?w=800&q=80&auto=format&fit=crop',
   },
 ];
 

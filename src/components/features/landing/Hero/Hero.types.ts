@@ -8,12 +8,10 @@
 export type HeroCategorySlug =
   | 'peluqueria'
   | 'masajes'
-  | 'padel'
   | 'manicura'
   | 'gimnasio'
   | 'estetica'
-  | 'yoga'
-  | 'depilacion';
+  | 'yoga';
 
 export interface HeroSearchDraft {
   category: HeroCategorySlug | '';

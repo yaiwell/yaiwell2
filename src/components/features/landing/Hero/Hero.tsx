@@ -28,12 +28,10 @@ const HERO_BACKGROUND_URL =
 const categoryOptions: HeroCategorySlug[] = [
   'peluqueria',
   'masajes',
-  'padel',
   'manicura',
   'gimnasio',
   'estetica',
   'yoga',
-  'depilacion',
 ];
 
 /**
