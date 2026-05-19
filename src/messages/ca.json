@@ -1,0 +1,12 @@
+{
+  "common": {
+    "appName": "Beauly",
+    "loading": "Carregant...",
+    "error": "S'ha produït un error. Torna-ho a provar d'aquí uns segons."
+  },
+  "home": {
+    "title": "Bellesa, benestar i esport quan tu vulguis",
+    "subtitle": "Descobreix professionals a prop teu amb disponibilitat immediata i reserva en segons.",
+    "cta": "Buscar disponibilitat ara"
+  }
+}
