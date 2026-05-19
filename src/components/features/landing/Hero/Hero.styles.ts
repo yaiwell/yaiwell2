@@ -46,6 +46,10 @@ export const heroStyles = {
   fieldLabel: 'text-[11px] font-medium uppercase tracking-wider text-muted-foreground',
   fieldControl:
     'w-full appearance-none border-0 bg-transparent pr-6 text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground/70 focus:ring-0',
+  // Trigger del Radix Select usado dentro de un `field`. Hereda el padding
+  // y la chevron del wrapper para mantener la línea visual de los inputs.
+  selectTrigger:
+    'h-auto w-full justify-start gap-0 border-0 bg-transparent p-0 pr-6 text-sm font-medium text-foreground hover:bg-transparent focus:ring-0 data-[placeholder]:text-muted-foreground/70',
   fieldChevron:
     'pointer-events-none absolute right-5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground transition-transform group-hover/field:text-foreground md:right-6',
 
