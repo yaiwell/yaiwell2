@@ -10,12 +10,8 @@
 
 ### Bloque A — Bootstrapping del repo
 
-- [ ] Crear repo en GitHub (privado) con nombre `beauly` (cambiar cuando haya nombre real).
-- [ ] Configurar next-intl con `es` y `ca` como locales.
-- [ ] Crear estructura de carpetas según `CLAUDE.md` sección 5.
 - [ ] Conectar el repo a Vercel y verificar deploy preview funcionando.
 - [ ] Configurar dominio o subdominio temporal en Vercel.
-- [ ] Crear `.env.example` con todas las variables de la sección 9 de `CLAUDE.md`.
 
 ### Bloque B — Infraestructura real (sin lógica todavía)
 
@@ -148,4 +144,4 @@
 
 ---
 
-*Última actualización: 2026-05-19.*
+*Última actualización: 2026-05-20.*

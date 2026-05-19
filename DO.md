@@ -8,6 +8,28 @@
 
 ## 2026-05
 
+### 2026-05-20
+
+- **Repositorio publicado en GitHub:** [jorgegraells/beauly](https://github.com/jorgegraells/beauly). Branch renombrado `master` → `main`. Estado anterior (initial commit + bootstrap + tooling + shadcn) reagrupado en 4 commits temáticos siguiendo Conventional Commits en castellano: `chore: añadir documentación base`, `style: reformatear archivos generados por create-next-app`, `build: configurar tooling de calidad`, `feat: instalar shadcn/ui con paleta stone`. Añadido `.claude/` al `.gitignore` (preferencias locales del cliente).
+- **next-intl configurado con `es` (por defecto) y `ca`.**
+  - Instalado `next-intl ^4.12.0` como dependencia de producción.
+  - `src/i18n/routing.ts` con `defineRouting({ locales: ['es','ca'], defaultLocale: 'es', localePrefix: 'as-needed' })`. Decisión: `as-needed` → `/` sirve castellano sin prefijo (mercado primario, URLs limpias), `/ca/...` sirve catalán.
+  - `src/i18n/navigation.ts` con wrappers tipados (`Link`, `redirect`, `usePathname`, `useRouter`, `getPathname`) vía `createNavigation(routing)`.
+  - `src/i18n/request.ts` con `getRequestConfig` que valida `requestLocale` con `hasLocale` y carga `messages/${locale}.json`.
+  - `src/proxy.ts` (no `middleware.ts` — en Next.js 16 el file convention se renombró a `proxy.ts`) con `createMiddleware(routing)` y matcher `'/((?!api|_next|_vercel|.*\\..*).*)'`.
+  - `src/messages/es.json` y `src/messages/ca.json` con claves de prueba (`common.{appName,loading,error}`, `home.{title,subtitle,cta}`) en castellano y catalán reales.
+  - `src/app/[locale]/layout.tsx` y `page.tsx`: el layout (Server Component) usa `params: Promise<{locale}>` (Next 16 hace `params` async), `generateStaticParams`, `hasLocale` + `notFound()`, `setRequestLocale`, envuelve children en `<NextIntlClientProvider>` y setea `<html lang={locale}>`. La página resuelve params en async y delega el render a un subcomponente síncrono que usa `useTranslations('home')`.
+  - `src/global.d.ts` augmenta `AppConfig` de next-intl v4 con `Locale` y `Messages` derivados de `es.json` para autocompletado/type-safety en `t(...)` y `setRequestLocale`.
+  - `next.config.ts` envuelto con `createNextIntlPlugin('./src/i18n/request.ts')`.
+  - Verificado: typecheck, lint, format:check y `npm run build` limpios. Build genera estáticamente `/es` y `/ca`.
+- **Estructura de carpetas creada según `CLAUDE.md` §5.**
+  - Nuevas carpetas (con `.gitkeep` para trackearlas vacías): `src/components/shared/`, `src/components/features/`, `src/lib/services/`, `src/lib/db/`, `src/lib/integrations/`, `src/lib/utils/`, `src/types/`, `src/styles/`, `prisma/`, `tests/`, `docs/`.
+  - `src/lib/utils.ts` (helper `cn()` de shadcn) y `src/lib/utils/` (carpeta para helpers futuros) conviven sin conflicto.
+  - Ningún archivo `.ts/.tsx` ni `index.ts` re-export creado todavía: las carpetas son placeholders hasta que se llenen con código real (regla §6.bis: no abstracciones prematuras).
+- **`.env.example` creado con las variables de `CLAUDE.md` §9.**
+  - Cabecera explicativa: es plantilla commiteable, valores reales en `.env.local` gitignored.
+  - Bloques agrupados con cabeceras `# === Servicio ===`: Supabase, Clerk, Stripe, Mapbox, Resend, App. Cada variable con comentario en castellano explicando su propósito y si va en cliente o servidor.
+
 ### 2026-05-19
 
 - **shadcn/ui instalado y configurado con paleta `stone` + Radix.**
