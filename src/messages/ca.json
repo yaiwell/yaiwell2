@@ -2,11 +2,158 @@
   "common": {
     "appName": "Beauly",
     "loading": "Carregant...",
-    "error": "S'ha produït un error. Torna-ho a provar d'aquí uns segons."
+    "error": "S'ha produït un error. Torna-ho a provar d'aquí uns segons.",
+    "goBack": "Tornar",
+    "comingSoon": "Pròximament"
+  },
+  "nav": {
+    "home": "Inici",
+    "search": "Cercar",
+    "bookings": "Reserves",
+    "profile": "Perfil",
+    "forProviders": "Per a professionals",
+    "signIn": "Entrar",
+    "signUp": "Registra't",
+    "openMenu": "Obrir menú"
+  },
+  "footer": {
+    "tagline": "Bellesa, benestar i esport amb disponibilitat immediata.",
+    "product": {
+      "title": "Producte",
+      "howItWorks": "Com funciona",
+      "categories": "Categories",
+      "pricing": "Preus"
+    },
+    "company": {
+      "title": "Empresa",
+      "about": "Sobre nosaltres",
+      "blog": "Blog",
+      "careers": "Treballa amb nosaltres"
+    },
+    "legal": {
+      "title": "Legal",
+      "terms": "Termes",
+      "privacy": "Privacitat",
+      "cookies": "Galetes"
+    },
+    "madeIn": "Fet a {city}",
+    "copyright": "© {year} Beauly"
   },
   "home": {
-    "title": "Bellesa, benestar i esport quan tu vulguis",
-    "subtitle": "Descobreix professionals a prop teu amb disponibilitat immediata i reserva en segons.",
-    "cta": "Buscar disponibilitat ara"
+    "hero": {
+      "title": {
+        "line1": "Reserva bellesa, benestar i esport",
+        "line2": "per a quan tu vulguis"
+      },
+      "subtitle": "Descobreix professionals disponibles a prop teu ara mateix.",
+      "searchBar": {
+        "category": "Què cerques?",
+        "location": "On?",
+        "when": "Quan?",
+        "now": "Ara",
+        "submit": "Cercar"
+      }
+    },
+    "categories": {
+      "title": "Categories populars",
+      "subtitle": "El més reservat per la comunitat aquesta setmana.",
+      "peluqueria": "Perruqueria",
+      "masajes": "Massatges",
+      "padel": "Pàdel",
+      "manicura": "Manicura",
+      "gimnasio": "Gimnàs",
+      "estetica": "Estètica",
+      "yoga": "Ioga",
+      "depilacion": "Depilació"
+    },
+    "howItWorks": {
+      "title": "Com funciona",
+      "steps": {
+        "0": {
+          "title": "Cerca a prop teu",
+          "description": "Filtra per categoria, distància i disponibilitat real en aquest mateix instant."
+        },
+        "1": {
+          "title": "Reserva a l'instant",
+          "description": "Confirmes i pagues en segons. Sense trucades, sense esperes, sense missatges a un WhatsApp que no contesta."
+        },
+        "2": {
+          "title": "Gaudeix i valora",
+          "description": "Vés, gaudeix del servei i deixa una valoració honesta per ajudar la comunitat."
+        }
+      }
+    },
+    "differentiator": {
+      "title": "Per què Beauly",
+      "cards": {
+        "0": {
+          "title": "Disponibilitat real",
+          "body": "Veus qui té lloc ara mateix. Sense agendes fantasma ni hores que en realitat no existeixen."
+        },
+        "1": {
+          "title": "Curació premium",
+          "body": "Només professionals verificats a mà pel nostre equip. Qualitat abans que quantitat."
+        },
+        "2": {
+          "title": "Sense compromís",
+          "body": "Cancel·la fins a 2 hores abans sense penalització. Flexibilitat de veritat."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Comença a cuidar-te ara",
+      "subtitle": "Professionals a prop teu, amb hora avui mateix.",
+      "button": "Cercar professionals"
+    }
+  },
+  "search": {
+    "title": "Cercar disponibilitat",
+    "searchPlaceholder": "Cerca un servei, centre o tractament...",
+    "availableNowToggle": "Només disponibles ara",
+    "filters": {
+      "button": "Filtres",
+      "title": "Filtres avançats",
+      "description": "Afina la teva cerca per preu i valoració mínima.",
+      "price": "Preu",
+      "priceLow": "Econòmic",
+      "priceMid": "Mitjà",
+      "priceHigh": "Premium",
+      "minRating": "Valoració mínima",
+      "anyRating": "Qualsevol",
+      "apply": "Aplicar filtres",
+      "clear": "Netejar",
+      "close": "Tancar"
+    },
+    "tabs": {
+      "list": "Llista",
+      "map": "Mapa"
+    },
+    "categories": {
+      "all": "Totes",
+      "belleza": "Bellesa",
+      "estetica": "Estètica",
+      "bienestar": "Benestar",
+      "deporte": "Esport"
+    },
+    "empty": {
+      "title": "Sense resultats per ara",
+      "subtitle": "Prova de treure algun filtre o ampliar la zona del mapa."
+    },
+    "card": {
+      "from": "des de",
+      "reviews": "{count, plural, one {# valoració} other {# valoracions}}",
+      "distance": "a {km} km",
+      "viewDetail": "Veure detall"
+    },
+    "availability": {
+      "now": "Disponible ara",
+      "soon": "En {minutes} min",
+      "busy": "Sense lloc avui"
+    },
+    "map": {
+      "attribution": "© OpenStreetMap",
+      "locating": "Localitzant..."
+    },
+    "resultsCount": "{count, plural, one {# resultat} other {# resultats}}"
   }
 }

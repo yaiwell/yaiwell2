@@ -2,11 +2,158 @@
   "common": {
     "appName": "Beauly",
     "loading": "Cargando...",
-    "error": "Ha ocurrido un error. Inténtalo de nuevo en unos segundos."
+    "error": "Ha ocurrido un error. Inténtalo de nuevo en unos segundos.",
+    "goBack": "Volver",
+    "comingSoon": "Próximamente"
+  },
+  "nav": {
+    "home": "Inicio",
+    "search": "Buscar",
+    "bookings": "Reservas",
+    "profile": "Perfil",
+    "forProviders": "Para profesionales",
+    "signIn": "Entrar",
+    "signUp": "Registrarse",
+    "openMenu": "Abrir menú"
+  },
+  "footer": {
+    "tagline": "Belleza, bienestar y deporte con disponibilidad inmediata.",
+    "product": {
+      "title": "Producto",
+      "howItWorks": "Cómo funciona",
+      "categories": "Categorías",
+      "pricing": "Precios"
+    },
+    "company": {
+      "title": "Empresa",
+      "about": "Sobre nosotros",
+      "blog": "Blog",
+      "careers": "Trabaja con nosotros"
+    },
+    "legal": {
+      "title": "Legal",
+      "terms": "Términos",
+      "privacy": "Privacidad",
+      "cookies": "Cookies"
+    },
+    "madeIn": "Hecho en {city}",
+    "copyright": "© {year} Beauly"
   },
   "home": {
-    "title": "Belleza, bienestar y deporte cuando tú quieras",
-    "subtitle": "Descubre profesionales cerca de ti con disponibilidad inmediata y reserva en segundos.",
-    "cta": "Buscar disponibilidad ahora"
+    "hero": {
+      "title": {
+        "line1": "Reserva belleza, bienestar y deporte",
+        "line2": "para cuando tú quieras"
+      },
+      "subtitle": "Descubre profesionales disponibles cerca de ti ahora mismo.",
+      "searchBar": {
+        "category": "¿Qué buscas?",
+        "location": "¿Dónde?",
+        "when": "¿Cuándo?",
+        "now": "Ahora",
+        "submit": "Buscar"
+      }
+    },
+    "categories": {
+      "title": "Categorías populares",
+      "subtitle": "Lo más reservado por la comunidad esta semana.",
+      "peluqueria": "Peluquería",
+      "masajes": "Masajes",
+      "padel": "Pádel",
+      "manicura": "Manicura",
+      "gimnasio": "Gimnasio",
+      "estetica": "Estética",
+      "yoga": "Yoga",
+      "depilacion": "Depilación"
+    },
+    "howItWorks": {
+      "title": "Cómo funciona",
+      "steps": {
+        "0": {
+          "title": "Busca cerca de ti",
+          "description": "Filtra por categoría, distancia y disponibilidad real en este preciso instante."
+        },
+        "1": {
+          "title": "Reserva al instante",
+          "description": "Confirmas y pagas en segundos. Sin llamadas, sin esperas, sin mensajes a un WhatsApp que no contesta."
+        },
+        "2": {
+          "title": "Disfruta y valora",
+          "description": "Ve, disfruta del servicio y deja una valoración honesta para ayudar a la comunidad."
+        }
+      }
+    },
+    "differentiator": {
+      "title": "Por qué Beauly",
+      "cards": {
+        "0": {
+          "title": "Disponibilidad real",
+          "body": "Ves quién tiene hueco ahora mismo. Sin agendas fantasma ni huecos que en realidad no existen."
+        },
+        "1": {
+          "title": "Curación premium",
+          "body": "Solo profesionales verificados a mano por nuestro equipo. Calidad antes que cantidad."
+        },
+        "2": {
+          "title": "Sin compromiso",
+          "body": "Cancela hasta 2 horas antes sin penalización. Flexibilidad de verdad."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Empieza a cuidarte ahora",
+      "subtitle": "Profesionales cerca de ti, con hueco hoy mismo.",
+      "button": "Buscar profesionales"
+    }
+  },
+  "search": {
+    "title": "Buscar disponibilidad",
+    "searchPlaceholder": "Busca un servicio, centro o tratamiento...",
+    "availableNowToggle": "Solo disponibles ahora",
+    "filters": {
+      "button": "Filtros",
+      "title": "Filtros avanzados",
+      "description": "Afina tu búsqueda por precio y valoración mínima.",
+      "price": "Precio",
+      "priceLow": "Económico",
+      "priceMid": "Medio",
+      "priceHigh": "Premium",
+      "minRating": "Valoración mínima",
+      "anyRating": "Cualquiera",
+      "apply": "Aplicar filtros",
+      "clear": "Limpiar",
+      "close": "Cerrar"
+    },
+    "tabs": {
+      "list": "Lista",
+      "map": "Mapa"
+    },
+    "categories": {
+      "all": "Todas",
+      "belleza": "Belleza",
+      "estetica": "Estética",
+      "bienestar": "Bienestar",
+      "deporte": "Deporte"
+    },
+    "empty": {
+      "title": "Sin resultados por ahora",
+      "subtitle": "Prueba a quitar algún filtro o a ampliar la zona del mapa."
+    },
+    "card": {
+      "from": "desde",
+      "reviews": "{count, plural, one {# valoración} other {# valoraciones}}",
+      "distance": "a {km} km",
+      "viewDetail": "Ver detalle"
+    },
+    "availability": {
+      "now": "Disponible ahora",
+      "soon": "En {minutes} min",
+      "busy": "Sin hueco hoy"
+    },
+    "map": {
+      "attribution": "© OpenStreetMap",
+      "locating": "Localizando..."
+    },
+    "resultsCount": "{count, plural, one {# resultado} other {# resultados}}"
   }
 }
