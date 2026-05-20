@@ -3,13 +3,11 @@
 import 'leaflet/dist/leaflet.css';
 
 import L from 'leaflet';
-import { Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 
-import { AvailabilityBadge } from '../AvailabilityBadge';
-
+import { MapProviderPopup } from './MapProviderPopup';
 import { buildPinHtml, searchMapStyles as s } from './SearchMap.styles';
 import type { SearchMapProps } from './SearchMap.types';
 
@@ -58,6 +56,8 @@ function MapResizeHandler() {
  *  - Sin `attributionControl` nativo de Leaflet (lo apagamos con
  *    `attributionControl={false}`) porque ya pintamos uno propio
  *    coherente con la estética stone.
+ *  - El contenido del Popup vive en `MapProviderPopup` para mantener
+ *    este archivo centrado en la composición Leaflet.
  *
  * El componente se importa con `next/dynamic({ ssr: false })` desde
  * `SearchView` porque Leaflet accede a `window` durante el require.
@@ -68,9 +68,9 @@ export function SearchMap({
   initialZoom,
   highlightedId,
   onHoverProvider,
+  onProviderSeeOnList,
 }: SearchMapProps) {
   const t = useTranslations('search.map');
-  const tCard = useTranslations('search.card');
 
   return (
     <div className={s.wrapper} data-component="search-map">
@@ -108,26 +108,13 @@ export function SearchMap({
               }}
             >
               <Popup closeButton autoPan offset={[0, -6]} className="beauly-map-popup">
-                <div className={s.popup} data-component={`search-map-popup-${p.slug}`}>
-                  <div className={s.popupHeader}>
-                    <p className={s.popupType}>
-                      {tCard(p.type === 'autonomo' ? 'typeAutonomous' : 'typeCenter')}
-                    </p>
-                    <h3 className={s.popupName}>{p.name}</h3>
-                  </div>
-                  <p className={s.popupAddress}>{p.address}</p>
-                  <div className={s.popupMeta}>
-                    <span className={s.popupRating}>
-                      <Star className="size-3.5 fill-current" aria-hidden />
-                      {p.rating.toFixed(1)}
-                    </span>
-                    <span className={s.popupReviews}>
-                      {tCard('reviews', { count: p.reviewsCount })}
-                    </span>
-                    <span className={s.popupPriceRange}>{p.priceRange}</span>
-                  </div>
-                  <AvailabilityBadge status={p.availability.status} />
-                </div>
+                <MapProviderPopup
+                  provider={p}
+                  onPrimaryAction={
+                    onProviderSeeOnList ? () => onProviderSeeOnList(p.id) : undefined
+                  }
+                  primaryActionLabel={t('popupCta')}
+                />
               </Popup>
             </Marker>
           );

@@ -206,9 +206,17 @@
     0 10px 30px -10px rgb(0 0 0 / 0.25),
     0 0 0 1px rgb(0 0 0 / 0.05);
   padding: 0;
+  /* Limitamos el ancho del popup para que case con el diseño del
+     sub-componente MapProviderPopup (~280px). El min-width evita
+     que Leaflet lo comprima cuando el contenido es muy corto. */
+  max-width: 288px !important;
+  min-width: 240px;
 }
 .leaflet-popup.beauly-map-popup .leaflet-popup-content {
-  margin: 0.875rem 1rem;
+  /* El padding lo controla el sub-componente para poder pintar la
+     foto a sangre dentro del popup sin márgenes externos. */
+  margin: 0;
+  width: auto !important;
   font-family: var(--font-sans), system-ui, sans-serif;
   line-height: 1.4;
 }
@@ -216,7 +224,18 @@
   background-color: var(--card);
 }
 .leaflet-popup.beauly-map-popup .leaflet-popup-close-button {
+  /* Botón de cierre flotante sobre la foto: círculo translúcido
+     para que sea visible tanto sobre imágenes claras como oscuras. */
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  line-height: 18px;
+  text-align: center;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.9);
   color: var(--muted-foreground);
-  font-size: 18px;
-  padding: 6px 8px;
+  font-size: 16px;
+  padding: 0;
+  z-index: 2;
 }

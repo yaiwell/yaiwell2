@@ -3,24 +3,15 @@
  *
  * El propio mapa de Leaflet llena su contenedor con `h-full w-full`;
  * por eso el wrapper aquí establece la altura responsive.
+ *
+ * El contenido del Popup vive en `MapProviderPopup/MapProviderPopup.styles.ts`.
+ * Aquí solo quedan los estilos del chrome exterior del mapa.
  */
 export const searchMapStyles = {
   wrapper:
     'relative h-full min-h-[60dvh] w-full overflow-hidden rounded-3xl border border-border bg-muted',
   attribution:
     'pointer-events-none absolute bottom-2 right-3 rounded-full bg-white/80 px-2 py-0.5 text-[0.65rem] text-muted-foreground backdrop-blur',
-  // Contenido interno del Popup de Leaflet. El chrome (caja blanca y
-  // cierre) se restilan con CSS global en globals.css porque Leaflet
-  // inyecta clases propias que no podemos pasar por props.
-  popup: 'flex min-w-[200px] flex-col gap-2',
-  popupHeader: 'flex flex-col gap-0.5',
-  popupType: 'text-[10px] font-medium uppercase tracking-wider text-muted-foreground',
-  popupName: 'font-display text-base text-foreground',
-  popupAddress: 'text-xs text-muted-foreground',
-  popupMeta: 'flex items-center gap-2 text-xs text-foreground/80',
-  popupRating: 'inline-flex items-center gap-1 text-amber-600',
-  popupReviews: 'text-muted-foreground',
-  popupPriceRange: 'ml-auto text-foreground/70',
 } as const;
 
 /**

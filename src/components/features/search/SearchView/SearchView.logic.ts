@@ -103,6 +103,30 @@ export function useSearchView(initial: SearchViewInitialState) {
     });
   }, [updateFilters]);
 
+  /**
+   * Acción "Ver en la lista" del popup del mapa.
+   *
+   * En móvil, la columna lista está oculta cuando la pestaña activa es
+   * "map", por lo que primero conmutamos la pestaña y resaltamos el id.
+   * Esperamos dos `requestAnimationFrame` para que React haya pintado
+   * la columna y la card esté en el DOM antes de hacer `scrollIntoView`.
+   * En desktop ambas columnas están siempre montadas, así que el scroll
+   * funciona igual.
+   */
+  const handleSeeOnList = useCallback((providerId: string) => {
+    setMobileTab('list');
+    setHighlightedId(providerId);
+
+    // Doble rAF: el primero permite a React aplicar el cambio de tab,
+    // el segundo asegura que el layout se ha recalculado tras el re-render.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const el = document.querySelector(`[data-provider-id="${providerId}"]`);
+        el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    });
+  }, []);
+
   const advancedValue: AdvancedFiltersValue = useMemo(
     () => ({
       priceRange: filters.priceRange,
@@ -133,5 +157,8 @@ export function useSearchView(initial: SearchViewInitialState) {
     handleAvailabilityToggle,
     handleApplyAdvanced,
     handleClearAdvanced,
+
+    // Interacción mapa → lista
+    handleSeeOnList,
   };
 }

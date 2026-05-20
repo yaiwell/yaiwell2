@@ -152,7 +152,8 @@
     },
     "map": {
       "attribution": "© OpenStreetMap",
-      "locating": "Localizando..."
+      "locating": "Localizando...",
+      "popupCta": "Ver en la lista"
     },
     "resultsCount": "{count, plural, one {# resultado} other {# resultados}}"
   }

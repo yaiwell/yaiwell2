@@ -207,6 +207,13 @@
 - `search-map` — wrapper del MapContainer.
 - `search-map-attribution` — atribución OSM personalizada.
 
+### `map-provider-popup` — Popup que se abre al clicar un pin
+
+- `map-provider-popup` — raíz del popup (foto + cuerpo).
+- `map-provider-popup-photo` — `<img>` de la foto principal.
+- `map-provider-popup-name` — `<h3>` con el nombre del proveedor.
+- `map-provider-popup-cta` — botón "Ver en la lista" (vuelve a la pestaña Lista y resalta la card).
+
 ---
 
 ## Notas

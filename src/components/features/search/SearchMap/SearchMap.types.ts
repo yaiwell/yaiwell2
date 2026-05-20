@@ -10,4 +10,6 @@ export interface SearchMapProps {
   highlightedId: string | null;
   /** Hover desde el pin → comunicar a la lista. */
   onHoverProvider: (providerId: string | null) => void;
+  /** Callback cuando el usuario pulsa el CTA del popup. */
+  onProviderSeeOnList?: (providerId: string) => void;
 }

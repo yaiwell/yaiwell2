@@ -50,6 +50,7 @@ export function SearchView({ initial }: SearchViewProps) {
     handleAvailabilityToggle,
     handleApplyAdvanced,
     handleClearAdvanced,
+    handleSeeOnList,
   } = useSearchView(initial);
 
   return (
@@ -134,6 +135,7 @@ export function SearchView({ initial }: SearchViewProps) {
               initialZoom={13}
               highlightedId={highlightedId}
               onHoverProvider={setHighlightedId}
+              onProviderSeeOnList={handleSeeOnList}
             />
           </div>
         </div>
