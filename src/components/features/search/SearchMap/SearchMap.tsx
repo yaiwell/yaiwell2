@@ -4,10 +4,46 @@ import 'leaflet/dist/leaflet.css';
 
 import L from 'leaflet';
 import { useTranslations } from 'next-intl';
-import { MapContainer, Marker, TileLayer } from 'react-leaflet';
+import { useEffect } from 'react';
+import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
 
 import { buildPinHtml, searchMapStyles as s } from './SearchMap.styles';
 import type { SearchMapProps } from './SearchMap.types';
+
+/**
+ * Helper que vive dentro del MapContainer para acceder a la instancia
+ * Leaflet vía `useMap()`. Observa el tamaño del contenedor y dispara
+ * `invalidateSize()` cuando cambia.
+ *
+ * Necesario porque el mapa se monta oculto (pestaña "Lista" por
+ * defecto) y Leaflet cachea el tamaño del contenedor en el primer
+ * render. Sin esto, al cambiar a la pestaña "Mapa" las tiles no se
+ * pintan completas y los clicks aterrizan en píxeles desfasados de
+ * las coordenadas reales.
+ */
+function MapResizeHandler() {
+  const map = useMap();
+
+  useEffect(() => {
+    const container = map.getContainer();
+
+    // Forzamos un invalidateSize en el siguiente frame por si en el
+    // momento del mount el contenedor aún era 0×0.
+    const raf = requestAnimationFrame(() => map.invalidateSize());
+
+    const observer = new ResizeObserver(() => {
+      map.invalidateSize();
+    });
+    observer.observe(container);
+
+    return () => {
+      cancelAnimationFrame(raf);
+      observer.disconnect();
+    };
+  }, [map]);
+
+  return null;
+}
 
 /**
  * Mapa Leaflet con pines de proveedores.
@@ -41,6 +77,7 @@ export function SearchMap({
         attributionControl={false}
         className="h-full w-full"
       >
+        <MapResizeHandler />
         <TileLayer
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={19}
