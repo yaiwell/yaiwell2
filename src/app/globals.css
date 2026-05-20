@@ -192,3 +192,31 @@
     font-feature-settings: 'ss01', 'ss02';
   }
 }
+
+/*
+ * Override del chrome del Popup de Leaflet para que case con la marca.
+ * Leaflet inyecta sus propias clases (.leaflet-popup-*); no podemos
+ * pasarlas por props, así que se sobrescriben aquí.
+ */
+.leaflet-popup.beauly-map-popup .leaflet-popup-content-wrapper {
+  border-radius: 1rem;
+  background-color: var(--card);
+  color: var(--card-foreground);
+  box-shadow:
+    0 10px 30px -10px rgb(0 0 0 / 0.25),
+    0 0 0 1px rgb(0 0 0 / 0.05);
+  padding: 0;
+}
+.leaflet-popup.beauly-map-popup .leaflet-popup-content {
+  margin: 0.875rem 1rem;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  line-height: 1.4;
+}
+.leaflet-popup.beauly-map-popup .leaflet-popup-tip {
+  background-color: var(--card);
+}
+.leaflet-popup.beauly-map-popup .leaflet-popup-close-button {
+  color: var(--muted-foreground);
+  font-size: 18px;
+  padding: 6px 8px;
+}

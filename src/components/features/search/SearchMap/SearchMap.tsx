@@ -3,9 +3,12 @@
 import 'leaflet/dist/leaflet.css';
 
 import L from 'leaflet';
+import { Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
-import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
+
+import { AvailabilityBadge } from '../AvailabilityBadge';
 
 import { buildPinHtml, searchMapStyles as s } from './SearchMap.styles';
 import type { SearchMapProps } from './SearchMap.types';
@@ -67,6 +70,7 @@ export function SearchMap({
   onHoverProvider,
 }: SearchMapProps) {
   const t = useTranslations('search.map');
+  const tCard = useTranslations('search.card');
 
   return (
     <div className={s.wrapper} data-component="search-map">
@@ -98,8 +102,34 @@ export function SearchMap({
               eventHandlers={{
                 mouseover: () => onHoverProvider(p.id),
                 mouseout: () => onHoverProvider(null),
+                // El click también resalta el pin (útil para que la lista
+                // sepa cuál es el activo cuando vuelva a la pestaña).
+                click: () => onHoverProvider(p.id),
               }}
-            />
+            >
+              <Popup closeButton autoPan offset={[0, -6]} className="beauly-map-popup">
+                <div className={s.popup} data-component={`search-map-popup-${p.slug}`}>
+                  <div className={s.popupHeader}>
+                    <p className={s.popupType}>
+                      {tCard(p.type === 'autonomo' ? 'typeAutonomous' : 'typeCenter')}
+                    </p>
+                    <h3 className={s.popupName}>{p.name}</h3>
+                  </div>
+                  <p className={s.popupAddress}>{p.address}</p>
+                  <div className={s.popupMeta}>
+                    <span className={s.popupRating}>
+                      <Star className="size-3.5 fill-current" aria-hidden />
+                      {p.rating.toFixed(1)}
+                    </span>
+                    <span className={s.popupReviews}>
+                      {tCard('reviews', { count: p.reviewsCount })}
+                    </span>
+                    <span className={s.popupPriceRange}>{p.priceRange}</span>
+                  </div>
+                  <AvailabilityBadge status={p.availability.status} />
+                </div>
+              </Popup>
+            </Marker>
           );
         })}
       </MapContainer>
