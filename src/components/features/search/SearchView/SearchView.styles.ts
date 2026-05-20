@@ -17,7 +17,10 @@ export const searchViewStyles = {
   headerRow: 'flex items-center justify-between gap-3',
   headerTitle: 'font-display text-lg text-foreground sm:text-xl',
   resultsCount: 'text-sm text-muted-foreground',
-  mobileTabs: 'flex items-center gap-1 self-stretch rounded-full bg-muted p-1 sm:hidden',
+  // Tabs Lista/Mapa: visibles hasta que arranca el split desktop en `lg`.
+  // Antes estaban en `sm:hidden`, lo que dejaba un hueco 640-1024px sin
+  // forma de alternar y el mapa permanecía oculto.
+  mobileTabs: 'flex items-center gap-1 self-stretch rounded-full bg-muted p-1 lg:hidden',
   mobileTabBase:
     'flex h-9 flex-1 items-center justify-center gap-1.5 rounded-full px-4 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
   mobileTabIdle: 'text-muted-foreground',
@@ -25,7 +28,10 @@ export const searchViewStyles = {
   body: 'mx-auto w-full max-w-7xl flex-1 px-4 py-5 sm:px-6 sm:py-6',
   splitGrid: 'grid w-full grid-cols-1 gap-6 lg:grid-cols-2',
   listColumn: 'flex flex-col gap-4',
-  mapColumn: 'sticky top-[124px] hidden h-[calc(100dvh-160px)] lg:block',
+  // Base sin `hidden`: el componente añade la visibilidad condicional
+  // según la pestaña activa para que las utilidades de mobile puedan
+  // sobreescribirla sin pelearse con la cascada.
+  mapColumn: 'lg:sticky lg:top-[124px] lg:h-[calc(100dvh-160px)]',
   mobileListPanel: 'lg:hidden',
-  mobileMapPanel: 'lg:hidden h-[calc(100dvh-180px)]',
+  mobileMapPanel: 'block h-[calc(100dvh-180px)] lg:hidden',
 } as const;
