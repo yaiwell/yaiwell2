@@ -68,28 +68,30 @@ export function FiltersBar({
         })}
       </div>
 
-      <button
-        type="button"
-        aria-pressed={availabilityOnly}
-        onClick={() => onAvailabilityToggle(!availabilityOnly)}
-        className={cn(s.toggleNow, availabilityOnly ? s.toggleNowActive : s.toggleNowIdle)}
-        data-component="filters-availability-toggle"
-      >
-        <Zap className="size-4" aria-hidden />
-        <span className="hidden sm:inline">{t('availableNowToggle')}</span>
-      </button>
+      <div className={s.actions}>
+        <button
+          type="button"
+          aria-pressed={availabilityOnly}
+          onClick={() => onAvailabilityToggle(!availabilityOnly)}
+          className={cn(s.toggleNow, availabilityOnly ? s.toggleNowActive : s.toggleNowIdle)}
+          data-component="filters-availability-toggle"
+        >
+          <Zap className="size-4" aria-hidden />
+          <span>{t('availableNowToggle')}</span>
+        </button>
 
-      <button
-        type="button"
-        onClick={onOpenFiltersSheet}
-        className={s.filterButton}
-        aria-label={t('filters.button')}
-        data-component="filters-bar-open-sheet"
-      >
-        <SlidersHorizontal className="size-4" aria-hidden />
-        <span className="hidden sm:inline">{t('filters.button')}</span>
-        {hasAdvancedFilters && <span className={s.filterButtonDot} aria-hidden />}
-      </button>
+        <button
+          type="button"
+          onClick={onOpenFiltersSheet}
+          className={s.filterButton}
+          aria-label={t('filters.button')}
+          data-component="filters-bar-open-sheet"
+        >
+          <SlidersHorizontal className="size-4" aria-hidden />
+          <span>{t('filters.button')}</span>
+          {hasAdvancedFilters && <span className={s.filterButtonDot} aria-hidden />}
+        </button>
+      </div>
     </div>
   );
 }
