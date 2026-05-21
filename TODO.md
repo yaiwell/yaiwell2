@@ -102,7 +102,15 @@
 - [ ] Búsqueda con PostgreSQL full-text search (tsvector + pg_trgm para fuzzy matching).
 - [ ] Flujo de reserva real con Stripe Connect.
 - [ ] Cancelación y refunds (política de 2h).
+  - El **proveedor** (autónomo o trabajador del centro) puede cancelar desde su panel siempre que falten al menos **2h** para el inicio del servicio. Por debajo de 2h, la cancelación queda bloqueada (penalización contractual; se gestiona por canal de soporte).
+  - El margen de 2h busca dar al cliente tiempo real para buscar otra opción antes de la franja reservada.
+  - Refund automático íntegro al cliente vía Stripe Connect cuando la cancela el proveedor.
+  - Política de cancelación por el cliente: TBD (Fase 1 final, probablemente full-refund hasta -2h, no-show sin refund).
 - [ ] Sistema de valoraciones (cliente → proveedor).
+  - **Solo puede valorar quien ha contratado y consumido el servicio.** Requisito doble: (a) existe un `Booking` del cliente para ese proveedor, (b) ese booking está en estado `completed` (es decir, el profesional ha marcado el servicio como finalizado desde su panel).
+  - La acción "marcar como finalizado" vive en el panel del autónomo/trabajador y es lo que desbloquea el formulario de reseña al cliente.
+  - Hasta que no se marque `completed`, el cliente no ve CTA "Valorar"; tampoco se permite valorar bookings `cancelled` ni `refunded`.
+  - Ventana para valorar: TBD (probable: 30 días desde `completed`).
 - [ ] Notificaciones por email (Resend).
 - [ ] 4 planes de suscripción con Stripe Billing.
 - [ ] Onboarding de proveedor con formulario manual (jerarquía categoría → tipo → subtipo).

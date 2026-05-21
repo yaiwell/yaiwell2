@@ -122,6 +122,33 @@ RLS policies obligatorias en Supabase para cada tabla. Sin RLS no se commitea un
 
 ---
 
+## 4.bis Reglas de negocio (no negociables)
+
+Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementación de Fase 1 debe respetarlas.
+
+### Valoraciones
+- **Solo puede valorar un proveedor quien ha contratado y consumido el servicio.** Requisito doble:
+  1. Existe un `Booking` del cliente para ese `providerId`.
+  2. Ese booking está en estado `completed`, lo que solo ocurre cuando el **profesional** (autónomo o trabajador del centro) ha marcado el servicio como finalizado desde su panel.
+- La acción "marcar como finalizado" vive en el panel del proveedor y es lo que desbloquea el CTA "Valorar" al cliente.
+- No se permite valorar bookings en estado `pending`, `confirmed`, `cancelled` ni `refunded`.
+- Una `Review` tiene FK obligatoria a un `Booking`. No hay reseñas huérfanas.
+- Ventana de valoración: 30 días desde `completed` (configurable en futuras versiones).
+
+### Cancelaciones por el proveedor
+- El proveedor puede cancelar una reserva desde su panel **siempre que falten al menos 2h** para `startAt`.
+- A menos de 2h, la cancelación queda bloqueada en UI y rechazada en API. La excepción (fuerza mayor) se gestiona por soporte, no por self-service.
+- El umbral de 2h busca dar al cliente margen real para buscar otra opción antes de la franja reservada.
+- Al cancelar el proveedor: refund íntegro automático al cliente vía Stripe Connect, sin penalización para el cliente.
+- La cancelación por el cliente sigue una política distinta (TBD, probable full-refund hasta -2h, no-show sin refund).
+
+### Implementación esperada
+- Validar ambas reglas en el `service` (`booking.service.ts` / `review.service.ts`) y en los endpoints, **no solo en UI**.
+- Errores tipados: `BookingTooLateToCancelError`, `BookingNotCompletedError`, `ReviewWindowExpiredError`.
+- Tests E2E cubren ambos casos límite (cancelar a 1h59min, valorar booking no completado).
+
+---
+
 ## 5. Estructura de carpetas
 
 ```
