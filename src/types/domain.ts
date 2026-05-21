@@ -132,3 +132,19 @@ export interface Service {
   durationMinutes: number;
   priceCents: number;
 }
+
+/**
+ * Reseña de un cliente sobre un proveedor. Los textos NO se traducen
+ * en demo (vienen escritos por usuarios reales); los mantenemos en
+ * el idioma original aunque la UI esté en otra lengua.
+ */
+export interface Review {
+  id: string;
+  providerId: string;
+  authorName: string;
+  /** Nota entera 1-5 (no medias en demo). */
+  rating: number;
+  text: string;
+  /** Fecha relativa, ej. "hace 2 semanas" — se genera ya formateada para simplificar la demo. */
+  createdAt: Date;
+}

@@ -1,6 +1,7 @@
 import { getCategoryBySlug } from '@/lib/fake-data/categories';
 import { getAvailabilityStatus, getNextSlot } from '@/lib/fake-data/availability';
-import { getProviderFromPriceCents } from '@/lib/fake-data/services';
+import { getRatingBreakdown, getReviewsByProvider } from '@/lib/fake-data/reviews';
+import { getProviderFromPriceCents, getServicesByProvider } from '@/lib/fake-data/services';
 import type { GeoPoint, Provider, ProviderWithAvailability } from '@/types/domain';
 
 import { InvalidSearchFiltersError } from './providers.errors';
@@ -9,7 +10,11 @@ import {
   searchProvidersFiltersSchema,
   type SearchProvidersFiltersParsed,
 } from './providers.validation';
-import type { SearchProvidersFilters, SearchProvidersResult } from './providers.types';
+import type {
+  ProviderDetail,
+  SearchProvidersFilters,
+  SearchProvidersResult,
+} from './providers.types';
 
 /**
  * Calcula la distancia en km entre dos puntos usando la fórmula de
@@ -153,4 +158,27 @@ export async function searchProviders(
  */
 export function getFromPriceCents(providerId: string): number | null {
   return getProviderFromPriceCents(providerId);
+}
+
+/**
+ * Devuelve toda la información necesaria para renderizar la ficha pública
+ * de un proveedor: datos básicos, servicios ordenados, reseñas recientes
+ * y el desglose de valoraciones.
+ *
+ * Devuelve `null` si el proveedor no existe o ha sido eliminado. No lanza
+ * errores para que las páginas puedan responder con un 404 limpio sin
+ * envolver la llamada en try/catch.
+ */
+export async function getProviderDetail(providerId: string): Promise<ProviderDetail | null> {
+  const provider = await providersRepository.findById(providerId);
+  if (!provider) return null;
+
+  // Los helpers de fake-data son síncronos, pero el contrato público es
+  // async para no romper la firma cuando saltemos a Prisma (donde sí lo serán).
+  return {
+    provider,
+    services: getServicesByProvider(providerId),
+    reviews: getReviewsByProvider(providerId),
+    ratingBreakdown: getRatingBreakdown(providerId),
+  };
 }

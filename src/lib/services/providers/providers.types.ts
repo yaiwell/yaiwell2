@@ -1,4 +1,12 @@
-import type { GeoBounds, GeoPoint, PriceRange, ProviderWithAvailability } from '@/types/domain';
+import type {
+  GeoBounds,
+  GeoPoint,
+  PriceRange,
+  Provider,
+  ProviderWithAvailability,
+  Review,
+  Service,
+} from '@/types/domain';
 
 /**
  * Filtros aceptados por `searchProviders`.
@@ -29,3 +37,27 @@ export interface SearchProvidersFilters {
  * distancia opcional, ordenada según las reglas del servicio.
  */
 export type SearchProvidersResult = ProviderWithAvailability[];
+
+/**
+ * Recuento de reseñas por cada estrella (1 a 5).
+ * Lo usa la ficha pública para pintar las barras de distribución.
+ */
+export interface RatingBreakdown {
+  1: number;
+  2: number;
+  3: number;
+  4: number;
+  5: number;
+}
+
+/**
+ * Datos agregados necesarios para renderizar la ficha pública de un
+ * proveedor en una sola lectura: información básica, sus servicios,
+ * reseñas y el desglose de valoraciones.
+ */
+export interface ProviderDetail {
+  provider: Provider;
+  services: Service[];
+  reviews: Review[];
+  ratingBreakdown: RatingBreakdown;
+}

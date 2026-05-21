@@ -156,5 +156,53 @@
       "popupCta": "Ver en la lista"
     },
     "resultsCount": "{count, plural, one {# resultado} other {# resultados}}"
+  },
+  "providerDetail": {
+    "breadcrumb": {
+      "home": "Inicio",
+      "search": "Buscar"
+    },
+    "header": {
+      "typeAutonomous": "Autónomo",
+      "typeCenter": "Centro",
+      "reviewsLabel": "{count, plural, one {# valoración} other {# valoraciones}}"
+    },
+    "tabs": {
+      "services": "Servicios",
+      "reviews": "Reseñas",
+      "info": "Información"
+    },
+    "services": {
+      "title": "Servicios",
+      "subtitle": "Elige el servicio que más se ajuste a lo que buscas.",
+      "duration": "{minutes} min",
+      "reserve": "Reservar",
+      "reserveComingSoon": "Próximamente",
+      "empty": "Este centro aún no tiene servicios publicados.",
+      "groupHeader": "{category}"
+    },
+    "reviews": {
+      "title": "Reseñas",
+      "summary": "{rating} sobre 5 · {count, plural, one {# valoración} other {# valoraciones}}",
+      "breakdownLabel": "{stars} estrellas",
+      "empty": "Aún no hay reseñas. Sé el primero en valorar este centro.",
+      "loadMore": "Ver más reseñas",
+      "collapse": "Ver menos"
+    },
+    "info": {
+      "title": "Información",
+      "addressLabel": "Dirección",
+      "scheduleLabel": "Horario",
+      "scheduleWeekdays": "Lunes a viernes",
+      "scheduleSaturday": "Sábados",
+      "scheduleSunday": "Domingos",
+      "scheduleClosed": "Cerrado",
+      "descriptionLabel": "Sobre el centro"
+    },
+    "notFound": {
+      "title": "Centro no encontrado",
+      "subtitle": "Es posible que ya no esté disponible o que el enlace sea incorrecto.",
+      "backToSearch": "Volver a la búsqueda"
+    }
   }
 }

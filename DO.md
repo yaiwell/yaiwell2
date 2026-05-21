@@ -8,6 +8,22 @@
 
 ## 2026-05
 
+### 2026-05-21
+
+- **Ficha de proveedor (`/centro/[slug]-[id]`) completa.** Construida en paralelo por 6 agentes especializados con scopes no solapados y contratos de props acordados de antemano.
+  - **Datos + servicio:** `getProviderDetail(providerId)` en `providers.service.ts` devuelve `{provider, services, reviews, ratingBreakdown}`. Nuevo módulo `src/lib/fake-data/reviews.ts` con 84 reseñas (`rev-01`..`rev-84`) repartidas por los 10 proveedores, en mezcla es/ca, sin <3★, fechas relativas a `2026-05-20T12:00:00Z`. Helpers `getReviewsByProvider(id)` y `getRatingBreakdown(id)`. Tipo `Review` añadido a `types/domain.ts`. Utilidad `provider-slug.ts` con `buildProviderSlugWithId` y `parseProviderIdFromSlugWithId` (regex `/-(prov-\d+)$/`).
+  - **Routing:** `src/app/[locale]/centro/[slugWithId]/page.tsx` como Server Component que parsea el segmento, valida locale, llama al service, enriquece el `Provider` con `availability` actual y `distanceKm: null`, y compone `<ProviderDetail>`. `generateMetadata` con título, descripción i18n y OG image. `not-found.tsx` con CTA de vuelta a `/buscar`. `ProviderCard` ahora envuelve el `<article>` en `<Link>` hacia `/centro/${buildProviderSlugWithId(provider)}`.
+  - **Componentes (6 features, todos en `src/components/features/provider/`):**
+    - `ProviderHeader` (Server): breadcrumb (Home › Buscar › Nombre, primer crumb oculto en mobile), tipo (autónomo/centro), h1 `font-display`, dirección con `MapPin`, columna derecha con `AvailabilityBadge` + price chip + valoración. `ProviderHeader.logic.ts` aísla `Date.now()` para no romper la regla de pureza de React.
+    - `ProviderGallery` (Client): carrusel scroll-snap en mobile + grid 60/40 (1 principal + 4 thumbnails) en desktop, mismo DOM con `lg:hidden`/`hidden lg:grid`. Hook `useProviderGallery` con cycling y `onKeyDown`.
+    - `ProviderServicesList` (Server): agrupa servicios por categoría raíz subiendo por `parentId`. `formatPriceCents` con `Intl.NumberFormat`. Botón "Próximamente" deshabilitado (shadcn `outline`).
+    - `ProviderReviewsSection` (Client): rating breakdown con barras `role="progressbar"` (relleno amber-400), avatares con iniciales, hook `useReviewsCollapse(total, 5)` + `formatRelativeDate` (semanas/meses en es/ca).
+    - `ProviderInfoPanel` (Server) + `ProviderInfoMap` (Client, dynamic `ssr:false`): mini-mapa Leaflet con pin reutilizando `buildPinHtml` (status `available_now`), horario hard-codeado (TODO Fase 1: campo en schema), dirección y CTA "Cómo llegar" a Google Maps.
+    - `ProviderDetail` (Server, compositor): orden Header → Gallery → Nav sticky mobile (`ProviderDetailNav` Client con `IntersectionObserver` scroll-spy) → Services → Reviews → Info. Cada sección con `id="section-{name}"` y `scroll-mt-28 md:scroll-mt-20`.
+  - **i18n:** `providerDetail.*` añadido a `messages/es.json` y `ca.json` (breadcrumb, header, tabs, services, reviews, info, notFound).
+  - **COMPONENTS.md:** nueva sección "Página de proveedor" con todos los `data-component` (~40 nuevos identificadores).
+  - **Validación:** `tsc --noEmit` y `npm run lint` limpios. Tarea completada según workflow CLAUDE.md §7.
+
 ### 2026-05-19
 
 - **Rediseño UI iteración 2 — categorías con foto, buscador desktop, identificadores universales.**

@@ -156,5 +156,53 @@
       "popupCta": "Veure a la llista"
     },
     "resultsCount": "{count, plural, one {# resultat} other {# resultats}}"
+  },
+  "providerDetail": {
+    "breadcrumb": {
+      "home": "Inici",
+      "search": "Cercar"
+    },
+    "header": {
+      "typeAutonomous": "Autònom",
+      "typeCenter": "Centre",
+      "reviewsLabel": "{count, plural, one {# valoració} other {# valoracions}}"
+    },
+    "tabs": {
+      "services": "Serveis",
+      "reviews": "Ressenyes",
+      "info": "Informació"
+    },
+    "services": {
+      "title": "Serveis",
+      "subtitle": "Tria el servei que més s'ajusti al que busques.",
+      "duration": "{minutes} min",
+      "reserve": "Reservar",
+      "reserveComingSoon": "Pròximament",
+      "empty": "Aquest centre encara no té serveis publicats.",
+      "groupHeader": "{category}"
+    },
+    "reviews": {
+      "title": "Ressenyes",
+      "summary": "{rating} sobre 5 · {count, plural, one {# valoració} other {# valoracions}}",
+      "breakdownLabel": "{stars} estrelles",
+      "empty": "Encara no hi ha ressenyes. Sigues el primer a valorar aquest centre.",
+      "loadMore": "Veure més ressenyes",
+      "collapse": "Veure menys"
+    },
+    "info": {
+      "title": "Informació",
+      "addressLabel": "Adreça",
+      "scheduleLabel": "Horari",
+      "scheduleWeekdays": "De dilluns a divendres",
+      "scheduleSaturday": "Dissabtes",
+      "scheduleSunday": "Diumenges",
+      "scheduleClosed": "Tancat",
+      "descriptionLabel": "Sobre el centre"
+    },
+    "notFound": {
+      "title": "Centre no trobat",
+      "subtitle": "És possible que ja no estigui disponible o que l'enllaç sigui incorrecte.",
+      "backToSearch": "Tornar a la cerca"
+    }
   }
 }

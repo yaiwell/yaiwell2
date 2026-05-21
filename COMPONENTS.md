@@ -216,6 +216,66 @@
 
 ---
 
+## Página de proveedor (`/centro/[slug]-[id]`)
+
+### `provider-detail-page` — wrapper raíz de la ficha
+
+- `provider-detail-page` — `<main>` raíz.
+
+### `provider-gallery` — Galería de fotos
+
+- `provider-gallery` — wrapper raíz.
+- `provider-gallery-main` — foto principal grande.
+- `provider-gallery-thumb-{index}` — thumbnails laterales (desktop) o dots (mobile).
+- `provider-gallery-prev` — botón previo (mobile carousel).
+- `provider-gallery-next` — botón siguiente (mobile carousel).
+
+### `provider-header` — Cabecera con info clave
+
+- `provider-header` — `<header>` raíz.
+- `provider-header-breadcrumb` — breadcrumb de navegación.
+- `provider-header-type` — etiqueta autónomo/centro.
+- `provider-header-name` — nombre `<h1>`.
+- `provider-header-rating` — bloque rating + nº reseñas.
+- `provider-header-address` — dirección.
+- `provider-header-availability` — wrapper del AvailabilityBadge.
+- `provider-header-price-range` — chip rango precio.
+
+### `provider-tabs` — Tabs (solo mobile)
+
+- `provider-tabs` — wrapper.
+- `provider-tabs-services` — pestaña Servicios.
+- `provider-tabs-reviews` — pestaña Reseñas.
+- `provider-tabs-info` — pestaña Información.
+
+### `provider-services-list` — Lista de servicios
+
+- `provider-services-list` — `<section>` raíz.
+- `provider-services-list-group-{categorySlug}` — agrupación por categoría.
+- `provider-services-list-item-{serviceId}` — fila de servicio individual.
+- `provider-services-list-reserve-{serviceId}` — botón "Reservar" (deshabilitado por ahora).
+- `provider-services-list-empty` — estado vacío.
+
+### `provider-reviews-section` — Reseñas
+
+- `provider-reviews-section` — `<section>` raíz.
+- `provider-reviews-summary` — bloque resumen (rating + breakdown).
+- `provider-reviews-breakdown-{stars}` — barra de breakdown por estrellas (1-5).
+- `provider-reviews-list` — `<ul>` con las reseñas.
+- `provider-reviews-item-{reviewId}` — `<li>` de cada reseña.
+- `provider-reviews-load-more` — botón "Ver más".
+- `provider-reviews-empty` — estado vacío.
+
+### `provider-info-panel` — Información (mapa + dirección + horario + descripción)
+
+- `provider-info-panel` — `<section>` raíz.
+- `provider-info-panel-map` — wrapper del mini-mapa.
+- `provider-info-panel-address` — bloque dirección.
+- `provider-info-panel-schedule` — bloque horario.
+- `provider-info-panel-description` — descripción larga.
+
+---
+
 ## Notas
 
 - Los `data-component` son atributos puramente identificativos: no

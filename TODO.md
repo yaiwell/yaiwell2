@@ -54,7 +54,6 @@
 - [x] Listado de búsqueda (`/buscar`) con filtros, lista de resultados y mapa lateral.
 - [x] Mapa interactivo con pines de colores (verde/ámbar/gris) según disponibilidad.
 - [x] Toggle "Solo disponibles ahora" en filtros.
-- [ ] Ficha de proveedor (`/centro/[slug]-[id]`) con galería, servicios, valoraciones, mapa, info.
 - [ ] Ficha de servicio individual con descripción, profesional asignado, precio, duración, cláusulas.
 - [ ] Selector de slot disponible (calendario simple navegable).
 - [ ] Flujo de "reserva" simulado: confirmar datos → resumen → "pago" (mock) → confirmación.
@@ -144,3 +143,4 @@
 ---
 
 *Última actualización: 2026-05-21.*
+
