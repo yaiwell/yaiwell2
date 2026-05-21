@@ -1,3 +1,7 @@
+'use client';
+
+import { useCallback, useState } from 'react';
+
 import { fakeCategories } from '@/lib/fake-data/categories';
 import type { Category, Service } from '@/types/domain';
 
@@ -93,4 +97,35 @@ export function formatPriceCents(cents: number, locale: SupportedLocale): string
     minimumFractionDigits: hasDecimals ? 2 : 0,
     maximumFractionDigits: hasDecimals ? 2 : 0,
   }).format(cents / 100);
+}
+
+/**
+ * Hook que gestiona el servicio seleccionado para mostrar en el sheet.
+ *
+ * Mantenemos el servicio entero en estado (no solo su id) para que el
+ * sheet pueda renderizar su contenido incluso mientras se cierra con
+ * animación, evitando un parpadeo visual durante el desmontado.
+ */
+export function useServiceSheet(): {
+  selectedService: Service | null;
+  isOpen: boolean;
+  openWith: (service: Service) => void;
+  setOpen: (open: boolean) => void;
+} {
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const openWith = useCallback((service: Service) => {
+    setSelectedService(service);
+    setIsOpen(true);
+  }, []);
+
+  const setOpen = useCallback((open: boolean) => {
+    setIsOpen(open);
+    // No reseteamos `selectedService` al cerrar: dejamos que el contenido
+    // permanezca mientras la animación de salida termina. Se reemplazará
+    // la próxima vez que el usuario abra el sheet con otro servicio.
+  }, []);
+
+  return { selectedService, isOpen, openWith, setOpen };
 }

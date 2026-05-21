@@ -4,6 +4,10 @@
  * El layout es vertical en mobile (mapa, dirección, horario,
  * descripción) y pasa a 2 columnas (dirección + horario) en desktop.
  * La descripción es siempre full width al final.
+ *
+ * Apostamos por un layout abierto sin cajas bordeadas para una estética
+ * editorial premium: cada bloque vive en su propio espacio, separado
+ * por aire en lugar de bordes.
  */
 export const providerInfoPanelStyles = {
   section: 'flex flex-col gap-4 py-8 md:py-12',
@@ -13,10 +17,9 @@ export const providerInfoPanelStyles = {
   mapWrapper:
     'relative h-[280px] md:h-[360px] w-full overflow-hidden rounded-3xl border border-border bg-muted',
 
-  // Bloques de información
-  grid: 'grid grid-cols-1 gap-4 md:grid-cols-2',
-  block: 'flex items-start gap-3 rounded-2xl border border-border bg-card p-5 md:p-6',
-  blockIcon: 'h-5 w-5 shrink-0 text-muted-foreground mt-0.5',
+  // Bloques de información — layout abierto, sin caja, separados por aire.
+  grid: 'grid grid-cols-1 gap-10 md:grid-cols-2 md:gap-x-12 md:gap-y-10',
+  block: 'flex flex-col gap-3',
   blockBody: 'flex flex-col gap-1',
   blockLabel: 'text-xs font-medium uppercase tracking-wide text-muted-foreground',
   blockContent: 'text-sm text-foreground',
@@ -24,7 +27,8 @@ export const providerInfoPanelStyles = {
   scheduleRow: 'flex items-center justify-between gap-4',
   scheduleDay: 'text-muted-foreground',
 
-  // Descripción full width
-  descriptionBlock: 'flex flex-col gap-2 rounded-2xl border border-border bg-card p-5 md:p-6',
-  descriptionText: 'text-sm text-foreground/90 leading-relaxed whitespace-pre-line',
+  // Descripción full width — sin caja, tipografía más ligera y respiro.
+  descriptionBlock: 'flex flex-col gap-4 mt-2',
+  descriptionText:
+    'text-base md:text-lg leading-[1.7] text-foreground/85 max-w-[62ch] font-light whitespace-pre-line',
 } as const;

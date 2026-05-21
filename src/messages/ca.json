@@ -169,35 +169,48 @@
     },
     "tabs": {
       "services": "Serveis",
-      "reviews": "Ressenyes",
-      "info": "Informació"
+      "reviews": "Opinions",
+      "info": "El lloc"
     },
     "services": {
-      "title": "Serveis",
+      "title": "Carta de serveis",
       "subtitle": "Tria el servei que més s'ajusti al que busques.",
       "duration": "{minutes} min",
       "reserve": "Reservar",
       "reserveComingSoon": "Pròximament",
       "empty": "Aquest centre encara no té serveis publicats.",
-      "groupHeader": "{category}"
+      "groupHeader": "{category}",
+      "cardHint": "Prem per veure els detalls",
+      "sheet": {
+        "title": "Reservar aquest servei",
+        "subtitle": "Revisa els detalls abans de continuar.",
+        "close": "Tancar",
+        "durationLabel": "Durada",
+        "priceLabel": "Preu",
+        "professionalLabel": "Professional",
+        "anyProfessional": "Qualsevol professional disponible",
+        "descriptionLabel": "Descripció",
+        "reserveCta": "Reservar (pròximament)",
+        "comingSoonNote": "La reserva en línia estarà disponible molt aviat. Mentrestant pots contactar directament amb el centre."
+      }
     },
     "reviews": {
-      "title": "Ressenyes",
+      "title": "Opinions",
       "summary": "{rating} sobre 5 · {count, plural, one {# valoració} other {# valoracions}}",
       "breakdownLabel": "{stars} estrelles",
       "empty": "Encara no hi ha ressenyes. Sigues el primer a valorar aquest centre.",
-      "loadMore": "Veure més ressenyes",
+      "loadMore": "Llegir més opinions",
       "collapse": "Veure menys"
     },
     "info": {
-      "title": "Informació",
-      "addressLabel": "Adreça",
-      "scheduleLabel": "Horari",
+      "title": "El lloc",
+      "addressLabel": "On som",
+      "scheduleLabel": "Quan trobar-nos",
       "scheduleWeekdays": "De dilluns a divendres",
       "scheduleSaturday": "Dissabtes",
       "scheduleSunday": "Diumenges",
       "scheduleClosed": "Tancat",
-      "descriptionLabel": "Sobre el centre"
+      "descriptionLabel": "La casa"
     },
     "notFound": {
       "title": "Centre no trobat",

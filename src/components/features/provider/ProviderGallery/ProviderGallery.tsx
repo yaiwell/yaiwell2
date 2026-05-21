@@ -12,14 +12,16 @@ import type { ProviderGalleryProps } from './ProviderGallery.types';
 /**
  * Galería de fotos del proveedor.
  *
- * Renderiza dos layouts mutuamente excluyentes con clases responsive
- * (sin duplicar componentes ni montar JS de detección de viewport):
+ * Renderiza dos layouts mutuamente excluyentes en wrappers separados
+ * para evitar que los controles absolutos del mobile se solapen con
+ * la composición desktop:
  *
  * - Mobile (`< lg`): carousel horizontal con scroll-snap CSS nativo,
  *   sin librerías externas. Los "dots" y los botones prev/next
  *   actualizan el `scrollLeft` del track, lo que dispara el snap.
- * - Desktop (`lg+`): split con foto principal grande y columna de
- *   thumbnails. Click en thumbnail cambia la foto principal.
+ * - Desktop (`lg+`): split "hero" con foto principal grande a la
+ *   izquierda (aspect 3:2) y grid 2x2 de miniaturas a la derecha.
+ *   Click en miniatura cambia la principal con transición de opacidad.
  *
  * La elección de scroll-snap CSS evita meter Embla/Swiper en el
  * bundle: el caso de uso es lo bastante simple y el navegador hace
@@ -43,6 +45,9 @@ export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
   }, [activeIndex]);
 
   const showControls = photos.length > 1;
+  // Lista de miniaturas desktop: hasta 4 para que el grid 2x2 quede
+  // siempre completo visualmente.
+  const desktopThumbs = photos.slice(0, 4);
 
   return (
     <section
@@ -54,106 +59,112 @@ export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
       onKeyDown={onKeyDown}
     >
       {/* ---------------- Mobile carousel ---------------- */}
-      <div ref={mobileTrackRef} className={s.mobileTrack}>
-        {photos.map((src, index) => (
-          <div
-            key={`${src}-${index}`}
-            className={s.mobileSlide}
-            data-component={index === activeIndex ? 'provider-gallery-main' : undefined}
-          >
-            {/* Usamos <img> nativo porque las URLs son externas (Unsplash)
-                y next/image requeriría configurar dominios. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={src}
-              alt={alt}
-              loading={index === 0 ? 'eager' : 'lazy'}
-              decoding="async"
-              className={s.mobileImage}
-            />
-          </div>
-        ))}
-      </div>
-
-      {showControls && (
-        <>
-          <button
-            type="button"
-            onClick={goPrev}
-            className={s.prevBtn}
-            aria-label="Foto anterior"
-            data-component="provider-gallery-prev"
-          >
-            <ChevronLeft className={s.navIcon} aria-hidden />
-          </button>
-          <button
-            type="button"
-            onClick={goNext}
-            className={s.nextBtn}
-            aria-label="Foto siguiente"
-            data-component="provider-gallery-next"
-          >
-            <ChevronRight className={s.navIcon} aria-hidden />
-          </button>
-
-          <div className={s.dotsRow}>
-            {photos.map((_, index) => {
-              const isActive = index === activeIndex;
-              return (
-                <button
-                  key={`dot-${index}`}
-                  type="button"
-                  onClick={() => goTo(index)}
-                  className={cn(s.dot, isActive && s.dotActive)}
-                  aria-label={`Ir a la foto ${index + 1}`}
-                  aria-current={isActive ? 'true' : undefined}
-                  data-component={`provider-gallery-thumb-${index}`}
-                />
-              );
-            })}
-          </div>
-        </>
-      )}
-
-      {/* ---------------- Desktop split layout ---------------- */}
-      <div className={s.desktopGrid}>
-        <div className={s.desktopMainWrapper}>
-          {/* Renderizamos solo la activa en desktop: el cambio se hace
-              por click en thumbnail, no por swipe, así que no hace
-              falta mantener el resto en el DOM. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            key={photos[activeIndex]}
-            src={photos[activeIndex]}
-            alt={alt}
-            loading="eager"
-            decoding="async"
-            className={s.desktopMainImage}
-            data-component="provider-gallery-main"
-          />
+      <div className={s.mobileWrapper}>
+        <div ref={mobileTrackRef} className={s.mobileTrack}>
+          {photos.map((src, index) => (
+            <div
+              key={`${src}-${index}`}
+              className={s.mobileSlide}
+              data-component={index === activeIndex ? 'provider-gallery-main' : undefined}
+            >
+              {/* Usamos <img> nativo porque las URLs son externas (Unsplash)
+                  y next/image requeriría configurar dominios. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={src}
+                alt={alt}
+                loading={index === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+                className={s.mobileImage}
+              />
+            </div>
+          ))}
         </div>
 
-        {photos.length > 1 && (
-          <div className={s.thumbsColumn}>
-            {photos.slice(0, 4).map((src, index) => {
-              const isActive = index === activeIndex;
-              return (
-                <button
-                  key={`thumb-${src}-${index}`}
-                  type="button"
-                  onClick={() => goTo(index)}
-                  className={cn(s.thumbWrapper, isActive && s.thumbActive)}
-                  aria-label={`Ver foto ${index + 1}`}
-                  aria-current={isActive ? 'true' : undefined}
-                  data-component={`provider-gallery-thumb-${index}`}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt={alt} loading="lazy" decoding="async" className={s.thumb} />
-                </button>
-              );
-            })}
-          </div>
+        {showControls && (
+          <>
+            <button
+              type="button"
+              onClick={goPrev}
+              className={s.prevBtn}
+              aria-label="Foto anterior"
+              data-component="provider-gallery-prev"
+            >
+              <ChevronLeft className={s.navIcon} aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={goNext}
+              className={s.nextBtn}
+              aria-label="Foto siguiente"
+              data-component="provider-gallery-next"
+            >
+              <ChevronRight className={s.navIcon} aria-hidden />
+            </button>
+
+            <div className={s.dotsRow}>
+              {photos.map((_, index) => {
+                const isActive = index === activeIndex;
+                return (
+                  <button
+                    key={`dot-${index}`}
+                    type="button"
+                    onClick={() => goTo(index)}
+                    className={cn(s.dot, isActive && s.dotActive)}
+                    aria-label={`Ir a la foto ${index + 1}`}
+                    aria-current={isActive ? 'true' : undefined}
+                    data-component={`provider-gallery-thumb-${index}`}
+                  />
+                );
+              })}
+            </div>
+          </>
         )}
+      </div>
+
+      {/* ---------------- Desktop split layout ---------------- */}
+      <div className={s.desktopWrapper}>
+        <div className={s.desktopGrid}>
+          <div className={s.desktopMainWrapper}>
+            {/* Renderizamos solo la activa en desktop: el cambio se hace
+                por click en thumbnail, no por swipe, así que no hace
+                falta mantener el resto en el DOM. La `key` fuerza un
+                re-mount para que el navegador anime la transición de
+                opacidad sin acumular imágenes invisibles. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              key={photos[activeIndex]}
+              src={photos[activeIndex]}
+              alt={alt}
+              loading="eager"
+              decoding="async"
+              className={s.desktopMainImage}
+              data-component="provider-gallery-main"
+            />
+          </div>
+
+          {desktopThumbs.length > 1 && (
+            <div className={s.thumbsColumn}>
+              {desktopThumbs.map((src, index) => {
+                const isActive = index === activeIndex;
+                return (
+                  <button
+                    key={`thumb-${src}-${index}`}
+                    type="button"
+                    onClick={() => goTo(index)}
+                    className={cn(s.thumbWrapper, s.thumbHoverable, isActive && s.thumbActive)}
+                    aria-label={`Ver foto ${index + 1}`}
+                    aria-current={isActive ? 'true' : undefined}
+                    data-component={`provider-gallery-thumb-${index}`}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={src} alt={alt} loading="lazy" decoding="async" className={s.thumb} />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </section>
   );

@@ -1,4 +1,4 @@
-import { MapPin, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { AvailabilityBadge } from '@/components/features/search/AvailabilityBadge';
@@ -69,7 +69,6 @@ export function ProviderHeader({ provider }: ProviderHeaderProps) {
             {provider.name}
           </h1>
           <p className={s.address} data-component="provider-header-address">
-            <MapPin className={s.addressIcon} aria-hidden />
             {provider.address}
           </p>
         </div>

@@ -1,4 +1,3 @@
-import { Clock, MapPin } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { ProviderInfoMapLoader } from './ProviderInfoMapLoader';
@@ -32,7 +31,9 @@ export async function ProviderInfoPanel({ provider, locale }: ProviderInfoPanelP
 
   return (
     <section className={s.section} data-component="provider-info-panel">
-      <h2 className={s.heading}>{t('title')}</h2>
+      <h2 id="provider-info-heading" className={s.heading}>
+        {t('title')}
+      </h2>
 
       <div className={s.mapWrapper} data-component="provider-info-panel-map">
         <ProviderInfoMapLoader lat={provider.location.lat} lng={provider.location.lng} />
@@ -40,26 +41,20 @@ export async function ProviderInfoPanel({ provider, locale }: ProviderInfoPanelP
 
       <div className={s.grid}>
         <div className={s.block} data-component="provider-info-panel-address">
-          <MapPin className={s.blockIcon} aria-hidden="true" />
-          <div className={s.blockBody}>
-            <span className={s.blockLabel}>{t('addressLabel')}</span>
-            <span className={s.blockContent}>{provider.address}</span>
-          </div>
+          <span className={s.blockLabel}>{t('addressLabel')}</span>
+          <span className={s.blockContent}>{provider.address}</span>
         </div>
 
         <div className={s.block} data-component="provider-info-panel-schedule">
-          <Clock className={s.blockIcon} aria-hidden="true" />
-          <div className={s.blockBody}>
-            <span className={s.blockLabel}>{t('scheduleLabel')}</span>
-            <ul className={s.scheduleList}>
-              {schedule.map((row) => (
-                <li key={row.dayKey} className={s.scheduleRow}>
-                  <span className={s.scheduleDay}>{t(row.dayKey)}</span>
-                  <span>{row.value}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <span className={s.blockLabel}>{t('scheduleLabel')}</span>
+          <ul className={s.scheduleList}>
+            {schedule.map((row) => (
+              <li key={row.dayKey} className={s.scheduleRow}>
+                <span className={s.scheduleDay}>{t(row.dayKey)}</span>
+                <span>{row.value}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 

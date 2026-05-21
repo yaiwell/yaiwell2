@@ -1,38 +1,39 @@
-import { Clock } from 'lucide-react';
+'use client';
+
+import { ChevronRight, Clock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/components/ui/button';
-
-import { formatPriceCents, groupServicesByRootCategory } from './ProviderServicesList.logic';
+import {
+  formatPriceCents,
+  groupServicesByRootCategory,
+  useServiceSheet,
+} from './ProviderServicesList.logic';
 import { providerServicesListStyles as s } from './ProviderServicesList.styles';
 import type {
   ProviderServicesListProps,
   ServiceGroup,
   SupportedLocale,
 } from './ProviderServicesList.types';
+import { ServiceDetailSheet } from './ServiceDetailSheet';
 
 /**
  * Lista de servicios de un proveedor agrupada por categoría raíz.
  *
- * Server Component puro: sin estado, sin eventos. Recibe los servicios
- * ya ordenados por precio ascendente (responsabilidad del repositorio)
- * y los agrupa por la categoría raíz a la que pertenecen.
+ * Client Component porque cada tarjeta es interactiva: al hacer click
+ * abre un sheet con los detalles del servicio. Aunque el flujo de
+ * reserva real aún no existe, esto permite al usuario "seleccionar"
+ * cada servicio y revisar sus detalles antes de continuar.
  *
- * El CTA "Reservar" está deshabilitado en MVP visual: aún no existe el
- * flujo de booking real. Mostramos el texto "Próximamente" como label
- * del propio botón (en lugar de una segunda línea muted) por dos
- * motivos:
- * - en móvil queda más compacto y no fragmenta la columna derecha;
- * - el screen reader anuncia un único elemento con su estado disabled,
- *   evitando confusiones tipo "botón Reservar — Próximamente".
- *   Conservamos `aria-label` con "Reservar" para que el botón siga
- *   describiendo su acción real cuando llegue el momento de habilitarlo.
+ * Renderiza su propio `<h2>` con `id="provider-services-heading"` para
+ * que el compositor `ProviderDetail` lo referencie vía `aria-labelledby`
+ * sin duplicar el título en pantalla.
  *
  * @param services — servicios a renderizar.
  * @param locale — locale activo (`es` o `ca`).
  */
 export function ProviderServicesList({ services, locale }: ProviderServicesListProps) {
   const t = useTranslations('providerDetail.services');
+  const { selectedService, isOpen, openWith, setOpen } = useServiceSheet();
 
   const groups = groupServicesByRootCategory(services);
   // Fallback localizado para servicios sin categoría raíz resuelta.
@@ -41,7 +42,9 @@ export function ProviderServicesList({ services, locale }: ProviderServicesListP
   return (
     <section className={s.root} data-component="provider-services-list">
       <header className={s.sectionHeader}>
-        <h2 className={s.sectionTitle}>{t('title')}</h2>
+        <h2 id="provider-services-heading" className={s.sectionTitle}>
+          {t('title')}
+        </h2>
         <p className={s.sectionSubtitle}>{t('subtitle')}</p>
       </header>
 
@@ -66,9 +69,13 @@ export function ProviderServicesList({ services, locale }: ProviderServicesListP
 
               <div className={s.groupCard}>
                 {group.services.map((service) => (
-                  <article
+                  <button
                     key={service.id}
+                    type="button"
+                    onClick={() => openWith(service)}
                     className={s.item}
+                    aria-haspopup="dialog"
+                    aria-label={`${service.name[locale]} · ${formatPriceCents(service.priceCents, locale)}`}
                     data-component={`provider-services-list-item-${service.id}`}
                   >
                     <div className={s.itemInfo}>
@@ -84,25 +91,25 @@ export function ProviderServicesList({ services, locale }: ProviderServicesListP
                       <span className={s.itemPrice}>
                         {formatPriceCents(service.priceCents, locale)}
                       </span>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        disabled
-                        aria-disabled="true"
-                        aria-label={t('reserve')}
-                        data-component={`provider-services-list-reserve-${service.id}`}
-                      >
-                        {t('reserveComingSoon')}
-                      </Button>
+                      <span className={s.itemHintRow} aria-hidden>
+                        {t('cardHint')}
+                        <ChevronRight className={s.itemHintIcon} aria-hidden />
+                      </span>
                     </div>
-                  </article>
+                  </button>
                 ))}
               </div>
             </div>
           );
         })
       )}
+
+      <ServiceDetailSheet
+        service={selectedService}
+        open={isOpen}
+        onOpenChange={setOpen}
+        locale={locale}
+      />
     </section>
   );
 }

@@ -252,9 +252,15 @@
 
 - `provider-services-list` — `<section>` raíz.
 - `provider-services-list-group-{categorySlug}` — agrupación por categoría.
-- `provider-services-list-item-{serviceId}` — fila de servicio individual.
-- `provider-services-list-reserve-{serviceId}` — botón "Reservar" (deshabilitado por ahora).
+- `provider-services-list-item-{serviceId}` — tarjeta de servicio clicable (`<button>`).
 - `provider-services-list-empty` — estado vacío.
+
+### `provider-services-sheet` — Sheet de detalle de servicio (bottom-sheet mobile / side-panel desktop)
+
+- `provider-services-sheet-overlay` — overlay oscuro del Dialog.
+- `provider-services-sheet` — contenedor del Dialog.Content.
+- `provider-services-sheet-close` — botón cerrar (x) del sheet.
+- `provider-services-sheet-reserve` — CTA "Reservar" deshabilitado (placeholder hasta que exista el flujo).
 
 ### `provider-reviews-section` — Reseñas
 

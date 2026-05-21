@@ -169,35 +169,48 @@
     },
     "tabs": {
       "services": "Servicios",
-      "reviews": "Reseñas",
-      "info": "Información"
+      "reviews": "Opiniones",
+      "info": "El lugar"
     },
     "services": {
-      "title": "Servicios",
+      "title": "Carta de servicios",
       "subtitle": "Elige el servicio que más se ajuste a lo que buscas.",
       "duration": "{minutes} min",
       "reserve": "Reservar",
       "reserveComingSoon": "Próximamente",
       "empty": "Este centro aún no tiene servicios publicados.",
-      "groupHeader": "{category}"
+      "groupHeader": "{category}",
+      "cardHint": "Pulsa para ver detalles",
+      "sheet": {
+        "title": "Reservar este servicio",
+        "subtitle": "Revisa los detalles antes de continuar.",
+        "close": "Cerrar",
+        "durationLabel": "Duración",
+        "priceLabel": "Precio",
+        "professionalLabel": "Profesional",
+        "anyProfessional": "Cualquier profesional disponible",
+        "descriptionLabel": "Descripción",
+        "reserveCta": "Reservar (próximamente)",
+        "comingSoonNote": "La reserva online estará disponible muy pronto. Mientras tanto puedes contactar directamente con el centro."
+      }
     },
     "reviews": {
-      "title": "Reseñas",
+      "title": "Opiniones",
       "summary": "{rating} sobre 5 · {count, plural, one {# valoración} other {# valoraciones}}",
       "breakdownLabel": "{stars} estrellas",
       "empty": "Aún no hay reseñas. Sé el primero en valorar este centro.",
-      "loadMore": "Ver más reseñas",
+      "loadMore": "Leer más opiniones",
       "collapse": "Ver menos"
     },
     "info": {
-      "title": "Información",
-      "addressLabel": "Dirección",
-      "scheduleLabel": "Horario",
+      "title": "El lugar",
+      "addressLabel": "Dónde estamos",
+      "scheduleLabel": "Cuándo encontrarnos",
       "scheduleWeekdays": "Lunes a viernes",
       "scheduleSaturday": "Sábados",
       "scheduleSunday": "Domingos",
       "scheduleClosed": "Cerrado",
-      "descriptionLabel": "Sobre el centro"
+      "descriptionLabel": "La casa"
     },
     "notFound": {
       "title": "Centro no encontrado",

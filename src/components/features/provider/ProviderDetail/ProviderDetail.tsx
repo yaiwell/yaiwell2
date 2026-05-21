@@ -1,5 +1,3 @@
-import { useTranslations } from 'next-intl';
-
 import { ProviderGallery } from '@/components/features/provider/ProviderGallery';
 import { ProviderHeader } from '@/components/features/provider/ProviderHeader';
 import { ProviderInfoPanel } from '@/components/features/provider/ProviderInfoPanel';
@@ -21,6 +19,10 @@ import type { ProviderDetailProps } from './ProviderDetail.types';
  *  5. Reseñas — confianza social
  *  6. Información — mapa + horario para confirmar antes de reservar
  *
+ * Cada sección hija renderiza su propio `<h2>` interno. El compositor
+ * solo aporta el `<section id="...">` ancla con `aria-labelledby` para
+ * preservar accesibilidad sin duplicar el título en pantalla.
+ *
  * Se renderiza como Server Component: la única isla interactiva es
  * `ProviderDetailNav` (mobile tabs con scroll-spy).
  */
@@ -31,8 +33,6 @@ export function ProviderDetail({
   ratingBreakdown,
   locale,
 }: ProviderDetailProps) {
-  const t = useTranslations('providerDetail');
-
   return (
     <main className={s.root} data-component="provider-detail-page">
       <ProviderHeader provider={provider} />
@@ -47,13 +47,7 @@ export function ProviderDetail({
           className={s.sectionAnchor}
           aria-labelledby="provider-services-heading"
         >
-          <h2 id="provider-services-heading" className={s.sectionHeading}>
-            {t('services.title')}
-          </h2>
-          <p className="text-muted-foreground mt-1 text-sm">{t('services.subtitle')}</p>
-          <div className="mt-6">
-            <ProviderServicesList services={services} locale={locale} />
-          </div>
+          <ProviderServicesList services={services} locale={locale} />
         </section>
 
         <section
@@ -61,18 +55,13 @@ export function ProviderDetail({
           className={s.sectionAnchor}
           aria-labelledby="provider-reviews-heading"
         >
-          <h2 id="provider-reviews-heading" className={s.sectionHeading}>
-            {t('reviews.title')}
-          </h2>
-          <div className="mt-6">
-            <ProviderReviewsSection
-              reviews={reviews}
-              ratingAvg={provider.rating}
-              reviewsCount={provider.reviewsCount}
-              ratingBreakdown={ratingBreakdown}
-              locale={locale}
-            />
-          </div>
+          <ProviderReviewsSection
+            reviews={reviews}
+            ratingAvg={provider.rating}
+            reviewsCount={provider.reviewsCount}
+            ratingBreakdown={ratingBreakdown}
+            locale={locale}
+          />
         </section>
 
         <section
@@ -80,12 +69,7 @@ export function ProviderDetail({
           className={s.sectionAnchor}
           aria-labelledby="provider-info-heading"
         >
-          <h2 id="provider-info-heading" className={s.sectionHeading}>
-            {t('info.title')}
-          </h2>
-          <div className="mt-6">
-            <ProviderInfoPanel provider={provider} locale={locale} />
-          </div>
+          <ProviderInfoPanel provider={provider} locale={locale} />
         </section>
       </div>
     </main>

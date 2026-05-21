@@ -11,10 +11,10 @@ export const providerDetailStyles = {
   root: 'mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 pb-16 pt-2 md:gap-12 md:px-6 lg:px-8',
   // Bloque de contenido principal: cada sección se separa con un gap
   // amplio para que en mobile se identifiquen como bloques distintos
-  // sin necesidad de tabs.
-  sections: 'flex flex-col gap-10 md:gap-14',
+  // sin necesidad de tabs. Aumentado para que servicios/reseñas/info
+  // no se peguen visualmente.
+  sections: 'flex flex-col gap-12 md:gap-16',
   // Anchor para que las tabs mobile hagan scrollIntoView sin que el
   // sticky de la nav del header tape el título de la sección.
   sectionAnchor: 'scroll-mt-28 md:scroll-mt-20',
-  sectionHeading: 'font-display text-2xl tracking-tight text-foreground md:text-3xl',
 } as const;

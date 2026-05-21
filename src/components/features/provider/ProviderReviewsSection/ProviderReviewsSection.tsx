@@ -29,53 +29,55 @@ export function ProviderReviewsSection({
 
   // Si no hay reseñas, no pintamos el resumen ni el breakdown:
   // solo un empty state honesto. Evita el "0 estrellas" feo.
-  if (reviewsCount === 0 || reviews.length === 0) {
-    return (
-      <section className={s.section} data-component="provider-reviews-section">
-        <h2 className={s.heading}>{t('title')}</h2>
-        <p className={s.empty} data-component="provider-reviews-empty">
-          {t('empty')}
-        </p>
-      </section>
-    );
-  }
-
+  // El h2 se pinta una única vez fuera del condicional para evitar
+  // duplicación y simplificar la lectura del JSX.
+  const isEmpty = reviewsCount === 0 || reviews.length === 0;
   const visibleReviews = reviews.slice(0, visibleCount);
 
   return (
     <section className={s.section} data-component="provider-reviews-section">
-      <h2 className={s.heading}>{t('title')}</h2>
+      <h2 id="provider-reviews-heading" className={s.heading}>
+        {t('title')}
+      </h2>
 
-      <SummaryBlock
-        ratingAvg={ratingAvg}
-        reviewsCount={reviewsCount}
-        breakdown={ratingBreakdown}
-        summaryLabel={t('summary', {
-          rating: ratingAvg.toFixed(1),
-          count: reviewsCount,
-        })}
-        breakdownLabel={(stars: number) => t('breakdownLabel', { stars })}
-      />
+      {isEmpty ? (
+        <p className={s.empty} data-component="provider-reviews-empty">
+          {t('empty')}
+        </p>
+      ) : (
+        <>
+          <SummaryBlock
+            ratingAvg={ratingAvg}
+            reviewsCount={reviewsCount}
+            breakdown={ratingBreakdown}
+            summaryLabel={t('summary', {
+              rating: ratingAvg.toFixed(1),
+              count: reviewsCount,
+            })}
+            breakdownLabel={(stars: number) => t('breakdownLabel', { stars })}
+          />
 
-      <ul className={s.list} data-component="provider-reviews-list">
-        {visibleReviews.map((review) => (
-          <ReviewItem key={review.id} review={review} locale={locale} />
-        ))}
-      </ul>
+          <ul className={s.list} data-component="provider-reviews-list">
+            {visibleReviews.map((review) => (
+              <ReviewItem key={review.id} review={review} locale={locale} />
+            ))}
+          </ul>
 
-      {canExpand ? (
-        <div className={s.loadMoreWrapper}>
-          <button
-            type="button"
-            onClick={toggle}
-            className={s.loadMore}
-            data-component="provider-reviews-load-more"
-            aria-expanded={isExpanded}
-          >
-            {isExpanded ? t('collapse') : t('loadMore')}
-          </button>
-        </div>
-      ) : null}
+          {canExpand ? (
+            <div className={s.loadMoreWrapper}>
+              <button
+                type="button"
+                onClick={toggle}
+                className={s.loadMore}
+                data-component="provider-reviews-load-more"
+                aria-expanded={isExpanded}
+              >
+                {isExpanded ? t('collapse') : t('loadMore')}
+              </button>
+            </div>
+          ) : null}
+        </>
+      )}
     </section>
   );
 }

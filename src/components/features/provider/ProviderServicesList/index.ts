@@ -1,2 +1,6 @@
 export { ProviderServicesList } from './ProviderServicesList';
-export type { ProviderServicesListProps } from './ProviderServicesList.types';
+export { ServiceDetailSheet } from './ServiceDetailSheet';
+export type {
+  ProviderServicesListProps,
+  ServiceDetailSheetProps,
+} from './ProviderServicesList.types';
