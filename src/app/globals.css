@@ -177,10 +177,12 @@
   --accent-foreground: oklch(0.97 0.01 70);
 
   --destructive: oklch(0.72 0.21 25);
-  /* Bordes: 12% es el punto dulce. Visible sobre card (L0.22) sin
-     resultar agresivo en superficies más claras como popover (L0.26). */
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 10%);
+  /* Bordes a 16%: el sistema usa muchos modifiers (border-border/60,
+     /40) para definir tarjetas. A 12% el modifier /60 caía a 7.2%
+     efectivo, casi invisible. Con 16%: /80 ≈ 13%, /60 ≈ 10%, /40 ≈
+     6% — todos perceptibles manteniendo elegancia. */
+  --border: oklch(1 0 0 / 16%);
+  --input: oklch(1 0 0 / 14%);
   /* Ring: plum CLARO y saturado. El anterior (L0.6) era casi invisible
      sobre card. Ahora L0.78 con chroma alto se ve nítido sobre cualquier
      superficie dark — focus accesible. */
@@ -220,7 +222,7 @@
   --sidebar-primary-foreground: oklch(0.97 0.01 70);
   --sidebar-accent: oklch(0.32 0.08 10);
   --sidebar-accent-foreground: oklch(0.97 0.01 70);
-  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-border: oklch(1 0 0 / 16%);
   --sidebar-ring: oklch(0.78 0.13 350);
 }
 
