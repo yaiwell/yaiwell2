@@ -46,6 +46,9 @@ export const providerHeaderStyles = {
     'inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground',
   ratingRow: 'inline-flex items-center gap-2',
   rating: 'inline-flex items-center gap-1 text-base font-semibold text-foreground',
-  ratingStar: 'size-4 fill-amber-500 stroke-amber-500',
+  // Estrella del rating: token `brand-butter` (mantequilla cálida) que
+  // contrasta tanto en tema claro como oscuro, en lugar de `amber-500`
+  // hardcoded.
+  ratingStar: 'size-4 fill-brand-butter stroke-brand-butter',
   reviews: 'text-xs text-muted-foreground',
 } as const;

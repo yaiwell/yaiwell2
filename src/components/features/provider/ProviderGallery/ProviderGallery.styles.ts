@@ -31,17 +31,21 @@ export const providerGalleryStyles = {
   mobileImage: 'absolute inset-0 h-full w-full object-cover',
 
   // Botones prev/next: solo móvil/tablet, superpuestos a los lados.
+  // Usamos `bg-card` (claro en light, oscuro en dark) sobre la foto, con
+  // `text-foreground` para contraste correcto en ambos temas.
   prevBtn:
-    'absolute left-3 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/85 p-2 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:inline-flex',
+    'absolute left-3 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full bg-card/85 p-2 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:inline-flex',
   nextBtn:
-    'absolute right-3 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/85 p-2 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:inline-flex',
+    'absolute right-3 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full bg-card/85 p-2 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:inline-flex',
   navIcon: 'size-5',
 
-  // Dots: barras pequeñas centradas en la parte inferior.
+  // Dots: barras pequeñas centradas en la parte inferior. Sobre la foto
+  // mantenemos un tono claro fijo (card) para asegurar visibilidad
+  // independientemente del tema.
   dotsRow:
     'pointer-events-none absolute inset-x-0 bottom-3 z-10 flex items-center justify-center gap-1.5',
-  dot: 'pointer-events-auto h-1.5 w-4 rounded-full bg-white/55 transition-all duration-200 ease-out hover:bg-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60',
-  dotActive: 'w-8 bg-white',
+  dot: 'pointer-events-auto h-1.5 w-4 rounded-full bg-card/55 transition-all duration-200 ease-out hover:bg-card/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60',
+  dotActive: 'w-8 bg-card',
 
   // -------- Desktop container --------
   // Composición "hero" premium: foto principal grande a la izquierda
