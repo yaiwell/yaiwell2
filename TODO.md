@@ -155,5 +155,5 @@
 
 ---
 
-*Última actualización: 2026-05-27 (ronda 3 G + fixes 🔴 audit).*
+*Última actualización: 2026-05-27 (ronda 5 — auth mock, landing /profesionales, dark mode global).*
 
