@@ -129,25 +129,44 @@
 }
 
 .dark {
-  /* Modo oscuro: plums profundos con acentos rosa/celeste mantenidos. */
+  /* Modo oscuro: plums profundos cálidos (NUNCA negro puro) con acentos
+     rosa/melocotón mantenidos pero apagados para no quemar la vista.
+     Mantiene la línea editorial premium-cálida-unisex. Brand-pastels se
+     invierten: el tono saturado se aclara para destacar sobre fondo
+     oscuro, y los `*-soft` se oscurecen al ~36% de lightness. */
   --background: oklch(0.18 0.025 350);
   --foreground: oklch(0.97 0.01 70);
   --card: oklch(0.24 0.03 350);
   --card-foreground: oklch(0.97 0.01 70);
   --popover: oklch(0.24 0.03 350);
   --popover-foreground: oklch(0.97 0.01 70);
-  --primary: oklch(0.92 0.04 10);
-  --primary-foreground: oklch(0.24 0.05 350);
+
+  /* Primary en dark: cremoso suave (no blanco puro) para que los CTAs
+     mantengan calidez y el foreground oscuro contraste bien. */
+  --primary: oklch(0.93 0.025 60);
+  --primary-foreground: oklch(0.22 0.04 350);
+
   --secondary: oklch(0.3 0.04 350);
   --secondary-foreground: oklch(0.97 0.01 70);
   --muted: oklch(0.28 0.03 350);
   --muted-foreground: oklch(0.74 0.02 30);
+
+  /* Accent: rosa apagado para hovers sutiles en dark. */
   --accent: oklch(0.32 0.06 10);
   --accent-foreground: oklch(0.97 0.01 70);
+
   --destructive: oklch(0.7 0.19 25);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.6 0.08 350);
+
+  /* Gráficos en dark: misma paleta pastel pero ligeramente más saturada
+     para mantener legibilidad sobre fondo oscuro. */
+  --chart-1: oklch(0.72 0.12 10);
+  --chart-2: oklch(0.72 0.11 230);
+  --chart-3: oklch(0.76 0.11 60);
+  --chart-4: oklch(0.76 0.1 140);
+  --chart-5: oklch(0.72 0.11 310);
 
   --brand-rose: oklch(0.82 0.12 12);
   --brand-rose-soft: oklch(0.36 0.07 10);
@@ -164,8 +183,8 @@
 
   --sidebar: oklch(0.24 0.03 350);
   --sidebar-foreground: oklch(0.97 0.01 70);
-  --sidebar-primary: oklch(0.92 0.04 10);
-  --sidebar-primary-foreground: oklch(0.24 0.05 350);
+  --sidebar-primary: oklch(0.93 0.025 60);
+  --sidebar-primary-foreground: oklch(0.22 0.04 350);
   --sidebar-accent: oklch(0.32 0.06 10);
   --sidebar-accent-foreground: oklch(0.97 0.01 70);
   --sidebar-border: oklch(1 0 0 / 10%);

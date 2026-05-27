@@ -20,7 +20,8 @@ export const providerHeaderStyles = {
   breadcrumb: 'flex items-center gap-1.5 text-xs text-muted-foreground',
   breadcrumbList: 'flex flex-wrap items-center gap-1.5',
   breadcrumbItem: 'inline-flex items-center',
-  breadcrumbLink: 'transition-colors hover:text-foreground hover:underline',
+  breadcrumbLink:
+    'rounded-sm transition-colors duration-150 hover:text-foreground hover:underline focus-visible:text-foreground focus-visible:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
   breadcrumbSeparator: 'text-border',
   breadcrumbCurrent: 'text-foreground/80',
 

@@ -6,6 +6,17 @@
     "goBack": "Tornar",
     "comingSoon": "Pròximament"
   },
+  "theme": {
+    "groupLabel": "Tema",
+    "light": "Clar",
+    "dark": "Fosc",
+    "system": "Sistema"
+  },
+  "seo": {
+    "defaultTitle": "Beauly · Bellesa, benestar i esport disponibles ja",
+    "defaultDescription": "Reserva a l'instant amb professionals verificats de bellesa, benestar i esport a prop teu. Disponibilitat real, sense trucades ni esperes.",
+    "ogImageAlt": "Beauly · Bellesa, benestar i esport disponibles ja"
+  },
   "nav": {
     "home": "Inici",
     "search": "Cercar",

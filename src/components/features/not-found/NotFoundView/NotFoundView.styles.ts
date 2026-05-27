@@ -34,10 +34,10 @@ export const notFoundViewStyles = {
   actions: 'flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center',
 
   primaryCta:
-    'inline-flex h-12 items-center justify-center rounded-full bg-primary px-7 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 md:h-13 md:text-base',
+    'inline-flex h-12 items-center justify-center rounded-full bg-primary px-7 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] md:h-13 md:text-base',
 
   secondaryCta:
-    'inline-flex h-12 items-center justify-center rounded-full border border-foreground/15 bg-background/70 px-7 text-sm font-semibold text-foreground transition-colors hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20 md:h-13 md:text-base',
+    'inline-flex h-12 items-center justify-center rounded-full border border-foreground/15 bg-background/70 px-7 text-sm font-semibold text-foreground transition-colors duration-150 hover:bg-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] md:h-13 md:text-base',
 
   helpHint: 'mt-2 max-w-md text-balance text-xs text-muted-foreground md:text-sm',
 } as const;

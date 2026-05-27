@@ -23,8 +23,10 @@ export const mockPaymentStepStyles = {
   amountValue: 'text-lg font-semibold text-foreground',
 
   // CTA pagar.
+  // CTA principal del flujo de pago. `active:scale` da feedback de tap;
+  // se desactiva con `disabled:` para no confundir cuando carga.
   payButton:
-    'inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground shadow-sm transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-70',
+    'inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground shadow-sm transition-all duration-150 hover:bg-primary/90 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70 disabled:active:scale-100',
   payButtonSpinner: 'size-4 animate-spin rounded-full border-2 border-current border-r-transparent',
 
   // Nota explicativa de que es un mock.

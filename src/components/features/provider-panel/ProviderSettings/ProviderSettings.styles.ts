@@ -35,7 +35,7 @@ export const providerSettingsStyles = {
   photoTile: 'relative aspect-square overflow-hidden rounded-2xl border border-border/40 bg-muted',
   photoImg: 'h-full w-full object-cover',
   photoAdd:
-    'flex aspect-square items-center justify-center rounded-2xl border-2 border-dashed border-border bg-background text-sm text-muted-foreground transition-colors hover:border-primary hover:text-foreground',
+    'flex aspect-square items-center justify-center rounded-2xl border-2 border-dashed border-border bg-background text-sm text-muted-foreground transition-colors duration-150 hover:border-primary hover:text-foreground focus-visible:border-primary focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-[0.98]',
 
   notice:
     'rounded-2xl border border-dashed border-border bg-muted/40 p-3 text-xs text-muted-foreground',

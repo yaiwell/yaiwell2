@@ -6,6 +6,17 @@
     "goBack": "Volver",
     "comingSoon": "Próximamente"
   },
+  "theme": {
+    "groupLabel": "Tema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+  "seo": {
+    "defaultTitle": "Beauly · Belleza, bienestar y deporte disponibles ya",
+    "defaultDescription": "Reserva al instante con profesionales verificados de belleza, bienestar y deporte cerca de ti. Disponibilidad real, sin llamadas ni esperas.",
+    "ogImageAlt": "Beauly · Belleza, bienestar y deporte disponibles ya"
+  },
   "nav": {
     "home": "Inicio",
     "search": "Buscar",

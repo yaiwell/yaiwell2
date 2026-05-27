@@ -31,7 +31,7 @@ export const providerServicesListStyles = {
   // Fila de servicio como botón clicable: el contenedor entero es un
   // `<button>` con `text-left`. Cambia sutilmente el fondo en hover
   // y muestra anillo en focus visible.
-  item: 'group relative flex w-full flex-col gap-3 p-5 text-left transition-colors md:flex-row md:items-center md:justify-between md:gap-6 md:p-6 hover:bg-muted/50 focus-visible:outline-none focus-visible:bg-muted/60 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50',
+  item: 'group relative flex w-full flex-col gap-3 p-5 text-left transition-colors duration-150 md:flex-row md:items-center md:justify-between md:gap-6 md:p-6 hover:bg-muted/50 focus-visible:outline-none focus-visible:bg-muted/60 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50 active:bg-muted/70',
   itemInfo: 'flex flex-col gap-1.5 min-w-0',
   itemName: 'font-medium text-base text-foreground',
   itemDescription: 'text-sm text-muted-foreground line-clamp-2',

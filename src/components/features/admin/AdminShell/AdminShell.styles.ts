@@ -16,6 +16,6 @@ export const adminShellStyles = {
   brandSubtitle: 'text-xs text-muted-foreground',
   nav: 'flex flex-wrap items-center gap-2 text-sm',
   navLink:
-    'inline-flex items-center gap-1 rounded-full border border-transparent px-3 py-1.5 text-muted-foreground transition-colors hover:border-border hover:text-foreground',
+    'inline-flex items-center gap-1 rounded-full border border-transparent px-3 py-1.5 text-muted-foreground transition-colors duration-150 hover:border-border hover:text-foreground focus-visible:border-border focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
   main: 'flex flex-1 flex-col gap-8',
 } as const;

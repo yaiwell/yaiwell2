@@ -16,11 +16,14 @@ export const footerStyles = {
   tagline: 'max-w-xs text-sm leading-relaxed text-muted-foreground',
   socials: 'mt-2 flex items-center gap-2',
   socialButton:
-    'inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground',
+    'inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors duration-150 hover:border-foreground/30 hover:text-foreground focus-visible:border-foreground/30 focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95',
   group: 'flex flex-col gap-3',
   groupTitle: 'text-sm font-semibold tracking-tight text-foreground',
   groupList: 'flex flex-col gap-2 text-sm',
-  groupLink: 'text-muted-foreground transition-colors hover:text-foreground',
+  // Los enlaces del footer son inline: usamos un rounded-sm pequeño para
+  // que el ring no quede excesivo alrededor de la línea de texto.
+  groupLink:
+    'rounded-sm text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
   bottom:
     'mt-12 flex flex-col items-start justify-between gap-3 border-t border-border pt-6 text-xs text-muted-foreground md:flex-row md:items-center',
 } as const;

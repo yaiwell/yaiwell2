@@ -9,7 +9,7 @@
 export const verificationDetailStyles = {
   root: 'flex flex-col gap-8',
   topRow: 'flex flex-col gap-2',
-  back: 'inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground',
+  back: 'inline-flex w-fit items-center gap-1 rounded-md text-sm text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
   name: 'font-display text-3xl leading-tight text-foreground sm:text-4xl',
   subtitle: 'text-sm text-muted-foreground',
   grid: 'grid gap-8 lg:grid-cols-[3fr_2fr]',
@@ -28,10 +28,12 @@ export const verificationDetailStyles = {
   actions:
     'sticky bottom-4 z-10 mt-4 flex flex-col-reverse gap-3 rounded-3xl border border-border/70 bg-card/95 p-4 shadow-md backdrop-blur sm:flex-row sm:items-center sm:justify-end',
   reject:
-    'inline-flex items-center justify-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-5 py-2.5 text-sm font-medium text-rose-700 transition-colors hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60',
+    'inline-flex items-center justify-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-5 py-2.5 text-sm font-medium text-rose-700 transition-colors duration-150 hover:bg-rose-100 focus-visible:bg-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60',
   approve:
-    'inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60',
+    'inline-flex items-center justify-center gap-2 rounded-full bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white transition-colors duration-150 hover:bg-emerald-700 focus-visible:bg-emerald-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60',
+  // El toast aparece con un fade+slide-up para no irrumpir bruscamente.
   toast:
-    'fixed inset-x-4 bottom-24 z-20 mx-auto flex max-w-md items-center justify-between gap-3 rounded-2xl border border-border bg-foreground px-4 py-3 text-sm text-background shadow-lg sm:bottom-8',
-  toastClose: 'rounded-full px-2 py-1 text-xs text-background/80 hover:text-background',
+    'fixed inset-x-4 bottom-24 z-20 mx-auto flex max-w-md items-center justify-between gap-3 rounded-2xl border border-border bg-foreground px-4 py-3 text-sm text-background shadow-lg duration-200 animate-in fade-in slide-in-from-bottom-2 sm:bottom-8',
+  toastClose:
+    'rounded-full px-2 py-1 text-xs text-background/80 transition-colors duration-150 hover:text-background focus-visible:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background/40',
 } as const;

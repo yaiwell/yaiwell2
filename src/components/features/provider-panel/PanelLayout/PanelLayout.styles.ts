@@ -16,7 +16,7 @@ export const panelLayoutStyles = {
   sidebarProvider: 'text-sm text-foreground/70',
   sidebarNav: 'flex flex-col gap-1',
   sidebarLink:
-    'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors hover:bg-muted hover:text-foreground',
+    'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
   sidebarLinkActive: 'bg-primary/10 text-foreground',
   sidebarLinkIcon: 'size-4 shrink-0',
 
@@ -27,7 +27,7 @@ export const panelLayoutStyles = {
   bottomNav:
     'fixed bottom-20 left-0 right-0 z-20 mx-auto flex max-w-md items-center justify-around gap-1 rounded-full border border-border/60 bg-background/95 px-2 py-2 shadow-lg backdrop-blur lg:hidden',
   bottomNavLink:
-    'flex flex-1 flex-col items-center justify-center gap-0.5 rounded-full px-2 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors',
+    'flex flex-1 flex-col items-center justify-center gap-0.5 rounded-full px-2 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95',
   bottomNavLinkActive: 'bg-primary/10 text-foreground',
   bottomNavIcon: 'size-4',
 } as const;

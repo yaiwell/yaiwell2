@@ -60,6 +60,6 @@ export const heroStyles = {
   // primario, alineado a la derecha de la píldora.
   submitWrap: 'flex p-2 md:items-center md:p-0',
   submit:
-    'inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-md transition-all hover:bg-primary/90 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 md:h-12 md:w-12 md:rounded-full md:px-0',
+    'inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-md transition-all duration-200 hover:bg-primary/90 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:scale-[0.98] md:h-12 md:w-12 md:rounded-full md:px-0',
   submitLabel: 'md:sr-only',
 } as const;

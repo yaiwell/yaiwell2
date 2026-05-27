@@ -12,6 +12,9 @@ export const finalCtaStyles = {
   title:
     'max-w-2xl text-balance text-3xl font-medium tracking-tight text-foreground md:text-4xl lg:text-5xl',
   subtitle: 'max-w-xl text-balance text-base text-muted-foreground md:text-lg',
+  // CTA principal: añadimos focus-visible (teclado) y active:scale como
+  // feedback de tap. La duración se mantiene corta para no romper la
+  // sensación premium.
   button:
-    'inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 md:h-14 md:px-10 md:text-base',
+    'inline-flex h-12 items-center justify-center rounded-full bg-primary px-8 text-sm font-semibold text-primary-foreground transition-all duration-150 hover:bg-primary/90 hover:shadow-md focus-visible:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] md:h-14 md:px-10 md:text-base',
 } as const;

@@ -16,7 +16,9 @@ export const categoryGridStyles = {
   title: 'text-3xl font-medium tracking-tight text-foreground md:text-4xl lg:text-5xl',
   subtitle: 'max-w-xl text-sm text-muted-foreground md:text-base',
   grid: 'grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5',
-  card: 'group relative flex aspect-[4/5] flex-col overflow-hidden rounded-3xl shadow-sm ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl',
+  // Microinteracciones: además del lift en hover, añadimos focus-visible
+  // para teclado y un pequeño `active:scale` para feedback de tap mobile.
+  card: 'group relative flex aspect-[4/5] flex-col overflow-hidden rounded-3xl shadow-sm ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98]',
   imageWrap: 'relative h-3/5 overflow-hidden',
   image:
     'absolute inset-0 h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.06]',
