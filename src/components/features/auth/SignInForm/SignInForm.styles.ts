@@ -17,9 +17,13 @@ export const signInStyles = {
   // Grid de dos columnas en desktop; una sola en mobile.
   grid: 'mx-auto grid w-full max-w-6xl grid-cols-1 lg:grid-cols-[1.05fr_1fr]',
 
-  // Panel ilustrativo (solo desktop). Gradiente cálido marca + copy editorial.
+  // Panel ilustrativo (solo desktop). En light, gradient pastel claro
+  // brillante (los soft son L0.94-0.95). En dark los `*-soft` son tintes
+  // oscuros muy parecidos al card y el gradient queda apagado;
+  // overrideamos a los `*` (pastels claros L0.85) al 18% para mantener
+  // el carácter alegre sin quemar la vista sobre fondo oscuro.
   aside:
-    'relative hidden overflow-hidden bg-gradient-to-br from-brand-rose-soft via-brand-peach-soft to-brand-sky-soft p-12 lg:flex lg:flex-col lg:justify-between',
+    'relative hidden overflow-hidden bg-gradient-to-br from-brand-rose-soft via-brand-peach-soft to-brand-sky-soft dark:from-brand-rose/[0.18] dark:via-brand-peach/[0.18] dark:to-brand-sky/[0.18] p-12 lg:flex lg:flex-col lg:justify-between',
   asideBadge:
     'inline-flex w-fit items-center gap-2 rounded-full bg-background/70 px-3 py-1 text-xs font-medium uppercase tracking-wider text-foreground/80 backdrop-blur',
   asideTitle:

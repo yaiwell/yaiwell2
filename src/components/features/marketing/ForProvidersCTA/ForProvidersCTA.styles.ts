@@ -9,8 +9,11 @@
 export const forProvidersCtaStyles = {
   root: 'bg-background pb-16 md:pb-24',
   container: 'mx-auto max-w-7xl px-6 md:px-8',
+  // Banner gradient. En dark cambiamos a los `*` (pastels claros) al 20%
+  // para que el banner siga siendo un acento cálido y no se confunda con
+  // el background dark.
   banner:
-    'relative flex flex-col items-center justify-center gap-5 overflow-hidden rounded-3xl bg-gradient-to-br from-brand-rose-soft via-brand-peach-soft to-brand-butter-soft px-6 py-14 text-center md:rounded-[2.5rem] md:px-12 md:py-20',
+    'relative flex flex-col items-center justify-center gap-5 overflow-hidden rounded-3xl bg-gradient-to-br from-brand-rose-soft via-brand-peach-soft to-brand-butter-soft dark:from-brand-rose/[0.20] dark:via-brand-peach/[0.20] dark:to-brand-butter/[0.20] px-6 py-14 text-center md:rounded-[2.5rem] md:px-12 md:py-20',
   eyebrow:
     'text-xs font-medium uppercase tracking-wider text-muted-foreground md:text-sm',
   title:

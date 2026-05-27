@@ -24,15 +24,18 @@ export const categoryGridStyles = {
   image:
     'absolute inset-0 h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.06]',
   imageTint: 'absolute inset-0 mix-blend-multiply opacity-30',
-  // Píldora translúcida sobre la foto: usamos `bg-card/90` para que en dark
-  // sea un plum suave en lugar de un blanco que destaque demasiado.
+  // Píldora translúcida sobre la foto. En light usamos `bg-card/90`
+  // (card=blanco al 90%); en dark el card es L0.22 plum y la cápsula
+  // sobre el bloque pastel-soft-dark (L0.30) quedaba apenas visible. En
+  // dark cambiamos a `bg-background/85` (L0.16) para máximo contraste.
   arrowWrap:
-    'absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-card/90 text-foreground shadow-sm transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5',
+    'absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-card/90 dark:bg-background/85 text-foreground shadow-sm transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5',
   pastelBlock: 'relative flex h-2/5 items-center gap-3 px-4 py-3 md:px-5 md:py-4',
-  // Mismo razonamiento que `arrowWrap`: la cápsula del icono se adapta al
-  // tema vía `bg-card/80` y no rompe el bloque pastel inferior.
+  // Mismo razonamiento que `arrowWrap`: en dark la cápsula del icono usa
+  // `bg-background/80` para que se vea como un círculo definido sobre el
+  // bloque pastel oscuro tintado.
   iconWrap:
-    'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-card/80 shadow-sm md:h-11 md:w-11',
+    'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-card/80 dark:bg-background/80 shadow-sm md:h-11 md:w-11',
   title2: 'text-sm font-medium leading-tight md:text-base lg:text-lg',
 } as const;
 

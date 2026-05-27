@@ -16,13 +16,16 @@
  */
 export const forProvidersHeroStyles = {
   root: 'relative isolate overflow-hidden bg-background px-6 pt-16 pb-20 md:px-10 md:pt-24 md:pb-28',
-  // Fondo cálido con gradiente brand. En dark los tokens `*-soft` viran a
-  // plums oscuros automáticamente (definidos en .dark del globals.css).
+  // Fondo cálido con gradient brand. En light: pasteles claros brillantes
+  // (los `*-soft` son L0.95). En dark los `*-soft` viran a tintes oscuros
+  // muddy; usamos los `*` (pastels claros L0.85-0.88) al 15% para
+  // mantener calidez sin saturar el fondo dark.
   bgLayer:
-    'pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-brand-peach-soft via-brand-rose-soft to-brand-lilac-soft opacity-90',
-  // Halo radial sutil para dar foco al contenido sin romper la calidez.
+    'pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-brand-peach-soft via-brand-rose-soft to-brand-lilac-soft dark:from-brand-peach/[0.15] dark:via-brand-rose/[0.15] dark:to-brand-lilac/[0.15] opacity-90 dark:opacity-100',
+  // Halo radial. Mismo enfoque: en dark cambiamos a brand-peach claro con
+  // opacidad baja para que el halo se perciba como aura pastel.
   bgGlow:
-    'pointer-events-none absolute -top-1/3 left-1/2 -z-10 h-[60rem] w-[60rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,var(--brand-peach-soft),transparent_60%)] opacity-60',
+    'pointer-events-none absolute -top-1/3 left-1/2 -z-10 h-[60rem] w-[60rem] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,var(--brand-peach-soft),transparent_60%)] dark:bg-[radial-gradient(circle_at_center,oklch(0.88_0.12_55/0.15),transparent_60%)] opacity-60',
   container:
     'mx-auto grid w-full max-w-6xl items-center gap-12 md:grid-cols-[1.05fr_0.95fr] md:gap-16',
 
@@ -69,9 +72,11 @@ export const forProvidersHeroStyles = {
   mockMetricValue: 'text-2xl font-medium tracking-tight text-foreground',
   mockBarTrack: 'mt-3 h-2 w-full overflow-hidden rounded-full bg-muted',
   mockBarFill: 'h-full w-[86%] rounded-full bg-gradient-to-r from-brand-rose to-brand-peach',
-  // Burbuja decorativa flotante para dar profundidad al mock.
+  // Burbujas decorativas. En dark los `*-soft` son oscuros y se diluyen
+  // sobre el background; cambiamos a `*` con opacidad baja para que
+  // sigan luciendo como acentos pastel sin agresividad.
   mockFloat:
-    'absolute -right-4 -top-4 hidden size-20 rounded-full bg-brand-butter-soft md:block',
+    'absolute -right-4 -top-4 hidden size-20 rounded-full bg-brand-butter-soft dark:bg-brand-butter/25 md:block',
   mockFloat2:
-    'absolute -bottom-6 -left-6 hidden size-28 rounded-full bg-brand-lilac-soft md:block',
+    'absolute -bottom-6 -left-6 hidden size-28 rounded-full bg-brand-lilac-soft dark:bg-brand-lilac/25 md:block',
 } as const;

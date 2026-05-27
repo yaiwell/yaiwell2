@@ -74,11 +74,13 @@ export const signUpFormStyles = {
   footerNote: 'text-center text-sm text-muted-foreground',
   footerLink: 'font-medium text-foreground underline-offset-2 hover:underline',
 
-  // Columna ilustrativa (solo desktop). Usamos un gradient peach→lilac
-  // construido con tokens brand-* para que el modo oscuro lo invierta
-  // automáticamente. No incluye texto crítico, solo refuerzo de marca.
+  // Columna ilustrativa (solo desktop). En light: gradient pastel claro
+  // peach→lilac brillante (los `*-soft` son L0.95). En dark los `*-soft`
+  // son tintes oscuros y el gradient queda apagado y muddy; por eso en
+  // dark sustituimos por los `*` (pastels claros L0.88) al 18% para
+  // tintar el fondo sin quemar la vista.
   illustration:
-    'relative hidden flex-col justify-between gap-8 overflow-hidden bg-[linear-gradient(140deg,var(--brand-peach-soft),var(--brand-lilac-soft))] p-10 md:flex',
+    'relative hidden flex-col justify-between gap-8 overflow-hidden bg-gradient-to-br from-brand-peach-soft to-brand-lilac-soft dark:from-brand-peach/[0.18] dark:to-brand-lilac/[0.18] p-10 md:flex',
   illustrationBadge:
     'inline-flex w-fit items-center gap-2 rounded-full bg-card/70 px-3 py-1 text-xs font-medium text-foreground backdrop-blur',
   illustrationTitle:
@@ -86,9 +88,12 @@ export const signUpFormStyles = {
   illustrationSubtitle: 'max-w-xs text-sm leading-relaxed text-foreground/80',
   illustrationFooter: 'text-xs text-foreground/70',
 
-  // Decoraciones suaves (círculos) usando tokens brand-rose.
+  // Decoraciones suaves (círculos). En light los `*-soft` claros con
+  // blur dan halos pastel; en dark los `*-soft` son oscuros y los blobs
+  // desaparecen — por eso en dark usamos los `*` (pastels claros) con
+  // baja opacidad para que sigan luciendo como auras de color.
   illustrationBlob1:
-    'pointer-events-none absolute -right-12 -top-12 size-48 rounded-full bg-[color:var(--brand-rose-soft)] opacity-70 blur-2xl',
+    'pointer-events-none absolute -right-12 -top-12 size-48 rounded-full bg-brand-rose-soft opacity-70 blur-2xl dark:bg-brand-rose dark:opacity-20',
   illustrationBlob2:
-    'pointer-events-none absolute -bottom-16 -left-10 size-56 rounded-full bg-[color:var(--brand-butter-soft)] opacity-60 blur-2xl',
+    'pointer-events-none absolute -bottom-16 -left-10 size-56 rounded-full bg-brand-butter-soft opacity-60 blur-2xl dark:bg-brand-butter dark:opacity-15',
 } as const;
