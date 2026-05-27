@@ -19,9 +19,14 @@ export const availabilityBadgeStyles = {
     available_soon: 'bg-brand-butter-soft text-brand-butter ring-1 ring-inset ring-brand-butter/30',
     busy: 'bg-muted text-muted-foreground ring-1 ring-inset ring-border',
   },
+  // Variante `solid`: el fondo brand-* es claro en AMBOS modos (L0.72-0.90),
+  // así que el texto debe ser SIEMPRE oscuro. Antes usábamos
+  // `text-primary-foreground` (cream): en light daba ~3:1 marginal y en
+  // dark daba ~1.2:1 (invisible). Usamos el plum oscuro del foreground
+  // light fijado para garantizar AA en ambos modos.
   solid: {
-    available_now: 'bg-brand-sage text-primary-foreground',
-    available_soon: 'bg-brand-butter text-primary-foreground',
+    available_now: 'bg-brand-sage text-[oklch(0.22_0.025_350)]',
+    available_soon: 'bg-brand-butter text-[oklch(0.22_0.025_350)]',
     busy: 'bg-muted-foreground text-background',
   },
   dotColor: {

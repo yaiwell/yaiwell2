@@ -29,8 +29,11 @@ export const verificationDetailStyles = {
     'sticky bottom-4 z-10 mt-4 flex flex-col-reverse gap-3 rounded-3xl border border-border/70 bg-card/95 p-4 shadow-md backdrop-blur sm:flex-row sm:items-center sm:justify-end',
   reject:
     'inline-flex items-center justify-center gap-2 rounded-full border border-destructive/30 bg-destructive/10 px-5 py-2.5 text-sm font-medium text-destructive transition-colors duration-150 hover:bg-destructive/20 focus-visible:bg-destructive/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60',
+  // El fondo `bg-brand-sage` es verde claro en ambos modos (L0.72/0.83);
+  // por eso forzamos un texto plum oscuro fijo (no `text-primary-foreground`,
+  // que en dark se vuelve cream y desaparece sobre el sage claro).
   approve:
-    'inline-flex items-center justify-center gap-2 rounded-full bg-brand-sage px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors duration-150 hover:bg-brand-sage/90 focus-visible:bg-brand-sage/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sage/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60',
+    'inline-flex items-center justify-center gap-2 rounded-full bg-brand-sage px-5 py-2.5 text-sm font-medium text-[oklch(0.22_0.025_350)] transition-colors duration-150 hover:bg-brand-sage/90 focus-visible:bg-brand-sage/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sage/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60',
   // El toast aparece con un fade+slide-up para no irrumpir bruscamente.
   toast:
     'fixed inset-x-4 bottom-24 z-20 mx-auto flex max-w-md items-center justify-between gap-3 rounded-2xl border border-border bg-foreground px-4 py-3 text-sm text-background shadow-lg duration-200 animate-in fade-in slide-in-from-bottom-2 sm:bottom-8',

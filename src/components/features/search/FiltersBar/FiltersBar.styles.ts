@@ -28,7 +28,11 @@ export const filtersBarStyles = {
   toggleNow:
     'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   toggleNowIdle: 'border-border bg-card text-foreground/80 hover:bg-muted',
-  toggleNowActive: 'border-brand-sage/40 bg-brand-sage-soft text-[oklch(0.32_0.06_145)]',
+  // Texto en `text-brand-sage` (no hardcoded sage oscuro): el par
+  // `*-soft` / `*` se invierte automáticamente en dark, asegurando AA
+  // tanto en light (texto sage oscuro sobre fondo sage claro) como en
+  // dark (texto sage claro sobre fondo sage oscuro).
+  toggleNowActive: 'border-brand-sage/40 bg-brand-sage-soft text-brand-sage',
   filterButton:
     'relative inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   filterButtonDot:

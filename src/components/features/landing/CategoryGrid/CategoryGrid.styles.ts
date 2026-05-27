@@ -45,40 +45,47 @@ export const categoryToneStyles: Record<
   CategoryTone,
   { pastel: string; tint: string; icon: string; title: string }
 > = {
+  // Los `title` antes usaban hardcoded `oklch(0.3X ...)` (plum oscuro
+  // saturado) para máximo contraste sobre el fondo pastel light. En dark
+  // el `*-soft` ahora es el plum oscuro tintado (L0.30) y un texto
+  // hardcoded oscuro encima resultaba invisible. La solución limpia es
+  // usar el token pareado `text-brand-X`: dark text sobre soft-light en
+  // light (~3:1, suficiente para texto grande de card) y light text sobre
+  // soft-dark en dark (~6:1, AA AAA). Mantiene la semántica del par.
   rose: {
     pastel: 'bg-brand-rose-soft',
     tint: 'bg-brand-rose-soft',
     icon: 'text-brand-rose',
-    title: 'text-[oklch(0.32_0.07_350)]',
+    title: 'text-brand-rose',
   },
   sky: {
     pastel: 'bg-brand-sky-soft',
     tint: 'bg-brand-sky-soft',
     icon: 'text-brand-sky',
-    title: 'text-[oklch(0.3_0.08_230)]',
+    title: 'text-brand-sky',
   },
   peach: {
     pastel: 'bg-brand-peach-soft',
     tint: 'bg-brand-peach-soft',
     icon: 'text-brand-peach',
-    title: 'text-[oklch(0.34_0.08_50)]',
+    title: 'text-brand-peach',
   },
   sage: {
     pastel: 'bg-brand-sage-soft',
     tint: 'bg-brand-sage-soft',
     icon: 'text-brand-sage',
-    title: 'text-[oklch(0.32_0.06_145)]',
+    title: 'text-brand-sage',
   },
   butter: {
     pastel: 'bg-brand-butter-soft',
     tint: 'bg-brand-butter-soft',
     icon: 'text-brand-butter',
-    title: 'text-[oklch(0.34_0.07_90)]',
+    title: 'text-brand-butter',
   },
   lilac: {
     pastel: 'bg-brand-lilac-soft',
     tint: 'bg-brand-lilac-soft',
     icon: 'text-brand-lilac',
-    title: 'text-[oklch(0.32_0.08_300)]',
+    title: 'text-brand-lilac',
   },
 };
