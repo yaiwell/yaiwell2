@@ -21,27 +21,37 @@ export const heroStyles = {
   // cálido abajo. Da personalidad cromática a la foto sin matarla.
   overlay:
     'absolute inset-0 -z-10 bg-gradient-to-b from-[oklch(0.22_0.05_350/0.65)] via-[oklch(0.4_0.06_340/0.35)] to-[oklch(0.95_0.04_15/0.95)]',
+  // El overlay del hero es un gradiente plum-oscuro fijo en ambos temas
+  // (ver `overlay` arriba), así que el texto se mantiene claro siempre.
+  // Usamos `text-foreground/text-muted-foreground` no procede aquí porque
+  // se invertirían en dark y dejarían el texto ilegible sobre la foto.
   content:
-    'relative flex w-full max-w-3xl flex-col items-center gap-6 text-center text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.25)] md:gap-8',
+    'relative flex w-full max-w-3xl flex-col items-center gap-6 text-center text-primary-foreground drop-shadow-[0_2px_12px_rgba(0,0,0,0.25)] md:gap-8',
   titleLine1:
     'text-balance text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl md:text-6xl lg:text-7xl',
   titleLine2:
     'mt-1 block bg-gradient-to-r from-[oklch(0.92_0.08_15)] via-[oklch(0.95_0.05_50)] to-[oklch(0.9_0.08_230)] bg-clip-text font-display italic font-normal text-transparent',
-  subtitle: 'max-w-2xl text-balance text-base leading-relaxed text-white/95 sm:text-lg md:text-xl',
+  subtitle:
+    'max-w-2xl text-balance text-base leading-relaxed text-primary-foreground/95 sm:text-lg md:text-xl',
 
   // === Search card ===
   // Mobile: card vertical con campos apilados y separadores horizontales.
   // Desktop: píldora limpia con campos en fila y separadores verticales.
+  // Usamos `bg-card` para que la píldora se adapte a light/dark, y los
+  // ring/shadow basados en `foreground` para que el borde sutil siga
+  // funcionando en ambos temas sin colores hardcoded.
   searchCard:
-    'mt-2 w-full max-w-3xl rounded-3xl bg-white text-foreground shadow-2xl shadow-black/15 ring-1 ring-black/5 backdrop-blur md:rounded-full md:p-1.5',
+    'mt-2 w-full max-w-3xl rounded-3xl bg-card text-foreground shadow-2xl shadow-foreground/15 ring-1 ring-foreground/5 backdrop-blur md:rounded-full md:p-1.5',
   searchForm: 'flex flex-col divide-y divide-border md:flex-row md:items-stretch md:divide-y-0',
 
   // Cada campo es un label que abarca todo su segmento clickable.
   // En desktop el padding lo da el segmento; el divider va separado.
   field:
     'group/field relative flex flex-1 items-center gap-3 px-5 py-3 text-left transition-colors hover:bg-muted/60 focus-within:bg-muted/60 md:rounded-full md:px-6 md:py-3',
+  // En hover el icono se aclara al color de la card para destacar sobre el
+  // muted del estado base; usamos `bg-card` por coherencia con searchCard.
   fieldIcon:
-    'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors group-hover/field:bg-white group-hover/field:text-foreground',
+    'flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors group-hover/field:bg-card group-hover/field:text-foreground',
   fieldBody: 'flex min-w-0 flex-1 flex-col gap-0.5',
   fieldLabel: 'text-[11px] font-medium uppercase tracking-wider text-muted-foreground',
   fieldControl:

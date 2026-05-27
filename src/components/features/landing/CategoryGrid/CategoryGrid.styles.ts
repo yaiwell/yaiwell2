@@ -18,16 +18,21 @@ export const categoryGridStyles = {
   grid: 'grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5',
   // Microinteracciones: además del lift en hover, añadimos focus-visible
   // para teclado y un pequeño `active:scale` para feedback de tap mobile.
-  card: 'group relative flex aspect-[4/5] flex-col overflow-hidden rounded-3xl shadow-sm ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98]',
+  // El ring base usa `foreground` (semantic) para adaptarse al tema.
+  card: 'group relative flex aspect-[4/5] flex-col overflow-hidden rounded-3xl shadow-sm ring-1 ring-foreground/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98]',
   imageWrap: 'relative h-3/5 overflow-hidden',
   image:
     'absolute inset-0 h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.06]',
   imageTint: 'absolute inset-0 mix-blend-multiply opacity-30',
+  // Píldora translúcida sobre la foto: usamos `bg-card/90` para que en dark
+  // sea un plum suave en lugar de un blanco que destaque demasiado.
   arrowWrap:
-    'absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-foreground shadow-sm transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5',
+    'absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-card/90 text-foreground shadow-sm transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5',
   pastelBlock: 'relative flex h-2/5 items-center gap-3 px-4 py-3 md:px-5 md:py-4',
+  // Mismo razonamiento que `arrowWrap`: la cápsula del icono se adapta al
+  // tema vía `bg-card/80` y no rompe el bloque pastel inferior.
   iconWrap:
-    'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/80 shadow-sm md:h-11 md:w-11',
+    'inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-card/80 shadow-sm md:h-11 md:w-11',
   title2: 'text-sm font-medium leading-tight md:text-base lg:text-lg',
 } as const;
 
