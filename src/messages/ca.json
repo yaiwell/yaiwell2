@@ -879,5 +879,27 @@
       "passwordMismatch": "Les contrasenyes no coincideixen.",
       "termsRequired": "Has d'acceptar els termes per continuar."
     }
+  },
+  "location": {
+    "label": "La teva ubicació",
+    "labelNone": "Sense ubicació",
+    "permissionTitle": "Et mostrem el que tens a prop?",
+    "permissionBody": "Activa la ubicació per veure primer els professionals més propers a tu. Pots desactivar-la quan vulguis.",
+    "permissionEnable": "Activar ubicació",
+    "permissionDismiss": "Ara no",
+    "requesting": "Cercant la teva ubicació…",
+    "granted": "Ubicació activa",
+    "denied": "Has denegat la ubicació",
+    "deniedHelp": "Per activar-la, busca la icona del cadenat a la barra d'adreces i permet la ubicació en aquest lloc.",
+    "unavailable": "No hem pogut obtenir la teva ubicació",
+    "unavailableHelp": "Comprova la teva connexió o torna-ho a provar d'aquí a uns segons.",
+    "timeout": "S'ha trigat massa",
+    "notSupported": "El teu navegador no admet la ubicació",
+    "retry": "Reintentar",
+    "clear": "Treure la ubicació",
+    "useFallback": "Mostrar resultats de Barcelona",
+    "fallbackHint": "Mostrem resultats del centre de Barcelona. Activa la teva ubicació per veure el que tens més a prop.",
+    "distanceAway": "a {distance}",
+    "nearYou": "A prop teu"
   }
 }

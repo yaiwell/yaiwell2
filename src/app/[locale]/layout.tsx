@@ -6,9 +6,10 @@ import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { routing } from '@/i18n/routing';
-import { Footer, Header, MobileNav } from '@/components/shared';
+import { Footer, Header, MobileNav, UserLocationProvider } from '@/components/shared';
 import { ThemeProvider } from '@/components/shared/ThemeToggle';
 import { SkipToContent } from '@/components/shared/SkipToContent';
+import { COOKIE_NAME as LOCATION_COOKIE_NAME, readLocationFromHeaders } from '@/lib/services/location';
 import { isThemePreference, THEME_COOKIE_NAME, type ThemePreference } from '@/lib/utils/theme';
 
 import '../globals.css';
@@ -190,6 +191,14 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
     ? rawPreference
     : 'system';
 
+  // Leemos también la ubicación guardada (si la hay) para que el provider
+  // hidrate sin parpadeo. Construimos el header `cookieName=value` y lo
+  // pasamos al parser SSR-safe del módulo location.
+  const rawLocationCookie = cookieStore.get(LOCATION_COOKIE_NAME)?.value;
+  const initialUserLocation = rawLocationCookie
+    ? readLocationFromHeaders(`${LOCATION_COOKIE_NAME}=${rawLocationCookie}`)
+    : null;
+
   return (
     <html
       lang={locale}
@@ -202,20 +211,26 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider>
           <ThemeProvider initialPreference={initialThemePreference}>
-            {/* Skip link para usuarios de teclado y lectores de pantalla:
-                solo es visible al recibir foco y permite saltar la
-                navegación cabecera para ir directo al contenido. */}
-            <SkipToContent />
-            <Header />
-            {/* El padding inferior en mobile reserva espacio para el bottom
-                tab bar (MobileNav). En desktop el tab bar se oculta y no
-                hace falta el padding extra. El `id="main"` es el destino
-                del skip link. */}
-            <main id="main" className="flex flex-1 flex-col pb-20 md:pb-0">
-              {children}
-            </main>
-            <Footer />
-            <MobileNav />
+            {/* UserLocationProvider envuelve el shell para que cabecera,
+                contenido y mobile nav puedan leer la ubicación con el
+                mismo hook (`useUserLocation`). Se monta dentro del
+                NextIntlClientProvider para que su UI hija pueda traducir. */}
+            <UserLocationProvider initialLocation={initialUserLocation}>
+              {/* Skip link para usuarios de teclado y lectores de pantalla:
+                  solo es visible al recibir foco y permite saltar la
+                  navegación cabecera para ir directo al contenido. */}
+              <SkipToContent />
+              <Header />
+              {/* El padding inferior en mobile reserva espacio para el bottom
+                  tab bar (MobileNav). En desktop el tab bar se oculta y no
+                  hace falta el padding extra. El `id="main"` es el destino
+                  del skip link. */}
+              <main id="main" className="flex flex-1 flex-col pb-20 md:pb-0">
+                {children}
+              </main>
+              <Footer />
+              <MobileNav />
+            </UserLocationProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

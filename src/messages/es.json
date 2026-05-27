@@ -879,5 +879,27 @@
       "passwordMismatch": "Las contraseñas no coinciden.",
       "termsRequired": "Debes aceptar los términos para continuar."
     }
+  },
+  "location": {
+    "label": "Tu ubicación",
+    "labelNone": "Sin ubicación",
+    "permissionTitle": "¿Te enseñamos lo que tienes cerca?",
+    "permissionBody": "Activa la ubicación para ver primero los profesionales más cercanos a ti. Puedes desactivarla cuando quieras.",
+    "permissionEnable": "Activar ubicación",
+    "permissionDismiss": "Ahora no",
+    "requesting": "Buscando tu ubicación…",
+    "granted": "Ubicación activa",
+    "denied": "Has denegado la ubicación",
+    "deniedHelp": "Para activarla, busca el icono de candado en la barra de direcciones y permite la ubicación para este sitio.",
+    "unavailable": "No hemos podido obtener tu ubicación",
+    "unavailableHelp": "Comprueba tu conexión o vuelve a intentarlo en unos segundos.",
+    "timeout": "Se ha tardado demasiado",
+    "notSupported": "Tu navegador no soporta ubicación",
+    "retry": "Reintentar",
+    "clear": "Quitar ubicación",
+    "useFallback": "Mostrar resultados de Barcelona",
+    "fallbackHint": "Mostramos resultados del centro de Barcelona. Activa tu ubicación para ver lo más cercano a ti.",
+    "distanceAway": "a {distance}",
+    "nearYou": "Cerca de ti"
   }
 }
