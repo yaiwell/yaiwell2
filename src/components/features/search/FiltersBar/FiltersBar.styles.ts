@@ -33,6 +33,13 @@ export const filtersBarStyles = {
   // tanto en light (texto sage oscuro sobre fondo sage claro) como en
   // dark (texto sage claro sobre fondo sage oscuro).
   toggleNowActive: 'border-brand-sage/40 bg-brand-sage-soft text-brand-sage',
+  // Chip "Cerca de ti": misma base que los toggles para no romper el ritmo
+  // visual de la barra. Cuando está activo usa el par brand-sky para
+  // diferenciarlo del "ahora" (sage) y reforzar la metáfora de "ubicación".
+  toggleNear:
+    'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
+  toggleNearIdle: 'border-border bg-card text-foreground/80 hover:bg-muted',
+  toggleNearActive: 'border-brand-sky/40 bg-brand-sky-soft text-brand-sky',
   filterButton:
     'relative inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   filterButtonDot:

@@ -30,6 +30,13 @@ export const providerCardStyles = {
   reviews: 'text-muted-foreground',
   separator: 'text-border',
   distance: 'text-muted-foreground',
+  // Pill compacta para la distancia al usuario. Mantenemos tokens
+  // semánticos (`bg-muted`, `text-foreground`) para que respete el
+  // par light/dark sin colores hardcoded. El icono va alineado a la
+  // baseline del texto con `size-3.5` para no engordar la card.
+  distancePill:
+    'inline-flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground/80',
+  distancePillIcon: 'size-3.5 text-muted-foreground',
   footerRow: 'mt-1 flex items-center justify-between gap-3 border-t border-border/60 pt-4',
   fromPrice: 'flex items-baseline gap-1 text-foreground/80',
   fromPriceLabel: 'text-xs text-muted-foreground',

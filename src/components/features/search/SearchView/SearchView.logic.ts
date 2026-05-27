@@ -8,7 +8,12 @@ import type { PriceRange } from '@/types/domain';
 
 import type { ActiveFilterChip } from '../ActiveFiltersChips';
 import type { AdvancedFiltersValue } from '../FiltersSheet';
+import { NEAR_ME_RADIUS_METERS, useNearMe } from './SearchView.nearMe';
 import type { MobileTab, SearchViewInitialState } from './SearchView.types';
+
+// Re-export del radio para que los consumidores lo importen desde la
+// fachada habitual de lógica (en lugar de tirar del archivo nearMe).
+export { NEAR_ME_RADIUS_METERS };
 
 /**
  * Construye la URL de búsqueda a partir de los filtros activos.
@@ -50,6 +55,18 @@ export function useSearchView(initial: SearchViewInitialState) {
   const [mobileTab, setMobileTab] = useState<MobileTab>('list');
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
+
+  // Distancia + filtro "Cerca de ti" viven en su propio hook para no
+  // inflar este orquestador (ver `SearchView.nearMe.ts`).
+  const {
+    userLocation,
+    hasRealLocation,
+    nearMeOnly,
+    displayProviders,
+    nearMeYieldedEmpty,
+    handleToggleNearMe,
+    handleDisableNearMe,
+  } = useNearMe(initial.providers);
 
   // Estado local que SIEMPRE refleja la URL. Lo derivamos del initial
   // que llega del server; cada navegación produce un nuevo `initial`.
@@ -206,6 +223,8 @@ export function useSearchView(initial: SearchViewInitialState) {
     advancedValue,
     hasAdvancedFilters,
     isPending,
+    displayProviders,
+    nearMeYieldedEmpty,
 
     // Estado puro UI
     mobileTab,
@@ -214,6 +233,13 @@ export function useSearchView(initial: SearchViewInitialState) {
     setFiltersSheetOpen,
     highlightedId,
     setHighlightedId,
+
+    // Ubicación + filtro "Cerca de ti"
+    userLocation,
+    hasRealLocation,
+    nearMeOnly,
+    handleToggleNearMe,
+    handleDisableNearMe,
 
     // Setters de filtros
     handleQueryChange,

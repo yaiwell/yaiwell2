@@ -18,6 +18,7 @@ export function ProviderList({
   fromPriceMap,
   highlightedId,
   onHoverProvider,
+  hasRealLocation,
 }: ProviderListProps) {
   const t = useTranslations('search.empty');
 
@@ -39,6 +40,8 @@ export function ProviderList({
             fromPriceCents={fromPriceMap[provider.id] ?? null}
             highlighted={highlightedId === provider.id}
             onHover={onHoverProvider}
+            distanceMeters={provider.distanceMeters}
+            hasRealLocation={hasRealLocation}
           />
         </li>
       ))}

@@ -1,9 +1,10 @@
 'use client';
 
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight, MapPin, Star } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
+import { formatDistance } from '@/lib/services/location';
 import { cn } from '@/lib/utils';
 import { buildProviderSlugWithId } from '@/lib/utils/provider-slug';
 
@@ -24,11 +25,30 @@ export function ProviderCard({
   fromPriceCents,
   highlighted = false,
   onHover,
+  distanceMeters,
+  hasRealLocation = true,
 }: ProviderCardProps) {
   const locale = useLocale();
   const t = useTranslations('search.card');
 
   const minutesUntilNext = getMinutesUntilNextSlot(provider);
+
+  // Preferimos la distancia calculada en cliente (`distanceMeters`) porque
+  // refleja la ubicación REAL del usuario. Si no se ha pasado, caemos al
+  // `distanceKm` que vino del server (calculado contra Barcelona centro).
+  // De esta forma la card sigue siendo útil fuera del flujo de búsqueda.
+  const distanceLabel: string | null = (() => {
+    if (typeof distanceMeters === 'number' && Number.isFinite(distanceMeters)) {
+      const formatted = formatDistance(distanceMeters, locale);
+      return hasRealLocation
+        ? t('distanceShort', { distance: formatted })
+        : t('distanceFromFallback', { distance: formatted });
+    }
+    if (provider.distanceKm !== null) {
+      return t('distance', { km: provider.distanceKm.toFixed(1) });
+    }
+    return null;
+  })();
 
   // Toda la card es navegable: envolvemos en un Link de next-intl que
   // respeta el prefijo de locale. Mantenemos el <article> interno con
@@ -91,15 +111,15 @@ export function ProviderCard({
             <span className={s.reviews} data-component="provider-card-reviews">
               {t('reviews', { count: provider.reviewsCount })}
             </span>
-            {provider.distanceKm !== null && (
-              <>
-                <span className={s.separator} aria-hidden>
-                  ·
-                </span>
-                <span className={s.distance} data-component="provider-card-distance">
-                  {t('distance', { km: provider.distanceKm.toFixed(1) })}
-                </span>
-              </>
+            {distanceLabel !== null && (
+              <span
+                className={s.distancePill}
+                data-component="provider-card-distance"
+                title={hasRealLocation ? undefined : t('distanceFromFallbackHint')}
+              >
+                <MapPin className={s.distancePillIcon} aria-hidden />
+                {distanceLabel}
+              </span>
             )}
           </div>
 

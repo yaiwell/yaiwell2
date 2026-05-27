@@ -159,12 +159,18 @@
     },
     "empty": {
       "title": "Sense resultats per ara",
-      "subtitle": "Prova de treure algun filtre o ampliar la zona del mapa."
+      "subtitle": "Prova de treure algun filtre o ampliar la zona del mapa.",
+      "nearMeTitle": "Res a {radius} km al voltant",
+      "nearMeSubtitle": "No hi ha professionals dins del radi que t'hem posat. Amplia la cerca i torna-ho a provar.",
+      "disableNearMeCta": "Treure el filtre \"A prop teu\""
     },
     "card": {
       "from": "des de",
       "reviews": "{count, plural, one {# valoració} other {# valoracions}}",
       "distance": "a {km} km",
+      "distanceShort": "a {distance}",
+      "distanceFromFallback": "a {distance} *",
+      "distanceFromFallbackHint": "Distància estimada des del centre de Barcelona (sense la teva ubicació real).",
       "viewDetail": "Veure detall",
       "typeAutonomous": "Autònom",
       "typeCenter": "Centre"
@@ -177,8 +183,12 @@
     "map": {
       "attribution": "© OpenStreetMap",
       "locating": "Localitzant...",
-      "popupCta": "Veure a la llista"
+      "popupCta": "Veure a la llista",
+      "youAreHere": "Ets aquí",
+      "fallbackCenter": "Centre de Barcelona (estimació)"
     },
+    "nearMeChip": "A prop teu",
+    "nearMeChipAria": "Filtrar a professionals en un radi de {radius} km",
     "resultsCount": "{count, plural, one {# resultat} other {# resultats}}"
   },
   "searchAutocomplete": {
@@ -900,6 +910,23 @@
     "useFallback": "Mostrar resultats de Barcelona",
     "fallbackHint": "Mostrem resultats del centre de Barcelona. Activa la teva ubicació per veure el que tens més a prop.",
     "distanceAway": "a {distance}",
-    "nearYou": "A prop teu"
+    "nearYou": "A prop teu",
+    "barcelona": "Barcelona",
+    "defaultBadge": "predeterminat",
+    "pill": {
+      "ariaLabel": "Ubicació actual",
+      "openAria": "Obrir opcions d'ubicació",
+      "fallbackTitle": "Estàs veient Barcelona",
+      "fallbackBody": "Activa la teva ubicació per veure el que tens més a prop.",
+      "grantedTitle": "Ubicació activa",
+      "grantedBody": "Et mostrem els resultats ordenats per proximitat a la teva posició.",
+      "deniedTitle": "Permís bloquejat",
+      "requestingTitle": "Cercant la teva ubicació…",
+      "unavailableTitle": "Ubicació no disponible",
+      "shortLabelDefault": "Barcelona",
+      "shortLabelGranted": "A prop teu",
+      "shortLabelRequesting": "Localitzant…",
+      "shortLabelUnavailable": "Sense ubicació"
+    }
   }
 }

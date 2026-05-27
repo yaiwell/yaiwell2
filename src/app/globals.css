@@ -277,6 +277,43 @@
 .leaflet-popup.beauly-map-popup .leaflet-popup-tip {
   background-color: var(--card);
 }
+/*
+ * Halo pulsante del marker "tú estás aquí" en SearchMap.
+ *
+ * Leaflet inserta el HTML del divIcon directamente al DOM, así que la
+ * animación tiene que vivir aquí (no en el objeto de estilos del
+ * componente). El color del halo viene de --brand-sky para coordinarse
+ * con el chip "Cerca de ti".
+ */
+@keyframes beauly-user-pulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.45;
+  }
+  70% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.beauly-user-pin .beauly-user-pin-halo {
+  animation: beauly-user-pulse 2.2s ease-out infinite;
+  transform-origin: center;
+}
+
+/* Respetamos la preferencia del usuario de reducir movimiento: si la
+   activa, el halo queda estático en lugar de pulsar. */
+@media (prefers-reduced-motion: reduce) {
+  .beauly-user-pin .beauly-user-pin-halo {
+    animation: none;
+    opacity: 0.3;
+  }
+}
+
 .leaflet-popup.beauly-map-popup .leaflet-popup-close-button {
   /* Botón de cierre flotante sobre la foto. Antes era blanco hardcoded
      (rgba 255,255,255,0.9), lo que generaba un círculo blanco brillante

@@ -7,8 +7,14 @@ import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 
+import type { GeoPoint } from '@/types/domain';
+
 import { MapProviderPopup } from './MapProviderPopup';
-import { buildPinHtml, searchMapStyles as s } from './SearchMap.styles';
+import {
+  buildPinHtml,
+  buildUserLocationHtml,
+  searchMapStyles as s,
+} from './SearchMap.styles';
 import type { SearchMapProps } from './SearchMap.types';
 
 /**
@@ -47,6 +53,36 @@ function MapResizeHandler() {
 }
 
 /**
+ * Vuelve a centrar el mapa cuando cambia la ubicación del usuario.
+ *
+ * Lo aislamos en un componente para tener acceso a `useMap()` y no
+ * tener que envolver toda la lógica en una ref hacia el padre. Usamos
+ * `flyTo` con duración corta para suavizar la transición cuando el
+ * usuario acaba de conceder permisos y pasamos de fallback → GPS.
+ *
+ * En el primer render del mapa el centro ya viene de `initialCenter`,
+ * por lo que esta llamada es idempotente y solo se nota cuando la
+ * posición cambia de verdad (cookie nueva o GPS recién concedido).
+ */
+function MapUserLocationCenterer({ position }: { position: GeoPoint | undefined }) {
+  const map = useMap();
+  // Memorizamos lat/lng como primitivos para que el efecto solo se
+  // dispare cuando cambia la posición de verdad, no cuando llega un
+  // objeto nuevo con los mismos valores.
+  const lat = position?.lat;
+  const lng = position?.lng;
+
+  useEffect(() => {
+    if (lat === undefined || lng === undefined) return;
+    map.flyTo([lat, lng], Math.max(map.getZoom(), 14), {
+      duration: 0.6,
+    });
+  }, [map, lat, lng]);
+
+  return null;
+}
+
+/**
  * Mapa Leaflet con pines de proveedores.
  *
  * Decisiones:
@@ -69,8 +105,26 @@ export function SearchMap({
   highlightedId,
   onHoverProvider,
   onProviderSeeOnList,
+  userLocation,
+  hasRealLocation = true,
 }: SearchMapProps) {
   const t = useTranslations('search.map');
+
+  // Construimos el icono del marker del usuario solo si tenemos
+  // ubicación. El HTML depende de si es GPS real (halo pulsante azul)
+  // o fallback (pin neutro discreto con tooltip explicativo).
+  const userIcon = userLocation
+    ? L.divIcon({
+        className: 'beauly-user-pin',
+        html: buildUserLocationHtml(hasRealLocation),
+        // Halo de hasta 44x44 cuando es real; mantenemos un tamaño
+        // generoso para que el anchor no descoloque la posición.
+        iconSize: [44, 44],
+        iconAnchor: [22, 22],
+      })
+    : null;
+
+  const userTooltip = hasRealLocation ? t('youAreHere') : t('fallbackCenter');
 
   return (
     <div className={s.wrapper} data-component="search-map">
@@ -82,11 +136,31 @@ export function SearchMap({
         className="h-full w-full"
       >
         <MapResizeHandler />
+        <MapUserLocationCenterer position={userLocation} />
         <TileLayer
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={19}
           attribution=""
         />
+
+        {userLocation && userIcon && (
+          <Marker
+            position={[userLocation.lat, userLocation.lng]}
+            icon={userIcon}
+            // El marker del usuario no es interactivo: solo informativo.
+            // Bajamos su zIndexOffset para que cualquier pin de proveedor
+            // que caiga encima quede por delante en clicabilidad.
+            interactive
+            keyboard={false}
+            zIndexOffset={-100}
+            title={userTooltip}
+          >
+            <Popup closeButton={false} offset={[0, -10]} className="beauly-map-popup">
+              <span className="block px-3 py-2 text-xs text-foreground">{userTooltip}</span>
+            </Popup>
+          </Marker>
+        )}
+
         {providers.map((p) => {
           const icon = L.divIcon({
             className: 'beauly-pin',

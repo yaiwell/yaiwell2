@@ -1,6 +1,6 @@
 'use client';
 
-import { SlidersHorizontal, Zap } from 'lucide-react';
+import { Navigation, SlidersHorizontal, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { getRootCategories } from '@/lib/fake-data/categories';
@@ -24,8 +24,11 @@ export function FiltersBar({
   activeCategorySlug,
   availabilityOnly,
   hasAdvancedFilters,
+  nearMeOnly,
+  nearMeRadiusKm,
   onCategoryChange,
   onAvailabilityToggle,
+  onNearMeToggle,
   onOpenFiltersSheet,
 }: FiltersBarProps) {
   const t = useTranslations('search');
@@ -69,6 +72,18 @@ export function FiltersBar({
       </div>
 
       <div className={s.actions}>
+        <button
+          type="button"
+          aria-pressed={nearMeOnly}
+          aria-label={t('nearMeChipAria', { radius: nearMeRadiusKm })}
+          onClick={onNearMeToggle}
+          className={cn(s.toggleNear, nearMeOnly ? s.toggleNearActive : s.toggleNearIdle)}
+          data-component="filters-near-me-toggle"
+        >
+          <Navigation className="size-4" aria-hidden />
+          <span>{t('nearMeChip')}</span>
+        </button>
+
         <button
           type="button"
           aria-pressed={availabilityOnly}
