@@ -54,7 +54,11 @@ const SelectContent = React.forwardRef<
       position={position}
       sideOffset={sideOffset}
       className={cn(
-        'border-border bg-popover text-popover-foreground z-50 max-h-(--radix-select-content-available-height) min-w-(--radix-select-trigger-width) overflow-hidden rounded-2xl border p-1 shadow-xl ring-1 shadow-black/10 ring-black/5',
+        // `shadow-foreground/10` y `ring-border` mantienen la sombra y el
+        // halo visibles en light (donde foreground es plum oscuro casi
+        // negro) y en dark (donde el ring usa el token de borde semántico
+        // en lugar de un negro que desaparecería sobre el popover oscuro).
+        'border-border bg-popover text-popover-foreground z-50 max-h-(--radix-select-content-available-height) min-w-(--radix-select-trigger-width) overflow-hidden rounded-2xl border p-1 shadow-xl ring-1 shadow-foreground/10 ring-border',
         'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
         'data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2',
         className,

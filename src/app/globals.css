@@ -136,9 +136,12 @@
      oscuro, y los `*-soft` se oscurecen al ~36% de lightness. */
   --background: oklch(0.18 0.025 350);
   --foreground: oklch(0.97 0.01 70);
-  --card: oklch(0.24 0.03 350);
+  /* Subido de 0.24 a 0.26 para mejorar la separación visual entre cards
+     y el background en dark (la diferencia anterior de 0.06 era demasiado
+     sutil y las cards desaparecían sobre el fondo). */
+  --card: oklch(0.26 0.03 350);
   --card-foreground: oklch(0.97 0.01 70);
-  --popover: oklch(0.24 0.03 350);
+  --popover: oklch(0.26 0.03 350);
   --popover-foreground: oklch(0.97 0.01 70);
 
   /* Primary en dark: cremoso suave (no blanco puro) para que los CTAs
@@ -148,7 +151,10 @@
 
   --secondary: oklch(0.3 0.04 350);
   --secondary-foreground: oklch(0.97 0.01 70);
-  --muted: oklch(0.28 0.03 350);
+  /* Subido de 0.28 a 0.33 para que las superficies `muted` (tab bars,
+     fondos sutiles) destaquen claramente sobre card (0.26) y background
+     (0.18). Antes muted (0.28) quedaba indistinguible de card (0.24). */
+  --muted: oklch(0.33 0.03 350);
   --muted-foreground: oklch(0.74 0.02 30);
 
   /* Accent: rosa apagado para hovers sutiles en dark. */
@@ -156,7 +162,10 @@
   --accent-foreground: oklch(0.97 0.01 70);
 
   --destructive: oklch(0.7 0.19 25);
-  --border: oklch(1 0 0 / 10%);
+  /* Subido de 10% a 14% para que los bordes sean perceptibles sobre las
+     cards más claras (0.26). Por debajo del 12% se difuminaban hasta
+     desaparecer y las cards perdían definición. */
+  --border: oklch(1 0 0 / 14%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.6 0.08 350);
 
@@ -181,13 +190,15 @@
   --brand-lilac: oklch(0.82 0.1 300);
   --brand-lilac-soft: oklch(0.36 0.07 300);
 
-  --sidebar: oklch(0.24 0.03 350);
+  /* Sidebar alineado con los nuevos valores de card/border para mantener
+     coherencia visual entre todas las superficies elevadas en dark. */
+  --sidebar: oklch(0.26 0.03 350);
   --sidebar-foreground: oklch(0.97 0.01 70);
   --sidebar-primary: oklch(0.93 0.025 60);
   --sidebar-primary-foreground: oklch(0.22 0.04 350);
   --sidebar-accent: oklch(0.32 0.06 10);
   --sidebar-accent-foreground: oklch(0.97 0.01 70);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-border: oklch(1 0 0 / 14%);
   --sidebar-ring: oklch(0.6 0.08 350);
 }
 

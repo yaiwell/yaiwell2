@@ -12,8 +12,13 @@ export const headerStyles = {
   // para mantener la sensación premium sin animaciones lentas.
   brand:
     'flex items-center gap-2 font-medium tracking-tight text-foreground transition-opacity duration-150 hover:opacity-80 focus-visible:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-md',
+  // El brandMark vive sobre un gradiente pastel rosa→melocotón en ambos
+  // temas. Usamos `text-primary-foreground` para que el icono sea cremoso
+  // sobre el gradiente en light y plum oscuro en dark, garantizando
+  // contraste en ambos modos. El ring usa `foreground` con alpha para
+  // mantener el halo sutil sin recurrir a blanco/negro hardcoded.
   brandMark:
-    'inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-brand-rose to-brand-peach text-white shadow-sm ring-1 ring-white/20 dark:ring-white/30',
+    'inline-flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-brand-rose to-brand-peach text-primary-foreground shadow-sm ring-1 ring-foreground/15 dark:ring-foreground/25',
   brandText: 'font-display text-xl md:text-2xl tracking-tight',
   desktopNav: 'hidden items-center gap-7 md:flex',
   navLink:
