@@ -4,6 +4,7 @@ import { Sparkles } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import { LangSwitcher } from '@/components/shared/LangSwitcher';
+import { LocationPill } from '@/components/shared/LocationPill';
 import { ThemeToggle } from '@/components/shared/ThemeToggle';
 
 import { headerStyles as s } from './Header.styles';
@@ -77,6 +78,7 @@ export function Header() {
             {tNav('forProviders')}
           </Link>
           <ThemeToggle />
+          <LocationPill />
           <LangSwitcher />
           <Button asChild variant="outline" size="lg" data-component="header-sign-in">
             <Link href="/entrar">{tNav('signIn')}</Link>
@@ -90,6 +92,7 @@ export function Header() {
             navegación principal vive en `MobileNav` (bottom tab bar). */}
         <div className={s.mobileActions} data-component="header-mobile-actions">
           <ThemeToggle compact />
+          <LocationPill />
           <LangSwitcher compact />
         </div>
       </div>

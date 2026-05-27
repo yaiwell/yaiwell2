@@ -6,7 +6,13 @@ import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { routing } from '@/i18n/routing';
-import { Footer, Header, MobileNav, UserLocationProvider } from '@/components/shared';
+import {
+  Footer,
+  Header,
+  LocationPermissionBanner,
+  MobileNav,
+  UserLocationProvider,
+} from '@/components/shared';
 import { ThemeProvider } from '@/components/shared/ThemeToggle';
 import { SkipToContent } from '@/components/shared/SkipToContent';
 import { COOKIE_NAME as LOCATION_COOKIE_NAME, readLocationFromHeaders } from '@/lib/services/location';
@@ -230,6 +236,11 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
               </main>
               <Footer />
               <MobileNav />
+              {/* Banner discreto que solicita permiso de ubicación la
+                  primera vez. Se monta fuera del flujo (fixed) y se
+                  oculta solo cuando el usuario ya ha decidido o lo ha
+                  descartado en esta sesión. */}
+              <LocationPermissionBanner />
             </UserLocationProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
