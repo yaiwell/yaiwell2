@@ -657,5 +657,227 @@
       "fromPrice": "des de {price}",
       "secureNote": "Confirmació immediata. Pagament segur."
     }
+  },
+  "forProviders": {
+    "meta": {
+      "title": "Per a professionals",
+      "description": "Beauly és el marketplace de bellesa, benestar i esport on els teus clients et troben quan estan a punt per reservar. Comença gratis i sense permanència."
+    },
+    "hero": {
+      "eyebrow": "Per a centres i autònoms",
+      "titleLine1": "La teva agenda plena,",
+      "titleLine2": "sense esforç.",
+      "subtitle": "Beauly és el marketplace de bellesa, benestar i esport on els teus clients et troben quan estan a punt per reservar.",
+      "ctaPrimary": "Comença gratis",
+      "ctaSecondary": "Com funciona",
+      "trustNote": "Sense permanència · Sense cost d'alta · Cobra a l'instant",
+      "mockBadge": "Reserves en directe",
+      "mockBookingService": "Tall + rentat",
+      "mockBookingClient": "Marta · 18:30",
+      "mockBookingStatus": "Confirmada",
+      "mockOccupancyLabel": "Ocupació aquesta setmana",
+      "mockOccupancyValue": "86%"
+    },
+    "benefits": {
+      "eyebrow": "Beneficis",
+      "title": "Pensat perquè tu només hagis d'obrir les portes.",
+      "subtitle": "Nosaltres ens encarreguem del màrqueting, dels recordatoris i del cobrament. Tu dediques el temps al que fas bé.",
+      "items": {
+        "liveBookings": {
+          "title": "Reserves en directe",
+          "body": "Rep clients amb disponibilitat real des del teu calendari. Sense forats fantasma."
+        },
+        "noCalls": {
+          "title": "Zero trucades",
+          "body": "Pagaments en línia, recordatoris automàtics i confirmació immediata. Adéu al telèfon."
+        },
+        "yourHours": {
+          "title": "Tu decideixes els teus forats",
+          "body": "El calendari és teu. Bloqueja hores, tanca dies i obre només quan vulguis treballar."
+        },
+        "noLockIn": {
+          "title": "Sense permanència",
+          "body": "Entra avui i prova. Si no encaixa, et dones de baixa demà sense cost."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Plans",
+      "title": "Comença gratis. Creix quan t'interessi.",
+      "subtitle": "Només pagues comissió sobre el que reserves. La quota mensual baixa la comissió i desbloqueja funcions premium.",
+      "popularBadge": "Més escollit",
+      "perMonth": "/mes",
+      "commission": "Comissió {rate}",
+      "ctaStart": "Començar",
+      "plans": {
+        "free": {
+          "name": "Gratis",
+          "tagline": "Per provar Beauly sense compromís.",
+          "feature1": "Fins a 5 serveis publicats",
+          "feature2": "Reserves en línia il·limitades",
+          "feature3": "Pagament segur amb Stripe",
+          "feature4": "Fitxa pública al marketplace"
+        },
+        "basic": {
+          "name": "Bàsic",
+          "tagline": "Per a professionals que comencen a omplir agenda.",
+          "feature1": "Fins a 20 serveis publicats",
+          "feature2": "Recordatoris automàtics per email",
+          "feature3": "Estadístiques bàsiques d'ocupació",
+          "feature4": "Suport per email en 48 h"
+        },
+        "pro": {
+          "name": "Pro",
+          "tagline": "Per a centres amb diversos professionals.",
+          "feature1": "Serveis il·limitats",
+          "feature2": "Gestió multi-professional",
+          "feature3": "Promocions de forats solts",
+          "feature4": "Suport prioritari en 24 h"
+        },
+        "premium": {
+          "name": "Premium",
+          "tagline": "Per a grups amb diversos centres.",
+          "feature1": "Multi-centre sota un únic compte",
+          "feature2": "Panell de control consolidat",
+          "feature3": "Account manager dedicat",
+          "feature4": "Onboarding assistit per l'equip"
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "Preguntes freqüents",
+      "title": "El que ens pregunteu sempre.",
+      "items": {
+        "start": {
+          "question": "Quant trigo a començar a rebre reserves?",
+          "answer": "Un cop verificat el teu compte (de mitjana en 24 h laborables) la teva fitxa es publica i pots rebre reserves el mateix dia. Només necessites la teva agenda i els teus serveis carregats."
+        },
+        "payouts": {
+          "question": "Com cobro el que em reserven?",
+          "answer": "Beauly fa servir Stripe Connect. El client paga en confirmar la reserva i nosaltres et transferim l'import (menys comissió) al teu compte bancari cada setmana de manera automàtica."
+        },
+        "cancel": {
+          "question": "Puc cancel·lar una reserva?",
+          "answer": "Sí, fins a 2 hores abans de l'inici del servei des del teu panell. Si cancel·les, el client rep un reemborsament íntegre automàtic sense penalització per la teva part."
+        },
+        "regret": {
+          "question": "Què passa si me'n penedeixo?",
+          "answer": "No hi ha permanència ni penalització per donar-te de baixa. Entres avui, surts demà. La teva informació es manté 30 dies per si tornes a canviar d'opinió."
+        },
+        "platform": {
+          "question": "Beauly és app o web?",
+          "answer": "Avui som web optimitzada per a mòbil; el teu panell funciona a qualsevol navegador. L'app nativa iOS/Android arribarà a la propera fase, sense cost addicional per a tu."
+        },
+        "verification": {
+          "question": "Què necessito per donar-me d'alta?",
+          "answer": "Un email, el teu NIF/CIF i, segons la categoria, alguna documentació professional (assegurança, certificats). Et guiem pas a pas en l'alta."
+        }
+      }
+    },
+    "cta": {
+      "eyebrow": "Llest per començar",
+      "title": "Preparat per omplir la teva agenda?",
+      "subtitle": "Crea el teu compte gratis en menys de 5 minuts. Sense targeta, sense permanència, sense compromís.",
+      "primary": "Crear compte gratis",
+      "secondary": "Parlar amb vendes"
+    }
+  },
+  "signIn": {
+    "meta": {
+      "title": "Entrar · Beauly",
+      "description": "Accedeix al teu compte de Beauly per reservar bellesa, benestar i esport a prop teu."
+    },
+    "title": "Entra a Beauly",
+    "subtitle": "Reserva bellesa, benestar i esport en segons.",
+    "aside": {
+      "badge": "Accés",
+      "title": "La teva agenda a tot arreu.",
+      "subtitle": "Reserva a l'instant, gestiona les teves cites i descobreix professionals a prop.",
+      "bullet1": "Disponibilitat real, sense trucades ni esperes.",
+      "bullet2": "Cancel·lació gratuïta fins a 2 h abans."
+    },
+    "tabs": {
+      "ariaLabel": "Tria tipus de compte",
+      "client": "Sóc client",
+      "provider": "Sóc professional",
+      "clientDescription": "Inici de sessió com a client.",
+      "providerDescription": "Inici de sessió com a professional."
+    },
+    "fields": {
+      "emailLabel": "Correu electrònic",
+      "emailPlaceholder": "el-teu@email.com",
+      "passwordLabel": "Contrasenya",
+      "passwordPlaceholder": "La teva contrasenya",
+      "remember": "Recorda'm",
+      "forgot": "Has oblidat la contrasenya?"
+    },
+    "actions": {
+      "submit": "Entrar",
+      "submitting": "Entrant…"
+    },
+    "divider": "o continua amb",
+    "social": {
+      "google": "Google",
+      "googleAria": "Continua amb Google (pròximament)",
+      "apple": "Apple",
+      "appleAria": "Continua amb Apple (pròximament)",
+      "comingSoon": "Pròximament"
+    },
+    "footer": {
+      "noAccount": "Encara no tens compte?",
+      "createOne": "Crea'n un"
+    },
+    "errors": {
+      "emailRequired": "Introdueix el teu correu per continuar.",
+      "emailInvalid": "Aquest correu no sembla vàlid. Revisa'l i torna-ho a provar."
+    }
+  },
+  "signUp": {
+    "meta": {
+      "title": "Crea el teu compte",
+      "description": "Registra't a Beauly per reservar bellesa, benestar i esport a prop teu, o per començar a oferir els teus serveis."
+    },
+    "eyebrow": "Uneix-te a Beauly",
+    "title": "Crea el teu compte",
+    "subtitle": "Reserva a l'instant o comença a oferir els teus serveis. Només triguen un minut.",
+    "tabs": {
+      "client": "Sóc client",
+      "provider": "Sóc professional"
+    },
+    "fields": {
+      "fullName": "Nom i cognoms",
+      "contactName": "Nom del responsable",
+      "businessName": "Nom del centre",
+      "email": "Correu electrònic",
+      "password": "Contrasenya",
+      "passwordRepeat": "Repeteix la contrasenya"
+    },
+    "verificationNotice": "Abans de publicar-te revisarem la teva informació i documentació. T'avisarem per correu quan el teu perfil estigui verificat.",
+    "termsLabel": "He llegit i accepto els <terms>termes d'ús</terms> i la <privacy>política de privacitat</privacy>.",
+    "cta": {
+      "submit": "Crear compte",
+      "submitting": "Creant compte…"
+    },
+    "socialDivider": "o registra't amb",
+    "social": {
+      "google": "Continuar amb Google",
+      "apple": "Continuar amb Apple"
+    },
+    "haveAccount": "Ja tens compte? <link>Entra aquí</link>",
+    "illustration": {
+      "badge": "Beauly Premium",
+      "title": "Cuidar-se no hauria d'esperar.",
+      "subtitle": "Uneix la teva agenda a la dels millors professionals a prop teu.",
+      "footer": "Només acceptem professionals verificats a mà. Qualitat abans que quantitat."
+    },
+    "errors": {
+      "required": "Aquest camp és obligatori.",
+      "fullNameMin": "Indica'ns com a mínim un nom de 2 caràcters.",
+      "businessNameMin": "El nom del centre ha de tenir com a mínim 2 caràcters.",
+      "emailInvalid": "Introdueix un correu vàlid.",
+      "passwordShort": "La contrasenya ha de tenir com a mínim 8 caràcters.",
+      "passwordMismatch": "Les contrasenyes no coincideixen.",
+      "termsRequired": "Has d'acceptar els termes per continuar."
+    }
   }
 }

@@ -657,5 +657,227 @@
       "fromPrice": "desde {price}",
       "secureNote": "Confirmación inmediata. Pago seguro."
     }
+  },
+  "forProviders": {
+    "meta": {
+      "title": "Para profesionales",
+      "description": "Beauly es el marketplace de belleza, bienestar y deporte donde tus clientes te encuentran cuando están listos para reservar. Empieza gratis y sin permanencia."
+    },
+    "hero": {
+      "eyebrow": "Para centros y autónomos",
+      "titleLine1": "Tu agenda llena,",
+      "titleLine2": "sin esfuerzo.",
+      "subtitle": "Beauly es el marketplace de belleza, bienestar y deporte donde tus clientes te encuentran cuando están listos para reservar.",
+      "ctaPrimary": "Empezar gratis",
+      "ctaSecondary": "Cómo funciona",
+      "trustNote": "Sin permanencia · Sin coste de alta · Cobra al instante",
+      "mockBadge": "Reservas en directo",
+      "mockBookingService": "Corte + lavado",
+      "mockBookingClient": "Marta · 18:30",
+      "mockBookingStatus": "Confirmada",
+      "mockOccupancyLabel": "Ocupación esta semana",
+      "mockOccupancyValue": "86%"
+    },
+    "benefits": {
+      "eyebrow": "Beneficios",
+      "title": "Pensado para que tú solo tengas que abrir las puertas.",
+      "subtitle": "Nos encargamos del marketing, los recordatorios y el cobro. Tú dedicas el tiempo a lo que haces bien.",
+      "items": {
+        "liveBookings": {
+          "title": "Reservas en directo",
+          "body": "Recibe clientes con disponibilidad real desde tu calendario. Sin huecos fantasma."
+        },
+        "noCalls": {
+          "title": "Cero llamadas",
+          "body": "Pagos online, recordatorios automáticos y confirmación inmediata. Adiós al teléfono."
+        },
+        "yourHours": {
+          "title": "Tú decides tus huecos",
+          "body": "El calendario es tuyo. Bloquea horas, cierra días y abre solo cuando quieras trabajar."
+        },
+        "noLockIn": {
+          "title": "Sin permanencia",
+          "body": "Entra hoy y prueba. Si no encaja, te das de baja mañana sin coste."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Planes",
+      "title": "Empieza gratis. Crece cuando te interese.",
+      "subtitle": "Solo pagas comisión sobre lo que reservas. La cuota mensual baja la comisión y desbloquea funciones premium.",
+      "popularBadge": "Más elegido",
+      "perMonth": "/mes",
+      "commission": "Comisión {rate}",
+      "ctaStart": "Empezar",
+      "plans": {
+        "free": {
+          "name": "Gratis",
+          "tagline": "Para probar Beauly sin compromiso.",
+          "feature1": "Hasta 5 servicios publicados",
+          "feature2": "Reservas online ilimitadas",
+          "feature3": "Pago seguro con Stripe",
+          "feature4": "Ficha pública en el marketplace"
+        },
+        "basic": {
+          "name": "Básico",
+          "tagline": "Para profesionales que empiezan a llenar agenda.",
+          "feature1": "Hasta 20 servicios publicados",
+          "feature2": "Recordatorios automáticos por email",
+          "feature3": "Estadísticas básicas de ocupación",
+          "feature4": "Soporte por email en 48 h"
+        },
+        "pro": {
+          "name": "Pro",
+          "tagline": "Para centros con varios profesionales.",
+          "feature1": "Servicios ilimitados",
+          "feature2": "Gestión multi-profesional",
+          "feature3": "Promociones de huecos sueltos",
+          "feature4": "Soporte prioritario en 24 h"
+        },
+        "premium": {
+          "name": "Premium",
+          "tagline": "Para grupos con varios centros.",
+          "feature1": "Multi-centro bajo una cuenta",
+          "feature2": "Panel de control consolidado",
+          "feature3": "Account manager dedicado",
+          "feature4": "Onboarding asistido por el equipo"
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "Preguntas frecuentes",
+      "title": "Lo que nos preguntáis siempre.",
+      "items": {
+        "start": {
+          "question": "¿Cuánto tardo en empezar a recibir reservas?",
+          "answer": "Una vez verificada tu cuenta (de media en 24 h laborables) tu ficha se publica y puedes recibir reservas el mismo día. Solo necesitas tu agenda y tus servicios cargados."
+        },
+        "payouts": {
+          "question": "¿Cómo cobro lo que me reservan?",
+          "answer": "Beauly usa Stripe Connect. El cliente paga al confirmar la reserva y nosotros te transferimos el importe (menos comisión) a tu cuenta bancaria cada semana de forma automática."
+        },
+        "cancel": {
+          "question": "¿Puedo cancelar una reserva?",
+          "answer": "Sí, hasta 2 horas antes del inicio del servicio desde tu panel. Si cancelas, el cliente recibe un reembolso íntegro automático sin penalización por tu parte."
+        },
+        "regret": {
+          "question": "¿Qué pasa si me arrepiento?",
+          "answer": "No hay permanencia ni penalización por darte de baja. Entras hoy, sales mañana. Tu información se mantiene 30 días por si vuelves a cambiar de opinión."
+        },
+        "platform": {
+          "question": "¿Beauly es app o web?",
+          "answer": "Hoy somos web optimizada para móvil; tu panel funciona en cualquier navegador. La app nativa iOS/Android llegará en la siguiente fase, sin coste adicional para ti."
+        },
+        "verification": {
+          "question": "¿Qué necesito para darme de alta?",
+          "answer": "Un email, tu NIF/CIF y, según la categoría, alguna documentación profesional (seguro, certificados). Te guiamos paso a paso en el alta."
+        }
+      }
+    },
+    "cta": {
+      "eyebrow": "Listo para empezar",
+      "title": "¿Listo para llenar tu agenda?",
+      "subtitle": "Crea tu cuenta gratis en menos de 5 minutos. Sin tarjeta, sin permanencia, sin compromiso.",
+      "primary": "Crear cuenta gratis",
+      "secondary": "Hablar con ventas"
+    }
+  },
+  "signIn": {
+    "meta": {
+      "title": "Entrar · Beauly",
+      "description": "Accede a tu cuenta Beauly para reservar belleza, bienestar y deporte cerca de ti."
+    },
+    "title": "Entra en Beauly",
+    "subtitle": "Reserva belleza, bienestar y deporte en segundos.",
+    "aside": {
+      "badge": "Acceso",
+      "title": "Tu agenda contigo a todas partes.",
+      "subtitle": "Reserva al instante, gestiona tus citas y descubre profesionales cerca de ti.",
+      "bullet1": "Disponibilidad real, sin llamadas ni esperas.",
+      "bullet2": "Cancelación gratuita hasta 2 h antes."
+    },
+    "tabs": {
+      "ariaLabel": "Elige tipo de cuenta",
+      "client": "Soy cliente",
+      "provider": "Soy profesional",
+      "clientDescription": "Inicio de sesión como cliente.",
+      "providerDescription": "Inicio de sesión como profesional."
+    },
+    "fields": {
+      "emailLabel": "Email",
+      "emailPlaceholder": "tu@email.com",
+      "passwordLabel": "Contraseña",
+      "passwordPlaceholder": "Tu contraseña",
+      "remember": "Recordarme",
+      "forgot": "¿Olvidaste tu contraseña?"
+    },
+    "actions": {
+      "submit": "Entrar",
+      "submitting": "Entrando…"
+    },
+    "divider": "o continúa con",
+    "social": {
+      "google": "Google",
+      "googleAria": "Continuar con Google (próximamente)",
+      "apple": "Apple",
+      "appleAria": "Continuar con Apple (próximamente)",
+      "comingSoon": "Próximamente"
+    },
+    "footer": {
+      "noAccount": "¿No tienes cuenta?",
+      "createOne": "Crea una"
+    },
+    "errors": {
+      "emailRequired": "Introduce tu email para continuar.",
+      "emailInvalid": "Ese email no parece válido. Revísalo e inténtalo de nuevo."
+    }
+  },
+  "signUp": {
+    "meta": {
+      "title": "Crea tu cuenta",
+      "description": "Regístrate en Beauly para reservar belleza, bienestar y deporte cerca de ti, o para empezar a ofrecer tus servicios."
+    },
+    "eyebrow": "Únete a Beauly",
+    "title": "Crea tu cuenta",
+    "subtitle": "Reserva al instante o empieza a ofrecer tus servicios. Solo tardas un minuto.",
+    "tabs": {
+      "client": "Soy cliente",
+      "provider": "Soy profesional"
+    },
+    "fields": {
+      "fullName": "Nombre y apellidos",
+      "contactName": "Nombre del responsable",
+      "businessName": "Nombre del centro",
+      "email": "Email",
+      "password": "Contraseña",
+      "passwordRepeat": "Repite la contraseña"
+    },
+    "verificationNotice": "Antes de publicarte revisaremos tu información y documentación. Te avisaremos por email cuando tu perfil esté verificado.",
+    "termsLabel": "He leído y acepto los <terms>términos de uso</terms> y la <privacy>política de privacidad</privacy>.",
+    "cta": {
+      "submit": "Crear cuenta",
+      "submitting": "Creando cuenta…"
+    },
+    "socialDivider": "o regístrate con",
+    "social": {
+      "google": "Continuar con Google",
+      "apple": "Continuar con Apple"
+    },
+    "haveAccount": "¿Ya tienes cuenta? <link>Entra aquí</link>",
+    "illustration": {
+      "badge": "Beauly Premium",
+      "title": "Cuidarse no debería esperar.",
+      "subtitle": "Une tu agenda a la de los mejores profesionales cerca de ti.",
+      "footer": "Solo aceptamos profesionales verificados a mano. Calidad antes que cantidad."
+    },
+    "errors": {
+      "required": "Este campo es obligatorio.",
+      "fullNameMin": "Indícanos al menos un nombre con 2 caracteres.",
+      "businessNameMin": "El nombre del centro debe tener al menos 2 caracteres.",
+      "emailInvalid": "Introduce un email válido.",
+      "passwordShort": "La contraseña debe tener al menos 8 caracteres.",
+      "passwordMismatch": "Las contraseñas no coinciden.",
+      "termsRequired": "Debes aceptar los términos para continuar."
+    }
   }
 }
