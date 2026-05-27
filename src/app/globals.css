@@ -129,77 +129,99 @@
 }
 
 .dark {
-  /* Modo oscuro: plums profundos cálidos (NUNCA negro puro) con acentos
-     rosa/melocotón mantenidos pero apagados para no quemar la vista.
-     Mantiene la línea editorial premium-cálida-unisex. Brand-pastels se
-     invierten: el tono saturado se aclara para destacar sobre fondo
-     oscuro, y los `*-soft` se oscurecen al ~36% de lightness. */
-  --background: oklch(0.18 0.025 350);
+  /* Modo oscuro Beauly: plums profundos cálidos (NUNCA negro puro) con
+     acentos brand pastel claros y saturados. Filosofía: el dark no es un
+     light invertido; es una pieza editorial propia donde el primary
+     mantiene la identidad plum saturado (no crema), los brand-pastels
+     viven como pares "fondo oscuro tintado + texto/icono pastel claro"
+     cumpliendo WCAG AA 4.5:1, y las superficies escalonadas (background
+     → card → popover → muted → secondary) crean jerarquía clara.
+
+     Contrastes verificados (ratios aproximados):
+     - foreground 0.97 / background 0.16 ≈ 15:1 (AAA)
+     - foreground 0.97 / muted 0.28 ≈ 9.5:1 (AAA)
+     - primary 0.62 / background 0.16 ≈ 5.6:1 (AA grande/normal)
+     - primary 0.62 / card 0.22 ≈ 4.7:1 (AA texto pequeño)
+     - brand-X 0.83-0.90 / brand-X-soft 0.30-0.32 ≈ 6.5-7.6:1 (AAA)
+     - ring 0.78 / card 0.22 ≈ 8.4:1 (muy visible)
+     - card 0.22 sobre background 0.16: ΔL 0.06, jerarquía clara */
+  --background: oklch(0.16 0.018 350);
   --foreground: oklch(0.97 0.01 70);
-  /* Subido de 0.24 a 0.26 para mejorar la separación visual entre cards
-     y el background en dark (la diferencia anterior de 0.06 era demasiado
-     sutil y las cards desaparecían sobre el fondo). */
-  --card: oklch(0.26 0.03 350);
+  /* Card: +0.06 L sobre background. Suficiente para destacar como
+     superficie elevada sin perder la calidez del plum. */
+  --card: oklch(0.22 0.022 350);
   --card-foreground: oklch(0.97 0.01 70);
-  --popover: oklch(0.26 0.03 350);
+  /* Popover: +0.04 L sobre card. Los popovers SIEMPRE flotan visualmente
+     por encima de las cards; tener su propio token diferenciado evita el
+     bug visual de "popover plano sobre card" del diseño anterior. */
+  --popover: oklch(0.26 0.025 350);
   --popover-foreground: oklch(0.97 0.01 70);
 
-  /* Primary en dark: cremoso suave (no blanco puro) para que los CTAs
-     mantengan calidez y el foreground oscuro contraste bien. */
-  --primary: oklch(0.93 0.025 60);
-  --primary-foreground: oklch(0.22 0.04 350);
+  /* Primary: plum claro y saturado. Recupera la identidad de marca en
+     dark (el anterior era crema casi blanco, lo que rompía la jerarquía
+     cromática). Hue 350 = mismo plum que en light, L 0.62 lo hace claro
+     para destacar sobre dark sin saturar la vista. */
+  --primary: oklch(0.62 0.13 350);
+  --primary-foreground: oklch(0.97 0.01 70);
 
-  --secondary: oklch(0.3 0.04 350);
+  /* Secondary y muted ahora forman dos escalones distintos sobre card,
+     no se solapan como antes. */
+  --secondary: oklch(0.30 0.03 350);
   --secondary-foreground: oklch(0.97 0.01 70);
-  /* Subido de 0.28 a 0.33 para que las superficies `muted` (tab bars,
-     fondos sutiles) destaquen claramente sobre card (0.26) y background
-     (0.18). Antes muted (0.28) quedaba indistinguible de card (0.24). */
-  --muted: oklch(0.33 0.03 350);
-  --muted-foreground: oklch(0.74 0.02 30);
+  --muted: oklch(0.28 0.025 350);
+  --muted-foreground: oklch(0.78 0.02 30);
 
-  /* Accent: rosa apagado para hovers sutiles en dark. */
-  --accent: oklch(0.32 0.06 10);
+  /* Accent: rosa apagado con un punto más de saturación para que los
+     hovers sutiles sean visibles sobre dark. */
+  --accent: oklch(0.32 0.08 10);
   --accent-foreground: oklch(0.97 0.01 70);
 
-  --destructive: oklch(0.7 0.19 25);
-  /* Subido de 10% a 14% para que los bordes sean perceptibles sobre las
-     cards más claras (0.26). Por debajo del 12% se difuminaban hasta
-     desaparecer y las cards perdían definición. */
-  --border: oklch(1 0 0 / 14%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.6 0.08 350);
+  --destructive: oklch(0.72 0.21 25);
+  /* Bordes: 12% es el punto dulce. Visible sobre card (L0.22) sin
+     resultar agresivo en superficies más claras como popover (L0.26). */
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 10%);
+  /* Ring: plum CLARO y saturado. El anterior (L0.6) era casi invisible
+     sobre card. Ahora L0.78 con chroma alto se ve nítido sobre cualquier
+     superficie dark — focus accesible. */
+  --ring: oklch(0.78 0.13 350);
 
-  /* Gráficos en dark: misma paleta pastel pero ligeramente más saturada
-     para mantener legibilidad sobre fondo oscuro. */
-  --chart-1: oklch(0.72 0.12 10);
-  --chart-2: oklch(0.72 0.11 230);
-  --chart-3: oklch(0.76 0.11 60);
-  --chart-4: oklch(0.76 0.1 140);
-  --chart-5: oklch(0.72 0.11 310);
+  /* Gráficos en dark: chroma elevado para mantener viveza sobre fondo
+     oscuro. Lightness ~0.74 = mismo tono visual que en light. */
+  --chart-1: oklch(0.74 0.13 10);
+  --chart-2: oklch(0.74 0.12 230);
+  --chart-3: oklch(0.78 0.12 60);
+  --chart-4: oklch(0.78 0.11 140);
+  --chart-5: oklch(0.74 0.12 310);
 
-  --brand-rose: oklch(0.82 0.12 12);
-  --brand-rose-soft: oklch(0.36 0.07 10);
-  --brand-sky: oklch(0.8 0.1 230);
-  --brand-sky-soft: oklch(0.34 0.06 230);
-  --brand-peach: oklch(0.85 0.12 55);
-  --brand-peach-soft: oklch(0.38 0.07 50);
-  --brand-sage: oklch(0.8 0.08 145);
-  --brand-sage-soft: oklch(0.34 0.06 145);
-  --brand-butter: oklch(0.88 0.1 90);
-  --brand-butter-soft: oklch(0.36 0.07 90);
-  --brand-lilac: oklch(0.82 0.1 300);
-  --brand-lilac-soft: oklch(0.36 0.07 300);
+  /* Brand pastels — rediseñados para dark:
+     - El `*-soft` es el fondo oscuro tintado (L0.30-0.32, chroma 0.06-0.07).
+       Diferencia ΔL ≈ 0.08-0.10 sobre card (0.22): claramente visible.
+     - El `*` es el texto/icono claro y saturado (L0.83-0.90, chroma 0.10-0.13).
+     - Cada par cumple AA 4.5:1; la mayoría llega a AAA 7:1. */
+  --brand-rose: oklch(0.85 0.13 12);
+  --brand-rose-soft: oklch(0.30 0.07 12);
+  --brand-sky: oklch(0.85 0.10 230);
+  --brand-sky-soft: oklch(0.30 0.06 230);
+  --brand-peach: oklch(0.88 0.12 55);
+  --brand-peach-soft: oklch(0.32 0.07 50);
+  --brand-sage: oklch(0.83 0.10 145);
+  --brand-sage-soft: oklch(0.30 0.06 145);
+  --brand-butter: oklch(0.90 0.11 90);
+  --brand-butter-soft: oklch(0.32 0.07 90);
+  --brand-lilac: oklch(0.85 0.11 300);
+  --brand-lilac-soft: oklch(0.30 0.07 300);
 
-  /* Sidebar alineado con los nuevos valores de card/border para mantener
-     coherencia visual entre todas las superficies elevadas en dark. */
-  --sidebar: oklch(0.26 0.03 350);
+  /* Sidebar alineado con los nuevos valores: usa popover como superficie
+     (los sidebars son superficies elevadas, no cards inline). */
+  --sidebar: oklch(0.26 0.025 350);
   --sidebar-foreground: oklch(0.97 0.01 70);
-  --sidebar-primary: oklch(0.93 0.025 60);
-  --sidebar-primary-foreground: oklch(0.22 0.04 350);
-  --sidebar-accent: oklch(0.32 0.06 10);
+  --sidebar-primary: oklch(0.62 0.13 350);
+  --sidebar-primary-foreground: oklch(0.97 0.01 70);
+  --sidebar-accent: oklch(0.32 0.08 10);
   --sidebar-accent-foreground: oklch(0.97 0.01 70);
-  --sidebar-border: oklch(1 0 0 / 14%);
-  --sidebar-ring: oklch(0.6 0.08 350);
+  --sidebar-border: oklch(1 0 0 / 12%);
+  --sidebar-ring: oklch(0.78 0.13 350);
 }
 
 @layer base {
@@ -254,8 +276,10 @@
   background-color: var(--card);
 }
 .leaflet-popup.beauly-map-popup .leaflet-popup-close-button {
-  /* Botón de cierre flotante sobre la foto: círculo translúcido
-     para que sea visible tanto sobre imágenes claras como oscuras. */
+  /* Botón de cierre flotante sobre la foto. Antes era blanco hardcoded
+     (rgba 255,255,255,0.9), lo que generaba un círculo blanco brillante
+     incoherente sobre dark. Ahora usa --card con borde semántico para
+     respetar el tema activo. */
   top: 6px;
   right: 6px;
   width: 22px;
@@ -263,9 +287,11 @@
   line-height: 18px;
   text-align: center;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.9);
-  color: var(--muted-foreground);
+  background: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
   font-size: 16px;
   padding: 0;
   z-index: 2;
+  opacity: 0.95;
 }
