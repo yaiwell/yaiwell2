@@ -19,8 +19,11 @@ export const searchAutocompleteStyles = {
     'absolute right-2 flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
 
   // Dropdown
+  // Sombra/ring usan opacidad sobre negro porque actúan como elevación
+  // foto-agnóstica (depth shadow), no como color de tema. En dark el
+  // contraste se mantiene gracias al borde border y al fondo bg-card.
   listbox:
-    'absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 max-h-80 overflow-y-auto rounded-2xl border border-border bg-card shadow-2xl shadow-black/10 ring-1 ring-black/5',
+    'absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 max-h-80 overflow-y-auto rounded-2xl border border-border bg-popover text-popover-foreground shadow-2xl shadow-black/10 ring-1 ring-black/5',
   listboxInner: 'flex flex-col py-2',
   emptyRow: 'px-4 py-3 text-sm text-muted-foreground',
 

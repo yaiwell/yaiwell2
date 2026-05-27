@@ -16,7 +16,7 @@ export const providerCardStyles = {
   image: 'h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]',
   badgeOverlay: 'absolute left-3 top-3',
   priceTag:
-    'absolute right-3 top-3 inline-flex items-center rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-foreground backdrop-blur',
+    'absolute right-3 top-3 inline-flex items-center rounded-full bg-card/90 px-2.5 py-1 text-xs font-medium text-foreground backdrop-blur',
   body: 'flex flex-col gap-3 p-5',
   headerRow: 'flex items-start justify-between gap-3',
   name: 'font-display text-lg leading-tight text-foreground',
@@ -24,7 +24,9 @@ export const providerCardStyles = {
   address: 'text-sm leading-snug text-muted-foreground',
   metaRow: 'flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-foreground/80',
   rating: 'inline-flex items-center gap-1 font-medium',
-  ratingStar: 'size-3.5 fill-amber-400 stroke-amber-400',
+  // Estrella de rating: brand-butter para mantener calor visual y coherencia
+  // con la paleta. En dark mode brand-butter se aclara y sigue legible.
+  ratingStar: 'size-3.5 fill-brand-butter stroke-brand-butter',
   reviews: 'text-muted-foreground',
   separator: 'text-border',
   distance: 'text-muted-foreground',

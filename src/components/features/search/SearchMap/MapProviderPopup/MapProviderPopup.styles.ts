@@ -17,12 +17,15 @@ export const mapProviderPopupStyles = {
   photoWrapper: 'relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-muted',
   photo: 'h-full w-full object-cover',
   photoFallback: 'h-full w-full bg-gradient-to-br from-muted to-secondary',
-  // Overlay sutil para mejorar legibilidad de los chips flotantes.
+  // Overlay sutil para mejorar legibilidad de los chips flotantes. Mantenemos
+  // negro/transparente puro por ser un gradiente de oscurecimiento foto-agnóstico
+  // (no es color de tema, sino una sombra para garantizar contraste sobre cualquier
+  // imagen). Funciona igual en light y dark mode.
   photoOverlay:
     'pointer-events-none absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-black/10',
   badgeOverlay: 'absolute left-2 top-2 z-[1]',
   priceChip:
-    'absolute right-2 top-2 z-[1] inline-flex items-center rounded-full bg-white/85 px-2.5 py-1 text-xs font-semibold text-foreground shadow-sm backdrop-blur',
+    'absolute right-2 top-2 z-[1] inline-flex items-center rounded-full bg-card/85 px-2.5 py-1 text-xs font-semibold text-foreground shadow-sm backdrop-blur',
 
   // Cuerpo de información.
   body: 'flex flex-col gap-1 p-3',
@@ -32,7 +35,9 @@ export const mapProviderPopupStyles = {
 
   // Meta (rating, reseñas, distancia).
   metaRow: 'mt-1 flex items-center gap-1.5 text-xs text-foreground/80',
-  rating: 'inline-flex items-center gap-1 text-amber-600 font-medium',
+  // Rating en brand-butter para mantener calor visual y coherencia con la
+  // estrella del ProviderCard. En dark se aclara automáticamente.
+  rating: 'inline-flex items-center gap-1 text-brand-butter font-medium',
   separator: 'text-muted-foreground/60',
   reviews: 'text-muted-foreground',
   distance: 'text-muted-foreground',
