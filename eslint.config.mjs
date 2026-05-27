@@ -55,12 +55,15 @@ const eslintConfig = defineConfig([
   // Sobrescribe los ignores por defecto de eslint-config-next.
   globalIgnores([
     '.next/**',
+    '.claude/**',
     'out/**',
     'build/**',
     'dist/**',
     'coverage/**',
     'next-env.d.ts',
     'node_modules/**',
+    'playwright-report/**',
+    'test-results/**',
   ]),
 ]);
 
