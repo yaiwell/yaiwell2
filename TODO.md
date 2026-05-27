@@ -81,12 +81,13 @@
 
 ### Bloque G — Pulido final del esqueleto
 
-- [ ] Microinteracciones (transitions, hovers, loading states).
-- [ ] Modo oscuro funcional.
-- [ ] Responsive perfecto en 375px / 768px / 1024px / 1440px.
-- [ ] SEO básico (meta tags, OG image, sitemap).
+- [x] Microinteracciones (transitions, hovers, loading states).
+- [x] Modo oscuro funcional.
+- [x] Responsive perfecto en 375px / 768px / 1024px / 1440px (audit `docs/audit-2026-05-27.md`).
+- [x] SEO básico (meta tags, OG image, sitemap).
+- [x] Verificar que todo el texto está en es/ca (audit + 🔴 hardcoded labels arreglados).
+- [ ] Aplicar 🟠 y 🟡 restantes del audit (`docs/audit-2026-05-27.md`).
 - [ ] Verificar Lighthouse: Performance > 90, Accessibility > 95.
-- [ ] Verificar que todo el texto está en es/ca (cambio de idioma funciona).
 - [ ] Deploy final en Vercel con dominio definitivo.
 - [ ] Captura de pantallas para la presentación a la cliente.
 
@@ -154,5 +155,5 @@
 
 ---
 
-*Última actualización: 2026-05-27.*
+*Última actualización: 2026-05-27 (ronda 3 G + fixes 🔴 audit).*
 

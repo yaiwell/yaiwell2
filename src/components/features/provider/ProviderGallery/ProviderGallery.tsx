@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef } from 'react';
 
 import { cn } from '@/lib/utils';
@@ -29,6 +30,7 @@ import type { ProviderGalleryProps } from './ProviderGallery.types';
  */
 export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
   const { activeIndex, goTo, goNext, goPrev, onKeyDown } = useProviderGallery(photos.length);
+  const t = useTranslations('providerGallery');
 
   // Referencia al track móvil para sincronizar el scroll cuando el
   // usuario cambia de foto mediante dots, botones o teclado.
@@ -53,7 +55,7 @@ export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
     <section
       data-component="provider-gallery"
       role="region"
-      aria-label="Galería de fotos"
+      aria-label={t('galleryLabel')}
       className={s.root}
       tabIndex={0}
       onKeyDown={onKeyDown}
@@ -87,7 +89,7 @@ export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
               type="button"
               onClick={goPrev}
               className={s.prevBtn}
-              aria-label="Foto anterior"
+              aria-label={t('prev')}
               data-component="provider-gallery-prev"
             >
               <ChevronLeft className={s.navIcon} aria-hidden />
@@ -96,7 +98,7 @@ export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
               type="button"
               onClick={goNext}
               className={s.nextBtn}
-              aria-label="Foto siguiente"
+              aria-label={t('next')}
               data-component="provider-gallery-next"
             >
               <ChevronRight className={s.navIcon} aria-hidden />
@@ -111,7 +113,7 @@ export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
                     type="button"
                     onClick={() => goTo(index)}
                     className={cn(s.dot, isActive && s.dotActive)}
-                    aria-label={`Ir a la foto ${index + 1}`}
+                    aria-label={t('goToPhoto', { index: index + 1 })}
                     aria-current={isActive ? 'true' : undefined}
                     data-component={`provider-gallery-thumb-${index}`}
                   />
@@ -153,7 +155,7 @@ export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
                     type="button"
                     onClick={() => goTo(index)}
                     className={cn(s.thumbWrapper, s.thumbHoverable, isActive && s.thumbActive)}
-                    aria-label={`Ver foto ${index + 1}`}
+                    aria-label={t('viewPhoto', { index: index + 1 })}
                     aria-current={isActive ? 'true' : undefined}
                     data-component={`provider-gallery-thumb-${index}`}
                   >

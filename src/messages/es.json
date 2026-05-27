@@ -25,7 +25,20 @@
     "forProviders": "Para profesionales",
     "signIn": "Entrar",
     "signUp": "Registrarse",
-    "openMenu": "Abrir menú"
+    "openMenu": "Abrir menú",
+    "skipToContent": "Saltar al contenido",
+    "primaryNavLabel": "Navegación principal",
+    "bottomNavLabel": "Navegación inferior"
+  },
+  "langSwitcher": {
+    "groupLabel": "Idioma"
+  },
+  "providerGallery": {
+    "galleryLabel": "Galería de fotos",
+    "prev": "Foto anterior",
+    "next": "Foto siguiente",
+    "goToPhoto": "Ir a la foto {index}",
+    "viewPhoto": "Ver foto {index}"
   },
   "footer": {
     "tagline": "Belleza, bienestar y deporte con disponibilidad inmediata.",
@@ -198,7 +211,8 @@
     "header": {
       "typeAutonomous": "Autónomo",
       "typeCenter": "Centro",
-      "reviewsLabel": "{count, plural, one {# valoración} other {# valoraciones}}"
+      "reviewsLabel": "{count, plural, one {# valoración} other {# valoraciones}}",
+      "ratingGroupLabel": "Valoración"
     },
     "tabs": {
       "services": "Servicios",
@@ -260,7 +274,9 @@
       "settings": "Centro",
       "reviews": "Valoraciones",
       "addService": "Añadir servicio",
-      "providerLabel": "Centro activo"
+      "providerLabel": "Centro activo",
+      "sidebarNavLabel": "Navegación del panel",
+      "bottomNavLabel": "Accesos rápidos del panel"
     },
     "dashboard": {
       "title": "Resumen semanal",

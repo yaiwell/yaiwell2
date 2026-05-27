@@ -50,7 +50,11 @@ export function Header() {
         </Link>
 
         {/* Navegación central (solo desktop). */}
-        <nav className={s.desktopNav} aria-label={tNav('home')} data-component="header-nav">
+        <nav
+          className={s.desktopNav}
+          aria-label={tNav('primaryNavLabel')}
+          data-component="header-nav"
+        >
           {navItems.map((item) => (
             <Link
               key={item.href}

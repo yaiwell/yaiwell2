@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import { cn } from '@/lib/utils';
 
 import { useLangSwitcher } from './LangSwitcher.logic';
@@ -15,9 +17,15 @@ import type { LangSwitcherProps } from './LangSwitcher.types';
  */
 export function LangSwitcher({ compact = false }: LangSwitcherProps) {
   const { locales, currentLocale, changeLocale, isPending } = useLangSwitcher();
+  const t = useTranslations('langSwitcher');
 
   return (
-    <div className={s.root} role="group" aria-label="Language" data-component="lang-switcher">
+    <div
+      className={s.root}
+      role="group"
+      aria-label={t('groupLabel')}
+      data-component="lang-switcher"
+    >
       {locales.map((locale) => {
         const isActive = locale === currentLocale;
         // En modo compacto solo dejamos visible el activo y el primer

@@ -89,7 +89,7 @@ export function ProviderHeader({ provider }: ProviderHeaderProps) {
           <div
             className={s.ratingRow}
             role="group"
-            aria-label="Valoración"
+            aria-label={t('ratingGroupLabel')}
             data-component="provider-header-rating"
           >
             <span className={s.rating}>

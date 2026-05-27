@@ -41,7 +41,7 @@ export function PanelLayout({ children, providerName }: PanelLayoutProps) {
           <h2 className={s.sidebarTitle}>{tNav('title')}</h2>
           <p className={s.sidebarProvider}>{providerName}</p>
         </div>
-        <nav className={s.sidebarNav} aria-label={tNav('title')}>
+        <nav className={s.sidebarNav} aria-label={tNav('sidebarNavLabel')}>
           {navItems.map((item) => (
             <PanelLayoutLink key={item.href} item={item} label={tNav(item.labelKey)} />
           ))}
@@ -52,7 +52,11 @@ export function PanelLayout({ children, providerName }: PanelLayoutProps) {
         {children}
       </section>
 
-      <nav className={s.bottomNav} aria-label={tNav('title')} data-component="panel-bottom-nav">
+      <nav
+        className={s.bottomNav}
+        aria-label={tNav('bottomNavLabel')}
+        data-component="panel-bottom-nav"
+      >
         {navItems.map((item) => (
           <PanelBottomNavLink key={item.href} item={item} label={tNav(item.labelKey)} />
         ))}

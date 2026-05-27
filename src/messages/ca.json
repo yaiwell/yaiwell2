@@ -25,7 +25,20 @@
     "forProviders": "Per a professionals",
     "signIn": "Entrar",
     "signUp": "Registra't",
-    "openMenu": "Obrir menú"
+    "openMenu": "Obrir menú",
+    "skipToContent": "Salta al contingut",
+    "primaryNavLabel": "Navegació principal",
+    "bottomNavLabel": "Navegació inferior"
+  },
+  "langSwitcher": {
+    "groupLabel": "Idioma"
+  },
+  "providerGallery": {
+    "galleryLabel": "Galeria de fotos",
+    "prev": "Foto anterior",
+    "next": "Foto següent",
+    "goToPhoto": "Ves a la foto {index}",
+    "viewPhoto": "Veure foto {index}"
   },
   "footer": {
     "tagline": "Bellesa, benestar i esport amb disponibilitat immediata.",
@@ -198,7 +211,8 @@
     "header": {
       "typeAutonomous": "Autònom",
       "typeCenter": "Centre",
-      "reviewsLabel": "{count, plural, one {# valoració} other {# valoracions}}"
+      "reviewsLabel": "{count, plural, one {# valoració} other {# valoracions}}",
+      "ratingGroupLabel": "Valoració"
     },
     "tabs": {
       "services": "Serveis",
@@ -260,7 +274,9 @@
       "settings": "Centre",
       "reviews": "Valoracions",
       "addService": "Afegir servei",
-      "providerLabel": "Centre actiu"
+      "providerLabel": "Centre actiu",
+      "sidebarNavLabel": "Navegació del panell",
+      "bottomNavLabel": "Accessos ràpids del panell"
     },
     "dashboard": {
       "title": "Resum setmanal",

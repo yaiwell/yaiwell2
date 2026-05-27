@@ -8,6 +8,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { Footer, Header, MobileNav } from '@/components/shared';
 import { ThemeProvider } from '@/components/shared/ThemeToggle';
+import { SkipToContent } from '@/components/shared/SkipToContent';
 import { isThemePreference, THEME_COOKIE_NAME, type ThemePreference } from '@/lib/utils/theme';
 
 import '../globals.css';
@@ -201,11 +202,18 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
       <body className="flex min-h-full flex-col">
         <NextIntlClientProvider>
           <ThemeProvider initialPreference={initialThemePreference}>
+            {/* Skip link para usuarios de teclado y lectores de pantalla:
+                solo es visible al recibir foco y permite saltar la
+                navegación cabecera para ir directo al contenido. */}
+            <SkipToContent />
             <Header />
             {/* El padding inferior en mobile reserva espacio para el bottom
                 tab bar (MobileNav). En desktop el tab bar se oculta y no
-                hace falta el padding extra. */}
-            <main className="flex flex-1 flex-col pb-20 md:pb-0">{children}</main>
+                hace falta el padding extra. El `id="main"` es el destino
+                del skip link. */}
+            <main id="main" className="flex flex-1 flex-col pb-20 md:pb-0">
+              {children}
+            </main>
             <Footer />
             <MobileNav />
           </ThemeProvider>
