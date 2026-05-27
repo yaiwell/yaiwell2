@@ -23,10 +23,12 @@ export const bookingCardStyles = {
   actions: 'flex flex-wrap items-center gap-2',
   statusBase:
     'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset',
-  statusPending: 'bg-amber-50 text-amber-800 ring-amber-200',
-  statusConfirmed: 'bg-emerald-50 text-emerald-800 ring-emerald-200',
-  statusCompleted: 'bg-stone-100 text-stone-700 ring-stone-200',
-  statusCancelled: 'bg-rose-50 text-rose-700 ring-rose-200',
-  statusRefunded: 'bg-sky-50 text-sky-700 ring-sky-200',
+  // Badges de estado usando los pasteles de marca para que sigan teniendo
+  // semántica de color en modo oscuro sin perder contraste.
+  statusPending: 'bg-brand-butter-soft text-brand-butter ring-brand-butter/30',
+  statusConfirmed: 'bg-brand-sage-soft text-brand-sage ring-brand-sage/30',
+  statusCompleted: 'bg-brand-sky-soft text-brand-sky ring-brand-sky/30',
+  statusCancelled: 'bg-destructive/15 text-destructive ring-destructive/30',
+  statusRefunded: 'bg-muted text-muted-foreground ring-border',
   blockedHint: 'text-xs text-muted-foreground',
 } as const;

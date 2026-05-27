@@ -8,8 +8,10 @@ export const bookingConfirmationStyles = {
   root: 'flex flex-col items-center gap-6 text-center',
 
   // Tick verde dentro de un círculo grande.
+  // Usa el token de marca `brand-sage` para mantener coherencia cromática
+  // en claro y oscuro (los soft están definidos en globals.css por modo).
   iconCircle:
-    'flex size-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300',
+    'flex size-16 items-center justify-center rounded-full bg-brand-sage-soft text-brand-sage',
   icon: 'size-9',
 
   // Bloque de título + subtítulo.
