@@ -1,0 +1,1 @@
+export { ForProvidersFAQ } from './ForProvidersFAQ';
