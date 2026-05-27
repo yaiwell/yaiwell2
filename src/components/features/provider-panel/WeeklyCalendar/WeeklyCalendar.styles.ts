@@ -51,9 +51,9 @@ export const weeklyCalendarStyles = {
  */
 export const bookingBlockByStatus: BookingStatusClassMap = {
   confirmed: 'border-primary/30 bg-primary/10 text-foreground',
-  pending: 'border-amber-300/60 bg-amber-100 text-amber-900',
-  completed: 'border-emerald-300/60 bg-emerald-100 text-emerald-900',
-  cancelled: 'border-rose-300/60 bg-rose-100 text-rose-900 line-through opacity-70',
+  pending: 'border-brand-butter/40 bg-brand-butter-soft text-brand-butter',
+  completed: 'border-brand-sage/40 bg-brand-sage-soft text-brand-sage',
+  cancelled: 'border-destructive/30 bg-destructive/15 text-destructive line-through opacity-70',
 } as const;
 
 /**
@@ -62,7 +62,7 @@ export const bookingBlockByStatus: BookingStatusClassMap = {
  */
 export const legendDotByStatus: BookingStatusClassMap = {
   confirmed: 'bg-primary',
-  pending: 'bg-amber-500',
-  completed: 'bg-emerald-500',
-  cancelled: 'bg-rose-500',
+  pending: 'bg-brand-butter',
+  completed: 'bg-brand-sage',
+  cancelled: 'bg-destructive',
 } as const;

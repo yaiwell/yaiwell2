@@ -24,9 +24,9 @@ export const servicesListStyles = {
   cardCategoryChip:
     'inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground/80',
   cardStatusActive:
-    'inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700',
+    'inline-flex items-center rounded-full bg-brand-sage-soft px-2 py-0.5 text-xs font-medium text-brand-sage',
   cardStatusPaused:
-    'inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800',
+    'inline-flex items-center rounded-full bg-brand-butter-soft px-2 py-0.5 text-xs font-medium text-brand-butter',
   cardDescription: 'text-sm leading-relaxed text-muted-foreground',
   cardMeta: 'flex flex-wrap items-center gap-3 text-xs text-muted-foreground',
   cardMetaIcon: 'size-3.5',

@@ -30,7 +30,7 @@ export const receivedReviewsStyles = {
   cardAuthor: 'flex items-center gap-2 text-sm font-semibold text-foreground',
   cardMeta: 'text-xs text-muted-foreground',
   starsRow: 'flex items-center gap-0.5',
-  starFilled: 'size-4 fill-amber-400 stroke-amber-400',
+  starFilled: 'size-4 fill-brand-butter stroke-brand-butter',
   starEmpty: 'size-4 fill-transparent stroke-border',
 
   cardServiceTag:
@@ -41,8 +41,8 @@ export const receivedReviewsStyles = {
   responseTitle: 'text-xs font-semibold uppercase tracking-wide text-muted-foreground',
   responseText: 'mt-1 text-sm text-foreground/80',
   pendingBadge:
-    'inline-flex w-fit items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800',
+    'inline-flex w-fit items-center gap-1 rounded-full bg-brand-butter-soft px-2 py-0.5 text-xs font-medium text-brand-butter',
   respondedBadge:
-    'inline-flex w-fit items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700',
+    'inline-flex w-fit items-center gap-1 rounded-full bg-brand-sage-soft px-2 py-0.5 text-xs font-medium text-brand-sage',
   cardActions: 'flex items-center justify-end',
 } as const;

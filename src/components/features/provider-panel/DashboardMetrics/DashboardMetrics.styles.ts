@@ -19,9 +19,9 @@ export const dashboardMetricsStyles = {
   kpiLabel: 'text-sm text-muted-foreground',
   kpiValue: 'font-display text-2xl text-foreground',
   kpiDeltaPositive:
-    'inline-flex w-fit items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700',
+    'inline-flex w-fit items-center gap-1 rounded-full bg-brand-sage-soft px-2 py-0.5 text-xs font-medium text-brand-sage',
   kpiDeltaNegative:
-    'inline-flex w-fit items-center gap-1 rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-700',
+    'inline-flex w-fit items-center gap-1 rounded-full bg-destructive/15 px-2 py-0.5 text-xs font-medium text-destructive',
   kpiDeltaHint: 'text-[11px] text-muted-foreground',
 
   splitGrid: 'grid grid-cols-1 gap-4 lg:grid-cols-2',
