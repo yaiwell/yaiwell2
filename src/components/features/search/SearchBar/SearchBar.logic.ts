@@ -6,10 +6,11 @@ import { useCallback, useState } from 'react';
  * Hook de estado local del SearchBar.
  *
  * El input mantiene su propio valor (UX responsive: la tecla aparece
- * al instante) y solo emite hacia arriba al confirmar (Enter o botón
- * "limpiar"). El padre actualiza la URL con ese valor; cuando la URL
- * cambia, sincronizamos el input siguiendo el patrón recomendado por
- * React 19 ("derived state durante el render", no en `useEffect`).
+ * al instante) y solo emite hacia arriba al confirmar (Enter, click
+ * sobre una sugerencia o botón "limpiar"). El padre actualiza la URL
+ * con ese valor; cuando la URL cambia, sincronizamos el input siguiendo
+ * el patrón recomendado por React 19 ("derived state durante el render",
+ * no en `useEffect`).
  *
  * Patrón:
  *   - Guardamos el último `initialValue` que hemos visto en `prev`.
@@ -28,22 +29,15 @@ export function useSearchBar(initialValue: string, onSubmit: (value: string) => 
   }
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      onSubmit(value.trim());
+    (submittedValue: string) => {
+      onSubmit(submittedValue.trim());
     },
-    [onSubmit, value],
+    [onSubmit],
   );
-
-  const handleClear = useCallback(() => {
-    setValue('');
-    onSubmit('');
-  }, [onSubmit]);
 
   return {
     value,
     setValue,
     handleSubmit,
-    handleClear,
   };
 }

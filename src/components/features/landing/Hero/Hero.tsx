@@ -1,8 +1,9 @@
 'use client';
 
 import { CalendarClock, ChevronDown, MapPin, Search, Tags } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
+import { SearchAutocomplete } from '@/components/features/search/SearchAutocomplete';
 import {
   Select,
   SelectContent,
@@ -57,7 +58,9 @@ const categoryOptions: HeroCategorySlug[] = [
 export function Hero() {
   const t = useTranslations('home.hero');
   const tCats = useTranslations('home.categories');
-  const { draft, setCategory, setLocation, setWhenNow, handleSubmit } = useHeroSearch();
+  const locale = useLocale() as 'es' | 'ca';
+  const { draft, setCategory, setLocation, setWhenNow, handleSubmit, handleSelectSuggestion } =
+    useHeroSearch();
 
   return (
     <section className={s.root} data-component="hero">
@@ -117,23 +120,31 @@ export function Hero() {
 
             <span className={s.fieldDivider} aria-hidden="true" />
 
-            {/* Localización (texto libre por ahora; el geocoder llega luego) */}
-            <label className={s.field} data-component="hero-search-location">
+            {/* Localización: el input plano se sustituye por el autocomplete
+                del buscador. Lo renderizamos sin form interno (renderAsForm=false)
+                para no anidar formularios dentro del de Hero. La selección de
+                una sugerencia navega directamente vía `handleSelectSuggestion`. */}
+            <div className={s.field} data-component="hero-search-location">
               <span className={s.fieldIcon} aria-hidden="true">
                 <MapPin className="size-4" />
               </span>
               <span className={s.fieldBody}>
                 <span className={s.fieldLabel}>{t('searchBar.location')}</span>
-                <input
-                  type="text"
+                <SearchAutocomplete
                   value={draft.location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  onValueChange={setLocation}
+                  onSubmit={(value) => {
+                    setLocation(value);
+                  }}
+                  onSelectSuggestion={handleSelectSuggestion}
+                  locale={locale}
                   placeholder={t('searchBar.location')}
-                  className={s.fieldControl}
-                  autoComplete="off"
+                  inputAriaLabel={t('searchBar.location')}
+                  renderAsForm={false}
+                  inputClassName={s.fieldControl}
                 />
               </span>
-            </label>
+            </div>
 
             <span className={s.fieldDivider} aria-hidden="true" />
 

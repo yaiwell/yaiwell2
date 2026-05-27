@@ -157,6 +157,28 @@
     },
     "resultsCount": "{count, plural, one {# resultat} other {# resultats}}"
   },
+  "searchAutocomplete": {
+    "placeholder": "Cerca un servei, centre o tractament...",
+    "inputLabel": "Cercar",
+    "clear": "Netejar cerca",
+    "suggestionsLabel": "Suggeriments de cerca",
+    "type": {
+      "category": "Categoria",
+      "service": "Servei",
+      "provider": "Centre"
+    }
+  },
+  "searchFilters": {
+    "chips": {
+      "groupLabel": "Filtres actius",
+      "queryLabel": "Text: {value}",
+      "availabilityLabel": "Disponibles ara",
+      "priceLabel": "Preu {value}",
+      "ratingLabel": "{value}+ estrelles",
+      "clearAll": "Netejar tot",
+      "removeAria": "Treure filtre {label}"
+    }
+  },
   "providerDetail": {
     "breadcrumb": {
       "home": "Inici",
@@ -216,6 +238,397 @@
       "title": "Centre no trobat",
       "subtitle": "És possible que ja no estigui disponible o que l'enllaç sigui incorrecte.",
       "backToSearch": "Tornar a la cerca"
+    }
+  },
+  "providerPanel": {
+    "nav": {
+      "title": "Panell del centre",
+      "dashboard": "Resum",
+      "calendar": "Calendari",
+      "services": "Serveis",
+      "settings": "Centre",
+      "reviews": "Valoracions",
+      "addService": "Afegir servei",
+      "providerLabel": "Centre actiu"
+    },
+    "dashboard": {
+      "title": "Resum setmanal",
+      "subtitle": "Com va la teva setmana d'un cop d'ull.",
+      "metrics": {
+        "weekRevenue": "Ingressos setmana",
+        "weekBookings": "Reserves setmana",
+        "averageTicket": "Tiquet mitjà",
+        "occupancy": "Ocupació",
+        "vsLastWeek": "vs. setmana anterior"
+      },
+      "chart": {
+        "title": "Ingressos per dia",
+        "subtitle": "Comparativa dels darrers 7 dies.",
+        "dayShort": {
+          "mon": "Dl",
+          "tue": "Dt",
+          "wed": "Dc",
+          "thu": "Dj",
+          "fri": "Dv",
+          "sat": "Ds",
+          "sun": "Dg"
+        },
+        "barAriaLabel": "{day}: {revenue}, {count, plural, one {# reserva} other {# reserves}}"
+      },
+      "topServices": {
+        "title": "Serveis més reservats",
+        "subtitle": "Top 4 per nombre de reserves aquesta setmana.",
+        "bookings": "{count, plural, one {# reserva} other {# reserves}}"
+      }
+    },
+    "calendar": {
+      "title": "Calendari setmanal",
+      "subtitle": "Les teves reserves dels propers 7 dies.",
+      "weekdays": {
+        "mon": "Dilluns",
+        "tue": "Dimarts",
+        "wed": "Dimecres",
+        "thu": "Dijous",
+        "fri": "Divendres",
+        "sat": "Dissabte",
+        "sun": "Diumenge"
+      },
+      "weekdayShort": {
+        "mon": "Dl",
+        "tue": "Dt",
+        "wed": "Dc",
+        "thu": "Dj",
+        "fri": "Dv",
+        "sat": "Ds",
+        "sun": "Dg"
+      },
+      "status": {
+        "confirmed": "Confirmada",
+        "pending": "Pendent",
+        "completed": "Completada",
+        "cancelled": "Cancel·lada"
+      },
+      "legend": "Llegenda",
+      "emptyDay": "Sense reserves",
+      "bookingAriaLabel": "{service} amb {client} a les {time}",
+      "summary": "{count, plural, one {# reserva aquesta setmana} other {# reserves aquesta setmana}}"
+    },
+    "services": {
+      "title": "Serveis oferts",
+      "subtitle": "Gestiona la teva carta visible al client.",
+      "addCta": "Afegir servei",
+      "status": {
+        "active": "Actiu",
+        "paused": "Pausat"
+      },
+      "duration": "{minutes} min",
+      "bookings30d": "{count} reserves / 30d",
+      "edit": "Editar",
+      "pause": "Pausar",
+      "resume": "Reactivar",
+      "empty": "Encara no has publicat cap servei."
+    },
+    "addService": {
+      "title": "Afegir servei",
+      "subtitle": "Defineix un nou servei per a la teva carta.",
+      "back": "Tornar al llistat",
+      "categoryStep": {
+        "title": "Classificació",
+        "subtitle": "Tria a quina categoria pertany el servei.",
+        "rootLabel": "Categoria",
+        "rootPlaceholder": "Selecciona una categoria",
+        "typeLabel": "Tipus",
+        "typePlaceholder": "Selecciona un tipus",
+        "subtypeLabel": "Subtipus",
+        "subtypePlaceholder": "Selecciona un subtipus",
+        "hintAfterRoot": "Tria primer la categoria per veure els tipus disponibles.",
+        "hintAfterType": "Tria un tipus per veure els subtipus disponibles."
+      },
+      "detailsStep": {
+        "title": "Dades del servei",
+        "subtitle": "Informació que veurà el client en reservar.",
+        "nameLabel": "Nom del servei",
+        "namePlaceholder": "Ex. Tall dona amb rentat",
+        "descriptionLabel": "Descripció",
+        "descriptionPlaceholder": "Explica què inclou, materials, professionals assignats, etc.",
+        "durationLabel": "Durada (minuts)",
+        "priceLabel": "Preu (€)"
+      },
+      "submit": "Publicar servei",
+      "cancel": "Cancel·lar",
+      "mockNotice": "Aquest formulari encara no desa res. La publicació real arribarà amb el backend de serveis."
+    },
+    "settings": {
+      "title": "Configuració del centre",
+      "subtitle": "Dades públiques i operatives del teu negoci.",
+      "general": {
+        "title": "Dades generals",
+        "businessNameLabel": "Nom comercial",
+        "vatLabel": "NIF / CIF",
+        "phoneLabel": "Telèfon de contacte",
+        "emailLabel": "Email de contacte",
+        "descriptionLabel": "Descripció pública"
+      },
+      "address": {
+        "title": "Adreça",
+        "streetLabel": "Carrer i número",
+        "cityLabel": "Ciutat",
+        "postalLabel": "Codi postal"
+      },
+      "schedule": {
+        "title": "Horari",
+        "subtitle": "Horari d'obertura del centre.",
+        "weekdaysLabel": "De dilluns a divendres",
+        "saturdayLabel": "Dissabtes",
+        "sundayLabel": "Diumenges",
+        "closed": "Tancat",
+        "openFrom": "Obre",
+        "openTo": "Tanca"
+      },
+      "photos": {
+        "title": "Fotos",
+        "subtitle": "Les fotos apareixen a la teva fitxa pública. Recomanem un mínim de 3.",
+        "addCta": "Pujar nova foto",
+        "altLabel": "Foto del centre {index}"
+      },
+      "save": "Desar canvis",
+      "savedNotice": "Els canvis es desaran quan connectem el backend del panell."
+    },
+    "reviews": {
+      "title": "Valoracions rebudes",
+      "subtitle": "Respondre les ressenyes millora la confiança de futurs clients.",
+      "summary": "{rating} sobre 5 · {count, plural, one {# valoració} other {# valoracions}}",
+      "filters": {
+        "starsLabel": "Estrelles",
+        "allStars": "Totes",
+        "periodLabel": "Període",
+        "period7d": "Últims 7 dies",
+        "period30d": "Últims 30 dies",
+        "period90d": "Últims 90 dies",
+        "periodAll": "Totes",
+        "withoutResponse": "Només sense resposta"
+      },
+      "card": {
+        "serviceLabel": "Servei",
+        "respond": "Respondre",
+        "responseTitle": "Resposta del centre",
+        "alreadyResponded": "Respondida",
+        "pending": "Pendent de respondre"
+      },
+      "empty": "No hi ha valoracions que coincideixin amb els filtres."
+    }
+  },
+  "booking": {
+    "meta": {
+      "title": "Reservar · Beauly"
+    },
+    "flow": {
+      "eyebrow": "Pas {current} de {total}",
+      "steps": {
+        "slot": "Tria el teu lloc",
+        "summary": "Confirma les dades",
+        "payment": "Pagament segur",
+        "confirmation": "Reserva confirmada"
+      },
+      "back": "Enrere",
+      "cancel": "Cancel·lar reserva",
+      "continue": "Continuar",
+      "goToPayment": "Anar al pagament"
+    },
+    "slotPicker": {
+      "dayStripLabel": "Dies disponibles",
+      "morning": "Matí",
+      "afternoon": "Tarda",
+      "noMorningSlots": "No queden hores al matí.",
+      "noAfternoonSlots": "No queden hores a la tarda.",
+      "emptyTitle": "Sense hores aquest dia",
+      "emptySubtitle": "Prova amb un altre dia del calendari o torna demà."
+    },
+    "summary": {
+      "serviceLabel": "Servei",
+      "dateLabel": "Data",
+      "rangeLabel": "Horari",
+      "durationValue": "{minutes} min",
+      "professionalLabel": "Professional",
+      "anyProfessional": "Qualsevol professional disponible",
+      "totalLabel": "Total",
+      "notesLabel": "Notes per al centre (opcional)",
+      "notesHelper": "Indica'ns qualsevol detall rellevant: al·lèrgies, primera vegada, preferències…",
+      "notesPlaceholder": "Escriu aquí si vols afegir alguna cosa."
+    },
+    "policy": {
+      "title": "Política breu",
+      "clientCancel": "Pots cancel·lar gratis fins a 2h abans de l'inici del servei.",
+      "providerCancel": "El centre també pot cancel·lar fins a 2h abans; en aquest cas rebràs un reemborsament íntegre automàtic.",
+      "compactNote": "Cancel·lació gratuïta fins a 2h abans del servei, tant per a tu com per al centre."
+    },
+    "payment": {
+      "cardLabel": "Pagament demo",
+      "totalLabel": "Total a pagar",
+      "payCta": "Pagar (mock)",
+      "processing": "Processant…",
+      "mockNote": "Aquesta passarel·la és una simulació visual. En producció es connectarà amb Stripe Connect i la passarel·la real processarà el pagament de forma segura."
+    },
+    "confirmation": {
+      "title": "Reserva confirmada!",
+      "subtitle": "Hem enviat els detalls al teu correu (simulat). T'esperem.",
+      "bookingIdLabel": "Núm. de reserva",
+      "providerLabel": "Centre",
+      "serviceLabel": "Servei",
+      "whenLabel": "Quan",
+      "totalLabel": "Total",
+      "backToProvider": "Tornar al centre",
+      "keepBrowsing": "Seguir explorant"
+    }
+  },
+  "customerArea": {
+    "page": {
+      "title": "Les meves reserves",
+      "subtitle": "Gestiona les teves pròximes cites, consulta l'historial i valora els serveis ja realitzats."
+    },
+    "identity": {
+      "demoName": "Jorge G.",
+      "role": "Client"
+    },
+    "nav": {
+      "ariaLabel": "Navegació de l'àrea client",
+      "bookings": "Reserves",
+      "favorites": "Preferits",
+      "reviews": "Valoracions",
+      "profile": "Perfil"
+    },
+    "sections": {
+      "count": "{count, plural, =0 {Sense elements} one {# element} other {# elements}}",
+      "upcoming": {
+        "title": "Pròximes reserves",
+        "empty": "No tens reserves pròximes. Cerca un servei i reserva en segons."
+      },
+      "pendingReview": {
+        "title": "Valoracions pendents",
+        "empty": "Quan un servei es marqui com a finalitzat podràs deixar la teva valoració aquí."
+      },
+      "past": {
+        "title": "Historial",
+        "empty": "Encara no tens reserves passades."
+      }
+    },
+    "status": {
+      "pending": "Pendent",
+      "confirmed": "Confirmada",
+      "completed": "Completada",
+      "cancelled": "Cancel·lada",
+      "refunded": "Reemborsada"
+    },
+    "actions": {
+      "viewDetail": "Veure detall",
+      "cancel": "Cancel·lar",
+      "cancelling": "Cancel·lant…",
+      "cancelledHint": "Cancel·lació sol·licitada",
+      "cancelBlockedHint": "Només es pot cancel·lar amb més de 2 h d'antelació.",
+      "review": "Valorar"
+    }
+  },
+  "adminArea": {
+    "badge": "Admin",
+    "title": "Panell de moderació",
+    "subtitle": "Eina interna de l'equip Beauly.",
+    "nav": {
+      "ariaLabel": "Navegació del panell admin",
+      "dashboard": "Dashboard",
+      "queue": "Cua",
+      "exit": "Sortir del panell"
+    },
+    "dashboard": {
+      "title": "Resum operatiu",
+      "subtitle": "Mètriques globals del marketplace i accés ràpid a la cua de verificacions pendents."
+    },
+    "metrics": {
+      "bookingsToday": "Reserves avui",
+      "weeklyGmv": "GMV setmana",
+      "pendingProviders": "Prof. pendents",
+      "cancellationRate": "Taxa cancel·lació",
+      "weeklyDelta": "Variació setmanal: {delta}"
+    },
+    "verifications": {
+      "type": {
+        "centro": "Centre",
+        "autonomo": "Autònom"
+      },
+      "queue": {
+        "title": "Cua de verificacions",
+        "count": "{count, plural, =0 {Sense pendents} one {# pendent} other {# pendents}}",
+        "empty": "No hi ha sol·licituds pendents.",
+        "open": "Revisar",
+        "openAria": "Revisar la sol·licitud de {name}"
+      },
+      "detail": {
+        "back": "Tornar a la cua",
+        "contactTitle": "Dades de contacte",
+        "descriptionTitle": "Descripció del proveïdor",
+        "documentsTitle": "Documentació",
+        "fields": {
+          "email": "Email",
+          "phone": "Telèfon",
+          "vat": "NIF / CIF",
+          "category": "Categoria"
+        },
+        "docType": {
+          "identity": "Identitat",
+          "business": "Document mercantil",
+          "insurance": "Assegurança",
+          "portfolio": "Portfolio"
+        },
+        "actions": {
+          "approve": "Aprovar",
+          "reject": "Rebutjar"
+        },
+        "toast": {
+          "approved": "Sol·licitud de {name} aprovada (demo).",
+          "rejected": "Sol·licitud de {name} rebutjada (demo).",
+          "dismiss": "Tancar"
+        }
+      }
+    }
+  },
+  "notFound": {
+    "eyebrow": "Error 404",
+    "title": "Ens hem perdut buscant aquest enllaç",
+    "subtitle": "La pàgina que volies obrir no existeix o ja no està disponible. Torna a l'inici o explora serveis a prop teu.",
+    "illustrationAlt": "Il·lustració decorativa d'un mirall buit",
+    "backHome": "Tornar a l'inici",
+    "exploreServices": "Cercar serveis",
+    "helpHint": "Si creus que això és un error, escriu-nos a hola@beauly.com."
+  },
+  "serviceDetail": {
+    "breadcrumb": {
+      "home": "Inici",
+      "search": "Cercar"
+    },
+    "header": {
+      "eyebrow": "Servei",
+      "durationLabel": "Durada",
+      "priceLabel": "Preu",
+      "professionalLabel": "Professional assignat",
+      "anyProfessional": "Qualsevol professional disponible del centre",
+      "professionalPhotoAlt": "Foto de {name}"
+    },
+    "description": {
+      "title": "Sobre aquest servei"
+    },
+    "policy": {
+      "title": "Abans de reservar",
+      "cancellationTitle": "Cancel·lació flexible",
+      "cancellationBody": "Cancel·la fins a 2 hores abans de l'inici sense cost. Per sota d'aquest marge l'import no és reemborsable.",
+      "punctualityTitle": "Arriba 5 minuts abans",
+      "punctualityBody": "Perquè l'equip prepari la teva sessió amb calma i comencis puntual.",
+      "paymentTitle": "Pagament segur en línia",
+      "paymentBody": "La teva reserva es confirma a l'instant amb el pagament. Sense sorpreses al centre.",
+      "ratingHint": "Només podràs valorar el servei després que el professional el marqui com a completat."
+    },
+    "cta": {
+      "reserve": "Reservar",
+      "fromPrice": "des de {price}",
+      "secureNote": "Confirmació immediata. Pagament segur."
     }
   }
 }

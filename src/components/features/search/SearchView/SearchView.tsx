@@ -1,11 +1,13 @@
 'use client';
 
 import { List, MapPin } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 
+import { getCategoryBySlug } from '@/lib/fake-data/categories';
 import { cn } from '@/lib/utils';
 
+import { ActiveFiltersChips } from '../ActiveFiltersChips';
 import { FiltersBar } from '../FiltersBar';
 import { FiltersSheet } from '../FiltersSheet';
 import { ProviderList } from '../ProviderList';
@@ -36,6 +38,7 @@ const SearchMapLazy = dynamic(() => import('../SearchMap/SearchMap').then((m) =>
  */
 export function SearchView({ initial }: SearchViewProps) {
   const t = useTranslations('search');
+  const locale = useLocale() as 'es' | 'ca';
   const {
     advancedValue,
     hasAdvancedFilters,
@@ -51,7 +54,17 @@ export function SearchView({ initial }: SearchViewProps) {
     handleApplyAdvanced,
     handleClearAdvanced,
     handleSeeOnList,
+    handleRemoveChip,
+    handleClearAllChips,
+    handleSelectSuggestion,
   } = useSearchView(initial);
+
+  // Resolvemos la etiqueta visible de la categoría activa una sola vez
+  // para no recalcular en cada render del chip correspondiente.
+  const activeCategory = initial.filters.categorySlug
+    ? getCategoryBySlug(initial.filters.categorySlug)
+    : null;
+  const categoryLabel = activeCategory ? activeCategory.name[locale] : null;
 
   return (
     <div className={s.root} data-component="search-view">
@@ -64,7 +77,12 @@ export function SearchView({ initial }: SearchViewProps) {
             </span>
           </div>
 
-          <SearchBar initialValue={initial.filters.query} onSubmit={handleQueryChange} />
+          <SearchBar
+            initialValue={initial.filters.query}
+            onSubmit={handleQueryChange}
+            locale={locale}
+            onSelectSuggestion={handleSelectSuggestion}
+          />
 
           <FiltersBar
             activeCategorySlug={initial.filters.categorySlug}
@@ -116,6 +134,12 @@ export function SearchView({ initial }: SearchViewProps) {
             className={cn(s.listColumn, mobileTab === 'list' ? 'block' : 'hidden', 'lg:block')}
             data-component="search-list-column"
           >
+            <ActiveFiltersChips
+              filters={initial.filters}
+              categoryLabel={categoryLabel}
+              onRemove={handleRemoveChip}
+              onClearAll={handleClearAllChips}
+            />
             <ProviderList
               providers={initial.providers}
               fromPriceMap={initial.fromPriceMap}

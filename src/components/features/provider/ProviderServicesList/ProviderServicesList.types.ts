@@ -24,6 +24,12 @@ export interface ProviderServicesListProps {
   services: Service[];
   /** Locale activo para resolver el texto de categorías y servicios. */
   locale: SupportedLocale;
+  /**
+   * Segmento `{slug}-{id}` del proveedor. Lo recibimos ya construido
+   * para que el sheet pueda componer el enlace al flujo de reserva
+   * sin acoplarse a la utilidad de slug en el cliente.
+   */
+  providerSlugWithId: string;
 }
 
 /** Props del sheet de detalle de servicio. */
@@ -36,4 +42,6 @@ export interface ServiceDetailSheetProps {
   onOpenChange: (open: boolean) => void;
   /** Locale activo para resolver textos del dominio. */
   locale: SupportedLocale;
+  /** Segmento `{slug}-{id}` del proveedor para construir el href de reserva. */
+  providerSlugWithId: string;
 }

@@ -3,6 +3,7 @@
 import { useCallback, useState, type FormEvent } from 'react';
 
 import { useRouter } from '@/i18n/navigation';
+import type { Suggestion } from '@/lib/fake-data/search-suggestions';
 
 import type { HeroCategorySlug, HeroSearchDraft } from './Hero.types';
 
@@ -53,11 +54,36 @@ export function useHeroSearch() {
     [draft, router],
   );
 
+  /**
+   * Navega directamente al seleccionar una sugerencia del autocomplete.
+   *  - categoría → `/buscar?cat=slug`.
+   *  - servicio/proveedor → ficha del proveedor `/centro/[slug]-[id]`.
+   *
+   * Mantenemos las query params actuales del Hero (categoría seleccionada
+   * en el dropdown, "ahora") solo en la navegación a `/buscar`, no en
+   * fichas de proveedor (no aplican).
+   */
+  const handleSelectSuggestion = useCallback(
+    (suggestion: Suggestion) => {
+      if (suggestion.type === 'category') {
+        const params = new URLSearchParams();
+        params.set('cat', suggestion.slug);
+        if (draft.whenNow) params.set('now', '1');
+        router.push(`/buscar?${params.toString()}`);
+        return;
+      }
+      const segment = `${suggestion.providerSlug}-${suggestion.providerId}`;
+      router.push(`/centro/${segment}`);
+    },
+    [draft.whenNow, router],
+  );
+
   return {
     draft,
     setCategory,
     setLocation,
     setWhenNow,
     handleSubmit,
+    handleSelectSuggestion,
   };
 }

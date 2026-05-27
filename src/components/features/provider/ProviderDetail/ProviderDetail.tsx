@@ -3,6 +3,7 @@ import { ProviderHeader } from '@/components/features/provider/ProviderHeader';
 import { ProviderInfoPanel } from '@/components/features/provider/ProviderInfoPanel';
 import { ProviderReviewsSection } from '@/components/features/provider/ProviderReviewsSection';
 import { ProviderServicesList } from '@/components/features/provider/ProviderServicesList';
+import { buildProviderSlugWithId } from '@/lib/utils/provider-slug';
 
 import { providerDetailStyles as s } from './ProviderDetail.styles';
 import { ProviderDetailNav } from './ProviderDetailNav';
@@ -33,6 +34,10 @@ export function ProviderDetail({
   ratingBreakdown,
   locale,
 }: ProviderDetailProps) {
+  // Construimos aquí el segmento `{slug}-{id}` para que los componentes
+  // hijo no necesiten conocer la utilidad de slug ni reimplementarla.
+  const providerSlugWithId = buildProviderSlugWithId(provider);
+
   return (
     <main className={s.root} data-component="provider-detail-page">
       <ProviderHeader provider={provider} />
@@ -47,7 +52,11 @@ export function ProviderDetail({
           className={s.sectionAnchor}
           aria-labelledby="provider-services-heading"
         >
-          <ProviderServicesList services={services} locale={locale} />
+          <ProviderServicesList
+            services={services}
+            locale={locale}
+            providerSlugWithId={providerSlugWithId}
+          />
         </section>
 
         <section

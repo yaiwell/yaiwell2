@@ -12,6 +12,7 @@ import {
 } from './providers.validation';
 import type {
   ProviderDetail,
+  ProviderServiceDetail,
   SearchProvidersFilters,
   SearchProvidersResult,
 } from './providers.types';
@@ -181,4 +182,29 @@ export async function getProviderDetail(providerId: string): Promise<ProviderDet
     reviews: getReviewsByProvider(providerId),
     ratingBreakdown: getRatingBreakdown(providerId),
   };
+}
+
+/**
+ * Devuelve un servicio concreto dentro del catálogo de un proveedor,
+ * acompañado del propio proveedor para que la página de detalle pueda
+ * renderizar breadcrumbs y cabecera sin un segundo lookup.
+ *
+ * Devuelve `null` si el proveedor o el servicio no existen, o si el
+ * servicio pertenece a otro proveedor (caso de URL manipulada). La
+ * página llamadora se encarga de responder con un 404 limpio.
+ *
+ * @param providerId — id del proveedor dueño del catálogo.
+ * @param serviceId — id del servicio buscado dentro de ese catálogo.
+ */
+export async function getProviderService(
+  providerId: string,
+  serviceId: string,
+): Promise<ProviderServiceDetail | null> {
+  const provider = await providersRepository.findById(providerId);
+  if (!provider) return null;
+
+  const service = await providersRepository.findServiceByProvider(providerId, serviceId);
+  if (!service) return null;
+
+  return { provider, service };
 }

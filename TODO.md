@@ -54,26 +54,30 @@
 - [x] Listado de búsqueda (`/buscar`) con filtros, lista de resultados y mapa lateral.
 - [x] Mapa interactivo con pines de colores (verde/ámbar/gris) según disponibilidad.
 - [x] Toggle "Solo disponibles ahora" en filtros.
-- [ ] Ficha de servicio individual con descripción, profesional asignado, precio, duración, cláusulas.
-- [ ] Selector de slot disponible (calendario simple navegable).
-- [ ] Flujo de "reserva" simulado: confirmar datos → resumen → "pago" (mock) → confirmación.
-- [ ] Autocomplete de búsqueda mientras escribes (resultados fake), filtros activos visibles como chips.
-- [ ] Página 404 personalizada.
+- [x] Ficha de servicio individual con descripción, profesional asignado, precio, duración, cláusulas.
+- [x] Selector de slot disponible (calendario simple navegable).
+- [x] Flujo de "reserva" simulado: confirmar datos → resumen → "pago" (mock) → confirmación.
+- [x] Autocomplete de búsqueda mientras escribes (resultados fake), filtros activos visibles como chips.
+- [x] Página 404 personalizada.
+
+✅ Bloque E completado el 2026-05-27.
 
 ### Bloque F — Áreas privadas (mock visual)
 
-- [ ] Layout de área cliente (`/mis-reservas`) con próximas reservas, historial, valoraciones pendientes.
-- [ ] Layout de área proveedor (`/panel`) con:
-  - [ ] Dashboard con métricas fake (ingresos semana, reservas, ticket medio, ocupación).
-  - [ ] Calendario semanal con reservas fake.
-  - [ ] Listado de servicios ofrecidos.
-  - [ ] Pantalla de "añadir servicio" con jerarquía categorías → tipos → subtipos.
-  - [ ] Pantalla de configuración del centro.
-  - [ ] Vista de valoraciones recibidas.
-- [ ] Layout de área admin (`/admin`) con:
-  - [ ] Cola de verificaciones de proveedores pendientes.
-  - [ ] Ficha de verificación con documentos y botones aprobar/rechazar.
-  - [ ] Métricas globales fake.
+- [x] Layout de área cliente (`/mis-reservas`) con próximas reservas, historial, valoraciones pendientes.
+- [x] Layout de área proveedor (`/panel`) con:
+  - [x] Dashboard con métricas fake (ingresos semana, reservas, ticket medio, ocupación).
+  - [x] Calendario semanal con reservas fake.
+  - [x] Listado de servicios ofrecidos.
+  - [x] Pantalla de "añadir servicio" con jerarquía categorías → tipos → subtipos.
+  - [x] Pantalla de configuración del centro.
+  - [x] Vista de valoraciones recibidas.
+- [x] Layout de área admin (`/admin`) con:
+  - [x] Cola de verificaciones de proveedores pendientes.
+  - [x] Ficha de verificación con documentos y botones aprobar/rechazar.
+  - [x] Métricas globales fake.
+
+✅ Bloque F completado el 2026-05-27.
 
 ### Bloque G — Pulido final del esqueleto
 
@@ -150,5 +154,5 @@
 
 ---
 
-*Última actualización: 2026-05-21.*
+*Última actualización: 2026-05-27.*
 

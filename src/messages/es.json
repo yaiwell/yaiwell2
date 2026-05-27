@@ -157,6 +157,28 @@
     },
     "resultsCount": "{count, plural, one {# resultado} other {# resultados}}"
   },
+  "searchAutocomplete": {
+    "placeholder": "Busca un servicio, centro o tratamiento...",
+    "inputLabel": "Buscar",
+    "clear": "Limpiar búsqueda",
+    "suggestionsLabel": "Sugerencias de búsqueda",
+    "type": {
+      "category": "Categoría",
+      "service": "Servicio",
+      "provider": "Centro"
+    }
+  },
+  "searchFilters": {
+    "chips": {
+      "groupLabel": "Filtros activos",
+      "queryLabel": "Texto: {value}",
+      "availabilityLabel": "Disponibles ahora",
+      "priceLabel": "Precio {value}",
+      "ratingLabel": "{value}+ estrellas",
+      "clearAll": "Limpiar todo",
+      "removeAria": "Quitar filtro {label}"
+    }
+  },
   "providerDetail": {
     "breadcrumb": {
       "home": "Inicio",
@@ -216,6 +238,397 @@
       "title": "Centro no encontrado",
       "subtitle": "Es posible que ya no esté disponible o que el enlace sea incorrecto.",
       "backToSearch": "Volver a la búsqueda"
+    }
+  },
+  "providerPanel": {
+    "nav": {
+      "title": "Panel del centro",
+      "dashboard": "Resumen",
+      "calendar": "Calendario",
+      "services": "Servicios",
+      "settings": "Centro",
+      "reviews": "Valoraciones",
+      "addService": "Añadir servicio",
+      "providerLabel": "Centro activo"
+    },
+    "dashboard": {
+      "title": "Resumen semanal",
+      "subtitle": "Cómo va tu semana de un vistazo.",
+      "metrics": {
+        "weekRevenue": "Ingresos semana",
+        "weekBookings": "Reservas semana",
+        "averageTicket": "Ticket medio",
+        "occupancy": "Ocupación",
+        "vsLastWeek": "vs. semana anterior"
+      },
+      "chart": {
+        "title": "Ingresos por día",
+        "subtitle": "Comparativa de los últimos 7 días.",
+        "dayShort": {
+          "mon": "Lun",
+          "tue": "Mar",
+          "wed": "Mié",
+          "thu": "Jue",
+          "fri": "Vie",
+          "sat": "Sáb",
+          "sun": "Dom"
+        },
+        "barAriaLabel": "{day}: {revenue}, {count, plural, one {# reserva} other {# reservas}}"
+      },
+      "topServices": {
+        "title": "Servicios más reservados",
+        "subtitle": "Top 4 por número de reservas esta semana.",
+        "bookings": "{count, plural, one {# reserva} other {# reservas}}"
+      }
+    },
+    "calendar": {
+      "title": "Calendario semanal",
+      "subtitle": "Tus reservas de los próximos 7 días.",
+      "weekdays": {
+        "mon": "Lunes",
+        "tue": "Martes",
+        "wed": "Miércoles",
+        "thu": "Jueves",
+        "fri": "Viernes",
+        "sat": "Sábado",
+        "sun": "Domingo"
+      },
+      "weekdayShort": {
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mié",
+        "thu": "Jue",
+        "fri": "Vie",
+        "sat": "Sáb",
+        "sun": "Dom"
+      },
+      "status": {
+        "confirmed": "Confirmada",
+        "pending": "Pendiente",
+        "completed": "Completada",
+        "cancelled": "Cancelada"
+      },
+      "legend": "Leyenda",
+      "emptyDay": "Sin reservas",
+      "bookingAriaLabel": "{service} con {client} a las {time}",
+      "summary": "{count, plural, one {# reserva esta semana} other {# reservas esta semana}}"
+    },
+    "services": {
+      "title": "Servicios ofrecidos",
+      "subtitle": "Gestiona tu carta visible al cliente.",
+      "addCta": "Añadir servicio",
+      "status": {
+        "active": "Activo",
+        "paused": "Pausado"
+      },
+      "duration": "{minutes} min",
+      "bookings30d": "{count} reservas / 30d",
+      "edit": "Editar",
+      "pause": "Pausar",
+      "resume": "Reactivar",
+      "empty": "Aún no has publicado ningún servicio."
+    },
+    "addService": {
+      "title": "Añadir servicio",
+      "subtitle": "Define un nuevo servicio para tu carta.",
+      "back": "Volver al listado",
+      "categoryStep": {
+        "title": "Clasificación",
+        "subtitle": "Elige a qué categoría pertenece el servicio.",
+        "rootLabel": "Categoría",
+        "rootPlaceholder": "Selecciona una categoría",
+        "typeLabel": "Tipo",
+        "typePlaceholder": "Selecciona un tipo",
+        "subtypeLabel": "Subtipo",
+        "subtypePlaceholder": "Selecciona un subtipo",
+        "hintAfterRoot": "Elige primero la categoría para ver los tipos disponibles.",
+        "hintAfterType": "Elige un tipo para ver los subtipos disponibles."
+      },
+      "detailsStep": {
+        "title": "Datos del servicio",
+        "subtitle": "Información que verá el cliente al reservar.",
+        "nameLabel": "Nombre del servicio",
+        "namePlaceholder": "Ej. Corte mujer con lavado",
+        "descriptionLabel": "Descripción",
+        "descriptionPlaceholder": "Cuenta qué incluye, materiales, profesionales asignados, etc.",
+        "durationLabel": "Duración (minutos)",
+        "priceLabel": "Precio (€)"
+      },
+      "submit": "Publicar servicio",
+      "cancel": "Cancelar",
+      "mockNotice": "Este formulario aún no guarda nada. La publicación real llegará con el backend de servicios."
+    },
+    "settings": {
+      "title": "Configuración del centro",
+      "subtitle": "Datos públicos y operativos de tu negocio.",
+      "general": {
+        "title": "Datos generales",
+        "businessNameLabel": "Nombre comercial",
+        "vatLabel": "NIF / CIF",
+        "phoneLabel": "Teléfono de contacto",
+        "emailLabel": "Email de contacto",
+        "descriptionLabel": "Descripción pública"
+      },
+      "address": {
+        "title": "Dirección",
+        "streetLabel": "Calle y número",
+        "cityLabel": "Ciudad",
+        "postalLabel": "Código postal"
+      },
+      "schedule": {
+        "title": "Horario",
+        "subtitle": "Horario de apertura del centro.",
+        "weekdaysLabel": "Lunes a viernes",
+        "saturdayLabel": "Sábados",
+        "sundayLabel": "Domingos",
+        "closed": "Cerrado",
+        "openFrom": "Abre",
+        "openTo": "Cierra"
+      },
+      "photos": {
+        "title": "Fotos",
+        "subtitle": "Las fotos aparecen en tu ficha pública. Recomendamos un mínimo de 3.",
+        "addCta": "Subir nueva foto",
+        "altLabel": "Foto del centro {index}"
+      },
+      "save": "Guardar cambios",
+      "savedNotice": "Los cambios se guardarán cuando conectemos el backend del panel."
+    },
+    "reviews": {
+      "title": "Valoraciones recibidas",
+      "subtitle": "Responder a las reseñas mejora la confianza de futuros clientes.",
+      "summary": "{rating} sobre 5 · {count, plural, one {# valoración} other {# valoraciones}}",
+      "filters": {
+        "starsLabel": "Estrellas",
+        "allStars": "Todas",
+        "periodLabel": "Periodo",
+        "period7d": "Últimos 7 días",
+        "period30d": "Últimos 30 días",
+        "period90d": "Últimos 90 días",
+        "periodAll": "Todas",
+        "withoutResponse": "Solo sin respuesta"
+      },
+      "card": {
+        "serviceLabel": "Servicio",
+        "respond": "Responder",
+        "responseTitle": "Respuesta del centro",
+        "alreadyResponded": "Respondida",
+        "pending": "Pendiente de responder"
+      },
+      "empty": "No hay valoraciones que coincidan con los filtros."
+    }
+  },
+  "booking": {
+    "meta": {
+      "title": "Reservar · Beauly"
+    },
+    "flow": {
+      "eyebrow": "Paso {current} de {total}",
+      "steps": {
+        "slot": "Elige tu hueco",
+        "summary": "Confirma los datos",
+        "payment": "Pago seguro",
+        "confirmation": "Reserva confirmada"
+      },
+      "back": "Atrás",
+      "cancel": "Cancelar reserva",
+      "continue": "Continuar",
+      "goToPayment": "Ir al pago"
+    },
+    "slotPicker": {
+      "dayStripLabel": "Días disponibles",
+      "morning": "Mañana",
+      "afternoon": "Tarde",
+      "noMorningSlots": "No quedan huecos por la mañana.",
+      "noAfternoonSlots": "No quedan huecos por la tarde.",
+      "emptyTitle": "Sin huecos este día",
+      "emptySubtitle": "Prueba con otro día del calendario o vuelve mañana."
+    },
+    "summary": {
+      "serviceLabel": "Servicio",
+      "dateLabel": "Fecha",
+      "rangeLabel": "Horario",
+      "durationValue": "{minutes} min",
+      "professionalLabel": "Profesional",
+      "anyProfessional": "Cualquier profesional disponible",
+      "totalLabel": "Total",
+      "notesLabel": "Notas para el centro (opcional)",
+      "notesHelper": "Indícanos cualquier detalle relevante: alergias, primera vez, preferencias…",
+      "notesPlaceholder": "Escribe aquí si quieres añadir algo."
+    },
+    "policy": {
+      "title": "Política breve",
+      "clientCancel": "Puedes cancelar gratis hasta 2h antes del inicio del servicio.",
+      "providerCancel": "El centro también puede cancelar hasta 2h antes; en ese caso recibirás un reembolso íntegro automático.",
+      "compactNote": "Cancelación gratuita hasta 2h antes del servicio, tanto para ti como para el centro."
+    },
+    "payment": {
+      "cardLabel": "Pago demo",
+      "totalLabel": "Total a pagar",
+      "payCta": "Pagar (mock)",
+      "processing": "Procesando…",
+      "mockNote": "Esta pasarela es una simulación visual. En producción se conectará con Stripe Connect y la pasarela real procesará el pago de forma segura."
+    },
+    "confirmation": {
+      "title": "¡Reserva confirmada!",
+      "subtitle": "Hemos enviado los detalles a tu email (simulado). Te esperamos.",
+      "bookingIdLabel": "Nº de reserva",
+      "providerLabel": "Centro",
+      "serviceLabel": "Servicio",
+      "whenLabel": "Cuándo",
+      "totalLabel": "Total",
+      "backToProvider": "Volver al centro",
+      "keepBrowsing": "Seguir explorando"
+    }
+  },
+  "customerArea": {
+    "page": {
+      "title": "Mis reservas",
+      "subtitle": "Gestiona tus próximas citas, consulta el historial y valora los servicios ya realizados."
+    },
+    "identity": {
+      "demoName": "Jorge G.",
+      "role": "Cliente"
+    },
+    "nav": {
+      "ariaLabel": "Navegación del área cliente",
+      "bookings": "Reservas",
+      "favorites": "Favoritos",
+      "reviews": "Valoraciones",
+      "profile": "Perfil"
+    },
+    "sections": {
+      "count": "{count, plural, =0 {Sin elementos} one {# elemento} other {# elementos}}",
+      "upcoming": {
+        "title": "Próximas reservas",
+        "empty": "No tienes reservas próximas. Busca un servicio y reserva en segundos."
+      },
+      "pendingReview": {
+        "title": "Valoraciones pendientes",
+        "empty": "Cuando un servicio se marque como finalizado podrás dejar tu valoración aquí."
+      },
+      "past": {
+        "title": "Historial",
+        "empty": "Aún no tienes reservas pasadas."
+      }
+    },
+    "status": {
+      "pending": "Pendiente",
+      "confirmed": "Confirmada",
+      "completed": "Completada",
+      "cancelled": "Cancelada",
+      "refunded": "Reembolsada"
+    },
+    "actions": {
+      "viewDetail": "Ver detalle",
+      "cancel": "Cancelar",
+      "cancelling": "Cancelando…",
+      "cancelledHint": "Cancelación solicitada",
+      "cancelBlockedHint": "Solo se puede cancelar con más de 2 h de antelación.",
+      "review": "Valorar"
+    }
+  },
+  "adminArea": {
+    "badge": "Admin",
+    "title": "Panel de moderación",
+    "subtitle": "Herramienta interna del equipo Beauly.",
+    "nav": {
+      "ariaLabel": "Navegación del panel admin",
+      "dashboard": "Dashboard",
+      "queue": "Cola",
+      "exit": "Salir del panel"
+    },
+    "dashboard": {
+      "title": "Resumen operativo",
+      "subtitle": "Métricas globales del marketplace y acceso rápido a la cola de verificaciones pendientes."
+    },
+    "metrics": {
+      "bookingsToday": "Reservas hoy",
+      "weeklyGmv": "GMV semana",
+      "pendingProviders": "Pro. pendientes",
+      "cancellationRate": "Tasa cancelación",
+      "weeklyDelta": "Variación semanal: {delta}"
+    },
+    "verifications": {
+      "type": {
+        "centro": "Centro",
+        "autonomo": "Autónomo"
+      },
+      "queue": {
+        "title": "Cola de verificaciones",
+        "count": "{count, plural, =0 {Sin pendientes} one {# pendiente} other {# pendientes}}",
+        "empty": "No hay solicitudes pendientes.",
+        "open": "Revisar",
+        "openAria": "Revisar la solicitud de {name}"
+      },
+      "detail": {
+        "back": "Volver a la cola",
+        "contactTitle": "Datos de contacto",
+        "descriptionTitle": "Descripción del proveedor",
+        "documentsTitle": "Documentación",
+        "fields": {
+          "email": "Email",
+          "phone": "Teléfono",
+          "vat": "NIF / CIF",
+          "category": "Categoría"
+        },
+        "docType": {
+          "identity": "Identidad",
+          "business": "Documento mercantil",
+          "insurance": "Seguro",
+          "portfolio": "Portfolio"
+        },
+        "actions": {
+          "approve": "Aprobar",
+          "reject": "Rechazar"
+        },
+        "toast": {
+          "approved": "Solicitud de {name} aprobada (demo).",
+          "rejected": "Solicitud de {name} rechazada (demo).",
+          "dismiss": "Cerrar"
+        }
+      }
+    }
+  },
+  "notFound": {
+    "eyebrow": "Error 404",
+    "title": "Nos hemos perdido buscando este enlace",
+    "subtitle": "La página que intentabas abrir no existe o ya no está disponible. Vuelve al inicio o explora servicios cerca de ti.",
+    "illustrationAlt": "Ilustración decorativa de un espejo vacío",
+    "backHome": "Volver a inicio",
+    "exploreServices": "Buscar servicios",
+    "helpHint": "Si crees que esto es un error, escríbenos a hola@beauly.com."
+  },
+  "serviceDetail": {
+    "breadcrumb": {
+      "home": "Inicio",
+      "search": "Buscar"
+    },
+    "header": {
+      "eyebrow": "Servicio",
+      "durationLabel": "Duración",
+      "priceLabel": "Precio",
+      "professionalLabel": "Profesional asignado",
+      "anyProfessional": "Cualquier profesional disponible del centro",
+      "professionalPhotoAlt": "Foto de {name}"
+    },
+    "description": {
+      "title": "Sobre este servicio"
+    },
+    "policy": {
+      "title": "Antes de reservar",
+      "cancellationTitle": "Cancelación flexible",
+      "cancellationBody": "Cancela hasta 2 horas antes del inicio sin coste. Por debajo de ese margen el importe no es reembolsable.",
+      "punctualityTitle": "Llega 5 minutos antes",
+      "punctualityBody": "Para que el equipo prepare tu sesión con calma y empieces puntual.",
+      "paymentTitle": "Pago seguro online",
+      "paymentBody": "Tu reserva se confirma al instante con el pago. Sin sorpresas en el centro.",
+      "ratingHint": "Solo podrás valorar el servicio después de que el profesional lo marque como completado."
+    },
+    "cta": {
+      "reserve": "Reservar",
+      "fromPrice": "desde {price}",
+      "secureNote": "Confirmación inmediata. Pago seguro."
     }
   }
 }

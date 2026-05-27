@@ -31,7 +31,11 @@ import { ServiceDetailSheet } from './ServiceDetailSheet';
  * @param services — servicios a renderizar.
  * @param locale — locale activo (`es` o `ca`).
  */
-export function ProviderServicesList({ services, locale }: ProviderServicesListProps) {
+export function ProviderServicesList({
+  services,
+  locale,
+  providerSlugWithId,
+}: ProviderServicesListProps) {
   const t = useTranslations('providerDetail.services');
   const { selectedService, isOpen, openWith, setOpen } = useServiceSheet();
 
@@ -109,6 +113,7 @@ export function ProviderServicesList({ services, locale }: ProviderServicesListP
         open={isOpen}
         onOpenChange={setOpen}
         locale={locale}
+        providerSlugWithId={providerSlugWithId}
       />
     </section>
   );

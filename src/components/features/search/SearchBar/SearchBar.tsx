@@ -1,50 +1,44 @@
 'use client';
 
-import { Search, X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
-
+import { SearchAutocomplete } from '../SearchAutocomplete';
 import { useSearchBar } from './SearchBar.logic';
-import { searchBarStyles as s } from './SearchBar.styles';
 import type { SearchBarProps } from './SearchBar.types';
 
 /**
  * Campo de búsqueda principal de la vertical `/buscar`.
  *
- * Permite escribir texto libre y confirma con Enter (submit del form).
- * Muestra un botón "limpiar" cuando hay contenido para volver a estado
- * vacío sin recurrir al teclado.
+ * Es una fina capa sobre `SearchAutocomplete` que mantiene la API
+ * original (`initialValue` + `onSubmit`) y deriva el valor controlado
+ * desde la URL. Toda la UX (debounce, dropdown, teclado, a11y) vive
+ * en el autocomplete, así no duplicamos lógica.
  */
-export function SearchBar({ initialValue = '', onSubmit }: SearchBarProps) {
-  const t = useTranslations('search');
-  const { value, setValue, handleSubmit, handleClear } = useSearchBar(initialValue, onSubmit);
+export function SearchBar({
+  initialValue = '',
+  onSubmit,
+  locale,
+  onSelectSuggestion,
+}: SearchBarProps) {
+  const { value, setValue, handleSubmit } = useSearchBar(initialValue, onSubmit);
 
   return (
-    <form role="search" onSubmit={handleSubmit} className={s.form} data-component="search-bar">
-      <span className={s.iconLeft} aria-hidden>
-        <Search className="size-5" />
-      </span>
-      <input
-        type="search"
-        name="q"
-        autoComplete="off"
-        aria-label={t('searchPlaceholder')}
-        placeholder={t('searchPlaceholder')}
+    <div data-component="search-bar">
+      <SearchAutocomplete
         value={value}
-        onChange={(e) => setValue(e.target.value)}
-        className={s.input}
-        data-component="search-bar-input"
+        onValueChange={setValue}
+        onSubmit={handleSubmit}
+        onSelectSuggestion={(suggestion) => {
+          // Si el caller no maneja la selección, hacemos un fallback
+          // razonable: copiamos el label al input y disparamos submit
+          // para que la URL se actualice con un texto coherente.
+          if (onSelectSuggestion) {
+            onSelectSuggestion(suggestion);
+          } else {
+            setValue(suggestion.label);
+            handleSubmit(suggestion.label);
+          }
+        }}
+        locale={locale}
       />
-      {value.length > 0 && (
-        <button
-          type="button"
-          aria-label={t('filters.clear')}
-          onClick={handleClear}
-          className={s.clearButton}
-          data-component="search-bar-clear"
-        >
-          <X className="size-4" />
-        </button>
-      )}
-    </form>
+    </div>
   );
 }

@@ -4,6 +4,8 @@ import { Clock, Tag, User, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Dialog } from 'radix-ui';
 
+import { Link } from '@/i18n/navigation';
+
 import { formatPriceCents } from './ProviderServicesList.logic';
 import { serviceDetailSheetStyles as s } from './ServiceDetailSheet.styles';
 import type { ServiceDetailSheetProps } from './ProviderServicesList.types';
@@ -24,6 +26,7 @@ export function ServiceDetailSheet({
   open,
   onOpenChange,
   locale,
+  providerSlugWithId,
 }: ServiceDetailSheetProps) {
   const t = useTranslations('providerDetail.services.sheet');
 
@@ -95,15 +98,25 @@ export function ServiceDetailSheet({
           )}
 
           <footer className={s.footer}>
-            <button
-              type="button"
-              disabled
-              aria-disabled="true"
-              className={s.reserveCta}
-              data-component="provider-services-sheet-reserve"
-            >
-              {t('reserveCta')}
-            </button>
+            {service ? (
+              <Link
+                href={`/centro/${providerSlugWithId}/reservar?serviceId=${service.id}`}
+                className={s.reserveCta}
+                data-component="provider-services-sheet-reserve"
+              >
+                {t('reserveCta')}
+              </Link>
+            ) : (
+              <button
+                type="button"
+                disabled
+                aria-disabled="true"
+                className={s.reserveCta}
+                data-component="provider-services-sheet-reserve"
+              >
+                {t('reserveCta')}
+              </button>
+            )}
           </footer>
         </Dialog.Content>
       </Dialog.Portal>

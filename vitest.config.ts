@@ -21,10 +21,23 @@ export default defineConfig({
     include: ['src/**/*.test.{ts,tsx}', 'tests/unit/**/*.test.{ts,tsx}'],
     exclude: ['node_modules', '.next', 'tests/e2e/**'],
     css: false,
+    // Forzamos a Vite a transformar `next-intl` (en lugar de cargarlo
+    // como módulo externo en SSR) para que el alias `next/navigation`
+    // se aplique en su árbol de importaciones internas.
+    server: {
+      deps: {
+        inline: ['next-intl'],
+      },
+    },
   },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // Vitest + ESM no aplican las resoluciones implícitas de extensión
+      // que Next.js asume al importar `next/navigation` desde next-intl.
+      // Mapeamos al archivo CJS real para que los tests de componentes
+      // que usan el `Link` de next-intl puedan renderizar.
+      'next/navigation': path.resolve(__dirname, './node_modules/next/navigation.js'),
     },
   },
 });

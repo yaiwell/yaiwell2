@@ -3,8 +3,10 @@
 import { useCallback, useMemo, useState, useTransition } from 'react';
 
 import { usePathname, useRouter } from '@/i18n/navigation';
+import type { Suggestion } from '@/lib/fake-data/search-suggestions';
 import type { PriceRange } from '@/types/domain';
 
+import type { ActiveFilterChip } from '../ActiveFiltersChips';
 import type { AdvancedFiltersValue } from '../FiltersSheet';
 import type { MobileTab, SearchViewInitialState } from './SearchView.types';
 
@@ -104,6 +106,68 @@ export function useSearchView(initial: SearchViewInitialState) {
   }, [updateFilters]);
 
   /**
+   * Elimina un chip concreto sin tocar el resto. El switch garantiza
+   * que el TypeScript chequee todos los casos del discriminated union.
+   */
+  const handleRemoveChip = useCallback(
+    (chip: ActiveFilterChip) => {
+      switch (chip.kind) {
+        case 'query':
+          updateFilters({ query: '' });
+          return;
+        case 'category':
+          updateFilters({ categorySlug: null });
+          return;
+        case 'availability':
+          updateFilters({ availabilityOnly: false });
+          return;
+        case 'price':
+          updateFilters({
+            priceRange: filters.priceRange.filter((p) => p !== chip.value),
+          });
+          return;
+        case 'rating':
+          updateFilters({ minRating: null });
+          return;
+      }
+    },
+    [filters.priceRange, updateFilters],
+  );
+
+  const handleClearAllChips = useCallback(() => {
+    updateFilters({
+      query: '',
+      categorySlug: null,
+      availabilityOnly: false,
+      priceRange: [] as PriceRange[],
+      minRating: null,
+    });
+  }, [updateFilters]);
+
+  /**
+   * Resuelve la selección de una sugerencia del autocomplete dentro
+   * de `/buscar`:
+   *  - categoría → actualiza el filtro `cat` y limpia el query.
+   *  - servicio → navega a la ficha del proveedor.
+   *  - proveedor → navega a la ficha del proveedor.
+   *
+   * La navegación a fichas se delega en el router para mantener el locale.
+   */
+  const handleSelectSuggestion = useCallback(
+    (suggestion: Suggestion) => {
+      if (suggestion.type === 'category') {
+        updateFilters({ query: '', categorySlug: suggestion.slug });
+        return;
+      }
+      const segment = `${suggestion.providerSlug}-${suggestion.providerId}`;
+      startTransition(() => {
+        router.push(`/centro/${segment}`);
+      });
+    },
+    [router, updateFilters],
+  );
+
+  /**
    * Acción "Ver en la lista" del popup del mapa.
    *
    * En móvil, la columna lista está oculta cuando la pestaña activa es
@@ -160,5 +224,10 @@ export function useSearchView(initial: SearchViewInitialState) {
 
     // Interacción mapa → lista
     handleSeeOnList,
+
+    // Chips de filtros activos + autocomplete
+    handleRemoveChip,
+    handleClearAllChips,
+    handleSelectSuggestion,
   };
 }
