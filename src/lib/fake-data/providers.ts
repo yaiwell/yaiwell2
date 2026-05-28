@@ -233,6 +233,52 @@ export const fakeProviders: Provider[] = [
     priceRange: '€€',
     categoryIds: ['cat-sport', 'cat-tennis'],
   },
+  // Proveedores fuera del área metropolitana inmediata: nos sirven para
+  // probar el filtro "Cerca de ti" (radio 5 km) desde ubicaciones del
+  // Vallès Occidental y Oriental, donde el usuario ya no debería ver
+  // los locales de Barcelona dentro del radio.
+  {
+    id: 'prov-11',
+    slug: 'salo-bellesa-castellar',
+    name: 'Saló Bellesa Castellar',
+    type: 'centro',
+    description: {
+      es: 'Peluquería y estética familiar en el centro de Castellar del Vallès. Servicio cercano, cita rápida y productos veganos.',
+      ca: 'Perruqueria i estètica familiar al centre de Castellar del Vallès. Servei proper, cita ràpida i productes vegans.',
+    },
+    address: 'Passeig Tolrà 24, Castellar del Vallès',
+    location: { lat: 41.6122, lng: 2.0879 },
+    photos: [
+      unsplash('1560066984-138dadb4c035'),
+      unsplash('1522337360788-8b13dee7a37e'),
+      unsplash('1503951914875-452162b0f3f1'),
+    ],
+    rating: 4.7,
+    reviewsCount: 96,
+    priceRange: '€€',
+    categoryIds: ['cat-beauty', 'cat-hair', 'cat-hair-cut', 'cat-hair-color', 'cat-aesthetics'],
+  },
+  {
+    id: 'prov-12',
+    slug: 'crossfit-llica-vall',
+    name: 'CrossFit Lliçà de Vall',
+    type: 'centro',
+    description: {
+      es: 'Box de CrossFit en Lliçà de Vall con clases para todos los niveles, WOD diario y coaches certificados Level 2.',
+      ca: 'Box de CrossFit a Lliçà de Vall amb classes per a tots els nivells, WOD diari i coaches certificats Level 2.',
+    },
+    address: 'Carrer de l’Estació 12, Lliçà de Vall',
+    location: { lat: 41.5908, lng: 2.2387 },
+    photos: [
+      unsplash('1534438327276-14e5300c3a48'),
+      unsplash('1571902943202-507ec2618e8f'),
+      unsplash('1518611012118-696072aa579a'),
+    ],
+    rating: 4.8,
+    reviewsCount: 134,
+    priceRange: '€€',
+    categoryIds: ['cat-sport', 'cat-gym'],
+  },
 ];
 
 /**

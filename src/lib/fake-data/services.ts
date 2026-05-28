@@ -419,6 +419,88 @@ export const fakeServices: Service[] = [
     durationMinutes: 60,
     priceCents: 10500,
   },
+
+  // ---------- Saló Bellesa Castellar ----------
+  {
+    id: 'svc-31',
+    providerId: 'prov-11',
+    professionalId: null,
+    categoryId: 'cat-hair-cut',
+    name: { es: 'Corte y peinado', ca: 'Tall i pentinat' },
+    description: {
+      es: 'Corte personalizado, lavado y secado con producto incluido.',
+      ca: 'Tall personalitzat, rentat i assecat amb producte inclòs.',
+    },
+    durationMinutes: 50,
+    priceCents: 2800,
+  },
+  {
+    id: 'svc-32',
+    providerId: 'prov-11',
+    professionalId: null,
+    categoryId: 'cat-hair-color',
+    name: { es: 'Mechas balayage', ca: 'Metxes balayage' },
+    description: {
+      es: 'Técnica de mechas a mano alzada para un resultado natural y luminoso.',
+      ca: 'Tècnica de metxes a mà alçada per a un resultat natural i lluminós.',
+    },
+    durationMinutes: 120,
+    priceCents: 7500,
+  },
+  {
+    id: 'svc-33',
+    providerId: 'prov-11',
+    professionalId: null,
+    categoryId: 'cat-facial',
+    name: { es: 'Higiene facial profunda', ca: 'Higiene facial profunda' },
+    description: {
+      es: 'Limpieza con vapor, extracción manual y mascarilla hidratante final.',
+      ca: 'Neteja amb vapor, extracció manual i mascareta hidratant final.',
+    },
+    durationMinutes: 60,
+    priceCents: 4200,
+  },
+
+  // ---------- CrossFit Lliçà de Vall ----------
+  {
+    id: 'svc-34',
+    providerId: 'prov-12',
+    professionalId: null,
+    categoryId: 'cat-gym',
+    name: { es: 'Clase WOD suelta', ca: 'Classe WOD solta' },
+    description: {
+      es: 'Sesión de CrossFit dirigida con calentamiento, técnica y WOD del día.',
+      ca: 'Sessió de CrossFit dirigida amb escalfament, tècnica i WOD del dia.',
+    },
+    durationMinutes: 60,
+    priceCents: 1500,
+  },
+  {
+    id: 'svc-35',
+    providerId: 'prov-12',
+    professionalId: null,
+    categoryId: 'cat-gym',
+    name: { es: 'Sesión introductoria', ca: 'Sessió introductòria' },
+    description: {
+      es: 'Primera toma de contacto con un coach: movimientos básicos y tour por el box.',
+      ca: 'Primer contacte amb un coach: moviments bàsics i visita al box.',
+    },
+    durationMinutes: 75,
+    priceCents: 0,
+  },
+  {
+    id: 'svc-36',
+    providerId: 'prov-12',
+    professionalId: null,
+    categoryId: 'cat-gym',
+    name: { es: 'Personal training 1:1', ca: 'Personal training 1:1' },
+    description: {
+      es: 'Entrenamiento individual con plan progresivo enfocado a tu objetivo.',
+      ca: 'Entrenament individual amb pla progressiu enfocat al teu objectiu.',
+    },
+    durationMinutes: 60,
+    priceCents: 4500,
+  },
 ];
 
 /**
