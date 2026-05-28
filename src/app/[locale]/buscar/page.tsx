@@ -42,6 +42,9 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
   const query = typeof sp.q === 'string' ? sp.q : '';
   const categorySlug = typeof sp.cat === 'string' && sp.cat.length > 0 ? sp.cat : null;
   const availabilityOnly = sp.now === '1' || sp.now === 'true';
+  // `near=me` viene del formulario del Hero cuando el usuario elige
+  // "Usar mi ubicación". Activamos el chip "Cerca de ti" al hidratar.
+  const nearMeOnly = sp.near === 'me';
   const minRating = typeof sp.rating === 'string' ? Number(sp.rating) : NaN;
   const priceRangeRaw = typeof sp.price === 'string' ? sp.price : '';
   const allowedRanges: PriceRange[] = ['€', '€€', '€€€'];
@@ -77,6 +80,7 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
       priceRange,
       minRating: Number.isFinite(minRating) ? minRating : null,
     },
+    nearMeOnly,
   };
 
   return (

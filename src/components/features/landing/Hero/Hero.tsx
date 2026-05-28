@@ -1,6 +1,6 @@
 'use client';
 
-import { CalendarClock, ChevronDown, MapPin, Search, Tags } from 'lucide-react';
+import { CalendarClock, ChevronDown, Loader2, MapPin, Search, Tags, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { SearchAutocomplete } from '@/components/features/search/SearchAutocomplete';
@@ -14,7 +14,7 @@ import {
 
 import { useHeroSearch } from './Hero.logic';
 import { heroStyles as s } from './Hero.styles';
-import type { HeroCategorySlug } from './Hero.types';
+import type { HeroCategorySlug, HeroWhenOption } from './Hero.types';
 
 /**
  * URL Unsplash usada como fondo del Hero.
@@ -44,23 +44,61 @@ const categoryOptions: HeroCategorySlug[] = [
 ];
 
 /**
+ * Opciones del dropdown "¿Cuándo?". Mantenemos el orden de inmediatez:
+ * ahora → hoy → mañana → esta semana → cualquier día.
+ */
+const whenOptions: HeroWhenOption[] = ['now', 'today', 'tomorrow', 'this-week', 'any'];
+
+/**
+ * Tipo de clave válida dentro del namespace `home.hero.searchBar.whenOptions`.
+ * Se mantiene en sincronía con `es.json` y `ca.json`; si añadimos una opción
+ * en `HeroWhenOption`, hay que añadir aquí su clave i18n correspondiente.
+ */
+type WhenLabelKey = 'now' | 'today' | 'tomorrow' | 'thisWeek' | 'any';
+
+/**
+ * Mapea cada opción a la clave del namespace `whenOptions` en i18n.
+ */
+const whenLabelKey: Record<HeroWhenOption, WhenLabelKey> = {
+  now: 'now',
+  today: 'today',
+  tomorrow: 'tomorrow',
+  'this-week': 'thisWeek',
+  any: 'any',
+};
+
+/**
  * Hero principal de la landing.
  *
  * Compone fondo + overlay cálido + título + buscador prominente. El form
  * es Client Component porque tiene estado y al enviar navega con
  * `useRouter` de next-intl.
  *
- * Rediseño del search card (2026-05-19): se sustituyen los selects
- * nativos por campos con icono + label + valor visible, separadores
- * verticales y un botón submit circular en desktop. Mantiene el patrón
- * funcional (3 campos + botón) pero con un acabado mucho más premium.
+ * Rediseño 2026-05-28:
+ *  - "¿Dónde?" ofrece un atajo "Usar mi ubicación" que prellena el
+ *    campo con la ubicación del usuario (pide permiso si hace falta).
+ *  - "¿Cuándo?" pasa de un único valor ("Ahora") a un set completo de
+ *    ventanas temporales (Ahora / Hoy / Mañana / Esta semana / Cualquiera).
  */
 export function Hero() {
   const t = useTranslations('home.hero');
   const tCats = useTranslations('home.categories');
+  const tWhen = useTranslations('home.hero.searchBar.whenOptions');
   const locale = useLocale() as 'es' | 'ca';
-  const { draft, setCategory, setLocation, setWhenNow, handleSubmit, handleSelectSuggestion } =
-    useHeroSearch();
+  const {
+    draft,
+    locationStatus,
+    setCategory,
+    setLocation,
+    setWhen,
+    useMyLocation,
+    clearNearMe,
+    handleSubmit,
+    handleSelectSuggestion,
+  } = useHeroSearch();
+
+  const isLocating = locationStatus === 'requesting';
+  const isDenied = locationStatus === 'denied';
 
   return (
     <section className={s.root} data-component="hero">
@@ -120,36 +158,73 @@ export function Hero() {
 
             <span className={s.fieldDivider} aria-hidden="true" />
 
-            {/* Localización: el input plano se sustituye por el autocomplete
-                del buscador. Lo renderizamos sin form interno (renderAsForm=false)
-                para no anidar formularios dentro del de Hero. La selección de
-                una sugerencia navega directamente vía `handleSelectSuggestion`. */}
+            {/* Localización: si el usuario ha activado "Cerca de ti" mostramos
+                un chip removible; si no, el autocomplete habitual + un atajo
+                para autocompletar con su ubicación sin teclear. */}
             <div className={s.field} data-component="hero-search-location">
               <span className={s.fieldIcon} aria-hidden="true">
                 <MapPin className="size-4" />
               </span>
               <span className={s.fieldBody}>
                 <span className={s.fieldLabel}>{t('searchBar.location')}</span>
-                <SearchAutocomplete
-                  value={draft.location}
-                  onValueChange={setLocation}
-                  onSubmit={(value) => {
-                    setLocation(value);
-                  }}
-                  onSelectSuggestion={handleSelectSuggestion}
-                  locale={locale}
-                  placeholder={t('searchBar.location')}
-                  inputAriaLabel={t('searchBar.location')}
-                  renderAsForm={false}
-                  inputClassName={s.fieldControl}
-                />
+                {draft.useNearMe ? (
+                  <span className={s.nearMeChip} data-component="hero-search-near-me-chip">
+                    <span className={s.nearMeChipText}>
+                      <MapPin className="size-3.5" aria-hidden="true" />
+                      {t('searchBar.nearYou')}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={clearNearMe}
+                      className={s.nearMeChipClear}
+                      aria-label={t('searchBar.clearLocation')}
+                    >
+                      <X className="size-3" aria-hidden="true" />
+                    </button>
+                  </span>
+                ) : (
+                  <SearchAutocomplete
+                    value={draft.location}
+                    onValueChange={setLocation}
+                    onSubmit={(value) => {
+                      setLocation(value);
+                    }}
+                    onSelectSuggestion={handleSelectSuggestion}
+                    locale={locale}
+                    placeholder={t('searchBar.location')}
+                    inputAriaLabel={t('searchBar.location')}
+                    renderAsForm={false}
+                    inputClassName={s.fieldControl}
+                  />
+                )}
               </span>
+              {!draft.useNearMe && !isDenied && (
+                <button
+                  type="button"
+                  onClick={useMyLocation}
+                  disabled={isLocating}
+                  className={s.useMyLocationBtn}
+                  aria-label={t('searchBar.useMyLocation')}
+                  data-component="hero-search-use-my-location"
+                >
+                  {isLocating ? (
+                    <Loader2 className="size-3 animate-spin" aria-hidden="true" />
+                  ) : (
+                    <MapPin className="size-3" aria-hidden="true" />
+                  )}
+                  <span className={s.useMyLocationBtnLabel}>
+                    {isLocating ? t('searchBar.locating') : t('searchBar.useMyLocation')}
+                  </span>
+                </button>
+              )}
             </div>
 
             <span className={s.fieldDivider} aria-hidden="true" />
 
-            {/* Cuándo: misma estética que el desplegable de categoría para
-                que ambos selects se sientan parte del mismo sistema. */}
+            {/* Cuándo: el set completo de ventanas temporales. "Ahora" sigue
+                siendo el default y se traduce a `now=1` en la URL (alias
+                legacy del filtro de disponibilidad inmediata). El resto
+                viajan como `when=...` para la futura lógica de slots. */}
             <div className={s.field} data-component="hero-search-when">
               <span className={s.fieldIcon} aria-hidden="true">
                 <CalendarClock className="size-4" />
@@ -157,18 +232,22 @@ export function Hero() {
               <span className={s.fieldBody}>
                 <span className={s.fieldLabel}>{t('searchBar.when')}</span>
                 <Select
-                  value={draft.whenNow ? 'now' : 'later'}
-                  onValueChange={(value) => setWhenNow(value === 'now')}
+                  value={draft.when}
+                  onValueChange={(value) => setWhen(value as HeroWhenOption)}
                 >
                   <SelectTrigger
                     className={s.selectTrigger}
                     aria-label={t('searchBar.when')}
                     hideChevron
                   >
-                    <SelectValue placeholder={t('searchBar.now')} />
+                    <SelectValue placeholder={tWhen('now')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="now">{t('searchBar.now')}</SelectItem>
+                    {whenOptions.map((option) => (
+                      <SelectItem key={option} value={option}>
+                        {tWhen(whenLabelKey[option])}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </span>

@@ -75,7 +75,19 @@
         "location": "On?",
         "when": "Quan?",
         "now": "Ara",
-        "submit": "Cercar"
+        "submit": "Cercar",
+        "useMyLocation": "Usar la meva ubicació",
+        "nearYou": "A prop teu",
+        "clearLocation": "Esborrar ubicació",
+        "locating": "Localitzant…",
+        "locationDenied": "Permís denegat",
+        "whenOptions": {
+          "now": "Ara",
+          "today": "Avui",
+          "tomorrow": "Demà",
+          "thisWeek": "Aquesta setmana",
+          "any": "Qualsevol dia"
+        }
       }
     },
     "categories": {

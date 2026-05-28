@@ -75,7 +75,19 @@
         "location": "¿Dónde?",
         "when": "¿Cuándo?",
         "now": "Ahora",
-        "submit": "Buscar"
+        "submit": "Buscar",
+        "useMyLocation": "Usar mi ubicación",
+        "nearYou": "Cerca de ti",
+        "clearLocation": "Borrar ubicación",
+        "locating": "Localizando…",
+        "locationDenied": "Permiso denegado",
+        "whenOptions": {
+          "now": "Ahora",
+          "today": "Hoy",
+          "tomorrow": "Mañana",
+          "thisWeek": "Esta semana",
+          "any": "Cualquier día"
+        }
       }
     },
     "categories": {

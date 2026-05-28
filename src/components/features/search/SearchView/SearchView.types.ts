@@ -16,6 +16,11 @@ export interface SearchViewInitialState {
     priceRange: PriceRange[];
     minRating: number | null;
   };
+  /**
+   * Activa el filtro "Cerca de ti" al hidratar.
+   * Lo seteamos cuando el usuario llega desde el Hero con `?near=me`.
+   */
+  nearMeOnly?: boolean;
 }
 
 export interface SearchViewProps {

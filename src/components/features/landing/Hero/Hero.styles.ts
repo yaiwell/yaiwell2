@@ -66,6 +66,22 @@ export const heroStyles = {
   // Divisor vertical en desktop (solo se ve en md+).
   fieldDivider: 'hidden h-8 w-px self-center bg-border md:block',
 
+  // Mini-acción dentro del campo "Dónde": permite rellenar con la
+  // ubicación del usuario en un click sin que tenga que escribir nada.
+  // Se posiciona absoluto a la derecha del campo para no robar espacio
+  // al input cuando hay texto. El color usa `primary` para que se vea
+  // como una acción, no como decoración.
+  useMyLocationBtn:
+    'absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-medium text-primary transition-colors hover:bg-primary/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-60 md:right-4',
+  useMyLocationBtnLabel: 'hidden sm:inline',
+  // Chip que sustituye al autocomplete cuando el usuario activa
+  // "Cerca de ti". Visualmente cierra la idea de "ya está resuelto".
+  nearMeChip:
+    'inline-flex w-full items-center justify-between gap-2 rounded-full bg-brand-sky-soft px-3 py-1.5 text-sm font-medium text-foreground',
+  nearMeChipText: 'inline-flex items-center gap-1.5',
+  nearMeChipClear:
+    'inline-flex h-5 w-5 items-center justify-center rounded-full text-foreground/70 transition-colors hover:bg-foreground/10 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary',
+
   // Botón submit: en mobile ocupa fila completa; en desktop es circular,
   // primario, alineado a la derecha de la píldora.
   submitWrap: 'flex p-2 md:items-center md:p-0',

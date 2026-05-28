@@ -66,7 +66,7 @@ export function useSearchView(initial: SearchViewInitialState) {
     nearMeYieldedEmpty,
     handleToggleNearMe,
     handleDisableNearMe,
-  } = useNearMe(initial.providers);
+  } = useNearMe(initial.providers, { initialNearMeOnly: initial.nearMeOnly });
 
   // Estado local que SIEMPRE refleja la URL. Lo derivamos del initial
   // que llega del server; cada navegación produce un nuevo `initial`.
