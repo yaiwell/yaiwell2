@@ -14,6 +14,21 @@ export type HeroCategorySlug =
   | 'yoga';
 
 /**
+ * Opciones del selector "¿Dónde?" del Hero.
+ *
+ *  - `any`: no se filtra por zona (default, busca en todo el catálogo).
+ *  - `near-me`: usa la ubicación del usuario; si aún no hay permiso,
+ *    al elegirlo se dispara el flujo del provider global.
+ *  - Resto: ciudades/zonas predefinidas mapeadas a texto que el
+ *    `searchProviders` busca en el `address` del proveedor.
+ *
+ * Mantenemos la lista corta y manual porque en MVP no tenemos catálogo
+ * de ciudades. Cuando integremos PostGIS la sustituiremos por
+ * autocomplete real geocodificado.
+ */
+export type HeroLocationOption = 'any' | 'near-me' | 'barcelona' | 'castellar' | 'llica-vall';
+
+/**
  * Opciones del selector "¿Cuándo?" del Hero.
  *
  * `now` mantiene compatibilidad con el filtro existente del SearchView
@@ -25,11 +40,6 @@ export type HeroWhenOption = 'now' | 'today' | 'tomorrow' | 'this-week' | 'any';
 
 export interface HeroSearchDraft {
   category: HeroCategorySlug | '';
-  location: string;
-  /**
-   * Si es `true`, ignoramos `location` y enviamos `near=me` al search,
-   * que activará el filtro "Cerca de ti" usando la ubicación del usuario.
-   */
-  useNearMe: boolean;
+  location: HeroLocationOption;
   when: HeroWhenOption;
 }

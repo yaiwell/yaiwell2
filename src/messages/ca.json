@@ -76,11 +76,15 @@
         "when": "Quan?",
         "now": "Ara",
         "submit": "Cercar",
-        "useMyLocation": "Usar la meva ubicació",
-        "nearYou": "A prop teu",
-        "clearLocation": "Esborrar ubicació",
-        "locating": "Localitzant…",
-        "locationDenied": "Permís denegat",
+        "locationOptions": {
+          "any": "Qualsevol zona",
+          "nearMe": "A prop teu",
+          "nearMeLocating": "Localitzant…",
+          "nearMeDenied": "A prop teu (sense permís)",
+          "barcelona": "Barcelona",
+          "castellar": "Castellar del Vallès",
+          "llicaVall": "Lliçà de Vall"
+        },
         "whenOptions": {
           "now": "Ara",
           "today": "Avui",

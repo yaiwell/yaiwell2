@@ -7,29 +7,44 @@ import { useRouter } from '@/i18n/navigation';
 import type { Suggestion } from '@/lib/fake-data/search-suggestions';
 import { readLocationCookie } from '@/lib/services/location';
 
-import type { HeroCategorySlug, HeroSearchDraft, HeroWhenOption } from './Hero.types';
+import type {
+  HeroCategorySlug,
+  HeroLocationOption,
+  HeroSearchDraft,
+  HeroWhenOption,
+} from './Hero.types';
+
+/**
+ * Mapea cada opción del selector "¿Dónde?" al texto que viaja en el
+ * query param `q`. `near-me` y `any` no usan `q` (se gestionan aparte).
+ *
+ * Centralizado para que el día que tengamos catálogo real de ciudades
+ * sólo haya un sitio que actualizar.
+ */
+const LOCATION_QUERY: Record<Exclude<HeroLocationOption, 'any' | 'near-me'>, string> = {
+  barcelona: 'Barcelona',
+  castellar: 'Castellar del Vallès',
+  'llica-vall': 'Lliçà de Vall',
+};
 
 /**
  * Hook que gestiona el formulario de búsqueda del Hero.
  *
  * Decisión: no llamamos al servicio de búsqueda aquí; solo construimos la
  * URL de `/buscar` con los `searchParams` correspondientes y delegamos en
- * la página de búsqueda (que la implementa otro agente en paralelo). Así
- * evitamos acoplar la landing al módulo `@/lib/services/providers` antes
- * de que esté publicado.
+ * la página de búsqueda. Así evitamos acoplar la landing al módulo
+ * `@/lib/services/providers`.
  */
 export function useHeroSearch() {
   const router = useRouter();
 
-  // Consumimos el provider global de ubicación. Nos sirve para:
-  //  - Saber si ya tenemos GPS real (auto-completar "Cerca de ti").
-  //  - Pedir el permiso si el usuario pulsa "Usar mi ubicación".
+  // Consumimos el provider global de ubicación para poder pedir el
+  // permiso cuando el usuario elige "Cerca de ti" sin tenerlo aún.
   const { status: locationStatus, hasRealLocation, request: requestLocation } = useUserLocation();
 
   const [draft, setDraft] = useState<HeroSearchDraft>({
     category: '',
-    location: '',
-    useNearMe: false,
+    location: 'any',
     when: 'now',
   });
 
@@ -37,39 +52,31 @@ export function useHeroSearch() {
     setDraft((prev) => ({ ...prev, category }));
   }, []);
 
-  const setLocation = useCallback((location: string) => {
-    // Cualquier edición manual del texto desactiva el modo "cerca de mí"
-    // para evitar inconsistencia entre lo que el usuario ve y lo que se
-    // envía a la URL.
-    setDraft((prev) => ({ ...prev, location, useNearMe: false }));
-  }, []);
+  /**
+   * Cambia la zona seleccionada. Si el usuario elige "Cerca de ti" y aún
+   * no tiene ubicación real, disparamos el permiso del provider. Si lo
+   * deniega, dejamos la opción seleccionada para que vea el aviso
+   * inline ("sin permiso") y pueda probar otra zona.
+   */
+  const setLocation = useCallback(
+    async (location: HeroLocationOption) => {
+      setDraft((prev) => ({ ...prev, location }));
+      if (location === 'near-me' && !hasRealLocation) {
+        await requestLocation();
+        // Releemos la cookie escrita por el provider antes de resolver
+        // para confirmar la concesión sin esperar al siguiente render.
+        const fresh = readLocationCookie();
+        if (!fresh || fresh.source === 'fallback') {
+          // Permiso denegado/desconocido: la UI mostrará el sub-label
+          // de "sin permiso" gracias a `locationStatus`.
+        }
+      }
+    },
+    [hasRealLocation, requestLocation],
+  );
 
   const setWhen = useCallback((when: HeroWhenOption) => {
     setDraft((prev) => ({ ...prev, when }));
-  }, []);
-
-  /**
-   * Activa el modo "Cerca de ti". Si el navegador todavía no nos ha
-   * concedido la ubicación, disparamos el flujo de permiso del provider
-   * global; tras el `await` consultamos la cookie persistida (la escribe
-   * el provider antes de resolver) para saber si la concesión fue real.
-   * Es más fiable que leer `hasRealLocation` del closure, que aún no se
-   * habrá actualizado en este tick de React.
-   */
-  const useMyLocation = useCallback(async () => {
-    if (hasRealLocation) {
-      setDraft((prev) => ({ ...prev, useNearMe: true, location: '' }));
-      return;
-    }
-    await requestLocation();
-    const fresh = readLocationCookie();
-    if (fresh && fresh.source !== 'fallback') {
-      setDraft((prev) => ({ ...prev, useNearMe: true, location: '' }));
-    }
-  }, [hasRealLocation, requestLocation]);
-
-  const clearNearMe = useCallback(() => {
-    setDraft((prev) => ({ ...prev, useNearMe: false }));
   }, []);
 
   /**
@@ -77,11 +84,9 @@ export function useHeroSearch() {
    * Solo añadimos query params que tengan valor para mantener URLs limpias.
    *
    *  - `near=me`: filtra por proximidad usando la ubicación del provider.
-   *  - `q=...`: búsqueda textual por nombre/dirección.
-   *  - `now=1`: alias legacy de `when=now` (lo seguimos enviando porque
-   *    el SearchView aún lo lee directamente).
-   *  - `when=...`: cualquier otra ventana temporal distinta a "ahora"
-   *    o "cualquier día" (que es el default y no necesita param).
+   *  - `q=...`: texto a buscar (nombre de zona predefinida).
+   *  - `now=1`: alias legacy de `when=now`.
+   *  - `when=...`: cualquier otra ventana temporal.
    */
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -89,10 +94,10 @@ export function useHeroSearch() {
       const params = new URLSearchParams();
       if (draft.category) params.set('cat', draft.category);
 
-      if (draft.useNearMe) {
+      if (draft.location === 'near-me') {
         params.set('near', 'me');
-      } else if (draft.location.trim()) {
-        params.set('q', draft.location.trim());
+      } else if (draft.location !== 'any') {
+        params.set('q', LOCATION_QUERY[draft.location]);
       }
 
       if (draft.when === 'now') {
@@ -112,25 +117,25 @@ export function useHeroSearch() {
    *  - categoría → `/buscar?cat=slug`.
    *  - servicio/proveedor → ficha del proveedor `/centro/[slug]-[id]`.
    *
-   * Mantenemos las query params actuales del Hero (categoría seleccionada
-   * en el dropdown, "ahora") solo en la navegación a `/buscar`, no en
-   * fichas de proveedor (no aplican).
+   * Conservamos la zona y la ventana temporal en la URL para no perder
+   * el contexto del Hero al saltar a `/buscar`.
    */
   const handleSelectSuggestion = useCallback(
     (suggestion: Suggestion) => {
       if (suggestion.type === 'category') {
         const params = new URLSearchParams();
         params.set('cat', suggestion.slug);
+        if (draft.location === 'near-me') params.set('near', 'me');
+        else if (draft.location !== 'any') params.set('q', LOCATION_QUERY[draft.location]);
         if (draft.when === 'now') params.set('now', '1');
         else if (draft.when !== 'any') params.set('when', draft.when);
-        if (draft.useNearMe) params.set('near', 'me');
         router.push(`/buscar?${params.toString()}`);
         return;
       }
       const segment = `${suggestion.providerSlug}-${suggestion.providerId}`;
       router.push(`/centro/${segment}`);
     },
-    [draft.when, draft.useNearMe, router],
+    [draft.location, draft.when, router],
   );
 
   return {
@@ -140,8 +145,6 @@ export function useHeroSearch() {
     setCategory,
     setLocation,
     setWhen,
-    useMyLocation,
-    clearNearMe,
     handleSubmit,
     handleSelectSuggestion,
   };
