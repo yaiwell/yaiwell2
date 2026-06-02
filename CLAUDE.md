@@ -669,10 +669,15 @@ Cualquier desviación de estas reglas debe justificarse explícitamente en el co
 ## 7. Flujo de trabajo con Claude Code
 
 ### Al iniciar una sesión
-1. Leer `CLAUDE.md` (este archivo).
+1. Leer `CLAUDE.md` (este archivo) y `AGENTS.md` (catálogo de playbooks de orquestación de subagentes, importado al inicio con `@AGENTS.md`).
 2. Revisar `TODO.md` para saber qué toca.
 3. Revisar últimas 5 líneas de `DO.md` para entender el estado.
 4. Confirmar con el dev qué tarea atacar.
+
+### Antes de empezar una tarea: decidir orquestación
+- **Buscar encaje con un playbook de `AGENTS.md`** (P1–P11). Si encaja, ejecutar ese playbook **sin preguntar** al usuario cuántos subagentes lanzar ni de qué tipo.
+- Solo preguntar si la tarea no encaja en ningún playbook **o** si hay una decisión de producto pendiente.
+- Si durante el trabajo aparece un patrón de orquestación nuevo, añadirlo a `AGENTS.md` como `Pxx` al cerrar la tarea.
 
 ### Durante el trabajo
 - Si la tarea es grande, dividirla en subtareas y añadirlas a `TODO.md`.
