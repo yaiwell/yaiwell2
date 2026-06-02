@@ -10,7 +10,7 @@ import { forProvidersCtaStyles as s } from './ForProvidersCTA.styles';
  * de contacto, basta con sustituir el `<a href="mailto:...">` por un
  * `<Link href="/contacto">` sin tocar copy.
  */
-const SALES_EMAIL = 'hola@beauly.es';
+const SALES_EMAIL = 'hola@yeiwell.es';
 
 /**
  * Banner final de la landing /profesionales.

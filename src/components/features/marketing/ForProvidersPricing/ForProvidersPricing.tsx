@@ -12,7 +12,7 @@ import type { PricingPlan } from './ForProvidersPricing.types';
  * comisiones aquí NO toca la BD: este componente es marketing puro.
  *
  * El plan "Pro" se marca como popular porque es el sweet spot para
- * centros con varios profesionales (target principal Beauly).
+ * centros con varios profesionales (target principal Yeiwell).
  */
 const plans: PricingPlan[] = [
   {

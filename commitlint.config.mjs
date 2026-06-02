@@ -1,5 +1,5 @@
 /**
- * Configuración de commitlint para Beauly.
+ * Configuración de commitlint para Yeiwell.
  *
  * Se basa en Conventional Commits. Los prefijos válidos están en la lista
  * `type-enum`. El asunto va en castellano (ver CLAUDE.md sección 6.bis).

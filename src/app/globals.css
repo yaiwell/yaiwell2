@@ -66,7 +66,7 @@
 }
 
 :root {
-  /* Paleta Beauly: cremas cálidas + pasteles rosa/celeste/melocotón.
+  /* Paleta Yeiwell: cremas cálidas + pasteles rosa/celeste/melocotón.
      Premium pero alegre. Foreground en plum oscuro para evitar el negro
      puro y mantener calidez. Ver memoria: project_brand_aesthetic.md */
   --background: oklch(0.99 0.008 70);
@@ -129,7 +129,7 @@
 }
 
 .dark {
-  /* Modo oscuro Beauly: plums profundos cálidos (NUNCA negro puro) con
+  /* Modo oscuro Yeiwell: plums profundos cálidos (NUNCA negro puro) con
      acentos brand pastel claros y saturados. Filosofía: el dark no es un
      light invertido; es una pieza editorial propia donde el primary
      mantiene la identidad plum saturado (no crema), los brand-pastels
@@ -252,7 +252,7 @@
  * Leaflet inyecta sus propias clases (.leaflet-popup-*); no podemos
  * pasarlas por props, así que se sobrescriben aquí.
  */
-.leaflet-popup.beauly-map-popup .leaflet-popup-content-wrapper {
+.leaflet-popup.yeiwell-map-popup .leaflet-popup-content-wrapper {
   border-radius: 1rem;
   background-color: var(--card);
   color: var(--card-foreground);
@@ -266,7 +266,7 @@
   max-width: 288px !important;
   min-width: 240px;
 }
-.leaflet-popup.beauly-map-popup .leaflet-popup-content {
+.leaflet-popup.yeiwell-map-popup .leaflet-popup-content {
   /* El padding lo controla el sub-componente para poder pintar la
      foto a sangre dentro del popup sin márgenes externos. */
   margin: 0;
@@ -274,7 +274,7 @@
   font-family: var(--font-sans), system-ui, sans-serif;
   line-height: 1.4;
 }
-.leaflet-popup.beauly-map-popup .leaflet-popup-tip {
+.leaflet-popup.yeiwell-map-popup .leaflet-popup-tip {
   background-color: var(--card);
 }
 /*
@@ -285,7 +285,7 @@
  * componente). El color del halo viene de --brand-sky para coordinarse
  * con el chip "Cerca de ti".
  */
-@keyframes beauly-user-pulse {
+@keyframes yeiwell-user-pulse {
   0% {
     transform: scale(0.6);
     opacity: 0.45;
@@ -300,21 +300,21 @@
   }
 }
 
-.beauly-user-pin .beauly-user-pin-halo {
-  animation: beauly-user-pulse 2.2s ease-out infinite;
+.yeiwell-user-pin .yeiwell-user-pin-halo {
+  animation: yeiwell-user-pulse 2.2s ease-out infinite;
   transform-origin: center;
 }
 
 /* Respetamos la preferencia del usuario de reducir movimiento: si la
    activa, el halo queda estático en lugar de pulsar. */
 @media (prefers-reduced-motion: reduce) {
-  .beauly-user-pin .beauly-user-pin-halo {
+  .yeiwell-user-pin .yeiwell-user-pin-halo {
     animation: none;
     opacity: 0.3;
   }
 }
 
-.leaflet-popup.beauly-map-popup .leaflet-popup-close-button {
+.leaflet-popup.yeiwell-map-popup .leaflet-popup-close-button {
   /* Botón de cierre flotante sobre la foto. Antes era blanco hardcoded
      (rgba 255,255,255,0.9), lo que generaba un círculo blanco brillante
      incoherente sobre dark. Ahora usa --card con borde semántico para

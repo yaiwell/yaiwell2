@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Beauly",
+    "appName": "Yeiwell",
     "loading": "Cargando...",
     "error": "Ha ocurrido un error. Inténtalo de nuevo en unos segundos.",
     "goBack": "Volver",
@@ -13,9 +13,9 @@
     "system": "Sistema"
   },
   "seo": {
-    "defaultTitle": "Beauly · Belleza, bienestar y deporte disponibles ya",
+    "defaultTitle": "Yeiwell · Belleza, bienestar y deporte disponibles ya",
     "defaultDescription": "Reserva al instante con profesionales verificados de belleza, bienestar y deporte cerca de ti. Disponibilidad real, sin llamadas ni esperas.",
-    "ogImageAlt": "Beauly · Belleza, bienestar y deporte disponibles ya"
+    "ogImageAlt": "Yeiwell · Belleza, bienestar y deporte disponibles ya"
   },
   "nav": {
     "home": "Inicio",
@@ -61,7 +61,7 @@
       "cookies": "Cookies"
     },
     "madeIn": "Hecho en {city}",
-    "copyright": "© {year} Beauly"
+    "copyright": "© {year} Yeiwell"
   },
   "home": {
     "hero": {
@@ -122,7 +122,7 @@
       }
     },
     "differentiator": {
-      "title": "Por qué Beauly",
+      "title": "Por qué Yeiwell",
       "cards": {
         "0": {
           "title": "Disponibilidad real",
@@ -473,7 +473,7 @@
   },
   "booking": {
     "meta": {
-      "title": "Reservar · Beauly"
+      "title": "Reservar · Yeiwell"
     },
     "flow": {
       "eyebrow": "Paso {current} de {total}",
@@ -584,7 +584,7 @@
   "adminArea": {
     "badge": "Admin",
     "title": "Panel de moderación",
-    "subtitle": "Herramienta interna del equipo Beauly.",
+    "subtitle": "Herramienta interna del equipo Yeiwell.",
     "nav": {
       "ariaLabel": "Navegación del panel admin",
       "dashboard": "Dashboard",
@@ -650,7 +650,7 @@
     "illustrationAlt": "Ilustración decorativa de un espejo vacío",
     "backHome": "Volver a inicio",
     "exploreServices": "Buscar servicios",
-    "helpHint": "Si crees que esto es un error, escríbenos a hola@beauly.com."
+    "helpHint": "Si crees que esto es un error, escríbenos a hola@yeiwell.com."
   },
   "serviceDetail": {
     "breadcrumb": {
@@ -687,13 +687,13 @@
   "forProviders": {
     "meta": {
       "title": "Para profesionales",
-      "description": "Beauly es el marketplace de belleza, bienestar y deporte donde tus clientes te encuentran cuando están listos para reservar. Empieza gratis y sin permanencia."
+      "description": "Yeiwell es el marketplace de belleza, bienestar y deporte donde tus clientes te encuentran cuando están listos para reservar. Empieza gratis y sin permanencia."
     },
     "hero": {
       "eyebrow": "Para centros y autónomos",
       "titleLine1": "Tu agenda llena,",
       "titleLine2": "sin esfuerzo.",
-      "subtitle": "Beauly es el marketplace de belleza, bienestar y deporte donde tus clientes te encuentran cuando están listos para reservar.",
+      "subtitle": "Yeiwell es el marketplace de belleza, bienestar y deporte donde tus clientes te encuentran cuando están listos para reservar.",
       "ctaPrimary": "Empezar gratis",
       "ctaSecondary": "Cómo funciona",
       "trustNote": "Sin permanencia · Sin coste de alta · Cobra al instante",
@@ -738,7 +738,7 @@
       "plans": {
         "free": {
           "name": "Gratis",
-          "tagline": "Para probar Beauly sin compromiso.",
+          "tagline": "Para probar Yeiwell sin compromiso.",
           "feature1": "Hasta 5 servicios publicados",
           "feature2": "Reservas online ilimitadas",
           "feature3": "Pago seguro con Stripe",
@@ -780,7 +780,7 @@
         },
         "payouts": {
           "question": "¿Cómo cobro lo que me reservan?",
-          "answer": "Beauly usa Stripe Connect. El cliente paga al confirmar la reserva y nosotros te transferimos el importe (menos comisión) a tu cuenta bancaria cada semana de forma automática."
+          "answer": "Yeiwell usa Stripe Connect. El cliente paga al confirmar la reserva y nosotros te transferimos el importe (menos comisión) a tu cuenta bancaria cada semana de forma automática."
         },
         "cancel": {
           "question": "¿Puedo cancelar una reserva?",
@@ -791,7 +791,7 @@
           "answer": "No hay permanencia ni penalización por darte de baja. Entras hoy, sales mañana. Tu información se mantiene 30 días por si vuelves a cambiar de opinión."
         },
         "platform": {
-          "question": "¿Beauly es app o web?",
+          "question": "¿Yeiwell es app o web?",
           "answer": "Hoy somos web optimizada para móvil; tu panel funciona en cualquier navegador. La app nativa iOS/Android llegará en la siguiente fase, sin coste adicional para ti."
         },
         "verification": {
@@ -810,10 +810,10 @@
   },
   "signIn": {
     "meta": {
-      "title": "Entrar · Beauly",
-      "description": "Accede a tu cuenta Beauly para reservar belleza, bienestar y deporte cerca de ti."
+      "title": "Entrar · Yeiwell",
+      "description": "Accede a tu cuenta Yeiwell para reservar belleza, bienestar y deporte cerca de ti."
     },
-    "title": "Entra en Beauly",
+    "title": "Entra en Yeiwell",
     "subtitle": "Reserva belleza, bienestar y deporte en segundos.",
     "aside": {
       "badge": "Acceso",
@@ -861,9 +861,9 @@
   "signUp": {
     "meta": {
       "title": "Crea tu cuenta",
-      "description": "Regístrate en Beauly para reservar belleza, bienestar y deporte cerca de ti, o para empezar a ofrecer tus servicios."
+      "description": "Regístrate en Yeiwell para reservar belleza, bienestar y deporte cerca de ti, o para empezar a ofrecer tus servicios."
     },
-    "eyebrow": "Únete a Beauly",
+    "eyebrow": "Únete a Yeiwell",
     "title": "Crea tu cuenta",
     "subtitle": "Reserva al instante o empieza a ofrecer tus servicios. Solo tardas un minuto.",
     "tabs": {
@@ -891,7 +891,7 @@
     },
     "haveAccount": "¿Ya tienes cuenta? <link>Entra aquí</link>",
     "illustration": {
-      "badge": "Beauly Premium",
+      "badge": "Yeiwell Premium",
       "title": "Cuidarse no debería esperar.",
       "subtitle": "Une tu agenda a la de los mejores profesionales cerca de ti.",
       "footer": "Solo aceptamos profesionales verificados a mano. Calidad antes que cantidad."

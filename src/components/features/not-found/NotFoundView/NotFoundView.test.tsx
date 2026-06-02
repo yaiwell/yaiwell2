@@ -38,7 +38,7 @@ const messages = {
     illustrationAlt: 'Ilustración decorativa',
     backHome: 'Volver a inicio',
     exploreServices: 'Buscar servicios',
-    helpHint: 'Escríbenos a hola@beauly.com.',
+    helpHint: 'Escríbenos a hola@yeiwell.com.',
   },
 };
 

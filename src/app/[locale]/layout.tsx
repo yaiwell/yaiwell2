@@ -55,7 +55,7 @@ const SITE_URL =
  * Genera los metadatos SEO por locale.
  *
  * Incluye:
- *  - `title` con plantilla `%s | Beauly` para que las páginas hijas
+ *  - `title` con plantilla `%s | Yeiwell` para que las páginas hijas
  *    solo definan su título específico.
  *  - `description` editorial traducible.
  *  - `openGraph` y `twitter` con imagen por defecto en /og-default.png
@@ -81,10 +81,10 @@ export async function generateMetadata({
     metadataBase: new URL(SITE_URL),
     title: {
       default: t('defaultTitle'),
-      template: '%s | Beauly',
+      template: '%s | Yeiwell',
     },
     description: t('defaultDescription'),
-    applicationName: 'Beauly',
+    applicationName: 'Yeiwell',
     alternates: {
       canonical: canonicalPath,
       languages: {
@@ -95,7 +95,7 @@ export async function generateMetadata({
     },
     openGraph: {
       type: 'website',
-      siteName: 'Beauly',
+      siteName: 'Yeiwell',
       title: t('defaultTitle'),
       description: t('defaultDescription'),
       url: canonicalPath,

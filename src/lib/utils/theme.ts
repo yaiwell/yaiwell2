@@ -16,7 +16,7 @@ export type ThemePreference = 'light' | 'dark' | 'system';
 export type ResolvedTheme = 'light' | 'dark';
 
 /** Nombre de la cookie que persiste la preferencia. */
-export const THEME_COOKIE_NAME = 'beauly-theme';
+export const THEME_COOKIE_NAME = 'yeiwell-theme';
 
 /**
  * Duración de la cookie (1 año). Suficiente para que el usuario no tenga

@@ -8,7 +8,7 @@ import {
 import type { DifferentiatorCard } from './DifferentiatorCards.types';
 
 /**
- * Las tres promesas centrales que diferencian Beauly:
+ * Las tres promesas centrales que diferencian Yeiwell:
  * 1) Disponibilidad real (Clock).
  * 2) Curación premium (BadgeCheck).
  * 3) Sin compromiso (ShieldCheck).
@@ -27,7 +27,7 @@ const cards: DifferentiatorCard[] = [
 const cardSlugs = ['availability', 'curation', 'no-commitment'] as const;
 
 /**
- * Sección "Por qué Beauly" — tres cards con el diferencial frente a la
+ * Sección "Por qué Yeiwell" — tres cards con el diferencial frente a la
  * competencia (Treatwell/Booksy/Fresha).
  */
 export function DifferentiatorCards() {

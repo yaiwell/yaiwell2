@@ -1,5 +1,5 @@
 /**
- * Tipos de dominio compartidos del proyecto Beauly.
+ * Tipos de dominio compartidos del proyecto Yeiwell.
  *
  * Estos tipos modelan las entidades centrales (categorías, proveedores,
  * servicios, disponibilidad) y son la fuente de verdad consumida por:

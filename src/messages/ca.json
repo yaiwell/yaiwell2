@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Beauly",
+    "appName": "Yeiwell",
     "loading": "Carregant...",
     "error": "S'ha produït un error. Torna-ho a provar d'aquí uns segons.",
     "goBack": "Tornar",
@@ -13,9 +13,9 @@
     "system": "Sistema"
   },
   "seo": {
-    "defaultTitle": "Beauly · Bellesa, benestar i esport disponibles ja",
+    "defaultTitle": "Yeiwell · Bellesa, benestar i esport disponibles ja",
     "defaultDescription": "Reserva a l'instant amb professionals verificats de bellesa, benestar i esport a prop teu. Disponibilitat real, sense trucades ni esperes.",
-    "ogImageAlt": "Beauly · Bellesa, benestar i esport disponibles ja"
+    "ogImageAlt": "Yeiwell · Bellesa, benestar i esport disponibles ja"
   },
   "nav": {
     "home": "Inici",
@@ -61,7 +61,7 @@
       "cookies": "Galetes"
     },
     "madeIn": "Fet a {city}",
-    "copyright": "© {year} Beauly"
+    "copyright": "© {year} Yeiwell"
   },
   "home": {
     "hero": {
@@ -122,7 +122,7 @@
       }
     },
     "differentiator": {
-      "title": "Per què Beauly",
+      "title": "Per què Yeiwell",
       "cards": {
         "0": {
           "title": "Disponibilitat real",
@@ -473,7 +473,7 @@
   },
   "booking": {
     "meta": {
-      "title": "Reservar · Beauly"
+      "title": "Reservar · Yeiwell"
     },
     "flow": {
       "eyebrow": "Pas {current} de {total}",
@@ -584,7 +584,7 @@
   "adminArea": {
     "badge": "Admin",
     "title": "Panell de moderació",
-    "subtitle": "Eina interna de l'equip Beauly.",
+    "subtitle": "Eina interna de l'equip Yeiwell.",
     "nav": {
       "ariaLabel": "Navegació del panell admin",
       "dashboard": "Dashboard",
@@ -650,7 +650,7 @@
     "illustrationAlt": "Il·lustració decorativa d'un mirall buit",
     "backHome": "Tornar a l'inici",
     "exploreServices": "Cercar serveis",
-    "helpHint": "Si creus que això és un error, escriu-nos a hola@beauly.com."
+    "helpHint": "Si creus que això és un error, escriu-nos a hola@yeiwell.com."
   },
   "serviceDetail": {
     "breadcrumb": {
@@ -687,13 +687,13 @@
   "forProviders": {
     "meta": {
       "title": "Per a professionals",
-      "description": "Beauly és el marketplace de bellesa, benestar i esport on els teus clients et troben quan estan a punt per reservar. Comença gratis i sense permanència."
+      "description": "Yeiwell és el marketplace de bellesa, benestar i esport on els teus clients et troben quan estan a punt per reservar. Comença gratis i sense permanència."
     },
     "hero": {
       "eyebrow": "Per a centres i autònoms",
       "titleLine1": "La teva agenda plena,",
       "titleLine2": "sense esforç.",
-      "subtitle": "Beauly és el marketplace de bellesa, benestar i esport on els teus clients et troben quan estan a punt per reservar.",
+      "subtitle": "Yeiwell és el marketplace de bellesa, benestar i esport on els teus clients et troben quan estan a punt per reservar.",
       "ctaPrimary": "Comença gratis",
       "ctaSecondary": "Com funciona",
       "trustNote": "Sense permanència · Sense cost d'alta · Cobra a l'instant",
@@ -738,7 +738,7 @@
       "plans": {
         "free": {
           "name": "Gratis",
-          "tagline": "Per provar Beauly sense compromís.",
+          "tagline": "Per provar Yeiwell sense compromís.",
           "feature1": "Fins a 5 serveis publicats",
           "feature2": "Reserves en línia il·limitades",
           "feature3": "Pagament segur amb Stripe",
@@ -780,7 +780,7 @@
         },
         "payouts": {
           "question": "Com cobro el que em reserven?",
-          "answer": "Beauly fa servir Stripe Connect. El client paga en confirmar la reserva i nosaltres et transferim l'import (menys comissió) al teu compte bancari cada setmana de manera automàtica."
+          "answer": "Yeiwell fa servir Stripe Connect. El client paga en confirmar la reserva i nosaltres et transferim l'import (menys comissió) al teu compte bancari cada setmana de manera automàtica."
         },
         "cancel": {
           "question": "Puc cancel·lar una reserva?",
@@ -791,7 +791,7 @@
           "answer": "No hi ha permanència ni penalització per donar-te de baixa. Entres avui, surts demà. La teva informació es manté 30 dies per si tornes a canviar d'opinió."
         },
         "platform": {
-          "question": "Beauly és app o web?",
+          "question": "Yeiwell és app o web?",
           "answer": "Avui som web optimitzada per a mòbil; el teu panell funciona a qualsevol navegador. L'app nativa iOS/Android arribarà a la propera fase, sense cost addicional per a tu."
         },
         "verification": {
@@ -810,10 +810,10 @@
   },
   "signIn": {
     "meta": {
-      "title": "Entrar · Beauly",
-      "description": "Accedeix al teu compte de Beauly per reservar bellesa, benestar i esport a prop teu."
+      "title": "Entrar · Yeiwell",
+      "description": "Accedeix al teu compte de Yeiwell per reservar bellesa, benestar i esport a prop teu."
     },
-    "title": "Entra a Beauly",
+    "title": "Entra a Yeiwell",
     "subtitle": "Reserva bellesa, benestar i esport en segons.",
     "aside": {
       "badge": "Accés",
@@ -861,9 +861,9 @@
   "signUp": {
     "meta": {
       "title": "Crea el teu compte",
-      "description": "Registra't a Beauly per reservar bellesa, benestar i esport a prop teu, o per començar a oferir els teus serveis."
+      "description": "Registra't a Yeiwell per reservar bellesa, benestar i esport a prop teu, o per començar a oferir els teus serveis."
     },
-    "eyebrow": "Uneix-te a Beauly",
+    "eyebrow": "Uneix-te a Yeiwell",
     "title": "Crea el teu compte",
     "subtitle": "Reserva a l'instant o comença a oferir els teus serveis. Només triguen un minut.",
     "tabs": {
@@ -891,7 +891,7 @@
     },
     "haveAccount": "Ja tens compte? <link>Entra aquí</link>",
     "illustration": {
-      "badge": "Beauly Premium",
+      "badge": "Yeiwell Premium",
       "title": "Cuidar-se no hauria d'esperar.",
       "subtitle": "Uneix la teva agenda a la dels millors professionals a prop teu.",
       "footer": "Només acceptem professionals verificats a mà. Qualitat abans que quantitat."

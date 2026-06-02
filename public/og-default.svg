@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="Beauly · Belleza, bienestar y deporte disponibles ya">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" role="img" aria-label="Yeiwell · Belleza, bienestar y deporte disponibles ya">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#fdf5ee" />
@@ -13,7 +13,7 @@
   <rect width="1200" height="630" fill="url(#bg)" />
   <rect width="1200" height="630" fill="url(#halo)" />
   <g transform="translate(96 220)" font-family="Georgia, 'Times New Roman', serif" fill="#3a1d2d">
-    <text font-size="92" font-weight="700" letter-spacing="-2">Beauly</text>
+    <text font-size="92" font-weight="700" letter-spacing="-2">Yeiwell</text>
     <text y="120" font-size="44" font-weight="500" opacity="0.85">Belleza, bienestar y deporte</text>
     <text y="180" font-size="44" font-weight="500" opacity="0.85">disponibles ya cerca de ti.</text>
   </g>

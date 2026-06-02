@@ -31,7 +31,7 @@ export default async function PanelRouteLayout({ children, params }: PanelLayout
   // Mock: usamos siempre el primer proveedor del catálogo.
   // En Fase 1 esto se resolverá desde la sesión Clerk del proveedor.
   const provider = getProviderById('prov-01');
-  const providerName = provider?.name ?? 'Beauly';
+  const providerName = provider?.name ?? 'Yeiwell';
 
   return <PanelLayout providerName={providerName}>{children}</PanelLayout>;
 }

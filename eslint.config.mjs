@@ -4,7 +4,7 @@ import nextTs from 'eslint-config-next/typescript';
 import prettier from 'eslint-config-prettier/flat';
 
 /**
- * Configuración ESLint del proyecto Beauly.
+ * Configuración ESLint del proyecto Yeiwell.
  *
  * Orden de aplicación:
  * 1. Reglas base de Next.js (Core Web Vitals + TypeScript).

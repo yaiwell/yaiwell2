@@ -14,7 +14,7 @@ interface ForProvidersPageProps {
 /**
  * Genera los metadatos SEO de la landing /profesionales.
  *
- * Hereda el template `%s | Beauly` definido en el layout raíz, así que
+ * Hereda el template `%s | Yeiwell` definido en el layout raíz, así que
  * sólo aportamos el título específico ("Para profesionales") y una
  * description orientada a SEO comercial (palabras clave: marketplace,
  * gratis, sin permanencia).

@@ -167,6 +167,6 @@ describe('ForProvidersLanding', () => {
     renderWithIntl(<ForProvidersLanding />);
 
     const sales = screen.getByRole('link', { name: 'Hablar con ventas' });
-    expect(sales).toHaveAttribute('href', 'mailto:hola@beauly.es');
+    expect(sales).toHaveAttribute('href', 'mailto:hola@yeiwell.es');
   });
 });

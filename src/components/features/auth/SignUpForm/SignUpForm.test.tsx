@@ -41,10 +41,10 @@ const messages = {
     social: { google: 'Google', apple: 'Apple' },
     haveAccount: '¿Ya tienes cuenta? <link>Entra</link>',
     illustration: {
-      badge: 'Beauly',
+      badge: 'Yeiwell',
       title: 'Belleza para hoy',
       subtitle: 'Profesionales cerca de ti.',
-      footer: '© Beauly',
+      footer: '© Yeiwell',
     },
     errors: {
       required: 'Campo obligatorio.',
@@ -84,7 +84,7 @@ describe('SignUpForm', () => {
     renderForm();
 
     await user.type(screen.getByLabelText('Nombre'), 'Jorge');
-    await user.type(screen.getByLabelText('Email'), 'jorge@beauly.com');
+    await user.type(screen.getByLabelText('Email'), 'jorge@yeiwell.com');
     await user.type(screen.getByLabelText('Contraseña'), 'abc');
     await user.type(screen.getByLabelText('Repite la contraseña'), 'abc');
     await user.click(screen.getByRole('checkbox'));
@@ -99,7 +99,7 @@ describe('SignUpForm', () => {
     renderForm();
 
     await user.type(screen.getByLabelText('Nombre'), 'Jorge');
-    await user.type(screen.getByLabelText('Email'), 'jorge@beauly.com');
+    await user.type(screen.getByLabelText('Email'), 'jorge@yeiwell.com');
     await user.type(screen.getByLabelText('Contraseña'), 'unaclavefuerte');
     await user.type(screen.getByLabelText('Repite la contraseña'), 'otraclavefuerte');
     await user.click(screen.getByRole('checkbox'));
@@ -116,7 +116,7 @@ describe('SignUpForm', () => {
     renderForm();
 
     await user.type(screen.getByLabelText('Nombre'), 'Jorge');
-    await user.type(screen.getByLabelText('Email'), 'jorge@beauly.com');
+    await user.type(screen.getByLabelText('Email'), 'jorge@yeiwell.com');
     await user.type(screen.getByLabelText('Contraseña'), 'unaclavefuerte');
     await user.type(screen.getByLabelText('Repite la contraseña'), 'unaclavefuerte');
     await user.click(screen.getByRole('checkbox'));

@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('notFound');
 
   return {
-    title: `${t('title')} · Beauly`,
+    title: `${t('title')} · Yeiwell`,
     description: t('subtitle'),
   };
 }

@@ -115,7 +115,7 @@ export function SearchMap({
   // o fallback (pin neutro discreto con tooltip explicativo).
   const userIcon = userLocation
     ? L.divIcon({
-        className: 'beauly-user-pin',
+        className: 'yeiwell-user-pin',
         html: buildUserLocationHtml(hasRealLocation),
         // Halo de hasta 44x44 cuando es real; mantenemos un tamaño
         // generoso para que el anchor no descoloque la posición.
@@ -155,7 +155,7 @@ export function SearchMap({
             zIndexOffset={-100}
             title={userTooltip}
           >
-            <Popup closeButton={false} offset={[0, -10]} className="beauly-map-popup">
+            <Popup closeButton={false} offset={[0, -10]} className="yeiwell-map-popup">
               <span className="block px-3 py-2 text-xs text-foreground">{userTooltip}</span>
             </Popup>
           </Marker>
@@ -163,7 +163,7 @@ export function SearchMap({
 
         {providers.map((p) => {
           const icon = L.divIcon({
-            className: 'beauly-pin',
+            className: 'yeiwell-pin',
             html: buildPinHtml(p.availability.status, p.id === highlightedId),
             iconSize: [22, 22],
             iconAnchor: [11, 11],
@@ -181,7 +181,7 @@ export function SearchMap({
                 click: () => onHoverProvider(p.id),
               }}
             >
-              <Popup closeButton autoPan offset={[0, -6]} className="beauly-map-popup">
+              <Popup closeButton autoPan offset={[0, -6]} className="yeiwell-map-popup">
                 <MapProviderPopup
                   provider={p}
                   onPrimaryAction={

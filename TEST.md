@@ -1,4 +1,4 @@
-# TEST.md — Beauly
+# TEST.md — Yeiwell
 
 > Estrategia de testing del proyecto. Todo desarrollo nuevo debe ir acompañado de tests siguiendo lo descrito aquí. Reglas no negociables salvo justificación explícita en el PR.
 
