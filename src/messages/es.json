@@ -15,7 +15,11 @@
   "seo": {
     "defaultTitle": "Yeiwell · Belleza, bienestar y deporte disponibles ya",
     "defaultDescription": "Reserva al instante con profesionales verificados de belleza, bienestar y deporte cerca de ti. Disponibilidad real, sin llamadas ni esperas.",
-    "ogImageAlt": "Yeiwell · Belleza, bienestar y deporte disponibles ya"
+    "ogImageAlt": "Yeiwell · Belleza, bienestar y deporte disponibles ya",
+    "search": {
+      "title": "Buscar profesionales",
+      "description": "Filtra por categoría, zona y disponibilidad inmediata. Encuentra profesionales de belleza, bienestar y deporte cerca de ti."
+    }
   },
   "nav": {
     "home": "Inicio",

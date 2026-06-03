@@ -33,10 +33,12 @@ export const providerGalleryStyles = {
   // Botones prev/next: solo móvil/tablet, superpuestos a los lados.
   // Usamos `bg-card` (claro en light, oscuro en dark) sobre la foto, con
   // `text-foreground` para contraste correcto en ambos temas.
+  // `min-h-11 min-w-11` para cumplir el touch target de 44px (WCAG / Apple
+  // HIG; audit 2026-05-27 §B.6).
   prevBtn:
-    'absolute left-3 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full bg-card/85 p-2 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:inline-flex',
+    'absolute left-3 top-1/2 z-10 hidden min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full bg-card/85 p-2.5 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:inline-flex',
   nextBtn:
-    'absolute right-3 top-1/2 z-10 hidden -translate-y-1/2 items-center justify-center rounded-full bg-card/85 p-2 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:inline-flex',
+    'absolute right-3 top-1/2 z-10 hidden min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-full bg-card/85 p-2.5 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 sm:inline-flex',
   navIcon: 'size-5',
 
   // Dots: barras pequeñas centradas en la parte inferior. Sobre la foto

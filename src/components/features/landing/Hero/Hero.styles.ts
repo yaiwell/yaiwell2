@@ -12,7 +12,12 @@
  * hover sutil sobre el segmento completo.
  */
 export const heroStyles = {
-  root: 'relative isolate flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden px-6 pt-12 pb-16 md:min-h-[80vh] md:px-10 md:pt-20 md:pb-24',
+  // Altura: usamos `min-h` con un fallback fijo (36rem) que cubre el caso
+  // de landscape móvil (≈ 311px de alto disponible), donde un
+  // `100vh-4rem` dejaba el CTA fuera del viewport (audit 2026-05-27 §A.1).
+  // En md+ pasamos a `100dvh` para respetar las barras del navegador en
+  // tablet/laptop sin romper la composición editorial.
+  root: 'relative isolate flex min-h-[36rem] flex-col items-center justify-center overflow-hidden px-6 pt-12 pb-16 md:min-h-[calc(100dvh-5rem)] md:max-h-[80vh] md:px-10 md:pt-20 md:pb-24',
   // Capa de fondo con la foto Unsplash. Usamos background-image en CSS
   // inline (vía style) para no añadir hostnames al next.config y para no
   // depender de next/image en una imagen 100% decorativa.

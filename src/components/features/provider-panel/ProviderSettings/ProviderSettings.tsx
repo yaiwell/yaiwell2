@@ -181,7 +181,6 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
                 fill
                 sizes="(max-width: 640px) 50vw, 33vw"
                 className={s.photoImg}
-                unoptimized
               />
             </div>
           ))}

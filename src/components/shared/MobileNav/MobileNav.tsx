@@ -3,7 +3,7 @@
 import { CalendarDays, Home, Search, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 
 import { useIsActiveTab } from './MobileNav.logic';
@@ -29,9 +29,21 @@ const items: MobileNavItem[] = [
  *
  * Patrón clásico de app nativa: 4 pestañas con icono + etiqueta. Se oculta
  * en >=768px porque ahí el Header desktop ya cubre la navegación.
+ *
+ * Bajo `/panel/*` el panel de proveedor renderiza su propio bottom nav
+ * (`PanelLayout.bottomNav`). Para evitar dos barras apiladas en móvil
+ * (audit 2026-05-27 §A.9), ocultamos esta cuando estamos en esa rama.
+ * El panel admin (`/admin`) también se considera UI interna y se oculta
+ * por la misma razón.
  */
 export function MobileNav() {
   const t = useTranslations('nav');
+  const pathname = usePathname();
+
+  // Rutas con su propia navegación: no duplicar el bottom tab bar global.
+  if (pathname.startsWith('/panel') || pathname.startsWith('/admin')) {
+    return null;
+  }
 
   return (
     <nav className={s.root} aria-label={t('bottomNavLabel')} data-component="mobile-nav">

@@ -1,6 +1,7 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { SearchView } from '@/components/features/search';
 import type { SearchViewInitialState } from '@/components/features/search';
@@ -12,6 +13,37 @@ interface SearchPageProps {
   // En Next.js 16 `params` y `searchParams` son Promises.
   params: Promise<{ locale: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
+}
+
+/**
+ * Metadatos propios de `/buscar`.
+ *
+ * Sin `generateMetadata` propio la página heredaba el `defaultTitle` del
+ * layout, que es la copy de la home — no aporta valor SEO al search
+ * (audit 2026-05-27 §🟠 4). Aquí definimos un title específico que la
+ * plantilla `%s | Yeiwell` del layout completa con sufijo de marca.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const safeLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
+  const t = await getTranslations({ locale: safeLocale, namespace: 'seo.search' });
+  const canonicalPath = safeLocale === routing.defaultLocale ? '/buscar' : `/${safeLocale}/buscar`;
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    alternates: { canonical: canonicalPath },
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      url: canonicalPath,
+    },
+    twitter: { title: t('title'), description: t('description') },
+  };
 }
 
 /**

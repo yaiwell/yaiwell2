@@ -84,7 +84,9 @@
   --secondary-foreground: oklch(0.28 0.04 350);
 
   --muted: oklch(0.965 0.012 70);
-  --muted-foreground: oklch(0.5 0.025 340);
+  /* L: 0.42 garantiza ≥4.5:1 sobre `--card 1.0` para texto pequeño no-bold
+     (audit 2026-05-27 §B.2). Antes era 0.50 (≈3.7:1). */
+  --muted-foreground: oklch(0.42 0.025 340);
 
   /* Accent: rosa pastel base, para hovers y elementos sutilmente destacados. */
   --accent: oklch(0.94 0.04 10);

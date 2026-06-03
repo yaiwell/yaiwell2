@@ -34,7 +34,7 @@ export function AdminShell({ children }: AdminShellProps) {
           <Link href="/admin" className={s.navLink} data-component="admin-nav-dashboard">
             {t('nav.dashboard')}
           </Link>
-          <Link href="/admin" className={s.navLink} data-component="admin-nav-queue">
+          <Link href="/admin#verificaciones" className={s.navLink} data-component="admin-nav-queue">
             {t('nav.queue')}
           </Link>
           <Link href="/" className={s.navLink} data-component="admin-nav-exit">

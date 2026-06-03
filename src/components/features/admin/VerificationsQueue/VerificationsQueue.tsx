@@ -20,6 +20,7 @@ export function VerificationsQueue({ requests }: VerificationsQueueProps) {
 
   return (
     <section
+      id="verificaciones"
       className={s.root}
       aria-labelledby="admin-verifications-title"
       data-component="admin-verifications-queue"

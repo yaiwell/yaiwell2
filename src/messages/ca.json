@@ -15,7 +15,11 @@
   "seo": {
     "defaultTitle": "Yeiwell · Bellesa, benestar i esport disponibles ja",
     "defaultDescription": "Reserva a l'instant amb professionals verificats de bellesa, benestar i esport a prop teu. Disponibilitat real, sense trucades ni esperes.",
-    "ogImageAlt": "Yeiwell · Bellesa, benestar i esport disponibles ja"
+    "ogImageAlt": "Yeiwell · Bellesa, benestar i esport disponibles ja",
+    "search": {
+      "title": "Cercar professionals",
+      "description": "Filtra per categoria, zona i disponibilitat immediata. Troba professionals de bellesa, benestar i esport a prop teu."
+    }
   },
   "nav": {
     "home": "Inici",

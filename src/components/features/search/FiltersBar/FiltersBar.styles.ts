@@ -22,11 +22,11 @@ export const filtersBarStyles = {
   // su propia fila alineado a la derecha; en md+ vuelve a la fila única.
   actions: 'flex items-center justify-end gap-2',
   chipBase:
-    'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
+    'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   chipIdle: 'border-border bg-card text-foreground/80 hover:bg-muted',
   chipActive: 'border-primary bg-primary text-primary-foreground',
   toggleNow:
-    'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
+    'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   toggleNowIdle: 'border-border bg-card text-foreground/80 hover:bg-muted',
   // Texto en `text-brand-sage` (no hardcoded sage oscuro): el par
   // `*-soft` / `*` se invierte automáticamente en dark, asegurando AA
@@ -37,11 +37,11 @@ export const filtersBarStyles = {
   // visual de la barra. Cuando está activo usa el par brand-sky para
   // diferenciarlo del "ahora" (sage) y reforzar la metáfora de "ubicación".
   toggleNear:
-    'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
+    'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   toggleNearIdle: 'border-border bg-card text-foreground/80 hover:bg-muted',
   toggleNearActive: 'border-brand-sky/40 bg-brand-sky-soft text-brand-sky',
   filterButton:
-    'relative inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-1.5 text-sm text-foreground/80 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
+    'relative inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-sm text-foreground/80 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   filterButtonDot:
     'absolute -right-0.5 -top-0.5 size-2 rounded-full bg-primary ring-2 ring-background',
 } as const;
