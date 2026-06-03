@@ -1,0 +1,455 @@
+// Esquema de base de datos de Yeiwell.
+//
+// Source of truth canónica para el modelo de datos del marketplace.
+// Mantener sincronizado con `src/types/domain.ts` (UI) y con CLAUDE.md §4
+// (descripción funcional de cada entidad). Cualquier ruptura del modelo
+// debe documentarse en un ADR bajo `docs/adr/` antes de la migración.
+//
+// Decisiones clave:
+//
+// - **PostGIS**: la columna `Provider.location` usa `geography(Point,4326)`
+//   via `Unsupported` porque Prisma todavía no tiene un tipo nativo. Las
+//   queries geoespaciales (`ST_DWithin`, `<->`) viven en raw SQL en
+//   `lib/services/search/` para que el resto de Prisma client siga tipado.
+// - **Full-text search**: `Service.searchVector` es `tsvector` generado por
+//   trigger en una migración SQL aparte. No exponemos el tipo a Prisma; el
+//   ranking se hace por raw query.
+// - **Textos localizados**: campos como `Category.name`, `Provider.description`
+//   o `Service.name` viven como `Json` con forma `{ es, ca }`. Es la forma
+//   más sencilla de modelar 2 locales sin explosión de columnas; cuando
+//   añadamos un tercer idioma migramos a una tabla auxiliar.
+// - **Soft delete**: `deletedAt` nullable en las entidades editables por el
+//   proveedor (Provider, Professional, Service). El resto se borra duro
+//   porque pertenece a logs (Booking, Review, VerificationRequest).
+// - **Sincronización con Clerk**: `User.clerkId` es la fuente de verdad de
+//   identidad; el webhook `/api/webhooks/clerk` crea/actualiza este registro
+//   antes de cualquier operación de negocio.
+// - **RLS**: las policies viven en SQL crudo en `prisma/migrations/`. Sin
+//   RLS no se promociona una tabla nueva a producción.
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  // Pooler de Supabase: usa pgBouncer en modo transaction.
+  url        = env("DATABASE_URL")
+  // Conexión directa para migraciones (pgBouncer no soporta DDL en
+  // transaction mode).
+  directUrl  = env("DIRECT_URL")
+  extensions = [postgis, pg_trgm, uuid_ossp(map: "uuid-ossp")]
+}
+
+// =========================================================================
+// Enums
+// =========================================================================
+
+enum UserRole {
+  client
+  provider
+  admin
+}
+
+enum Locale {
+  es
+  ca
+}
+
+enum ProviderType {
+  autonomo
+  centro
+}
+
+enum PriceRange {
+  euro    @map("€")
+  euro2   @map("€€")
+  euro3   @map("€€€")
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  completed
+  cancelled
+  refunded
+}
+
+enum VerificationStatus {
+  pending
+  approved
+  rejected
+}
+
+enum PlanTier {
+  free
+  basic
+  pro
+  premium
+}
+
+// =========================================================================
+// Identidad y cuentas
+// =========================================================================
+
+/// Cuenta de usuario sincronizada con Clerk vía webhook.
+///
+/// La fuente de verdad de auth es Clerk; aquí guardamos solo el perfil
+/// mínimo necesario para joins (rol, idioma preferido, email para emails
+/// transaccionales). Nunca almacenamos hashes ni contraseñas.
+model User {
+  id        String   @id @default(uuid())
+  clerkId   String   @unique
+  email     String   @unique
+  role      UserRole @default(client)
+  locale    Locale   @default(es)
+  fullName  String?
+  avatarUrl String?
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relaciones
+  providers Provider[] @relation("ProviderOwner")
+  bookings  Booking[]  @relation("ClientBookings")
+  reviews   Review[]
+
+  @@index([role])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+// =========================================================================
+// Catálogo (categorías)
+// =========================================================================
+
+/// Categoría jerárquica (hasta 3 niveles vía `parentId`).
+///
+/// Convención: el slug es estable y se usa en URLs. El icono es el nombre
+/// del componente Lucide (ej. "Scissors") — el render lo resuelve en cliente.
+model Category {
+  id       String  @id @default(uuid())
+  slug     String  @unique
+  /// `{ es: "Peluquería", ca: "Perruqueria" }`.
+  name     Json
+  parentId String?
+  /// Nombre del componente lucide-react. Validado en seed.
+  icon     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Self-relation para jerarquía.
+  parent   Category?  @relation("CategoryParent", fields: [parentId], references: [id], onDelete: SetNull)
+  children Category[] @relation("CategoryParent")
+
+  // Categorías que ofrece un proveedor (M2M).
+  providers ProviderCategory[]
+  services  Service[]
+
+  @@index([parentId])
+  @@map("categories")
+}
+
+// =========================================================================
+// Proveedores y profesionales
+// =========================================================================
+
+/// Proveedor del marketplace: autónomo (1 profesional) o centro (N).
+///
+/// La ubicación se guarda como PostGIS geography(Point, 4326) para
+/// permitir queries `ST_DWithin` precisas (en metros). Las fotos son
+/// URLs públicas en Supabase Storage; el orden importa (primera =
+/// portada en cards).
+model Provider {
+  id           String       @id @default(uuid())
+  /// Dueño (cuenta Clerk con role=provider). Un usuario puede ser dueño de
+  /// varios centros — necesario para el caso "multi-centro" de Fase 1.
+  userId       String
+  type         ProviderType
+  businessName String
+  slug         String       @unique
+  vatNumber    String?
+  /// `{ es, ca }`.
+  description  Json
+  address      String
+  /// `geography(Point, 4326)` en PostGIS. Lng primero, Lat segundo.
+  /// Las queries geo van por raw SQL en `lib/services/search/`.
+  location     Unsupported("geography(Point, 4326)")
+  /// URLs absolutas. La primera es la portada.
+  photos       String[]
+  priceRange   PriceRange
+  /// Cache de rating medio (1-5) recalculado por trigger al insertar reviews.
+  /// Permite ordenar en `searchProviders` sin agregar por cada query.
+  ratingAvg    Float        @default(0)
+  ratingCount  Int          @default(0)
+  /// Plan de suscripción activo (free por defecto al alta).
+  planId       String
+
+  /// Verificación operativa: solo `approved` puede recibir reservas reales.
+  verificationStatus VerificationStatus @default(pending)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relaciones
+  owner                 User                  @relation("ProviderOwner", fields: [userId], references: [id], onDelete: Restrict)
+  plan                  Plan                  @relation(fields: [planId], references: [id], onDelete: Restrict)
+  professionals         Professional[]
+  services              Service[]
+  bookings              Booking[]
+  reviews               Review[]
+  categories            ProviderCategory[]
+  verificationRequests  VerificationRequest[]
+
+  @@index([userId])
+  @@index([planId])
+  @@index([verificationStatus])
+  @@index([deletedAt])
+  // Índice GiST sobre la geometría — necesario para ST_DWithin rápido. Se
+  // crea via raw SQL en la migración inicial (Prisma no expone GiST).
+  @@map("providers")
+}
+
+/// Tabla puente Provider ↔ Category (M2M).
+///
+/// Necesaria porque un centro puede ofrecer servicios de varias
+/// categorías raíz (ej. peluquería + estética). Permite también filtrar
+/// proveedores por categoría sin tener que enumerar sus servicios.
+model ProviderCategory {
+  providerId String
+  categoryId String
+
+  provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([providerId, categoryId])
+  @@map("provider_categories")
+}
+
+/// Profesional que trabaja en un Provider.
+///
+/// En proveedores tipo `autonomo` hay exactamente 1 Professional cuyo
+/// userId coincide con `Provider.userId`. En `centro` hay N profesionales
+/// y cada uno puede tener su propio userId si tiene cuenta Clerk para el
+/// panel; si no, `userId` es null y solo aparece en el catálogo.
+model Professional {
+  id         String  @id @default(uuid())
+  providerId String
+  userId     String?
+  name       String
+  photo      String?
+  bio        String?
+  /// JSON con horario semanal por defecto. Estructura:
+  /// `{ monday: [{open: "10:00", close: "20:00"}], ... }`.
+  /// Override por día concreto vía tabla aparte `ScheduleOverride` (TBD).
+  schedule   Json
+  /// Buffer en minutos entre citas (limpieza/preparación). Por defecto 15.
+  bufferMinutes Int @default(15)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  provider Provider  @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  services Service[]
+  bookings Booking[]
+
+  @@index([providerId])
+  @@index([userId])
+  @@index([deletedAt])
+  @@map("professionals")
+}
+
+// =========================================================================
+// Servicios
+// =========================================================================
+
+/// Servicio concreto ofrecido por un Provider (y opcionalmente atado a
+/// un Professional específico).
+///
+/// Para centros con varios profesionales que ofrecen el mismo servicio,
+/// `professionalId` puede ser null y el motor de availability elige el
+/// hueco entre los disponibles.
+model Service {
+  id               String  @id @default(uuid())
+  providerId       String
+  professionalId   String?
+  categoryId       String
+  /// `{ es, ca }`.
+  name             Json
+  /// `{ es, ca }`.
+  description      Json
+  durationMinutes  Int
+  priceCents       Int
+  /// Generated `tsvector` para FTS. La columna se materializa via trigger
+  /// SQL (`migrations/.../init.sql`); Prisma no la conoce, las queries de
+  /// búsqueda usan raw SQL.
+  /// searchVector  tsvector  -- gestionado fuera de Prisma.
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  provider     Provider      @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  professional Professional? @relation(fields: [professionalId], references: [id], onDelete: SetNull)
+  category     Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  bookings     Booking[]
+
+  @@index([providerId])
+  @@index([professionalId])
+  @@index([categoryId])
+  @@index([deletedAt])
+  @@map("services")
+}
+
+// =========================================================================
+// Reservas y reseñas
+// =========================================================================
+
+/// Reserva de un cliente sobre un Servicio.
+///
+/// El cálculo de `endAt` se hace en `booking.service.ts` a partir de la
+/// duración del servicio + buffer. Mantener ambos persistidos (no
+/// recalcular en queries) simplifica los overlaps y las queries de
+/// calendario.
+///
+/// Reglas de negocio críticas (ver §4.bis de CLAUDE.md):
+/// - El profesional marca `completed` desde su panel; solo entonces se
+///   habilita la valoración para el cliente.
+/// - El proveedor puede cancelar solo si `startAt - now() >= 2h`.
+model Booking {
+  id                    String        @id @default(uuid())
+  clientId              String
+  serviceId             String
+  professionalId        String
+  providerId            String
+  startAt               DateTime
+  endAt                 DateTime
+  status                BookingStatus @default(pending)
+  priceCents            Int
+  /// Comisión que retiene la plataforma en céntimos. Calculada en el
+  /// momento de la reserva según `Plan.commissionRate` para que cambios
+  /// posteriores de plan no afecten reservas pasadas.
+  commissionCents       Int
+  stripePaymentIntentId String?
+  /// Notas opcionales del cliente para el profesional.
+  notes                 String?
+  /// Marca temporal de cuándo se cambió a `completed`. Sirve para
+  /// calcular la ventana de 30 días de valoración.
+  completedAt           DateTime?
+  /// Marca temporal de cancelación. Útil para auditoría sin tener que
+  /// derivar del status (que se sobrescribe en refund).
+  cancelledAt           DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  client       User         @relation("ClientBookings", fields: [clientId], references: [id], onDelete: Restrict)
+  service      Service      @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Restrict)
+  provider     Provider     @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  review       Review?
+
+  @@index([clientId, startAt])
+  @@index([providerId, startAt])
+  @@index([professionalId, startAt])
+  // Índice clave del motor de availability: para detectar solapamientos
+  // basta con buscar reservas activas de un profesional en un rango.
+  @@index([professionalId, status, startAt, endAt])
+  @@index([status])
+  @@map("bookings")
+}
+
+/// Valoración del cliente sobre un Booking completado.
+///
+/// FK obligatoria a Booking — no admitimos reseñas huérfanas (§4.bis).
+/// La validación de "booking.status === 'completed'" se hace en
+/// `review.service.ts`, no por trigger, para emitir errores tipados.
+model Review {
+  id               String   @id @default(uuid())
+  bookingId        String   @unique
+  /// Denormalizado para joins rápidos en la ficha de proveedor.
+  providerId       String
+  /// Denormalizado: el autor real puede ser distinto del clientId si en el
+  /// futuro permitimos invitar a co-autor. De momento coincide.
+  authorId         String
+  rating           Int
+  text             String
+  /// URLs públicas en Supabase Storage. Hasta 5 fotos (validado en service).
+  photos           String[] @default([])
+  /// Respuesta del proveedor. Nullable porque la reseña existe sin respuesta.
+  providerResponse String?
+  providerResponseAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  booking  Booking  @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  author   User     @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  @@index([providerId, createdAt])
+  @@index([rating])
+  @@map("reviews")
+}
+
+// =========================================================================
+// Verificación y planes
+// =========================================================================
+
+/// Solicitud de verificación de un proveedor.
+///
+/// La cola de moderación del admin opera sobre esta tabla; el resultado
+/// (`approved`/`rejected`) se replica también en `Provider.verificationStatus`
+/// para que las queries de listado no tengan que joinar.
+model VerificationRequest {
+  id          String             @id @default(uuid())
+  providerId  String
+  status      VerificationStatus @default(pending)
+  /// Documentos subidos (URLs en Supabase Storage privado).
+  documents   String[]           @default([])
+  /// `User.id` del admin que revisó.
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  /// Notas internas de moderación. No se muestran al proveedor.
+  notes       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([providerId, status])
+  @@index([status, createdAt])
+  @@map("verification_requests")
+}
+
+/// Plan de suscripción del proveedor.
+///
+/// Stripe Billing es la fuente de verdad de pagos; aquí guardamos solo
+/// los límites y la comisión para que el servicio de booking pueda
+/// calcular la cuota retenida sin llamar a Stripe en cada reserva.
+model Plan {
+  id                 String   @id @default(uuid())
+  tier               PlanTier @unique
+  name               String
+  maxServices        Int
+  monthlyPriceCents  Int
+  /// Tasa de comisión en centésimas (e.g. 800 = 8.00%).
+  commissionRateBps  Int
+  /// Producto en Stripe (para el checkout de suscripción).
+  stripeProductId    String?  @unique
+  /// Precio mensual en Stripe (para el checkout de suscripción).
+  stripePriceId      String?  @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  providers Provider[]
+
+  @@map("plans")
+}
