@@ -46,7 +46,7 @@
 - [x] 30 servicios fake con descripciones realistas (es/ca).
 - [x] Disponibilidad fake determinista (available_now / available_soon / busy).
 - [x] Imágenes Unsplash con URLs estables verificadas.
-- [ ] 50-100 reseñas fake con nombres y textos variados (pendiente cuando hagamos ficha de proveedor).
+- [x] 100 reseñas fake (84 en 10 providers + 16 nuevas en prov-11 y prov-12) con nombres locales y mezcla es/ca (2026-06-03).
 
 ### Bloque E — Vistas públicas navegables
 
