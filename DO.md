@@ -6,6 +6,20 @@
 
 ---
 
+## 2026-06
+
+### 2026-06-02
+
+- **Catálogo de playbooks en `AGENTS.md`.** Reescrito de un aviso suelto de Next.js 16 a un catálogo de **11 playbooks** (P1–P11) que el agente orquestador consulta al inicio de cada tarea para decidir cuántos subagentes lanzar, de qué tipo (Explore / Plan / general-purpose / claude-code-guide / statusline-setup), en paralelo o serial, con qué prompt base y criterio de éxito. Cubre bugfix, feature pequeña/mediana/grande, refactor cross-cutting, migración de dependencia, auditoría de diseño/UX, auditoría técnica, exploración del repo, code review pre-PR, i18n review. Anti-patterns explícitos (no commitear desde subagentes, no usar para <3 tool calls, no paralelizar lo que se pisa sin worktrees). Reforzado en §7 de `CLAUDE.md`: el agente busca encaje con un playbook y ejecuta **sin preguntar**. Commits `bad8882` (AGENTS.md), `5b1c11e` (CLAUDE.md §7).
+
+- **Renombrado Beauly → Yeiwell en toda la app.** Cambio de marca sin tocar colores ni identidad visual. 43 ficheros / 123 sustituciones: textos i18n (es+ca), copy marketing, footer, 404, OG image, package.json + package-lock.json (`"name": "yeiwell"`), clases CSS internas (`.yeiwell-user-pin`, `.yeiwell-map-popup`, `@keyframes yeiwell-user-pulse`), claves de almacenamiento (cookie de tema `yeiwell-theme`, cookie de ubicación `yeiwell_user_location`, dismiss key `yeiwell:location-banner-dismissed`), tests, docs y emails de fixture. `typecheck` / `lint` / 148 tests verde. Commit `f9a6147`.
+
+### 2026-05-28
+
+- **Refactor del formulario de búsqueda del Hero.** El campo "¿Dónde?" pasa de un botón "Usar mi ubicación" + chip "Cerca de ti" a un `Select` homogéneo con los otros dos campos (categoría / cuándo). Opciones del selector: `any` (cualquier zona), `near-me` (pide permiso al seleccionarse si no lo tiene), `barcelona`, `castellar`, `llica-vall`. Etiqueta dinámica de "Cerca de ti" según `locationStatus` (`Localizando…` / `Sin permiso`). i18n nuevo namespace `home.hero.searchBar.locationOptions.*` en es+ca. El campo "¿Cuándo?" amplía de solo `now` a 5 opciones (`now`, `today`, `tomorrow`, `this-week`, `any`) con mapeo a query params `near=me|q=...|now=1|when=...`. Commits `b21c069`, `01a3643`.
+
+- **Proveedores fake en Vallès Occidental/Oriental.** Añadidos `prov-11` Saló Bellesa Castellar (Castellar del Vallès, 41.6122, 2.0879) y `prov-12` CrossFit Lliçà de Vall (Lliçà de Vall, 41.5908, 2.2387). 6 servicios fake nuevos (`svc-31` a `svc-36`) repartidos entre ambos para que el filtro "Cerca de ti" funcione con puntos fuera de Barcelona. Commit `4185915`.
+
 ## 2026-05
 
 ### 2026-05-27

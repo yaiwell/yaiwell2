@@ -155,5 +155,5 @@
 
 ---
 
-*Última actualización: 2026-05-27 (ronda 5 — auth mock, landing /profesionales, dark mode global).*
+*Última actualización: 2026-06-03 (rename Yeiwell, AGENTS.md como catálogo de playbooks, Hero search form refactor).*
 
