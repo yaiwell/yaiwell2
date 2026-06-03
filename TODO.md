@@ -37,7 +37,7 @@
 - [x] Componentes propios mínimos: `Header`, `Footer`, `MobileNav`, `LangSwitcher`, `ProviderCard`, `AvailabilityBadge`.
 - [ ] Completar componentes shadcn/ui: Card, Input, Badge, Avatar, Dialog, Sheet, Tabs, Skeleton, Toast (añadir según se necesiten).
 - [ ] Componentes propios pendientes: `CategoryPill`, `ServiceCard`, `RatingStars` (extraer cuando aparezca el caso de uso).
-- [ ] Crear página de prueba `/_design-system` listando todos los componentes.
+- [x] Crear página de prueba `/design-system` listando tokens y componentes (2026-06-03).
 
 ### Bloque D — Datos fake creíbles
 
@@ -155,5 +155,5 @@
 
 ---
 
-*Última actualización: 2026-06-03 (rename Yeiwell, AGENTS.md como catálogo de playbooks, Hero search form refactor).*
+*Última actualización: 2026-06-03 (audit 🟠/🟡 cerrado, migración a next/image, página `/design-system`).*
 

@@ -8,6 +8,14 @@
 
 ## 2026-06
 
+### 2026-06-03
+
+- **Página interna `/design-system` con catálogo de tokens.** Server Component bajo `[locale]/design-system` que pinta los swatches de los tokens semánticos (`--primary`, `--card`, `--muted`, `--destructive`...), los pares brand pastel (rose / sky / peach / sage / butter / lilac) en versión saturada + soft, la escala tipográfica (Fraunces display + Inter), el grid de botones (6 variantes × 4 tamaños), la escala de radius y muestras vivas de los componentes shadcn instalados (Select, Tabs). Sin enlace desde nav y `robots.index = false`: solo se llega por URL directa. Estructura per §6.bis: `app/[locale]/design-system/page.tsx` + `components/features/design-system/DesignSystemPage/` con `.tsx` / `.styles.ts` / `.types.ts` / `index.ts`. i18n nuevo namespace `designSystem` en es+ca. Commit `168a5bd`.
+
+- **Cierre de audit 2026-05-27 (🟠 + 🟡).** Quick wins del audit aplicados: (a) anclas duplicadas en AdminShell (`/admin#verificaciones`) y `id="verificaciones"` en VerificationsQueue; (b) doble bottom-nav resuelto ocultando `MobileNav` cuando `pathname` empieza por `/panel` o `/admin`; (c) touch targets a 44px (`min-h-11`) en MobileNav y en flechas prev/next de ProviderGallery; (d) Hero responsive en landscape móvil con `min-h-[36rem]` fallback + `100dvh - 5rem` en md+; (e) `--muted-foreground` a `oklch(0.42 …)` para AA sobre `--card 1.0`; (f) chips de FiltersBar con focus ring visible y `py-2`; (g) SEO de `/buscar` con `generateMetadata` propio (namespace `seo.search`); (h) Unsplash registrado en `next.config.ts.remotePatterns`, `unoptimized` eliminado en ProviderSettings. Commit `c00e5b8`.
+
+- **Migración a `next/image` de Hero, ProviderCard y ProviderGallery.** Sustituye `<img>` y `background-image` CSS por `next/image fill` + `sizes` ajustados a cada layout para aprovechar la pipeline de AVIF/WebP + srcset por viewport (ya no se servía el JPG original a 1600×). Hero usa `priority` por ser LCP de home; primer slide mobile de ProviderGallery también. Cierra el hallazgo 🟠 #10 del audit. Commit `aa19efa`.
+
 ### 2026-06-02
 
 - **Catálogo de playbooks en `AGENTS.md`.** Reescrito de un aviso suelto de Next.js 16 a un catálogo de **11 playbooks** (P1–P11) que el agente orquestador consulta al inicio de cada tarea para decidir cuántos subagentes lanzar, de qué tipo (Explore / Plan / general-purpose / claude-code-guide / statusline-setup), en paralelo o serial, con qué prompt base y criterio de éxito. Cubre bugfix, feature pequeña/mediana/grande, refactor cross-cutting, migración de dependencia, auditoría de diseño/UX, auditoría técnica, exploración del repo, code review pre-PR, i18n review. Anti-patterns explícitos (no commitear desde subagentes, no usar para <3 tool calls, no paralelizar lo que se pisa sin worktrees). Reforzado en §7 de `CLAUDE.md`: el agente busca encaje con un playbook y ejecuta **sin preguntar**. Commits `bad8882` (AGENTS.md), `5b1c11e` (CLAUDE.md §7).
