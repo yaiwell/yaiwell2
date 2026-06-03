@@ -34,11 +34,10 @@ generator client {
 
 datasource db {
   provider   = "postgresql"
-  // Pooler de Supabase: usa pgBouncer en modo transaction.
-  url        = env("DATABASE_URL")
-  // Conexión directa para migraciones (pgBouncer no soporta DDL en
-  // transaction mode).
-  directUrl  = env("DIRECT_URL")
+  // En Prisma 7 las URLs (`url`, `directUrl`) viven en `prisma.config.ts`.
+  // Desde ahí pasamos `DATABASE_URL` (pooler pgBouncer en modo transaction)
+  // y `DIRECT_URL` (conexión directa para migraciones; pgBouncer no
+  // soporta DDL en transaction mode).
   extensions = [postgis, pg_trgm, uuid_ossp(map: "uuid-ossp")]
 }
 
@@ -63,9 +62,9 @@ enum ProviderType {
 }
 
 enum PriceRange {
-  euro    @map("€")
-  euro2   @map("€€")
-  euro3   @map("€€€")
+  euro  @map("€")
+  euro2 @map("€€")
+  euro3 @map("€€€")
 }
 
 enum BookingStatus {
@@ -164,13 +163,13 @@ model Category {
 /// URLs públicas en Supabase Storage; el orden importa (primera =
 /// portada en cards).
 model Provider {
-  id           String       @id @default(uuid())
+  id           String                                @id @default(uuid())
   /// Dueño (cuenta Clerk con role=provider). Un usuario puede ser dueño de
   /// varios centros — necesario para el caso "multi-centro" de Fase 1.
   userId       String
   type         ProviderType
   businessName String
-  slug         String       @unique
+  slug         String                                @unique
   vatNumber    String?
   /// `{ es, ca }`.
   description  Json
@@ -183,8 +182,8 @@ model Provider {
   priceRange   PriceRange
   /// Cache de rating medio (1-5) recalculado por trigger al insertar reviews.
   /// Permite ordenar en `searchProviders` sin agregar por cada query.
-  ratingAvg    Float        @default(0)
-  ratingCount  Int          @default(0)
+  ratingAvg    Float                                 @default(0)
+  ratingCount  Int                                   @default(0)
   /// Plan de suscripción activo (free por defecto al alta).
   planId       String
 
@@ -196,14 +195,14 @@ model Provider {
   deletedAt DateTime?
 
   // Relaciones
-  owner                 User                  @relation("ProviderOwner", fields: [userId], references: [id], onDelete: Restrict)
-  plan                  Plan                  @relation(fields: [planId], references: [id], onDelete: Restrict)
-  professionals         Professional[]
-  services              Service[]
-  bookings              Booking[]
-  reviews               Review[]
-  categories            ProviderCategory[]
-  verificationRequests  VerificationRequest[]
+  owner                User                  @relation("ProviderOwner", fields: [userId], references: [id], onDelete: Restrict)
+  plan                 Plan                  @relation(fields: [planId], references: [id], onDelete: Restrict)
+  professionals        Professional[]
+  services             Service[]
+  bookings             Booking[]
+  reviews              Review[]
+  categories           ProviderCategory[]
+  verificationRequests VerificationRequest[]
 
   @@index([userId])
   @@index([planId])
@@ -237,18 +236,18 @@ model ProviderCategory {
 /// y cada uno puede tener su propio userId si tiene cuenta Clerk para el
 /// panel; si no, `userId` es null y solo aparece en el catálogo.
 model Professional {
-  id         String  @id @default(uuid())
-  providerId String
-  userId     String?
-  name       String
-  photo      String?
-  bio        String?
+  id            String  @id @default(uuid())
+  providerId    String
+  userId        String?
+  name          String
+  photo         String?
+  bio           String?
   /// JSON con horario semanal por defecto. Estructura:
   /// `{ monday: [{open: "10:00", close: "20:00"}], ... }`.
   /// Override por día concreto vía tabla aparte `ScheduleOverride` (TBD).
-  schedule   Json
+  schedule      Json
   /// Buffer en minutos entre citas (limpieza/preparación). Por defecto 15.
-  bufferMinutes Int @default(15)
+  bufferMinutes Int     @default(15)
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -275,16 +274,16 @@ model Professional {
 /// `professionalId` puede ser null y el motor de availability elige el
 /// hueco entre los disponibles.
 model Service {
-  id               String  @id @default(uuid())
-  providerId       String
-  professionalId   String?
-  categoryId       String
+  id              String  @id @default(uuid())
+  providerId      String
+  professionalId  String?
+  categoryId      String
   /// `{ es, ca }`.
-  name             Json
+  name            Json
   /// `{ es, ca }`.
-  description      Json
-  durationMinutes  Int
-  priceCents       Int
+  description     Json
+  durationMinutes Int
+  priceCents      Int
   /// Generated `tsvector` para FTS. La columna se materializa via trigger
   /// SQL (`migrations/.../init.sql`); Prisma no la conoce, las queries de
   /// búsqueda usan raw SQL.
@@ -370,19 +369,19 @@ model Booking {
 /// La validación de "booking.status === 'completed'" se hace en
 /// `review.service.ts`, no por trigger, para emitir errores tipados.
 model Review {
-  id               String   @id @default(uuid())
-  bookingId        String   @unique
+  id                 String    @id @default(uuid())
+  bookingId          String    @unique
   /// Denormalizado para joins rápidos en la ficha de proveedor.
-  providerId       String
+  providerId         String
   /// Denormalizado: el autor real puede ser distinto del clientId si en el
   /// futuro permitimos invitar a co-autor. De momento coincide.
-  authorId         String
-  rating           Int
-  text             String
+  authorId           String
+  rating             Int
+  text               String
   /// URLs públicas en Supabase Storage. Hasta 5 fotos (validado en service).
-  photos           String[] @default([])
+  photos             String[]  @default([])
   /// Respuesta del proveedor. Nullable porque la reseña existe sin respuesta.
-  providerResponse String?
+  providerResponse   String?
   providerResponseAt DateTime?
 
   createdAt DateTime @default(now())
@@ -407,16 +406,16 @@ model Review {
 /// (`approved`/`rejected`) se replica también en `Provider.verificationStatus`
 /// para que las queries de listado no tengan que joinar.
 model VerificationRequest {
-  id          String             @id @default(uuid())
-  providerId  String
-  status      VerificationStatus @default(pending)
+  id         String             @id @default(uuid())
+  providerId String
+  status     VerificationStatus @default(pending)
   /// Documentos subidos (URLs en Supabase Storage privado).
-  documents   String[]           @default([])
+  documents  String[]           @default([])
   /// `User.id` del admin que revisó.
-  reviewedBy  String?
-  reviewedAt  DateTime?
+  reviewedBy String?
+  reviewedAt DateTime?
   /// Notas internas de moderación. No se muestran al proveedor.
-  notes       String?
+  notes      String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -434,17 +433,17 @@ model VerificationRequest {
 /// los límites y la comisión para que el servicio de booking pueda
 /// calcular la cuota retenida sin llamar a Stripe en cada reserva.
 model Plan {
-  id                 String   @id @default(uuid())
-  tier               PlanTier @unique
-  name               String
-  maxServices        Int
-  monthlyPriceCents  Int
+  id                String   @id @default(uuid())
+  tier              PlanTier @unique
+  name              String
+  maxServices       Int
+  monthlyPriceCents Int
   /// Tasa de comisión en centésimas (e.g. 800 = 8.00%).
-  commissionRateBps  Int
+  commissionRateBps Int
   /// Producto en Stripe (para el checkout de suscripción).
-  stripeProductId    String?  @unique
+  stripeProductId   String?  @unique
   /// Precio mensual en Stripe (para el checkout de suscripción).
-  stripePriceId      String?  @unique
+  stripePriceId     String?  @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
