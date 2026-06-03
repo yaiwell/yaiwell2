@@ -18,7 +18,7 @@
 - [ ] Activar extensiones: `postgis`, `pg_trgm`, `uuid-ossp`.
 - [ ] Configurar Supabase local con Docker (`supabase init` + `supabase start`).
 - [ ] Instalar Prisma y conectar a Supabase.
-- [ ] Crear `prisma/schema.prisma` con entidades base (User, Provider, Professional, Category, Service, Booking, Review, Plan, VerificationRequest). Sin RLS todavía, solo schema.
+- [x] Crear `prisma/schema.prisma` con entidades base (User, Provider, Professional, Category, Service, Booking, Review, VerificationRequest, Plan). Sin RLS todavía, solo schema (2026-06-03).
 - [ ] Generar primera migración y aplicar a local + remoto.
 - [ ] Crear proyecto en Clerk (modo desarrollo).
 - [ ] Integrar Clerk en Next.js (middleware + ClerkProvider).
