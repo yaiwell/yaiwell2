@@ -1,6 +1,7 @@
 'use client';
 
 import { CalendarClock, ChevronDown, MapPin, Search, Tags } from 'lucide-react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -18,11 +19,10 @@ import type { HeroCategorySlug, HeroLocationOption, HeroWhenOption } from './Her
 /**
  * URL Unsplash usada como fondo del Hero.
  *
- * Decisión: usamos `background-image` CSS en lugar de `next/image` para no
- * tener que registrar el hostname en `next.config.ts` ni convertir el
- * componente en un mosaico de containers. La imagen es 100% decorativa, no
- * contiene texto ni información crítica, así que el coste de no usar la
- * pipeline de optimización es asumible para el MVP visual.
+ * Migrado a `next/image` con `fill` + `priority`: el hostname ya está
+ * registrado en `next.config.ts` y al ser el LCP de la home conviene que
+ * pase por la pipeline de optimización (AVIF/WebP, srcset por viewport)
+ * en lugar de servir el JPG original (audit 2026-05-27 §🟠 hallazgo #10).
  */
 const HERO_BACKGROUND_URL =
   'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1600&q=80&auto=format&fit=crop';
@@ -108,9 +108,15 @@ export function Hero() {
 
   return (
     <section className={s.root} data-component="hero">
-      <div
+      {/* Imagen de fondo decorativa. `priority` marca el LCP de la home y
+          `sizes=100vw` porque la foto ocupa el ancho completo del viewport. */}
+      <Image
+        src={HERO_BACKGROUND_URL}
+        alt=""
+        fill
+        priority
+        sizes="100vw"
         className={s.bgLayer}
-        style={{ backgroundImage: `url(${HERO_BACKGROUND_URL})` }}
         aria-hidden="true"
       />
       <div className={s.overlay} aria-hidden="true" />

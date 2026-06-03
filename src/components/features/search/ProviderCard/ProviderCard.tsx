@@ -1,6 +1,7 @@
 'use client';
 
 import { ArrowRight, MapPin, Star } from 'lucide-react';
+import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
@@ -66,14 +67,15 @@ export function ProviderCard({
         onMouseLeave={() => onHover?.(null)}
       >
         <div className={s.imageWrapper} data-component="provider-card-image">
-          {/* Foto principal (Unsplash). Usamos <img> nativo porque las
-              URLs externas y next/image requeriría configurar dominios. */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          {/* Foto principal (Unsplash, hostname registrado en next.config.ts).
+              `fill` + `sizes` permite que el navegador descargue la variante
+              óptima por viewport. Lazy por defecto: la mayoría de las cards
+              están fuera del primer pliegue en la lista de resultados. */}
+          <Image
             src={provider.photos[0]}
             alt={provider.name}
-            loading="lazy"
-            decoding="async"
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className={s.image}
           />
           <span className={s.badgeOverlay} data-component="provider-card-availability">

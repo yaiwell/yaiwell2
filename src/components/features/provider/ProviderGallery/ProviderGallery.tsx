@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef } from 'react';
 
@@ -69,14 +70,15 @@ export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
               className={s.mobileSlide}
               data-component={index === activeIndex ? 'provider-gallery-main' : undefined}
             >
-              {/* Usamos <img> nativo porque las URLs son externas (Unsplash)
-                  y next/image requeriría configurar dominios. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              {/* next/image con `fill` + sizes para que el navegador
+                  descargue la variante adecuada por viewport. El hostname
+                  externo (Unsplash) está registrado en next.config.ts. */}
+              <Image
                 src={src}
                 alt={alt}
-                loading={index === 0 ? 'eager' : 'lazy'}
-                decoding="async"
+                fill
+                priority={index === 0}
+                sizes="(max-width: 1024px) 100vw, 60vw"
                 className={s.mobileImage}
               />
             </div>
@@ -133,13 +135,13 @@ export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
                 falta mantener el resto en el DOM. La `key` fuerza un
                 re-mount para que el navegador anime la transición de
                 opacidad sin acumular imágenes invisibles. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               key={photos[activeIndex]}
               src={photos[activeIndex]}
               alt={alt}
-              loading="eager"
-              decoding="async"
+              fill
+              priority
+              sizes="(min-width: 1024px) 60vw, 100vw"
               className={s.desktopMainImage}
               data-component="provider-gallery-main"
             />
@@ -159,8 +161,16 @@ export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
                     aria-current={isActive ? 'true' : undefined}
                     data-component={`provider-gallery-thumb-${index}`}
                   >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={src} alt={alt} loading="lazy" decoding="async" className={s.thumb} />
+                    {/* Miniatura desktop: next/image con `fill` y `sizes`
+                        ajustados al ancho real de la columna (≈20vw en lg+).
+                        Lazy por defecto al estar fuera del primer viewport. */}
+                    <Image
+                      src={src}
+                      alt={alt}
+                      fill
+                      sizes="(min-width: 1024px) 20vw, 30vw"
+                      className={s.thumb}
+                    />
                   </button>
                 );
               })}

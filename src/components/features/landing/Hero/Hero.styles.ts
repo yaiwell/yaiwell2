@@ -18,10 +18,11 @@ export const heroStyles = {
   // En md+ pasamos a `100dvh` para respetar las barras del navegador en
   // tablet/laptop sin romper la composición editorial.
   root: 'relative isolate flex min-h-[36rem] flex-col items-center justify-center overflow-hidden px-6 pt-12 pb-16 md:min-h-[calc(100dvh-5rem)] md:max-h-[80vh] md:px-10 md:pt-20 md:pb-24',
-  // Capa de fondo con la foto Unsplash. Usamos background-image en CSS
-  // inline (vía style) para no añadir hostnames al next.config y para no
-  // depender de next/image en una imagen 100% decorativa.
-  bgLayer: 'absolute inset-0 -z-20 bg-cover bg-center bg-no-repeat',
+  // Capa de fondo con la foto Unsplash, ahora vía next/image `fill`.
+  // `fill` ya aplica position:absolute + inset:0, así que solo añadimos
+  // el z-index editorial (-z-20 debajo del overlay) y `object-cover` para
+  // que la imagen recorte sin deformarse.
+  bgLayer: '-z-20 object-cover',
   // Overlay editorial: tinte plum oscuro arriba que funde en un blush rosa
   // cálido abajo. Da personalidad cromática a la foto sin matarla.
   overlay:
