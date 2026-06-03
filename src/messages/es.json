@@ -948,5 +948,50 @@
       "shortLabelRequesting": "Localizando…",
       "shortLabelUnavailable": "Sin ubicación"
     }
+  },
+  "designSystem": {
+    "meta": {
+      "title": "Sistema de diseño",
+      "description": "Galería interna de tokens de marca, tipografía y componentes shadcn."
+    },
+    "title": "Sistema de diseño",
+    "subtitle": "Catálogo vivo de tokens y componentes. Página interna para QA visual; no aparece en la navegación.",
+    "colors": {
+      "title": "Colores semánticos",
+      "description": "Tokens base de shadcn ya mapeados a la paleta Yeiwell (plum cálido + cremas).",
+      "sample": "Aa Texto"
+    },
+    "brand": {
+      "title": "Pastel de marca",
+      "description": "Pares saturado/soft pensados para badges, chips e iconos sobre fondos cálidos.",
+      "solid": "Saturado",
+      "soft": "Soft"
+    },
+    "typography": {
+      "title": "Tipografía",
+      "description": "Display via Fraunces para titulares; Inter como sans-serif por defecto.",
+      "displaySample": "Belleza, bienestar y deporte",
+      "headlineSample": "Reserva en segundos",
+      "leadSample": "Descubre profesionales cerca de ti con disponibilidad inmediata.",
+      "bodySample": "Texto de cuerpo estándar para descripciones de servicios, fichas y formularios.",
+      "captionSample": "Texto secundario para metadatos y ayuda contextual."
+    },
+    "buttons": {
+      "title": "Botones",
+      "description": "Variantes y tamaños del componente Button (cva).",
+      "label": "{variant} · {size}"
+    },
+    "radius": {
+      "title": "Radius",
+      "description": "Escalado de radios derivado de --radius (0.875rem)."
+    },
+    "components": {
+      "title": "Componentes",
+      "description": "Muestras vivas de los componentes shadcn instalados.",
+      "selectPlaceholder": "Elige una opción",
+      "selectOption": "Opción {index}",
+      "tabLabel": "Pestaña {index}",
+      "tabContent": "Contenido de la pestaña {index}"
+    }
   }
 }

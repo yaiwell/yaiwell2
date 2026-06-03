@@ -948,5 +948,50 @@
       "shortLabelRequesting": "Localitzant…",
       "shortLabelUnavailable": "Sense ubicació"
     }
+  },
+  "designSystem": {
+    "meta": {
+      "title": "Sistema de disseny",
+      "description": "Galeria interna dels tokens de marca, tipografia i components shadcn."
+    },
+    "title": "Sistema de disseny",
+    "subtitle": "Catàleg viu de tokens i components. Pàgina interna per a QA visual; no apareix a la navegació.",
+    "colors": {
+      "title": "Colors semàntics",
+      "description": "Tokens base de shadcn ja mapejats a la paleta Yeiwell (plum càlid + cremes).",
+      "sample": "Aa Text"
+    },
+    "brand": {
+      "title": "Pastel de marca",
+      "description": "Parelles saturat/soft pensades per a badges, xips i icones sobre fons càlids.",
+      "solid": "Saturat",
+      "soft": "Soft"
+    },
+    "typography": {
+      "title": "Tipografia",
+      "description": "Display via Fraunces per a titulars; Inter com a sans-serif per defecte.",
+      "displaySample": "Bellesa, benestar i esport",
+      "headlineSample": "Reserva en segons",
+      "leadSample": "Descobreix professionals a prop teu amb disponibilitat immediata.",
+      "bodySample": "Text de cos estàndard per a descripcions de serveis, fitxes i formularis.",
+      "captionSample": "Text secundari per a metadades i ajuda contextual."
+    },
+    "buttons": {
+      "title": "Botons",
+      "description": "Variants i mides del component Button (cva).",
+      "label": "{variant} · {size}"
+    },
+    "radius": {
+      "title": "Radius",
+      "description": "Escalat de radis derivat de --radius (0.875rem)."
+    },
+    "components": {
+      "title": "Components",
+      "description": "Mostres vives dels components shadcn instal·lats.",
+      "selectPlaceholder": "Tria una opció",
+      "selectOption": "Opció {index}",
+      "tabLabel": "Pestanya {index}",
+      "tabContent": "Contingut de la pestanya {index}"
+    }
   }
 }
