@@ -102,20 +102,20 @@
 - [ ] Onboarding de proveedor con verificación.
 - [ ] Panel admin con cola de verificación real.
 - [ ] Sistema de servicios con jerarquía de categorías editable.
-- [ ] Motor de scheduling (slots de disponibilidad reales).
+- [x] Motor de scheduling (slots de disponibilidad reales) — `availability.service` con tests vía Prisma mockeado (2026-06-03). Falta conectar a UI y al panel del proveedor.
 - [ ] Búsqueda geoespacial con PostGIS.
 - [ ] Búsqueda con PostgreSQL full-text search (tsvector + pg_trgm para fuzzy matching).
 - [ ] Flujo de reserva real con Stripe Connect.
-- [ ] Cancelación y refunds (política de 2h).
-  - El **proveedor** (autónomo o trabajador del centro) puede cancelar desde su panel siempre que falten al menos **2h** para el inicio del servicio. Por debajo de 2h, la cancelación queda bloqueada (penalización contractual; se gestiona por canal de soporte).
-  - El margen de 2h busca dar al cliente tiempo real para buscar otra opción antes de la franja reservada.
-  - Refund automático íntegro al cliente vía Stripe Connect cuando la cancela el proveedor.
-  - Política de cancelación por el cliente: TBD (Fase 1 final, probablemente full-refund hasta -2h, no-show sin refund).
-- [ ] Sistema de valoraciones (cliente → proveedor).
-  - **Solo puede valorar quien ha contratado y consumido el servicio.** Requisito doble: (a) existe un `Booking` del cliente para ese proveedor, (b) ese booking está en estado `completed` (es decir, el profesional ha marcado el servicio como finalizado desde su panel).
-  - La acción "marcar como finalizado" vive en el panel del autónomo/trabajador y es lo que desbloquea el formulario de reseña al cliente.
-  - Hasta que no se marque `completed`, el cliente no ve CTA "Valorar"; tampoco se permite valorar bookings `cancelled` ni `refunded`.
-  - Ventana para valorar: TBD (probable: 30 días desde `completed`).
+- [~] Cancelación y refunds (política de 2h).
+  - [x] Regla 2h en `booking.service.cancelBookingByProvider` (validada en Zod + servicio, no solo en UI) y antelación mínima 2h también en `createBooking` para que no nazcan reservas "incancelables" (2026-06-03).
+  - [ ] Cliente puede cancelar (política TBD): full-refund hasta -2h, no-show sin refund (probable).
+  - [ ] Refund automático íntegro al cliente vía Stripe Connect cuando la cancela el proveedor (pendiente `payments.service`).
+  - [ ] UI: bloquear botón de cancelar a <2h en panel del proveedor.
+- [~] Sistema de valoraciones (cliente → proveedor).
+  - [x] `review.service.createReview` aplica regla §4.bis: solo cliente del booking, solo si `status=completed`, ventana 30 días desde `completedAt`, unicidad por booking (2026-06-03).
+  - [x] `replyToReview` para que el proveedor responda a la reseña (2026-06-03).
+  - [ ] UI: CTA "Valorar" solo visible cuando booking pasa a `completed` desde el panel.
+  - [ ] Formulario de reseña (rating + texto + fotos opcionales).
 - [ ] Notificaciones por email (Resend).
 - [ ] 4 planes de suscripción con Stripe Billing.
 - [ ] Onboarding de proveedor con formulario manual (jerarquía categoría → tipo → subtipo).
@@ -155,5 +155,5 @@
 
 ---
 
-*Última actualización: 2026-06-03 (audit 🟠/🟡 cerrado, migración a next/image, página `/design-system`).*
+*Última actualización: 2026-06-03 (domain layer Fase 1: availability + booking + review services con tests, 181/181 verde).*
 
