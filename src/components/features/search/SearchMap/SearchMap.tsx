@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 
 import L from 'leaflet';
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 
 import type { GeoPoint } from '@/types/domain';
@@ -68,8 +68,43 @@ function MapUserLocationCenterer({ position }: { position: GeoPoint | undefined 
   const lat = position?.lat;
   const lng = position?.lng;
 
+  // Guardamos la última posición a la que volamos para distinguir el
+  // primer mount (donde el `initialCenter` del MapContainer ya pinta el
+  // mapa centrado correctamente) de un cambio real de ubicación.
+  const lastFlownTo = useRef<{ lat: number; lng: number } | null>(null);
+
   useEffect(() => {
     if (lat === undefined || lng === undefined) return;
+    // Defensa contra NaN/Infinity: si las coordenadas no son finitas,
+    // Leaflet hace `unproject(NaN)` dentro de `flyTo` y lanza
+    // `Invalid LatLng object: (NaN, NaN)`, que en producción rompe el
+    // árbol React entero (la página /buscar se quedaba en "this page
+    // couldn't load"). Mejor no hacer nada y mantener el centro inicial.
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
+
+    // Primer render: el MapContainer ya ha hecho el `center=` con estas
+    // mismas coordenadas (initialCenter == userLocation), así que no
+    // hay nada que "volar". Además, en el momento del mount el
+    // contenedor puede medir 0×0 (sobre todo cuando la columna está
+    // oculta en la pestaña "Lista" del móvil) y `flyTo` proyectaría
+    // píxeles inexistentes a latlng NaN. Anotamos la posición y
+    // salimos sin llamar a Leaflet.
+    if (lastFlownTo.current === null) {
+      lastFlownTo.current = { lat, lng };
+      return;
+    }
+
+    // No volar si la posición no ha cambiado realmente.
+    const last = lastFlownTo.current;
+    if (last.lat === lat && last.lng === lng) return;
+
+    // Última verificación: si el contenedor sigue sin tamaño (por
+    // ejemplo, la pestaña Mapa nunca se ha abierto en móvil), aplazamos
+    // el flyTo a la siguiente vez que cambie la posición.
+    const size = map.getSize();
+    if (size.x === 0 || size.y === 0) return;
+
+    lastFlownTo.current = { lat, lng };
     map.flyTo([lat, lng], Math.max(map.getZoom(), 14), {
       duration: 0.6,
     });

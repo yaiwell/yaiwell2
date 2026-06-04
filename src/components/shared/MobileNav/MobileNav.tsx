@@ -20,8 +20,14 @@ import type { MobileNavItem } from './MobileNav.types';
 const items: MobileNavItem[] = [
   { href: '/', labelKey: 'home', icon: Home },
   { href: '/buscar', labelKey: 'search', icon: Search },
-  { href: '/reservas', labelKey: 'bookings', icon: CalendarDays },
-  { href: '/perfil', labelKey: 'profile', icon: User },
+  // `/mis-reservas` es la ruta real del área cliente. La pestaña
+  // "Cuenta" apunta a `/cuenta`, una página puente que muestra CTAs de
+  // entrar/registrarse cuando no hay sesión y los accesos del usuario
+  // cuando sí la hay. Ambas rutas existen — antes apuntábamos a
+  // `/reservas` y `/perfil` que daban 404 y rompían el prefetch RSC
+  // del bottom nav.
+  { href: '/mis-reservas', labelKey: 'bookings', icon: CalendarDays },
+  { href: '/cuenta', labelKey: 'profile', icon: User },
 ];
 
 /**
