@@ -859,7 +859,37 @@
     },
     "errors": {
       "emailRequired": "Introduce tu email para continuar.",
-      "emailInvalid": "Ese email no parece válido. Revísalo e inténtalo de nuevo."
+      "emailInvalid": "Ese email no parece válido. Revísalo e inténtalo de nuevo.",
+      "passwordRequired": "Introduce tu contraseña para continuar.",
+      "invalidCredentials": "Email o contraseña incorrectos. Revisa los datos e inténtalo de nuevo.",
+      "tooManyAttempts": "Demasiados intentos seguidos. Espera unos minutos antes de volver a probar.",
+      "sessionExists": "Ya hay una sesión activa en este navegador. Cierra sesión antes de cambiar de cuenta.",
+      "networkError": "No hemos podido conectar. Revisa tu conexión e inténtalo de nuevo.",
+      "unknown": "Algo no ha ido bien. Inténtalo de nuevo en unos segundos."
+    }
+  },
+  "account": {
+    "meta": {
+      "title": "Tu cuenta",
+      "description": "Accede a tus reservas, favoritos y ajustes desde un único lugar en Yaiwell."
+    },
+    "hero": {
+      "badgeGuest": "Aún sin sesión",
+      "badgeAuthenticated": "Tu cuenta",
+      "titleGuest": "Entra o crea tu cuenta",
+      "titleAuthenticated": "Hola, ¿qué hacemos hoy?",
+      "subtitleGuest": "Inicia sesión para ver tus reservas, guardar centros favoritos y recibir confirmaciones por email.",
+      "subtitleAuthenticated": "Gestiona tus reservas, favoritos y preferencias desde un único sitio."
+    },
+    "guest": {
+      "signInCta": "Iniciar sesión",
+      "signUpCta": "Crear cuenta"
+    },
+    "authenticated": {
+      "navLabel": "Accesos de tu cuenta",
+      "bookings": "Mis reservas",
+      "favorites": "Mis favoritos",
+      "settings": "Ajustes y preferencias"
     }
   },
   "signUp": {
@@ -900,6 +930,15 @@
       "subtitle": "Une tu agenda a la de los mejores profesionales cerca de ti.",
       "footer": "Solo aceptamos profesionales verificados a mano. Calidad antes que cantidad."
     },
+    "verification": {
+      "eyebrow": "Verificación de email",
+      "title": "Confirma tu email",
+      "subtitle": "Te hemos enviado un código a {email}. Introdúcelo aquí para activar tu cuenta.",
+      "codeLabel": "Código de 6 dígitos",
+      "submit": "Confirmar y entrar",
+      "submitting": "Confirmando…",
+      "back": "Volver y cambiar mis datos"
+    },
     "errors": {
       "required": "Este campo es obligatorio.",
       "fullNameMin": "Indícanos al menos un nombre con 2 caracteres.",
@@ -907,7 +946,16 @@
       "emailInvalid": "Introduce un email válido.",
       "passwordShort": "La contraseña debe tener al menos 8 caracteres.",
       "passwordMismatch": "Las contraseñas no coinciden.",
-      "termsRequired": "Debes aceptar los términos para continuar."
+      "termsRequired": "Debes aceptar los términos para continuar.",
+      "emailAlreadyExists": "Ya existe una cuenta con este email. Prueba a entrar en su lugar.",
+      "passwordCompromised": "Esta contraseña aparece en filtraciones conocidas. Elige otra distinta.",
+      "verificationCodeInvalid": "El código no es correcto. Revísalo e inténtalo de nuevo.",
+      "verificationCodeExpired": "El código ha caducado. Vuelve atrás para recibir uno nuevo.",
+      "invalidCredentials": "Datos incorrectos. Revísalos e inténtalo de nuevo.",
+      "tooManyAttempts": "Demasiados intentos seguidos. Espera unos minutos antes de volver a probar.",
+      "sessionExists": "Ya hay una sesión activa en este navegador.",
+      "networkError": "No hemos podido conectar. Revisa tu conexión e inténtalo de nuevo.",
+      "unknown": "Algo no ha ido bien. Inténtalo de nuevo en unos segundos."
     }
   },
   "location": {

@@ -96,4 +96,18 @@ export const signUpFormStyles = {
     'pointer-events-none absolute -right-12 -top-12 size-48 rounded-full bg-brand-rose-soft opacity-70 blur-2xl dark:bg-brand-rose dark:opacity-20',
   illustrationBlob2:
     'pointer-events-none absolute -bottom-16 -left-10 size-56 rounded-full bg-brand-butter-soft opacity-60 blur-2xl dark:bg-brand-butter dark:opacity-15',
+
+  // Banner de error global (rate limit, red, código de Clerk no anclado
+  // a un campo concreto). Vive justo encima del primer campo del form.
+  rootError:
+    'rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-xs font-medium text-destructive',
+
+  // Panel de verificación OTP (fase 2): input grande monoespaciado para
+  // tracking visual del código de 6 dígitos.
+  verificationCard: 'flex flex-col gap-5',
+  verificationCodeInput:
+    'h-12 w-full rounded-xl border border-border bg-background px-3.5 text-center text-lg font-semibold tracking-[0.4em] text-foreground transition-colors focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
+  verificationActions: 'flex flex-col gap-2',
+  verificationSecondary:
+    'inline-flex h-10 w-full items-center justify-center rounded-xl text-sm font-medium text-muted-foreground transition-colors hover:text-foreground',
 } as const;

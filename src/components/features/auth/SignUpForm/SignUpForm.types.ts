@@ -1,26 +1,37 @@
 /**
  * Tipos específicos del componente SignUpForm.
  *
- * Los tipos compartidos del dominio (User, Provider, Role) viven en
- * `/types/domain.ts`. Aquí solo modelamos lo que pertenece a la UI del
- * formulario: pestañas, draft del estado y mapa de errores.
+ * Los códigos de error y el rol viven en `@/lib/auth` para que sign-in,
+ * sign-up, guards y webhook consuman el mismo contrato.
  */
+
+import type { AuthErrorCode } from '@/lib/auth';
 
 /**
  * Pestaña activa del formulario.
  *
- * - `client`: alta de un usuario final que viene a reservar servicios.
+ * - `client`: alta de un usuario final que reserva servicios.
  * - `provider`: alta de un autónomo o centro que ofrecerá servicios y
  *   pasará por verificación manual antes de salir publicado.
  */
 export type SignUpRole = 'client' | 'provider';
 
 /**
- * Estado del formulario.
+ * Fases del wizard de registro.
+ *
+ * - `form`: el usuario rellena email + contraseña + datos personales.
+ *   Al enviar disparamos `signUp.create` y `prepareEmailAddressVerification`.
+ * - `verification`: el usuario introduce el código OTP de 6 dígitos
+ *   recibido por email; al validar, completamos la sesión y redirigimos.
+ */
+export type SignUpPhase = 'form' | 'verification';
+
+/**
+ * Estado del formulario en la fase 1.
  *
  * Mantenemos un único draft para ambas pestañas y solo validamos los
- * campos relevantes a la pestaña activa. Permite cambiar de pestaña sin
- * perder lo que el usuario ya tecleó.
+ * campos relevantes a la activa. Permite cambiar de pestaña sin perder
+ * lo tecleado.
  */
 export interface SignUpDraft {
   fullName: string;
@@ -32,15 +43,23 @@ export interface SignUpDraft {
 }
 
 /**
- * Mapa de errores por campo. La clave coincide con el nombre del campo
- * en el `SignUpDraft` para poder pintar `aria-invalid` y el mensaje
- * inline sin lógica extra.
+ * Mapa de errores por campo, tipado con `AuthErrorCode`.
+ *
+ * El componente UI traduce el código a string con `Record<AuthErrorCode,
+ * string>` construido con `t()` — patrón "next-intl no acepta claves
+ * dinámicas".
  */
-export type SignUpFieldErrors = Partial<Record<keyof SignUpDraft, string>>;
+export type SignUpFieldErrors = Partial<Record<keyof SignUpDraft, AuthErrorCode>>;
 
 /**
- * Identificadores de campos. Los usamos como `id`/`htmlFor` para
- * asociar labels y mensajes de error de forma consistente.
+ * Error global no anclado a un campo concreto (rate limit, red, fallo
+ * Clerk genérico). Se pinta como banner sobre el formulario.
+ */
+export type SignUpRootError = AuthErrorCode | null;
+
+/**
+ * Identificadores de campos para asociar labels con inputs y mensajes
+ * de error.
  */
 export const SIGN_UP_FIELD_IDS = {
   fullName: 'signup-full-name',
@@ -49,4 +68,5 @@ export const SIGN_UP_FIELD_IDS = {
   password: 'signup-password',
   passwordRepeat: 'signup-password-repeat',
   acceptsTerms: 'signup-accepts-terms',
+  verificationCode: 'signup-verification-code',
 } as const;

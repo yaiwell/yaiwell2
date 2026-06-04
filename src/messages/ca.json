@@ -859,7 +859,37 @@
     },
     "errors": {
       "emailRequired": "Introdueix el teu correu per continuar.",
-      "emailInvalid": "Aquest correu no sembla vàlid. Revisa'l i torna-ho a provar."
+      "emailInvalid": "Aquest correu no sembla vàlid. Revisa'l i torna-ho a provar.",
+      "passwordRequired": "Introdueix la teva contrasenya per continuar.",
+      "invalidCredentials": "Correu o contrasenya incorrectes. Revisa les dades i torna-ho a provar.",
+      "tooManyAttempts": "Massa intents seguits. Espera uns minuts abans de tornar-ho a provar.",
+      "sessionExists": "Ja hi ha una sessió activa en aquest navegador. Tanca la sessió abans de canviar de compte.",
+      "networkError": "No hem pogut connectar. Revisa la teva connexió i torna-ho a provar.",
+      "unknown": "Alguna cosa no ha anat bé. Torna-ho a provar d'aquí uns segons."
+    }
+  },
+  "account": {
+    "meta": {
+      "title": "El teu compte",
+      "description": "Accedeix a les teves reserves, preferits i ajustos des d'un únic lloc a Yaiwell."
+    },
+    "hero": {
+      "badgeGuest": "Encara sense sessió",
+      "badgeAuthenticated": "El teu compte",
+      "titleGuest": "Entra o crea el teu compte",
+      "titleAuthenticated": "Hola, què fem avui?",
+      "subtitleGuest": "Inicia sessió per veure les teves reserves, guardar centres preferits i rebre confirmacions per email.",
+      "subtitleAuthenticated": "Gestiona les teves reserves, preferits i preferències des d'un únic lloc."
+    },
+    "guest": {
+      "signInCta": "Iniciar sessió",
+      "signUpCta": "Crear compte"
+    },
+    "authenticated": {
+      "navLabel": "Accessos del teu compte",
+      "bookings": "Les meves reserves",
+      "favorites": "Els meus preferits",
+      "settings": "Ajustos i preferències"
     }
   },
   "signUp": {
@@ -900,6 +930,15 @@
       "subtitle": "Uneix la teva agenda a la dels millors professionals a prop teu.",
       "footer": "Només acceptem professionals verificats a mà. Qualitat abans que quantitat."
     },
+    "verification": {
+      "eyebrow": "Verificació de correu",
+      "title": "Confirma el teu correu",
+      "subtitle": "T'hem enviat un codi a {email}. Introdueix-lo aquí per activar el teu compte.",
+      "codeLabel": "Codi de 6 dígits",
+      "submit": "Confirmar i entrar",
+      "submitting": "Confirmant…",
+      "back": "Tornar i canviar les meves dades"
+    },
     "errors": {
       "required": "Aquest camp és obligatori.",
       "fullNameMin": "Indica'ns com a mínim un nom de 2 caràcters.",
@@ -907,7 +946,16 @@
       "emailInvalid": "Introdueix un correu vàlid.",
       "passwordShort": "La contrasenya ha de tenir com a mínim 8 caràcters.",
       "passwordMismatch": "Les contrasenyes no coincideixen.",
-      "termsRequired": "Has d'acceptar els termes per continuar."
+      "termsRequired": "Has d'acceptar els termes per continuar.",
+      "emailAlreadyExists": "Ja existeix un compte amb aquest correu. Prova a entrar.",
+      "passwordCompromised": "Aquesta contrasenya apareix en filtracions conegudes. Tria'n una de diferent.",
+      "verificationCodeInvalid": "El codi no és correcte. Revisa'l i torna-ho a provar.",
+      "verificationCodeExpired": "El codi ha caducat. Torna enrere per rebre'n un de nou.",
+      "invalidCredentials": "Dades incorrectes. Revisa-les i torna-ho a provar.",
+      "tooManyAttempts": "Massa intents seguits. Espera uns minuts abans de tornar-ho a provar.",
+      "sessionExists": "Ja hi ha una sessió activa en aquest navegador.",
+      "networkError": "No hem pogut connectar. Revisa la teva connexió i torna-ho a provar.",
+      "unknown": "Alguna cosa no ha anat bé. Torna-ho a provar d'aquí uns segons."
     }
   },
   "location": {

@@ -1,19 +1,22 @@
 'use client';
 
+import { useUser } from '@clerk/nextjs';
+import { useSignIn } from '@clerk/nextjs/legacy';
 import { useCallback, useState, type FormEvent } from 'react';
 import { z } from 'zod';
 
 import { useRouter } from '@/i18n/navigation';
+import { getRoleFromUser, mapClerkError, resolvePostAuthDestination } from '@/lib/auth';
 
 import type { SignInDraft, SignInErrorCode, SignInRole, SignInStatus } from './SignInForm.types';
 
 /**
- * Schema mínimo de validación del formulario.
+ * Validación local mínima antes de pegar a Clerk.
  *
- * Sólo validamos lo que tiene sentido para un mock visual: email con
- * formato razonable y contraseña no vacía. Cuando integremos Clerk real,
- * el servicio de auth aplicará reglas más estrictas (longitud mínima,
- * detección de leaks, etc.).
+ * El SDK aplica reglas más estrictas (longitud, leaks, etc.) y nos
+ * devuelve códigos tipados que mapeamos via `mapClerkError`. Aquí solo
+ * filtramos el caso obvio (email vacío / sin arroba) para ahorrar un
+ * round-trip cuando es claramente inválido en cliente.
  */
 const signInSchema = z.object({
   email: z.string().trim().email(),
@@ -29,22 +32,30 @@ const initialDraft: SignInDraft = {
 };
 
 /**
- * Hook que centraliza el estado, la validación y el submit mock del
- * formulario de sign-in.
+ * Hook que centraliza el estado y el envío real del formulario de
+ * sign-in contra Clerk (headless).
  *
- * Devuelve un API estrecho y tipado para que el componente de UI sea
- * puramente presentacional. El submit hace un pequeño delay artificial
- * (600 ms) para que el spinner se aprecie y luego redirige al destino
- * que corresponde según el rol seleccionado.
+ * Flujo:
+ *  1. Validación local con Zod (email + password no vacíos).
+ *  2. `signIn.create({ identifier, password })`.
+ *  3. Si `status === 'complete'`, `setActive({ session })`.
+ *  4. Lectura del rol con `getRoleFromUser` (publicMetadata con
+ *     fallback a unsafeMetadata) y redirect con `router.replace` a
+ *     `/` o `/panel` según el rol — usamos replace para que el back
+ *     del navegador no devuelva al usuario a `/entrar`.
+ *  5. Cualquier error de Clerk se traduce a `AuthErrorCode` via
+ *     `mapClerkError` para que el componente lo pinte con i18n.
  */
 export function useSignInForm(initialRole: SignInRole = 'client') {
   const router = useRouter();
+  const { signIn, setActive, isLoaded } = useSignIn();
+  const { user } = useUser();
+
   const [role, setRole] = useState<SignInRole>(initialRole);
   const [draft, setDraft] = useState<SignInDraft>(initialDraft);
   const [status, setStatus] = useState<SignInStatus>('idle');
-  // Almacenamos un código de error tipado para que el componente lo
-  // traduzca con next-intl. Usar una unión literal (no `string`) permite
-  // que el helper `t` mantenga su tipado estricto en el sitio de llamada.
+  // Código tipado para que el componente UI lo traduzca con next-intl
+  // sin perder el tipado estricto (rechaza claves dinámicas).
   const [errorCode, setErrorCode] = useState<SignInErrorCode | null>(null);
 
   const updateDraft = useCallback((patch: Partial<SignInDraft>) => {
@@ -59,30 +70,51 @@ export function useSignInForm(initialRole: SignInRole = 'client') {
     async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
+      // Validación local: distinguimos email vacío de email inválido
+      // porque el copy editorial cambia ("requerido" vs "formato").
       const parsed = signInSchema.safeParse(draft);
       if (!parsed.success) {
-        // Distinguimos email vacío de email inválido porque el copy
-        // editorial cambia ("requerido" vs "formato incorrecto").
         const emailValue = draft.email.trim();
         setErrorCode(emailValue.length === 0 ? 'emailRequired' : 'emailInvalid');
         setStatus('error');
         return;
       }
 
+      // Esperamos a que Clerk termine de hidratarse antes de enviar.
+      // Si el usuario clica muy rápido tras el primer paint, volvemos
+      // silenciosamente y el siguiente render disparará el botón.
+      if (!isLoaded || !signIn) return;
+
       setStatus('submitting');
       setErrorCode(null);
 
-      // Mock de latencia: en producción aquí llamaríamos al SDK de Clerk.
-      // 600 ms es suficiente para que el spinner se perciba sin frustrar.
-      await new Promise((resolve) => {
-        setTimeout(resolve, 600);
-      });
+      try {
+        const result = await signIn.create({
+          identifier: draft.email.trim(),
+          password: draft.password,
+        });
 
-      // Destino post-login según rol: cliente al feed, proveedor al panel.
-      const destination = role === 'provider' ? '/panel' : '/';
-      router.push(destination);
+        if (result.status === 'complete' && result.createdSessionId) {
+          await setActive({ session: result.createdSessionId });
+          // Tras setActive `user` todavía puede ser null durante un
+          // tick; el rol siempre puede leerse luego del redirect, pero
+          // intentamos resolverlo aquí para acertar al primer destino.
+          const resolvedRole = getRoleFromUser(user);
+          router.replace(resolvePostAuthDestination(resolvedRole));
+          return;
+        }
+
+        // Si Clerk devuelve un status intermedio (2FA, verificación
+        // pendiente) lo tratamos como error genérico — el flujo MVP
+        // no contempla 2FA todavía.
+        setErrorCode('unknown');
+        setStatus('error');
+      } catch (err) {
+        setErrorCode(narrowErrorCode(mapClerkError(err)));
+        setStatus('error');
+      }
     },
-    [draft, role, router],
+    [draft, isLoaded, router, setActive, signIn, user],
   );
 
   return {
@@ -94,4 +126,25 @@ export function useSignInForm(initialRole: SignInRole = 'client') {
     errorCode,
     handleSubmit,
   };
+}
+
+/**
+ * Restringe el `AuthErrorCode` global al subconjunto que SignIn
+ * puede mostrar. Si el mapeo devuelve un código no aplicable (p.ej.
+ * `passwordTooShort`, propio de sign-up), caemos a `'unknown'`.
+ */
+function narrowErrorCode(code: ReturnType<typeof mapClerkError>): SignInErrorCode {
+  switch (code) {
+    case 'emailRequired':
+    case 'emailInvalid':
+    case 'passwordRequired':
+    case 'invalidCredentials':
+    case 'tooManyAttempts':
+    case 'sessionExists':
+    case 'networkError':
+    case 'unknown':
+      return code;
+    default:
+      return 'unknown';
+  }
 }

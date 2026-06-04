@@ -1,10 +1,13 @@
+import { auth, currentUser } from '@clerk/nextjs/server';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import type { Metadata } from 'next';
 
-import { routing } from '@/i18n/routing';
 import { SignInForm } from '@/components/features/auth';
+import { redirect } from '@/i18n/navigation';
+import { routing } from '@/i18n/routing';
+import { getRoleFromUser, resolvePostAuthDestination } from '@/lib/auth';
 
 interface SignInPageProps {
   // En Next.js 16 los `params` de los segmentos dinámicos son asíncronos.
@@ -31,11 +34,13 @@ export async function generateMetadata({ params }: SignInPageProps): Promise<Met
 }
 
 /**
- * Pantalla `/entrar` (sign-in mock).
+ * Pantalla `/entrar` (sign-in real con Clerk headless).
  *
- * Server Component que sólo valida el locale, fija el contexto i18n y
- * renderiza el formulario interactivo (Client Component). Toda la lógica
- * de UI vive en `SignInForm`.
+ * Server Component que valida el locale, fija el contexto i18n y, si el
+ * usuario ya tiene sesión, lo redirige directamente a su área (cliente
+ * → `/`, proveedor → `/panel`). Esto evita que un usuario logueado vea
+ * el formulario de entrada — es la primera capa del guard de auth, la
+ * segunda vivirá en los layouts privados (`/panel`, etc.).
  */
 export default async function SignInPage({ params }: SignInPageProps) {
   const { locale } = await params;
@@ -45,6 +50,17 @@ export default async function SignInPage({ params }: SignInPageProps) {
   }
 
   setRequestLocale(locale);
+
+  // Guard: si ya hay sesión activa, mandamos al usuario a su destino
+  // según rol. Usamos `currentUser()` porque el rol vive en
+  // `publicMetadata` (con fallback a `unsafeMetadata`) y ese fetch no
+  // sale del runtime del Server Component.
+  const { userId } = await auth();
+  if (userId) {
+    const user = await currentUser();
+    const role = getRoleFromUser(user);
+    redirect({ href: resolvePostAuthDestination(role), locale });
+  }
 
   return <SignInForm />;
 }

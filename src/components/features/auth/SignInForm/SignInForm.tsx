@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 import { useSignInForm } from './SignInForm.logic';
 import { signInStyles as s } from './SignInForm.styles';
-import type { SignInRole } from './SignInForm.types';
+import type { SignInErrorCode, SignInRole } from './SignInForm.types';
 
 /**
  * Formulario de sign-in mock.
@@ -26,16 +26,26 @@ export function SignInForm() {
   const { role, setRole, draft, updateDraft, status, errorCode, handleSubmit } = useSignInForm();
 
   const isSubmitting = status === 'submitting';
-  const emailErrorId = errorCode ? 'sign-in-email-error' : undefined;
-  // Mapeo explícito código → mensaje traducido. Mantenerlo aquí en lugar
-  // de pasar la clave dinámica a `t()` preserva el tipado estricto de
-  // next-intl (rechaza strings dinámicos por seguridad).
-  const errorMessage =
-    errorCode === 'emailRequired'
-      ? t('errors.emailRequired')
-      : errorCode === 'emailInvalid'
-        ? t('errors.emailInvalid')
-        : null;
+  // Errores de campo (email/password) anclan el mensaje al input; errores
+  // globales (rate limit, red, credenciales) van al banner superior.
+  // Mantenemos el mapeo como `Record` exhaustivo porque next-intl rechaza
+  // claves dinámicas y queremos que añadir un código nuevo en el union
+  // obligue a actualizar este mapping (el compilador lo marcará).
+  const errorMessages: Record<SignInErrorCode, string> = {
+    emailRequired: t('errors.emailRequired'),
+    emailInvalid: t('errors.emailInvalid'),
+    passwordRequired: t('errors.passwordRequired'),
+    invalidCredentials: t('errors.invalidCredentials'),
+    tooManyAttempts: t('errors.tooManyAttempts'),
+    sessionExists: t('errors.sessionExists'),
+    networkError: t('errors.networkError'),
+    unknown: t('errors.unknown'),
+  };
+  const isEmailError = errorCode === 'emailRequired' || errorCode === 'emailInvalid';
+  const emailErrorId = isEmailError ? 'sign-in-email-error' : undefined;
+  const rootErrorId = errorCode && !isEmailError ? 'sign-in-root-error' : undefined;
+  const emailErrorMessage = isEmailError ? errorMessages[errorCode] : null;
+  const rootErrorMessage = errorCode && !isEmailError ? errorMessages[errorCode] : null;
 
   return (
     <section className={s.root} data-component="sign-in">
@@ -103,6 +113,17 @@ export function SignInForm() {
               noValidate
               data-component="sign-in-form"
             >
+              {rootErrorMessage ? (
+                <p
+                  id={rootErrorId}
+                  className={s.errorText}
+                  role="alert"
+                  data-component="sign-in-root-error"
+                >
+                  {rootErrorMessage}
+                </p>
+              ) : null}
+
               <div className={s.field}>
                 <label htmlFor="sign-in-email" className={s.label}>
                   {t('fields.emailLabel')}
@@ -117,19 +138,19 @@ export function SignInForm() {
                   placeholder={t('fields.emailPlaceholder')}
                   value={draft.email}
                   onChange={(event) => updateDraft({ email: event.target.value })}
-                  aria-invalid={errorCode !== null}
+                  aria-invalid={isEmailError}
                   aria-describedby={emailErrorId}
                   required
                   data-component="sign-in-email"
                 />
-                {errorMessage ? (
+                {emailErrorMessage ? (
                   <p
                     id={emailErrorId}
                     className={s.errorText}
                     role="alert"
                     data-component="sign-in-error"
                   >
-                    {errorMessage}
+                    {emailErrorMessage}
                   </p>
                 ) : null}
               </div>
