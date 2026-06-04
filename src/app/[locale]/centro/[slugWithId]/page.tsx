@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: ProviderPageProps): Promise<M
   const description = provider.description[locale as 'es' | 'ca'] ?? provider.description.es;
 
   return {
-    title: `${provider.name} · Yeiwell`,
+    title: `${provider.name} · Yaiwell`,
     description,
     openGraph: {
       title: provider.name,

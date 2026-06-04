@@ -1,13 +1,13 @@
 @AGENTS.md
 
-# CLAUDE.md — Yeiwell
+# CLAUDE.md — Yaiwell
 
 > Este archivo es leído automáticamente por Claude Code al iniciar sesión en este repo.
 > Mantenlo denso pero práctico. Si una sección crece mucho, muévela a un archivo dedicado.
 
 ---
 
-## 1. Qué es Yeiwell
+## 1. Qué es Yaiwell
 
 Marketplace web (y futuro móvil) de servicios de **belleza, bienestar y deporte** con foco en **disponibilidad inmediata** y **curación premium**.
 

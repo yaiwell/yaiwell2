@@ -1,4 +1,4 @@
-// Esquema de base de datos de Yeiwell.
+// Esquema de base de datos de Yaiwell.
 //
 // Source of truth canónica para el modelo de datos del marketplace.
 // Mantener sincronizado con `src/types/domain.ts` (UI) y con CLAUDE.md §4

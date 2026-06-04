@@ -54,7 +54,7 @@ const linkGroups: FooterLinkGroup[] = [
 export function Footer() {
   const tFooter = useTranslations('footer');
   const tCommon = useTranslations('common');
-  // Año dinámico calculado en render. Yeiwell se renderiza por locale en
+  // Año dinámico calculado en render. Yaiwell se renderiza por locale en
   // build time, pero como el contenido es estático no nos preocupa el SSG
   // momentáneo (cuando el año cambie un rebuild lo actualizará).
   const year = new Date().getFullYear();

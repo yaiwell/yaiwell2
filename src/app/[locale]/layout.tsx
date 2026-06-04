@@ -15,7 +15,10 @@ import {
 } from '@/components/shared';
 import { ThemeProvider } from '@/components/shared/ThemeToggle';
 import { SkipToContent } from '@/components/shared/SkipToContent';
-import { COOKIE_NAME as LOCATION_COOKIE_NAME, readLocationFromHeaders } from '@/lib/services/location';
+import {
+  COOKIE_NAME as LOCATION_COOKIE_NAME,
+  readLocationFromHeaders,
+} from '@/lib/services/location';
 import { isThemePreference, THEME_COOKIE_NAME, type ThemePreference } from '@/lib/utils/theme';
 
 import '../globals.css';
@@ -55,7 +58,7 @@ const SITE_URL =
  * Genera los metadatos SEO por locale.
  *
  * Incluye:
- *  - `title` con plantilla `%s | Yeiwell` para que las páginas hijas
+ *  - `title` con plantilla `%s | Yaiwell` para que las páginas hijas
  *    solo definan su título específico.
  *  - `description` editorial traducible.
  *  - `openGraph` y `twitter` con imagen por defecto en /og-default.png
@@ -81,10 +84,10 @@ export async function generateMetadata({
     metadataBase: new URL(SITE_URL),
     title: {
       default: t('defaultTitle'),
-      template: '%s | Yeiwell',
+      template: '%s | Yaiwell',
     },
     description: t('defaultDescription'),
-    applicationName: 'Yeiwell',
+    applicationName: 'Yaiwell',
     alternates: {
       canonical: canonicalPath,
       languages: {
@@ -95,7 +98,7 @@ export async function generateMetadata({
     },
     openGraph: {
       type: 'website',
-      siteName: 'Yeiwell',
+      siteName: 'Yaiwell',
       title: t('defaultTitle'),
       description: t('defaultDescription'),
       url: canonicalPath,

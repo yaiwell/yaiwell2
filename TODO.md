@@ -1,4 +1,4 @@
-# TODO.md — Yeiwell
+# TODO.md — Yaiwell
 
 > Lista viva de tareas pendientes. Cuando se completa una tarea, se mueve a `DO.md` con fecha.
 > Nuevas tareas descubiertas durante el trabajo se añaden aquí antes de continuar.

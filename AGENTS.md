@@ -6,7 +6,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ---
 
-# AGENTS.md — Orquestación de subagentes en Yeiwell
+# AGENTS.md — Orquestación de subagentes en Yaiwell
 
 > Este archivo le dice al agente orquestador **cuántos subagentes lanzar, de qué tipo, con qué prompt y en qué orden**, para cada clase de tarea habitual en este repo.
 >

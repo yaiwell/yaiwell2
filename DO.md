@@ -1,4 +1,4 @@
-# DO.md — Yeiwell
+# DO.md — Yaiwell
 
 > Registro de tareas completadas. Cada entrada incluye fecha (YYYY-MM-DD) y descripción breve.
 > Las tareas se mueven aquí desde `TODO.md` cuando se terminan.
@@ -7,6 +7,10 @@
 ---
 
 ## 2026-06
+
+### 2026-06-04
+
+- **Rebrand Yeiwell → Yaiwell en toda la app.** Confirmados los dominios definitivos `yaiwell.com` + `yaiwell.app`. Rename mecánico (playbook P5 de AGENTS.md): 46 ficheros, 129 sustituciones (`Yeiwell` → `Yaiwell` + `yeiwell` → `yaiwell`). Cubre i18n (es+ca: 39 strings), `package.json` (`"name": "yaiwell"`), schema Prisma, clases CSS (`.yaiwell-user-pin`, `.yaiwell-map-popup`, `@keyframes yaiwell-user-pulse`), cookies (`yaiwell-theme`, `yaiwell_user_location`, `yaiwell:location-banner-dismissed`), tests, docs (CLAUDE.md, AGENTS.md, README, VISION, TEST, COMPONENTS, audits), `og-default.svg`, `eslint.config.mjs`, `commitlint.config.mjs`. `typecheck` + `lint` + 181/181 tests verde.
 
 ### 2026-06-03
 
@@ -26,7 +30,7 @@
 
 - **Catálogo de playbooks en `AGENTS.md`.** Reescrito de un aviso suelto de Next.js 16 a un catálogo de **11 playbooks** (P1–P11) que el agente orquestador consulta al inicio de cada tarea para decidir cuántos subagentes lanzar, de qué tipo (Explore / Plan / general-purpose / claude-code-guide / statusline-setup), en paralelo o serial, con qué prompt base y criterio de éxito. Cubre bugfix, feature pequeña/mediana/grande, refactor cross-cutting, migración de dependencia, auditoría de diseño/UX, auditoría técnica, exploración del repo, code review pre-PR, i18n review. Anti-patterns explícitos (no commitear desde subagentes, no usar para <3 tool calls, no paralelizar lo que se pisa sin worktrees). Reforzado en §7 de `CLAUDE.md`: el agente busca encaje con un playbook y ejecuta **sin preguntar**. Commits `bad8882` (AGENTS.md), `5b1c11e` (CLAUDE.md §7).
 
-- **Renombrado Beauly → Yeiwell en toda la app.** Cambio de marca sin tocar colores ni identidad visual. 43 ficheros / 123 sustituciones: textos i18n (es+ca), copy marketing, footer, 404, OG image, package.json + package-lock.json (`"name": "yeiwell"`), clases CSS internas (`.yeiwell-user-pin`, `.yeiwell-map-popup`, `@keyframes yeiwell-user-pulse`), claves de almacenamiento (cookie de tema `yeiwell-theme`, cookie de ubicación `yeiwell_user_location`, dismiss key `yeiwell:location-banner-dismissed`), tests, docs y emails de fixture. `typecheck` / `lint` / 148 tests verde. Commit `f9a6147`.
+- **Renombrado Beauly → Yeiwell en toda la app.** Cambio de marca sin tocar colores ni identidad visual. 43 ficheros / 123 sustituciones: textos i18n (es+ca), copy marketing, footer, 404, OG image, package.json + package-lock.json, clases CSS internas, claves de almacenamiento, tests, docs y emails de fixture. `typecheck` / `lint` / 148 tests verde. Commit `f9a6147`. (NOTA: el 2026-06-04 todo "Yeiwell" se renombró de nuevo a "Yaiwell" al confirmarse los dominios `yaiwell.com/.app`.)
 
 ### 2026-05-28
 
@@ -44,7 +48,7 @@
   - **`ProviderCard`** muestra pill `MapPin` + distancia formateada vía `formatDistance(meters, locale)`. Cuando `hasRealLocation === false` añade `*` y `title` con tooltip i18n `"Distancia estimada desde el centro de Barcelona (sin tu ubicación real)."`. Sin distancia → no se renderiza el pill (fallback a `provider.distanceKm` legacy si existe).
   - **`FiltersBar`** gana chip "Cerca de ti" con `Navigation` icon antes del toggle "ahora". Variante activa `border-brand-sky/40 bg-brand-sky-soft text-brand-sky`. `aria-label` interpolado con radio en km (`Filtrar a profesionales en un radio de {radius} km`).
   - **`SearchMap`** acepta `userLocation?: GeoPoint` y `hasRealLocation?: boolean`. Nuevo subcomponente `MapUserLocationCenterer` que usa `flyTo` (zoom mín. 14, duración 0.6s) cuando cambia la posición — deps primitivos (`lat`, `lng`) para evitar re-disparos por identidad de objeto. Marker propio con `divIcon` 44×44: HTML pulsante azul (`--brand-sky` halo + dot) si GPS real, pin neutro discreto (`--muted-foreground`) si fallback. Popup informativo con `youAreHere` / `fallbackCenter`. `zIndexOffset={-100}` para que los pines de proveedor queden por encima.
-  - **Animación CSS** en `globals.css`: `@keyframes yeiwell-user-pulse` + `.yeiwell-user-pin .yeiwell-user-pin-halo` con `prefers-reduced-motion: reduce` que la desactiva. Las keyframes viven en globals porque Leaflet inyecta el HTML del divIcon directamente al DOM.
+  - **Animación CSS** en `globals.css`: `@keyframes yaiwell-user-pulse` + `.yaiwell-user-pin .yaiwell-user-pin-halo` con `prefers-reduced-motion: reduce` que la desactiva. Las keyframes viven en globals porque Leaflet inyecta el HTML del divIcon directamente al DOM.
   - **Empty state contextual** en `SearchView`: cuando `nearMeYieldedEmpty`, oculta la lista y muestra título "Nada en {radius} km a la redonda" + subtítulo + CTA "Quitar filtro 'Cerca de ti'" que invoca `handleDisableNearMe`. Estilos en `SearchView.styles.ts` con tokens semánticos (`bg-card`, `border-border`, `text-foreground`, `text-muted-foreground`).
   - **i18n:** nuevas claves en `search.*` (es+ca): `empty.nearMeTitle|nearMeSubtitle|disableNearMeCta`, `card.distanceShort|distanceFromFallback|distanceFromFallbackHint`, `map.youAreHere|fallbackCenter`, `nearMeChip`, `nearMeChipAria`. Sin tocar el resto del namespace.
   - **Tests (Vitest):** `SearchView.nearMe.test.tsx` con 5 tests cubriendo orden ascendente por proximidad, filtrado por radio al activar el toggle, `nearMeYieldedEmpty`/`handleDisableNearMe`, propagación de `hasRealLocation`, y verificación de que `NEAR_ME_RADIUS_METERS` se respeta en el filtro (punto al borde permanece). Mockea `useUserLocation` con `vi.mock(...)` + factory para controlar posición y bandera real/fallback. Suite global pasa **148/148** en 27 archivos.
@@ -73,7 +77,7 @@
 
 - **Bloque G — Pulido final del esqueleto (ronda 3 multi-agente).** 3 agentes en paralelo + revisión a11y/i18n.
   - **G1 — Microinteracciones.** Patrón unificado en 19 `.styles.ts`: `transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98|95]`. `disabled:active:scale-100` para evitar press en estados deshabilitados (`MockPaymentStep`). Sin librerías de animación.
-  - **G2 — Modo oscuro funcional + SEO básico.** Tokens dark en `globals.css` (chart-* incluidos). Toggle de tema (`ThemeToggle` con variantes desktop dropdown + mobile compact) y `ThemeProvider` que persiste preferencia en cookie (NO localStorage por CLAUDE.md §6). Script anti-FOUC inline en `<head>` lee la cookie y resuelve "system" con `matchMedia` antes del primer render. Cookie SSR → `initialPreference` para no desincronizar. `lib/utils/theme.ts` con type guards + 12 tests. Metadata Next.js: title template `%s | Yeiwell`, `metadataBase` con `VERCEL_URL` fallback, OG + Twitter con `/og-default.svg`, `alternates.languages` (hreflang es/ca/x-default), `robots` allow. `app/sitemap.ts` + `app/robots.ts`. Namespaces nuevos `theme` y `seo`.
+  - **G2 — Modo oscuro funcional + SEO básico.** Tokens dark en `globals.css` (chart-* incluidos). Toggle de tema (`ThemeToggle` con variantes desktop dropdown + mobile compact) y `ThemeProvider` que persiste preferencia en cookie (NO localStorage por CLAUDE.md §6). Script anti-FOUC inline en `<head>` lee la cookie y resuelve "system" con `matchMedia` antes del primer render. Cookie SSR → `initialPreference` para no desincronizar. `lib/utils/theme.ts` con type guards + 12 tests. Metadata Next.js: title template `%s | Yaiwell`, `metadataBase` con `VERCEL_URL` fallback, OG + Twitter con `/og-default.svg`, `alternates.languages` (hreflang es/ca/x-default), `robots` allow. `app/sitemap.ts` + `app/robots.ts`. Namespaces nuevos `theme` y `seo`.
   - **G3 — Auditoría responsive + a11y + i18n.** Informe en `docs/audit-2026-05-27.md` (21 issues: 5🔴 + 10🟠 + 6🟡). Sin modificación de código, solo diagnóstico.
   - **Fixes 🔴 críticos del audit aplicados.** `aria-label` hardcodeados extraídos a i18n: `LangSwitcher` (`langSwitcher.groupLabel`), `ProviderGallery` (`providerGallery.{galleryLabel,prev,next,goToPhoto,viewPhoto}` con interpolación `{index}`), `ProviderHeader` (`providerDetail.header.ratingGroupLabel`). `<nav>` con `aria-label` distintos por contexto: `Header` (`nav.primaryNavLabel`), `MobileNav` (`nav.bottomNavLabel`), `PanelLayout` (`providerPanel.nav.{sidebarNavLabel,bottomNavLabel}`). Nuevo `SkipToContent` (Server, sr-only hasta focus, salta a `<main id="main">`) montado como primer elemento focusable del layout `[locale]`, con copy `nav.skipToContent`. Claves añadidas en es.json y ca.json.
   - **Validaciones:** `tsc --noEmit` limpio, `npm run lint` limpio, `npm run test -- --run` 112/112 verde (20 archivos).
@@ -118,7 +122,7 @@
 
 
 
-- **Prototipo visible: landing + búsqueda con mapa funcionando en Vercel** (https://yeiwell-ten.vercel.app). Construido en paralelo por 2 agentes coordinados por verticales sin solape de archivos.
+- **Prototipo visible: landing + búsqueda con mapa funcionando en Vercel** (https://yaiwell-ten.vercel.app). Construido en paralelo por 2 agentes coordinados por verticales sin solape de archivos.
 - **Vertical de búsqueda (`/buscar`):**
   - Datos fake creíbles de Barcelona: 10 proveedores con coordenadas reales (Eixample, Gràcia, Sant Antoni, Born, Sarrià, Poblenou, Pedralbes, Raval, Sant Gervasi), 30 servicios con precios calibrados a BCN 2026, generador determinista de disponibilidad (~40% ahora / ~30% pronto / ~30% ocupado) por hash de providerId.
   - Capa de servicios Supabase-ready en `src/lib/services/providers/`: `providers.repository.ts` es la frontera de swap (hoy fake, mañana Prisma, misma firma), `providers.service.ts` con `searchProviders` (filtros + Haversine + ordenación), Zod schemas, errores tipados.
@@ -128,7 +132,7 @@
   - Tipos compartidos en `src/types/domain.ts` para la futura app móvil.
   - Deps añadidas: `zod`, `react-leaflet@5`, `leaflet@1.9`, `@types/leaflet`.
 - **Shell de app + landing:**
-  - Header sticky (logo Yeiwell, nav, LangSwitcher es/ca, botones placeholder, hamburguesa mobile), MobileNav bottom tab bar con safe-area-inset iOS (4 tabs), Footer (3 columnas + redes + copyright), LangSwitcher pill que preserva pathname con `useRouter().replace(pathname, { locale })`.
+  - Header sticky (logo Yaiwell, nav, LangSwitcher es/ca, botones placeholder, hamburguesa mobile), MobileNav bottom tab bar con safe-area-inset iOS (4 tabs), Footer (3 columnas + redes + copyright), LangSwitcher pill que preserva pathname con `useRouter().replace(pathname, { locale })`.
   - Layout `[locale]/layout.tsx` integra el shell preservando `setRequestLocale`, `NextIntlClientProvider`, `generateStaticParams`, `hasLocale`. Padding inferior en `<main>` para no quedar tapado por el MobileNav.
   - Landing `/` con 5 secciones premium-cálidas (paleta stone): Hero (título 2 líneas + buscador estilo Airbnb que navega a `/buscar` con searchParams), CategoryGrid (8 categorías scroll horizontal mobile / grid 4 col desktop), HowItWorks (3 pasos), DifferentiatorCards (3 ventajas), FinalCTA.
   - Imágenes Unsplash con `background-image` CSS (no `next/image`) para evitar configurar `remotePatterns` y porque son decorativas sin carga semántica. URLs verificadas con curl HTTP 200.
@@ -140,11 +144,11 @@
 
 ### 2026-05-20
 
-- **Deploy en Vercel funcionando: https://yeiwell-ten.vercel.app**
+- **Deploy en Vercel funcionando: https://yaiwell-ten.vercel.app**
   - `/` sirve castellano ("Belleza, bienestar y deporte cuando tú quieras"), `/ca` sirve catalán ("Bellesa, benestar i esport quan tu vulguis"). Build de producción con Turbopack.
   - Obstáculo resuelto en el camino: Vercel Hobby bloquea deploys cuyo commit author no está vinculado a la cuenta. Los commits iniciales usaban `jgraells@vteq.es` (email del trabajo) en lugar de `jorgegraellsgarcia@gmail.com` (cuenta de Vercel/GitHub). Solución aplicada: reescritura del author de los 7 commits con `git filter-branch --env-filter` y force-push a `main`. Repo fresco sin colaboradores, riesgo cero. Configurado `git config --local user.email "jorgegraellsgarcia@gmail.com"` para que los commits futuros desde este entorno salgan correctos sin volver a tocar nada.
   - ✅ **Bloque A de TODO.md completado.**
-- **Repositorio publicado en GitHub:** [jorgegraells/yeiwell](https://github.com/jorgegraells/yeiwell). Branch renombrado `master` → `main`. Estado anterior (initial commit + bootstrap + tooling + shadcn) reagrupado en 4 commits temáticos siguiendo Conventional Commits en castellano: `chore: añadir documentación base`, `style: reformatear archivos generados por create-next-app`, `build: configurar tooling de calidad`, `feat: instalar shadcn/ui con paleta stone`. Añadido `.claude/` al `.gitignore` (preferencias locales del cliente).
+- **Repositorio publicado en GitHub:** [jorgegraells/yaiwell](https://github.com/jorgegraells/yaiwell). Branch renombrado `master` → `main`. Estado anterior (initial commit + bootstrap + tooling + shadcn) reagrupado en 4 commits temáticos siguiendo Conventional Commits en castellano: `chore: añadir documentación base`, `style: reformatear archivos generados por create-next-app`, `build: configurar tooling de calidad`, `feat: instalar shadcn/ui con paleta stone`. Añadido `.claude/` al `.gitignore` (preferencias locales del cliente).
 - **next-intl configurado con `es` (por defecto) y `ca`.**
   - Instalado `next-intl ^4.12.0` como dependencia de producción.
   - `src/i18n/routing.ts` con `defineRouting({ locales: ['es','ca'], defaultLocale: 'es', localePrefix: 'as-needed' })`. Decisión: `as-needed` → `/` sirve castellano sin prefijo (mercado primario, URLs limpias), `/ca/...` sirve catalán.

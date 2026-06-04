@@ -14,14 +14,12 @@ interface ForProvidersPageProps {
 /**
  * Genera los metadatos SEO de la landing /profesionales.
  *
- * Hereda el template `%s | Yeiwell` definido en el layout raíz, así que
+ * Hereda el template `%s | Yaiwell` definido en el layout raíz, así que
  * sólo aportamos el título específico ("Para profesionales") y una
  * description orientada a SEO comercial (palabras clave: marketplace,
  * gratis, sin permanencia).
  */
-export async function generateMetadata({
-  params,
-}: ForProvidersPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: ForProvidersPageProps): Promise<Metadata> {
   const { locale } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
 

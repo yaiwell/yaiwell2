@@ -13,7 +13,7 @@ interface SignUpPageProps {
 
 /**
  * Metadatos SEO de la pantalla de registro. El título se compone con
- * la plantilla del layout (`%s | Yeiwell`) por lo que aquí solo damos
+ * la plantilla del layout (`%s | Yaiwell`) por lo que aquí solo damos
  * la parte específica.
  */
 export async function generateMetadata({ params }: SignUpPageProps): Promise<Metadata> {

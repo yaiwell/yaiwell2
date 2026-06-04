@@ -1,4 +1,4 @@
-# Yeiwell
+# Yaiwell
 
 Marketplace de servicios de **belleza, bienestar y deporte** con foco en disponibilidad inmediata y curación premium.
 
@@ -27,8 +27,8 @@ Marketplace de servicios de **belleza, bienestar y deporte** con foco en disponi
 
 ```bash
 # 1. Clonar el repo
-git clone <repo-url> yeiwell
-cd yeiwell
+git clone <repo-url> yaiwell
+cd yaiwell
 
 # 2. Instalar dependencias
 npm install
@@ -114,7 +114,7 @@ npm run i18n:check       # verificar claves faltantes en cada locale
 ## Estructura del proyecto
 
 ```
-yeiwell/
+yaiwell/
 ├── CLAUDE.md              ← contexto técnico (leído por Claude Code)
 ├── VISION.md              ← visión de producto
 ├── TODO.md                ← tareas pendientes

@@ -35,10 +35,10 @@ vi.mock('@/i18n/navigation', async () => {
 const messages = {
   signIn: {
     meta: {
-      title: 'Entrar · Yeiwell',
-      description: 'Accede a tu cuenta Yeiwell.',
+      title: 'Entrar · Yaiwell',
+      description: 'Accede a tu cuenta Yaiwell.',
     },
-    title: 'Entra en Yeiwell',
+    title: 'Entra en Yaiwell',
     subtitle: 'Reserva belleza y bienestar en segundos.',
     aside: {
       badge: 'Acceso',
@@ -102,7 +102,7 @@ describe('SignInForm', () => {
     renderForm();
 
     // El título h1 es la entrada visible principal.
-    expect(screen.getByRole('heading', { level: 1, name: 'Entra en Yeiwell' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Entra en Yaiwell' })).toBeInTheDocument();
 
     // Las dos pestañas existen y son accesibles por rol.
     expect(screen.getByRole('tab', { name: 'Soy cliente' })).toBeInTheDocument();
@@ -130,7 +130,7 @@ describe('SignInForm', () => {
     const user = userEvent.setup();
     renderForm();
 
-    await user.type(screen.getByLabelText('Email'), 'jorge@yeiwell.com');
+    await user.type(screen.getByLabelText('Email'), 'jorge@yaiwell.com');
     await user.type(screen.getByLabelText('Contraseña'), 'super-secret');
     await user.click(screen.getByRole('button', { name: 'Entrar' }));
 

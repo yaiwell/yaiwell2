@@ -10,11 +10,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import type { GeoPoint } from '@/types/domain';
 
 import { MapProviderPopup } from './MapProviderPopup';
-import {
-  buildPinHtml,
-  buildUserLocationHtml,
-  searchMapStyles as s,
-} from './SearchMap.styles';
+import { buildPinHtml, buildUserLocationHtml, searchMapStyles as s } from './SearchMap.styles';
 import type { SearchMapProps } from './SearchMap.types';
 
 /**
@@ -115,7 +111,7 @@ export function SearchMap({
   // o fallback (pin neutro discreto con tooltip explicativo).
   const userIcon = userLocation
     ? L.divIcon({
-        className: 'yeiwell-user-pin',
+        className: 'yaiwell-user-pin',
         html: buildUserLocationHtml(hasRealLocation),
         // Halo de hasta 44x44 cuando es real; mantenemos un tamaño
         // generoso para que el anchor no descoloque la posición.
@@ -155,15 +151,15 @@ export function SearchMap({
             zIndexOffset={-100}
             title={userTooltip}
           >
-            <Popup closeButton={false} offset={[0, -10]} className="yeiwell-map-popup">
-              <span className="block px-3 py-2 text-xs text-foreground">{userTooltip}</span>
+            <Popup closeButton={false} offset={[0, -10]} className="yaiwell-map-popup">
+              <span className="text-foreground block px-3 py-2 text-xs">{userTooltip}</span>
             </Popup>
           </Marker>
         )}
 
         {providers.map((p) => {
           const icon = L.divIcon({
-            className: 'yeiwell-pin',
+            className: 'yaiwell-pin',
             html: buildPinHtml(p.availability.status, p.id === highlightedId),
             iconSize: [22, 22],
             iconAnchor: [11, 11],
@@ -181,7 +177,7 @@ export function SearchMap({
                 click: () => onHoverProvider(p.id),
               }}
             >
-              <Popup closeButton autoPan offset={[0, -6]} className="yeiwell-map-popup">
+              <Popup closeButton autoPan offset={[0, -6]} className="yaiwell-map-popup">
                 <MapProviderPopup
                   provider={p}
                   onPrimaryAction={

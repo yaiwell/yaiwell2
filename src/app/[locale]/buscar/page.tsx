@@ -21,7 +21,7 @@ interface SearchPageProps {
  * Sin `generateMetadata` propio la página heredaba el `defaultTitle` del
  * layout, que es la copy de la home — no aporta valor SEO al search
  * (audit 2026-05-27 §🟠 4). Aquí definimos un title específico que la
- * plantilla `%s | Yeiwell` del layout completa con sufijo de marca.
+ * plantilla `%s | Yaiwell` del layout completa con sufijo de marca.
  */
 export async function generateMetadata({
   params,

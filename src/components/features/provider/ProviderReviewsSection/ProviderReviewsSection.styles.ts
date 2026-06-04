@@ -5,7 +5,7 @@
  * y para poder ajustar la estética de toda la sección en un solo
  * archivo. Evitamos el amber clásico de e-commerce: usamos foreground
  * suave para las barras (estética editorial) y el brand peach para
- * las estrellas, que casan mejor sobre el cream background de Yeiwell.
+ * las estrellas, que casan mejor sobre el cream background de Yaiwell.
  */
 export const providerReviewsSectionStyles = {
   section: 'flex flex-col gap-6 py-8 md:py-12',

@@ -5,7 +5,7 @@ import { Link } from '@/i18n/navigation';
 import { notFoundViewStyles as s } from './NotFoundView.styles';
 
 /**
- * Vista de la página 404 personalizada de Yeiwell.
+ * Vista de la página 404 personalizada de Yaiwell.
  *
  * Server Component puramente presentacional: lee las traducciones del
  * namespace `notFound` y compone una tarjeta editorial con un emoji

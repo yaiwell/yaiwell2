@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Yeiwell",
+    "appName": "Yaiwell",
     "loading": "Carregant...",
     "error": "S'ha produït un error. Torna-ho a provar d'aquí uns segons.",
     "goBack": "Tornar",
@@ -13,9 +13,9 @@
     "system": "Sistema"
   },
   "seo": {
-    "defaultTitle": "Yeiwell · Bellesa, benestar i esport disponibles ja",
+    "defaultTitle": "Yaiwell · Bellesa, benestar i esport disponibles ja",
     "defaultDescription": "Reserva a l'instant amb professionals verificats de bellesa, benestar i esport a prop teu. Disponibilitat real, sense trucades ni esperes.",
-    "ogImageAlt": "Yeiwell · Bellesa, benestar i esport disponibles ja",
+    "ogImageAlt": "Yaiwell · Bellesa, benestar i esport disponibles ja",
     "search": {
       "title": "Cercar professionals",
       "description": "Filtra per categoria, zona i disponibilitat immediata. Troba professionals de bellesa, benestar i esport a prop teu."
@@ -65,7 +65,7 @@
       "cookies": "Galetes"
     },
     "madeIn": "Fet a {city}",
-    "copyright": "© {year} Yeiwell"
+    "copyright": "© {year} Yaiwell"
   },
   "home": {
     "hero": {
@@ -126,7 +126,7 @@
       }
     },
     "differentiator": {
-      "title": "Per què Yeiwell",
+      "title": "Per què Yaiwell",
       "cards": {
         "0": {
           "title": "Disponibilitat real",
@@ -477,7 +477,7 @@
   },
   "booking": {
     "meta": {
-      "title": "Reservar · Yeiwell"
+      "title": "Reservar · Yaiwell"
     },
     "flow": {
       "eyebrow": "Pas {current} de {total}",
@@ -588,7 +588,7 @@
   "adminArea": {
     "badge": "Admin",
     "title": "Panell de moderació",
-    "subtitle": "Eina interna de l'equip Yeiwell.",
+    "subtitle": "Eina interna de l'equip Yaiwell.",
     "nav": {
       "ariaLabel": "Navegació del panell admin",
       "dashboard": "Dashboard",
@@ -654,7 +654,7 @@
     "illustrationAlt": "Il·lustració decorativa d'un mirall buit",
     "backHome": "Tornar a l'inici",
     "exploreServices": "Cercar serveis",
-    "helpHint": "Si creus que això és un error, escriu-nos a hola@yeiwell.com."
+    "helpHint": "Si creus que això és un error, escriu-nos a hola@yaiwell.com."
   },
   "serviceDetail": {
     "breadcrumb": {
@@ -691,13 +691,13 @@
   "forProviders": {
     "meta": {
       "title": "Per a professionals",
-      "description": "Yeiwell és el marketplace de bellesa, benestar i esport on els teus clients et troben quan estan a punt per reservar. Comença gratis i sense permanència."
+      "description": "Yaiwell és el marketplace de bellesa, benestar i esport on els teus clients et troben quan estan a punt per reservar. Comença gratis i sense permanència."
     },
     "hero": {
       "eyebrow": "Per a centres i autònoms",
       "titleLine1": "La teva agenda plena,",
       "titleLine2": "sense esforç.",
-      "subtitle": "Yeiwell és el marketplace de bellesa, benestar i esport on els teus clients et troben quan estan a punt per reservar.",
+      "subtitle": "Yaiwell és el marketplace de bellesa, benestar i esport on els teus clients et troben quan estan a punt per reservar.",
       "ctaPrimary": "Comença gratis",
       "ctaSecondary": "Com funciona",
       "trustNote": "Sense permanència · Sense cost d'alta · Cobra a l'instant",
@@ -742,7 +742,7 @@
       "plans": {
         "free": {
           "name": "Gratis",
-          "tagline": "Per provar Yeiwell sense compromís.",
+          "tagline": "Per provar Yaiwell sense compromís.",
           "feature1": "Fins a 5 serveis publicats",
           "feature2": "Reserves en línia il·limitades",
           "feature3": "Pagament segur amb Stripe",
@@ -784,7 +784,7 @@
         },
         "payouts": {
           "question": "Com cobro el que em reserven?",
-          "answer": "Yeiwell fa servir Stripe Connect. El client paga en confirmar la reserva i nosaltres et transferim l'import (menys comissió) al teu compte bancari cada setmana de manera automàtica."
+          "answer": "Yaiwell fa servir Stripe Connect. El client paga en confirmar la reserva i nosaltres et transferim l'import (menys comissió) al teu compte bancari cada setmana de manera automàtica."
         },
         "cancel": {
           "question": "Puc cancel·lar una reserva?",
@@ -795,7 +795,7 @@
           "answer": "No hi ha permanència ni penalització per donar-te de baixa. Entres avui, surts demà. La teva informació es manté 30 dies per si tornes a canviar d'opinió."
         },
         "platform": {
-          "question": "Yeiwell és app o web?",
+          "question": "Yaiwell és app o web?",
           "answer": "Avui som web optimitzada per a mòbil; el teu panell funciona a qualsevol navegador. L'app nativa iOS/Android arribarà a la propera fase, sense cost addicional per a tu."
         },
         "verification": {
@@ -814,10 +814,10 @@
   },
   "signIn": {
     "meta": {
-      "title": "Entrar · Yeiwell",
-      "description": "Accedeix al teu compte de Yeiwell per reservar bellesa, benestar i esport a prop teu."
+      "title": "Entrar · Yaiwell",
+      "description": "Accedeix al teu compte de Yaiwell per reservar bellesa, benestar i esport a prop teu."
     },
-    "title": "Entra a Yeiwell",
+    "title": "Entra a Yaiwell",
     "subtitle": "Reserva bellesa, benestar i esport en segons.",
     "aside": {
       "badge": "Accés",
@@ -865,9 +865,9 @@
   "signUp": {
     "meta": {
       "title": "Crea el teu compte",
-      "description": "Registra't a Yeiwell per reservar bellesa, benestar i esport a prop teu, o per començar a oferir els teus serveis."
+      "description": "Registra't a Yaiwell per reservar bellesa, benestar i esport a prop teu, o per començar a oferir els teus serveis."
     },
-    "eyebrow": "Uneix-te a Yeiwell",
+    "eyebrow": "Uneix-te a Yaiwell",
     "title": "Crea el teu compte",
     "subtitle": "Reserva a l'instant o comença a oferir els teus serveis. Només triguen un minut.",
     "tabs": {
@@ -895,7 +895,7 @@
     },
     "haveAccount": "Ja tens compte? <link>Entra aquí</link>",
     "illustration": {
-      "badge": "Yeiwell Premium",
+      "badge": "Yaiwell Premium",
       "title": "Cuidar-se no hauria d'esperar.",
       "subtitle": "Uneix la teva agenda a la dels millors professionals a prop teu.",
       "footer": "Només acceptem professionals verificats a mà. Qualitat abans que quantitat."
@@ -958,7 +958,7 @@
     "subtitle": "Catàleg viu de tokens i components. Pàgina interna per a QA visual; no apareix a la navegació.",
     "colors": {
       "title": "Colors semàntics",
-      "description": "Tokens base de shadcn ja mapejats a la paleta Yeiwell (plum càlid + cremes).",
+      "description": "Tokens base de shadcn ja mapejats a la paleta Yaiwell (plum càlid + cremes).",
       "sample": "Aa Text"
     },
     "brand": {

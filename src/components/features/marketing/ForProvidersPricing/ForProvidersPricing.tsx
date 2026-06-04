@@ -12,7 +12,7 @@ import type { PricingPlan } from './ForProvidersPricing.types';
  * comisiones aquí NO toca la BD: este componente es marketing puro.
  *
  * El plan "Pro" se marca como popular porque es el sweet spot para
- * centros con varios profesionales (target principal Yeiwell).
+ * centros con varios profesionales (target principal Yaiwell).
  */
 const plans: PricingPlan[] = [
   {
@@ -80,9 +80,7 @@ export function ForProvidersPricing() {
                 className={cardClass}
                 data-component={`for-providers-plan-${plan.id}`}
               >
-                {plan.popular && (
-                  <span className={s.popularBadge}>{t('popularBadge')}</span>
-                )}
+                {plan.popular && <span className={s.popularBadge}>{t('popularBadge')}</span>}
 
                 <header className="flex flex-col gap-1.5">
                   <h3 className={s.planName}>{t(`plans.${plan.id}.name`)}</h3>
@@ -95,9 +93,7 @@ export function ForProvidersPricing() {
                     <span className={s.priceValue}>{plan.priceEur}</span>
                     <span className={s.priceSuffix}>{t('perMonth')}</span>
                   </div>
-                  <span className={s.commission}>
-                    {t('commission', { rate: plan.commission })}
-                  </span>
+                  <span className={s.commission}>{t('commission', { rate: plan.commission })}</span>
                 </div>
 
                 <ul className={s.features}>

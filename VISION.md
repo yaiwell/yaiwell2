@@ -1,4 +1,4 @@
-# VISION.md — Yeiwell
+# VISION.md — Yaiwell
 
 > Documento de visión de producto. Cuando una decisión genere duda,
 > volver aquí antes de a `CLAUDE.md`. Si la decisión no encaja con esta visión,
@@ -66,7 +66,7 @@ El panel del proveedor parece hecho para él, no para un departamento de IT. Los
 
 ## 4. Posicionamiento frente a competidores
 
-| | Treatwell / Booksy / Fresha | Yeiwell |
+| | Treatwell / Booksy / Fresha | Yaiwell |
 |---|---|---|
 | Foco | Planificación con días/semanas | Disponibilidad inmediata (hoy / próximas horas) |
 | Catálogo | Volumen masivo, poca curación | Curado, verificado humanamente |
@@ -195,7 +195,7 @@ Este proyecto nace de una combinación poco común:
 
 Esta combinación es nuestra ventaja competitiva no copiable. Los marketplaces grandes los construyen equipos que optimizan métricas pero no aman el oficio. Aquí pasa lo contrario, y se va a notar en cada decisión.
 
-La promesa silenciosa de Yeiwell es esa: **una herramienta hecha por gente que entiende a ambos lados de la mesa**.
+La promesa silenciosa de Yaiwell es esa: **una herramienta hecha por gente que entiende a ambos lados de la mesa**.
 
 ---
 

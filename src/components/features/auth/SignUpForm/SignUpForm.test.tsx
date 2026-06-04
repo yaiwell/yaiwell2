@@ -41,10 +41,10 @@ const messages = {
     social: { google: 'Google', apple: 'Apple' },
     haveAccount: '¿Ya tienes cuenta? <link>Entra</link>',
     illustration: {
-      badge: 'Yeiwell',
+      badge: 'Yaiwell',
       title: 'Belleza para hoy',
       subtitle: 'Profesionales cerca de ti.',
-      footer: '© Yeiwell',
+      footer: '© Yaiwell',
     },
     errors: {
       required: 'Campo obligatorio.',
@@ -70,7 +70,9 @@ describe('SignUpForm', () => {
   it('renderiza el título y los campos básicos en el rol cliente', () => {
     renderForm();
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Da el primer paso' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Da el primer paso' }),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText('Nombre')).toBeInTheDocument();
     expect(screen.getByLabelText('Email')).toBeInTheDocument();
     expect(screen.getByLabelText('Contraseña')).toBeInTheDocument();
@@ -84,7 +86,7 @@ describe('SignUpForm', () => {
     renderForm();
 
     await user.type(screen.getByLabelText('Nombre'), 'Jorge');
-    await user.type(screen.getByLabelText('Email'), 'jorge@yeiwell.com');
+    await user.type(screen.getByLabelText('Email'), 'jorge@yaiwell.com');
     await user.type(screen.getByLabelText('Contraseña'), 'abc');
     await user.type(screen.getByLabelText('Repite la contraseña'), 'abc');
     await user.click(screen.getByRole('checkbox'));
@@ -99,7 +101,7 @@ describe('SignUpForm', () => {
     renderForm();
 
     await user.type(screen.getByLabelText('Nombre'), 'Jorge');
-    await user.type(screen.getByLabelText('Email'), 'jorge@yeiwell.com');
+    await user.type(screen.getByLabelText('Email'), 'jorge@yaiwell.com');
     await user.type(screen.getByLabelText('Contraseña'), 'unaclavefuerte');
     await user.type(screen.getByLabelText('Repite la contraseña'), 'otraclavefuerte');
     await user.click(screen.getByRole('checkbox'));
@@ -116,7 +118,7 @@ describe('SignUpForm', () => {
     renderForm();
 
     await user.type(screen.getByLabelText('Nombre'), 'Jorge');
-    await user.type(screen.getByLabelText('Email'), 'jorge@yeiwell.com');
+    await user.type(screen.getByLabelText('Email'), 'jorge@yaiwell.com');
     await user.type(screen.getByLabelText('Contraseña'), 'unaclavefuerte');
     await user.type(screen.getByLabelText('Repite la contraseña'), 'unaclavefuerte');
     await user.click(screen.getByRole('checkbox'));

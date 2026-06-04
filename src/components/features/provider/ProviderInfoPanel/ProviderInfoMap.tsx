@@ -56,7 +56,7 @@ export function ProviderInfoMap({ lat, lng }: ProviderInfoMapProps) {
   // coherencia visual. Forzamos status `available_now` porque en
   // este contexto el pin solo marca ubicación, no estado real.
   const icon = L.divIcon({
-    className: 'yeiwell-pin',
+    className: 'yaiwell-pin',
     html: buildPinHtml('available_now', false),
     iconSize: [22, 22],
     iconAnchor: [11, 11],

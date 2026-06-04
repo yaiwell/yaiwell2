@@ -1,5 +1,5 @@
 /**
- * Configuración de commitlint para Yeiwell.
+ * Configuración de commitlint para Yaiwell.
  *
  * Se basa en Conventional Commits. Los prefijos válidos están en la lista
  * `type-enum`. El asunto va en castellano (ver CLAUDE.md sección 6.bis).

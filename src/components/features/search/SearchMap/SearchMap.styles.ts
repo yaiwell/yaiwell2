@@ -87,7 +87,7 @@ export function buildUserLocationHtml(isReal: boolean): string {
   }
 
   // Halo pulsante + punto central. La animación vive en globals.css
-  // (`@keyframes yeiwell-user-pulse`) porque Leaflet inyecta HTML
+  // (`@keyframes yaiwell-user-pulse`) porque Leaflet inyecta HTML
   // crudo y los keyframes en `<style>` inline no se aplican siempre.
   return `
     <span style="
@@ -97,7 +97,7 @@ export function buildUserLocationHtml(isReal: boolean): string {
       justify-content:center;
       width:44px;height:44px;
     ">
-      <span class="yeiwell-user-pin-halo" style="
+      <span class="yaiwell-user-pin-halo" style="
         position:absolute;
         inset:0;
         border-radius:9999px;

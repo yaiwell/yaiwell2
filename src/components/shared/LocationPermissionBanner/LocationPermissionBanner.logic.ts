@@ -10,7 +10,7 @@ import { useCallback, useState, useSyncExternalStore } from 'react';
  * descarte debe ser efímero: si el usuario abre una pestaña nueva o
  * vuelve mañana, volvemos a darle la opción de activar la ubicación.
  */
-export const DEFAULT_DISMISS_STORAGE_KEY = 'yeiwell:location-banner-dismissed';
+export const DEFAULT_DISMISS_STORAGE_KEY = 'yaiwell:location-banner-dismissed';
 
 /**
  * Lectura defensiva del flag en sessionStorage.

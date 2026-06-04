@@ -1,4 +1,4 @@
-# Glosario de componentes — Yeiwell
+# Glosario de componentes — Yaiwell
 
 > Mapa de identificadores `data-component` para localizar cualquier elemento
 > de la UI. Inspecciona el DOM con devtools y busca el `data-component`
@@ -45,7 +45,7 @@
 - `how-it-works-step-reservar` — segundo paso (icono CalendarDays).
 - `how-it-works-step-disfrutar` — tercer paso (icono Sparkle).
 
-### `differentiator-cards` — Por qué Yeiwell (3 cards)
+### `differentiator-cards` — Por qué Yaiwell (3 cards)
 
 - `differentiator-cards` — `<section>` raíz.
 - `differentiator-cards-header` — cabecera con el título.

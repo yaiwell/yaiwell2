@@ -21,7 +21,7 @@ export const BARCELONA_CENTER: Readonly<Pick<UserLocation, 'lat' | 'lng'>> = Obj
 });
 
 /** Nombre de la cookie que persiste la `UserLocation` entre visitas. */
-export const COOKIE_NAME = 'yeiwell_user_location';
+export const COOKIE_NAME = 'yaiwell_user_location';
 
 /**
  * Duración de la cookie en segundos (30 días).

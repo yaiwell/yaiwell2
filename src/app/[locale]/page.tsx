@@ -17,7 +17,7 @@ interface HomePageProps {
 }
 
 /**
- * Landing principal de Yeiwell.
+ * Landing principal de Yaiwell.
  *
  * Composición de las cinco secciones que cuentan la propuesta de valor:
  * Hero (con buscador prominente) → Categorías populares → Cómo funciona
