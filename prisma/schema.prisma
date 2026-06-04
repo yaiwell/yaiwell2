@@ -33,12 +33,22 @@ generator client {
 }
 
 datasource db {
-  provider   = "postgresql"
-  // En Prisma 7 las URLs (`url`, `directUrl`) viven en `prisma.config.ts`.
-  // Desde ahí pasamos `DATABASE_URL` (pooler pgBouncer en modo transaction)
-  // y `DIRECT_URL` (conexión directa para migraciones; pgBouncer no
-  // soporta DDL en transaction mode).
-  extensions = [postgis, pg_trgm, uuid_ossp(map: "uuid-ossp")]
+  provider = "postgresql"
+
+  // En Prisma 7 la URL (`url`) vive en `prisma.config.ts`. Desde ahí
+  // pasamos `DATABASE_URL` (Session pooler de Supabase, port 5432).
+  //
+  // Extensiones gestionadas por Yaiwell (las necesita el dominio):
+  // - postgis: queries geoespaciales (ST_DWithin para "cerca de mí").
+  // - pg_trgm: fuzzy matching en el buscador full-text.
+  // - uuid-ossp: generación server-side de UUIDs (@default(uuid())).
+  //
+  // Extensiones pre-instaladas por Supabase (las declaramos aquí para
+  // que Prisma no detecte drift; no las usamos directamente):
+  // - pg_stat_statements: estadísticas de queries (observabilidad).
+  // - pgcrypto: utilidades criptográficas (las usa Supabase Auth).
+  // - supabase_vault: cifrado de secretos (lo usa Supabase Vault).
+  extensions = [postgis, pg_trgm, uuid_ossp(map: "uuid-ossp"), pg_stat_statements, pgcrypto, supabase_vault]
 }
 
 // =========================================================================

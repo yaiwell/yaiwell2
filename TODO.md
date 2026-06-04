@@ -14,12 +14,13 @@
 
 ### Bloque B — Infraestructura real (sin lógica todavía)
 
-- [ ] Crear proyecto en Supabase Cloud.
-- [ ] Activar extensiones: `postgis`, `pg_trgm`, `uuid-ossp`.
-- [ ] Configurar Supabase local con Docker (`supabase init` + `supabase start`).
-- [ ] Instalar Prisma y conectar a Supabase.
+- [x] Crear proyecto en Supabase Cloud (2026-06-04, región `eu-west-2` Londres).
+- [x] Activar extensiones: `postgis`, `pg_trgm`, `uuid-ossp` (2026-06-04).
+- [~] ~~Configurar Supabase local con Docker~~ — descartado, trabajamos directo contra remoto (2026-06-04).
+- [x] Instalar Prisma y conectar a Supabase (Prisma 7.8 + `prisma.config.ts`, vía Session pooler, 2026-06-04).
 - [x] Crear `prisma/schema.prisma` con entidades base (User, Provider, Professional, Category, Service, Booking, Review, VerificationRequest, Plan). Sin RLS todavía, solo schema (2026-06-03).
-- [ ] Generar primera migración y aplicar a local + remoto.
+- [x] Generar primera migración y aplicar a remoto (baseline `0_init`, 2026-06-04).
+- [ ] Configurar RLS policies por tabla (pendiente para cuando Clerk sync exista).
 - [ ] Crear proyecto en Clerk (modo desarrollo).
 - [ ] Integrar Clerk en Next.js (middleware + ClerkProvider).
 - [ ] Definir los 3 roles en Clerk: `client`, `provider`, `admin`.
