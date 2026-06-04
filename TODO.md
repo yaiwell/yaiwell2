@@ -156,5 +156,5 @@
 
 ---
 
-*Última actualización: 2026-06-03 (domain layer Fase 1: availability + booking + review services con tests, 181/181 verde).*
+*Última actualización: 2026-06-04 (seed inicial Supabase: 4 planes + 23 categorías; adapter `@prisma/adapter-pg` cableado).*
 

@@ -29,6 +29,10 @@ export default defineConfig({
   schema: path.join('prisma', 'schema.prisma'),
   migrations: {
     path: path.join('prisma', 'migrations'),
+    // Comando que ejecuta `prisma migrate reset` tras aplicar las
+    // migraciones. Usamos `tsx` porque el seed importa código del proyecto
+    // (alias `@/`, tipos de dominio) y necesita resolver TS sin compilar.
+    seed: 'tsx prisma/seed.ts',
   },
   datasource: {
     url: process.env.DATABASE_URL ?? '',

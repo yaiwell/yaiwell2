@@ -1,3 +1,4 @@
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 
 /**
@@ -7,15 +8,27 @@ import { PrismaClient } from '@prisma/client';
  * un cliente nuevo, agotando el pool de conexiones. El truco habitual es
  * cachearlo en `globalThis` durante el desarrollo.
  *
- * Nota Prisma 7: el cliente todavía se puede instanciar sin adapter para
- * usarse solo a nivel de tipos / mocks (los servicios mockean este módulo
- * vía `vi.mock`). Cuando enchufemos Supabase real configuraremos un
- * `adapter` aquí (driver `pg` o adaptador edge) sin romper los imports.
+ * Prisma 7 exige un driver adapter. Usamos `@prisma/adapter-pg` (basado
+ * en `node-postgres`) apuntado a la `DATABASE_URL` (Session pooler de
+ * Supabase, port 5432). Cuando deployemos a Vercel migraremos al pooler
+ * en transaction mode (port 6543) para reducir latencia en serverless.
+ *
+ * En tests los servicios mockean este módulo vía `vi.mock`, por lo que
+ * el adapter real nunca se instancia bajo Vitest.
  */
 
 const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
-export const prisma = globalForPrisma.prisma ?? new PrismaClient();
+function createPrismaClient(): PrismaClient {
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error('DATABASE_URL no está definida.');
+  }
+  const adapter = new PrismaPg({ connectionString });
+  return new PrismaClient({ adapter });
+}
+
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma;
