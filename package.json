@@ -16,6 +16,7 @@
     "format:check": "prettier --check .",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
+    "postinstall": "prisma generate",
     "prepare": "husky",
     "start": "next start",
     "test": "vitest run",
