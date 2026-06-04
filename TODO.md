@@ -21,10 +21,10 @@
 - [x] Crear `prisma/schema.prisma` con entidades base (User, Provider, Professional, Category, Service, Booking, Review, VerificationRequest, Plan). Sin RLS todavía, solo schema (2026-06-03).
 - [x] Generar primera migración y aplicar a remoto (baseline `0_init`, 2026-06-04).
 - [ ] Configurar RLS policies por tabla (pendiente para cuando Clerk sync exista).
-- [ ] Crear proyecto en Clerk (modo desarrollo).
-- [ ] Integrar Clerk en Next.js (middleware + ClerkProvider).
-- [ ] Definir los 3 roles en Clerk: `client`, `provider`, `admin`.
-- [ ] Crear webhook handler vacío en `/api/webhooks/clerk` para sync futuro.
+- [x] Crear proyecto en Clerk (modo desarrollo) (2026-06-04).
+- [x] Integrar Clerk en Next.js (middleware + ClerkProvider) (2026-06-04, `proxy.ts` compone `clerkMiddleware` + `next-intl`).
+- [ ] Definir los 3 roles en Clerk: `client`, `provider`, `admin` (pendiente: configurar `publicMetadata.role` en dashboard + helper de lectura en `lib/auth`).
+- [x] Crear webhook handler vacío en `/api/webhooks/clerk` para sync futuro (2026-06-04, stub 501 hasta tener `CLERK_WEBHOOK_SECRET` y URL pública).
 - [ ] Crear cuenta Stripe (modo test) + activar Stripe Connect.
 - [ ] Crear webhook handler vacío en `/api/webhooks/stripe`.
 - [ ] Crear cuenta Resend + verificar dominio para emails.
@@ -156,5 +156,5 @@
 
 ---
 
-*Última actualización: 2026-06-04 (seed inicial Supabase: 4 planes + 23 categorías; adapter `@prisma/adapter-pg` cableado).*
+*Última actualización: 2026-06-04 (Clerk integrado: `clerkMiddleware` en `proxy.ts`, `ClerkProvider` en RootLayout, webhook stub en `/api/webhooks/clerk`).*
 

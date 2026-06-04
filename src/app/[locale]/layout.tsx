@@ -1,3 +1,4 @@
+import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import { Fraunces, Geist_Mono, Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
@@ -209,45 +210,52 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
     : null;
 
   return (
-    <html
-      lang={locale}
-      className={`${inter.variable} ${fraunces.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <head>
-        {/* Script anti-FOUC: aplica la clase dark antes del primer pintado. */}
-        <script dangerouslySetInnerHTML={{ __html: themeAntiFoucScript }} />
-      </head>
-      <body className="flex min-h-full flex-col">
-        <NextIntlClientProvider>
-          <ThemeProvider initialPreference={initialThemePreference}>
-            {/* UserLocationProvider envuelve el shell para que cabecera,
-                contenido y mobile nav puedan leer la ubicación con el
-                mismo hook (`useUserLocation`). Se monta dentro del
-                NextIntlClientProvider para que su UI hija pueda traducir. */}
-            <UserLocationProvider initialLocation={initialUserLocation}>
-              {/* Skip link para usuarios de teclado y lectores de pantalla:
-                  solo es visible al recibir foco y permite saltar la
-                  navegación cabecera para ir directo al contenido. */}
-              <SkipToContent />
-              <Header />
-              {/* El padding inferior en mobile reserva espacio para el bottom
-                  tab bar (MobileNav). En desktop el tab bar se oculta y no
-                  hace falta el padding extra. El `id="main"` es el destino
-                  del skip link. */}
-              <main id="main" className="flex flex-1 flex-col pb-20 md:pb-0">
-                {children}
-              </main>
-              <Footer />
-              <MobileNav />
-              {/* Banner discreto que solicita permiso de ubicación la
-                  primera vez. Se monta fuera del flujo (fixed) y se
-                  oculta solo cuando el usuario ya ha decidido o lo ha
-                  descartado en esta sesión. */}
-              <LocationPermissionBanner />
-            </UserLocationProvider>
-          </ThemeProvider>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    // ClerkProvider envuelve toda la app para que `useAuth`, `useUser` y
+    // los componentes Clerk (SignIn, UserButton, etc.) tengan contexto
+    // disponible. En servidor expone `auth()` / `currentUser()` a Server
+    // Components y Route Handlers. No protege rutas — eso lo hace cada
+    // layout privado con `auth.protect()` cuando se cablee.
+    <ClerkProvider>
+      <html
+        lang={locale}
+        className={`${inter.variable} ${fraunces.variable} ${geistMono.variable} h-full antialiased`}
+      >
+        <head>
+          {/* Script anti-FOUC: aplica la clase dark antes del primer pintado. */}
+          <script dangerouslySetInnerHTML={{ __html: themeAntiFoucScript }} />
+        </head>
+        <body className="flex min-h-full flex-col">
+          <NextIntlClientProvider>
+            <ThemeProvider initialPreference={initialThemePreference}>
+              {/* UserLocationProvider envuelve el shell para que cabecera,
+                  contenido y mobile nav puedan leer la ubicación con el
+                  mismo hook (`useUserLocation`). Se monta dentro del
+                  NextIntlClientProvider para que su UI hija pueda traducir. */}
+              <UserLocationProvider initialLocation={initialUserLocation}>
+                {/* Skip link para usuarios de teclado y lectores de pantalla:
+                    solo es visible al recibir foco y permite saltar la
+                    navegación cabecera para ir directo al contenido. */}
+                <SkipToContent />
+                <Header />
+                {/* El padding inferior en mobile reserva espacio para el bottom
+                    tab bar (MobileNav). En desktop el tab bar se oculta y no
+                    hace falta el padding extra. El `id="main"` es el destino
+                    del skip link. */}
+                <main id="main" className="flex flex-1 flex-col pb-20 md:pb-0">
+                  {children}
+                </main>
+                <Footer />
+                <MobileNav />
+                {/* Banner discreto que solicita permiso de ubicación la
+                    primera vez. Se monta fuera del flujo (fixed) y se
+                    oculta solo cuando el usuario ya ha decidido o lo ha
+                    descartado en esta sesión. */}
+                <LocationPermissionBanner />
+              </UserLocationProvider>
+            </ThemeProvider>
+          </NextIntlClientProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
