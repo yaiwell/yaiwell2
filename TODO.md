@@ -98,7 +98,7 @@
 
 *Se detallará al cerrar Fase 0. Por ahora referencia genérica.*
 
-- [ ] Auth real con Clerk + sync a Supabase via webhook.
+- [x] Auth real con Clerk + sync a Supabase via webhook. (Capa 1 UI custom 2026-06-04, Capa 2 webhook svix 2026-06-04. Pendiente Capa 3: roles en publicMetadata + guards en layouts.)
 - [ ] Onboarding de cliente.
 - [ ] Onboarding de proveedor con verificación.
 - [ ] Panel admin con cola de verificación real.
