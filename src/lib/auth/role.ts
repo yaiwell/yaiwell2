@@ -40,8 +40,10 @@ export function getRoleFromUser(user: UserLike | null | undefined): UserRole {
  * Centralizado aquí para que sign-in, sign-up y el guard de capa 3
  * compartan el criterio sin riesgo de drift.
  */
-export function resolvePostAuthDestination(role: UserRole): '/' | '/panel' {
-  return role === 'provider' ? '/panel' : '/';
+export function resolvePostAuthDestination(role: UserRole): '/' | '/panel' | '/admin' {
+  if (role === 'provider') return '/panel';
+  if (role === 'admin') return '/admin';
+  return '/';
 }
 
 /**
@@ -81,6 +83,6 @@ export function getRoleFromSessionClaims(
  * número) propague un valor inválido al resto del sistema.
  */
 function sanitizeRole(raw: unknown): UserRole | null {
-  if (raw === 'client' || raw === 'provider') return raw;
+  if (raw === 'client' || raw === 'provider' || raw === 'admin') return raw;
   return null;
 }

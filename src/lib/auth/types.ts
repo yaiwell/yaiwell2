@@ -17,11 +17,13 @@
  * - `provider`: autónomo o centro que ofrece servicios. Aterriza en
  *   `/panel`. Requiere verificación manual antes de que su catálogo
  *   sea público (cola en `/admin`).
+ * - `admin`: equipo interno de moderación. Aterriza en `/admin`. Solo
+ *   se asigna manualmente desde el dashboard de Clerk — la UI pública
+ *   no lo expone como opción en sign-up.
  *
- * El rol `admin` existe a nivel BD pero no se asigna desde la UI
- * pública — se crea manualmente desde el dashboard de Clerk.
+ * Espejo del enum `UserRole` de Prisma (capa 2 lo replica en BD).
  */
-export type UserRole = 'client' | 'provider';
+export type UserRole = 'client' | 'provider' | 'admin';
 
 /**
  * Códigos de error tipados que cubren validación local + errores que

@@ -4,6 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { AdminShell } from '@/components/features/admin';
 import { routing } from '@/i18n/routing';
+import { requireRole } from '@/lib/auth';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -19,8 +20,8 @@ interface AdminLayoutProps {
  * no añade ornamento adicional: el panel admin es una herramienta
  * interna, no parte de la experiencia de marca pública.
  *
- * En Fase 1 este layout comprobará el rol `admin` vía Clerk y redirigirá
- * a `/` si el usuario no tiene permisos.
+ * Protegido por `requireRole(['admin'])` — cualquier rol no admin se
+ * redirige a su destino natural; los anónimos van a `/entrar`.
  */
 export default async function AdminLayout({ children, params }: AdminLayoutProps) {
   const { locale } = await params;
@@ -29,6 +30,8 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
     notFound();
   }
   setRequestLocale(locale);
+
+  await requireRole(['admin'], locale);
 
   return <AdminShell>{children}</AdminShell>;
 }

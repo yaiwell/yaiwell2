@@ -4,6 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { PanelLayout } from '@/components/features/provider-panel/PanelLayout';
 import { routing } from '@/i18n/routing';
+import { requireRole } from '@/lib/auth';
 import { getProviderById } from '@/lib/fake-data/providers';
 
 interface PanelLayoutRouteProps {
@@ -16,9 +17,12 @@ interface PanelLayoutRouteProps {
  * Layout del área del proveedor (`/panel`).
  *
  * Envuelve todas las rutas internas del panel con `PanelLayout` (sidebar
- * desktop + bottom tab bar mobile). El proveedor activo se obtiene
- * desde los mocks (`prov-01`); en Fase 1 lo resolverá Clerk a partir
- * de la sesión del proveedor autenticado.
+ * desktop + bottom tab bar mobile). Protegido por `requireRole(['provider'])`
+ * — cliente o admin caen a su destino natural, anónimos van a `/entrar`.
+ *
+ * El proveedor de datos sigue siendo mock (`prov-01`) en Fase 0; el
+ * mapeo `userId → providerId` real entrará con el onboarding de provider
+ * (Fase 1) cuando exista la tabla `providers` enlazada por `userId`.
  */
 export default async function PanelRouteLayout({ children, params }: PanelLayoutRouteProps) {
   const { locale } = await params;
@@ -27,6 +31,8 @@ export default async function PanelRouteLayout({ children, params }: PanelLayout
     notFound();
   }
   setRequestLocale(locale);
+
+  await requireRole(['provider'], locale);
 
   // Mock: usamos siempre el primer proveedor del catálogo.
   // En Fase 1 esto se resolverá desde la sesión Clerk del proveedor.

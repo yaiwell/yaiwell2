@@ -27,6 +27,7 @@ const {
   verifyMock,
   syncUserMock,
   deleteUserMock,
+  promoteRoleMock,
   MissingPrimaryEmailErrorStub,
   UserNotFoundErrorStub,
 } = vi.hoisted(() => {
@@ -40,6 +41,7 @@ const {
     verifyMock: vi.fn(),
     syncUserMock: vi.fn(),
     deleteUserMock: vi.fn(),
+    promoteRoleMock: vi.fn().mockResolvedValue(null),
     MissingPrimaryEmailErrorStub,
     UserNotFoundErrorStub,
   };
@@ -62,6 +64,10 @@ vi.mock('@/lib/services/user', () => ({
   deleteUserFromClerk: deleteUserMock,
   MissingPrimaryEmailError: MissingPrimaryEmailErrorStub,
   UserNotFoundError: UserNotFoundErrorStub,
+}));
+
+vi.mock('@/lib/auth', () => ({
+  promoteRoleToPublicMetadata: promoteRoleMock,
 }));
 
 import { POST } from './route';
@@ -95,6 +101,7 @@ describe('POST /api/webhooks/clerk', () => {
     verifyMock.mockReset();
     syncUserMock.mockReset();
     deleteUserMock.mockReset();
+    promoteRoleMock.mockReset().mockResolvedValue(null);
   });
 
   afterEach(() => {
@@ -125,18 +132,19 @@ describe('POST /api/webhooks/clerk', () => {
     expect(syncUserMock).not.toHaveBeenCalled();
   });
 
-  it('200 + sync en user.created', async () => {
+  it('200 + sync + promoción de rol en user.created', async () => {
     verifyMock.mockImplementation(() => ({ type: 'user.created', data: { id: 'user_1' } }));
     syncUserMock.mockResolvedValue({ id: 'db_1' });
 
     const res = await POST(buildRequest({ body: {} }));
 
     expect(res.status).toBe(200);
+    expect(promoteRoleMock).toHaveBeenCalledWith({ id: 'user_1' });
     expect(syncUserMock).toHaveBeenCalledWith({ id: 'user_1' });
     expect(deleteUserMock).not.toHaveBeenCalled();
   });
 
-  it('200 + sync en user.updated', async () => {
+  it('200 + sync (sin promoción) en user.updated', async () => {
     verifyMock.mockImplementation(() => ({ type: 'user.updated', data: { id: 'user_1' } }));
     syncUserMock.mockResolvedValue({ id: 'db_1' });
 
@@ -144,6 +152,8 @@ describe('POST /api/webhooks/clerk', () => {
 
     expect(res.status).toBe(200);
     expect(syncUserMock).toHaveBeenCalledWith({ id: 'user_1' });
+    // En user.updated NO promovemos: respetamos el publicMetadata actual.
+    expect(promoteRoleMock).not.toHaveBeenCalled();
   });
 
   it('200 + soft delete en user.deleted', async () => {

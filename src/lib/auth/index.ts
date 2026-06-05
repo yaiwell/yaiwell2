@@ -9,4 +9,7 @@
 export { AuthError } from './errors';
 export { mapClerkError } from './mapClerkError';
 export { getRoleFromUser, getRoleFromSessionClaims, resolvePostAuthDestination } from './role';
+export { requireRole } from './guard';
+export type { GuardResult } from './guard';
+export { promoteRoleToPublicMetadata } from './promoteRole';
 export type { AuthErrorCode, UserRole } from './types';

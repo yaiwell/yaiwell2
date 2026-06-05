@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { Webhook } from 'svix';
 
+import { promoteRoleToPublicMetadata } from '@/lib/auth';
 import {
   deleteUserFromClerk,
   MissingPrimaryEmailError,
@@ -70,7 +71,18 @@ export async function POST(request: NextRequest) {
   try {
     switch (event.type) {
       case 'user.created':
+        // 1) Promovemos rol unsafe→public ANTES del sync para que la
+        // copia en Supabase ya quede con el rol correcto si el sign-up
+        // sólo lo guardó en unsafe. La promoción es idempotente y no
+        // sobrescribe un publicMetadata.role ya válido.
+        await promoteRoleToPublicMetadata(event.data as UserJSON);
+        await syncUserFromClerk(event.data as UserJSON);
+        return NextResponse.json({ ok: true, type: event.type }, { status: 200 });
+
       case 'user.updated':
+        // En user.updated no promovemos: si el backend o un admin
+        // decidió cambiar publicMetadata, lo respetamos sin "desfacerlo"
+        // con un unsafe viejo.
         await syncUserFromClerk(event.data as UserJSON);
         return NextResponse.json({ ok: true, type: event.type }, { status: 200 });
 
