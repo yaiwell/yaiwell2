@@ -20,7 +20,7 @@
 - [x] Instalar Prisma y conectar a Supabase (Prisma 7.8 + `prisma.config.ts`, vía Session pooler, 2026-06-04).
 - [x] Crear `prisma/schema.prisma` con entidades base (User, Provider, Professional, Category, Service, Booking, Review, VerificationRequest, Plan). Sin RLS todavía, solo schema (2026-06-03).
 - [x] Generar primera migración y aplicar a remoto (baseline `0_init`, 2026-06-04).
-- [ ] Configurar RLS policies por tabla (pendiente para cuando Clerk sync exista).
+- [x] Configurar RLS policies por tabla (2026-06-05, migración `1_rls_policies`: RLS activo en 10 tablas, lectura pública del catálogo aprobado, deny-by-default en users/bookings/verification_requests, helper `requesting_clerk_user_id()` listo para policies de ownership cuando se conecte JWT template).
 - [x] Crear proyecto en Clerk (modo desarrollo) (2026-06-04).
 - [x] Integrar Clerk en Next.js (middleware + ClerkProvider) (2026-06-04, `proxy.ts` compone `clerkMiddleware` + `next-intl`).
 - [x] Definir los 3 roles en Clerk: `client`, `provider`, `admin` (2026-06-04, Capa 3: tipo `UserRole` con los 3, promoción unsafe→public en webhook `user.created`, helpers `getRoleFromUser` / `getRoleFromSessionClaims` / `resolvePostAuthDestination`, guard `requireRole` aplicado en `/panel`, `/admin`, `/mis-reservas`). Pendiente operativo en dashboard: configurar JWT template para exponer `publicMetadata` en claims y evitar fallback a `currentUser()`.
@@ -156,5 +156,5 @@
 
 ---
 
-*Última actualización: 2026-06-05 (Bloque Clerk cerrado: Capas 1-3 con auth real, webhook svix sync y guards por rol en `/panel`, `/admin`, `/mis-reservas`).*
+*Última actualización: 2026-06-05 (RLS migración `1_rls_policies` aplicada: defensa en profundidad activa, catálogo público legible, tablas privadas deny-all, helper `requesting_clerk_user_id()` esperando JWT template).*
 
