@@ -23,7 +23,7 @@
 - [ ] Configurar RLS policies por tabla (pendiente para cuando Clerk sync exista).
 - [x] Crear proyecto en Clerk (modo desarrollo) (2026-06-04).
 - [x] Integrar Clerk en Next.js (middleware + ClerkProvider) (2026-06-04, `proxy.ts` compone `clerkMiddleware` + `next-intl`).
-- [ ] Definir los 3 roles en Clerk: `client`, `provider`, `admin` (pendiente: configurar `publicMetadata.role` en dashboard + helper de lectura en `lib/auth`).
+- [x] Definir los 3 roles en Clerk: `client`, `provider`, `admin` (2026-06-04, Capa 3: tipo `UserRole` con los 3, promoción unsafe→public en webhook `user.created`, helpers `getRoleFromUser` / `getRoleFromSessionClaims` / `resolvePostAuthDestination`, guard `requireRole` aplicado en `/panel`, `/admin`, `/mis-reservas`). Pendiente operativo en dashboard: configurar JWT template para exponer `publicMetadata` en claims y evitar fallback a `currentUser()`.
 - [x] Crear webhook handler vacío en `/api/webhooks/clerk` para sync futuro (2026-06-04, stub 501 hasta tener `CLERK_WEBHOOK_SECRET` y URL pública).
 - [ ] Crear cuenta Stripe (modo test) + activar Stripe Connect.
 - [ ] Crear webhook handler vacío en `/api/webhooks/stripe`.
@@ -98,7 +98,7 @@
 
 *Se detallará al cerrar Fase 0. Por ahora referencia genérica.*
 
-- [x] Auth real con Clerk + sync a Supabase via webhook. (Capa 1 UI custom 2026-06-04, Capa 2 webhook svix 2026-06-04. Pendiente Capa 3: roles en publicMetadata + guards en layouts.)
+- [x] Auth real con Clerk + sync a Supabase via webhook. (Capa 1 UI custom + Capa 2 webhook svix + Capa 3 roles/guards, 2026-06-04. Bloque Clerk completo.)
 - [ ] Onboarding de cliente.
 - [ ] Onboarding de proveedor con verificación.
 - [ ] Panel admin con cola de verificación real.
@@ -156,5 +156,5 @@
 
 ---
 
-*Última actualización: 2026-06-04 (Clerk integrado: `clerkMiddleware` en `proxy.ts`, `ClerkProvider` en RootLayout, webhook stub en `/api/webhooks/clerk`).*
+*Última actualización: 2026-06-05 (Bloque Clerk cerrado: Capas 1-3 con auth real, webhook svix sync y guards por rol en `/panel`, `/admin`, `/mis-reservas`).*
 
