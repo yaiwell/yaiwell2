@@ -25,8 +25,8 @@
 - [x] Integrar Clerk en Next.js (middleware + ClerkProvider) (2026-06-04, `proxy.ts` compone `clerkMiddleware` + `next-intl`).
 - [x] Definir los 3 roles en Clerk: `client`, `provider`, `admin` (2026-06-04, Capa 3: tipo `UserRole` con los 3, promoción unsafe→public en webhook `user.created`, helpers `getRoleFromUser` / `getRoleFromSessionClaims` / `resolvePostAuthDestination`, guard `requireRole` aplicado en `/panel`, `/admin`, `/mis-reservas`). Pendiente operativo en dashboard: configurar JWT template para exponer `publicMetadata` en claims y evitar fallback a `currentUser()`.
 - [x] Crear webhook handler vacío en `/api/webhooks/clerk` para sync futuro (2026-06-04, stub 501 hasta tener `CLERK_WEBHOOK_SECRET` y URL pública).
-- [ ] Crear cuenta Stripe (modo test) + activar Stripe Connect.
-- [ ] Crear webhook handler vacío en `/api/webhooks/stripe`.
+- [~] Crear cuenta Stripe (modo test) + activar Stripe Connect. (Cuenta creada y Connect activado por el dev 2026-06-08; pendiente pegar `STRIPE_SECRET_KEY` + `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` + `STRIPE_CONNECT_CLIENT_ID` en `.env.local`.)
+- [x] Crear webhook handler vacío en `/api/webhooks/stripe` (2026-06-08, `lib/integrations/stripe/` + handler con verificación de firma + 14 tests).
 - [ ] Crear cuenta Resend + verificar dominio para emails.
 - [ ] Crear cuenta Mapbox + obtener token público.
 - [ ] Crear cuenta Sentry + integrar SDK en Next.js.
@@ -156,5 +156,5 @@
 
 ---
 
-*Última actualización: 2026-06-05 (RLS migración `1_rls_policies` aplicada: defensa en profundidad activa, catálogo público legible, tablas privadas deny-all, helper `requesting_clerk_user_id()` esperando JWT template).*
+*Última actualización: 2026-06-08 (Stripe Fase 0: SDK + handler `/api/webhooks/stripe` con verificación de firma listos; cuenta Stripe creada en modo test con Connect activado, pendiente pegar claves en `.env.local`).*
 
