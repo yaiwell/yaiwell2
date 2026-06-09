@@ -18,3 +18,6 @@ import 'server-only';
 export { requireRole } from './guard';
 export type { GuardResult } from './guard';
 export { promoteRoleToPublicMetadata } from './promoteRole';
+export { getCurrentProviderId, requireCurrentProvider } from './provider';
+export type { CurrentProvider } from './provider';
+export { ProviderNotFoundError } from './provider.errors';

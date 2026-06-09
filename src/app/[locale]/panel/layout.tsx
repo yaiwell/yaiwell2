@@ -4,8 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { PanelLayout } from '@/components/features/provider-panel/PanelLayout';
 import { routing } from '@/i18n/routing';
-import { requireRole } from '@/lib/auth/server';
-import { getProviderById } from '@/lib/fake-data/providers';
+import { requireCurrentProvider } from '@/lib/auth/server';
 
 interface PanelLayoutRouteProps {
   children: React.ReactNode;
@@ -17,12 +16,12 @@ interface PanelLayoutRouteProps {
  * Layout del área del proveedor (`/panel`).
  *
  * Envuelve todas las rutas internas del panel con `PanelLayout` (sidebar
- * desktop + bottom tab bar mobile). Protegido por `requireRole(['provider'])`
- * — cliente o admin caen a su destino natural, anónimos van a `/entrar`.
- *
- * El proveedor de datos sigue siendo mock (`prov-01`) en Fase 0; el
- * mapeo `userId → providerId` real entrará con el onboarding de provider
- * (Fase 1) cuando exista la tabla `providers` enlazada por `userId`.
+ * desktop + bottom tab bar mobile). Protegido por `requireCurrentProvider`:
+ *  - Anónimos → redirect a `/entrar` (vía `requireRole`).
+ *  - Cliente / admin → redirect al destino natural de su rol.
+ *  - Provider sin Provider asociado → redirect a `/panel/onboarding`
+ *    (el wizard #57 lo creará y devolverá al panel).
+ *  - Provider con Provider asociado → resuelve nombre y datos reales.
  */
 export default async function PanelRouteLayout({ children, params }: PanelLayoutRouteProps) {
   const { locale } = await params;
@@ -32,12 +31,7 @@ export default async function PanelRouteLayout({ children, params }: PanelLayout
   }
   setRequestLocale(locale);
 
-  await requireRole(['provider'], locale);
+  const provider = await requireCurrentProvider(locale);
 
-  // Mock: usamos siempre el primer proveedor del catálogo.
-  // En Fase 1 esto se resolverá desde la sesión Clerk del proveedor.
-  const provider = getProviderById('prov-01');
-  const providerName = provider?.name ?? 'Yaiwell';
-
-  return <PanelLayout providerName={providerName}>{children}</PanelLayout>;
+  return <PanelLayout providerName={provider.businessName}>{children}</PanelLayout>;
 }
