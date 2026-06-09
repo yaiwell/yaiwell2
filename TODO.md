@@ -30,7 +30,10 @@
 - [~] Crear cuenta Resend + verificar dominio para emails.
   - [x] SDK Resend + wrapper `sendEmail()` con errores tipados y 13 tests (2026-06-09).
   - [ ] Cuenta Resend + verificación del dominio `yaiwell.com` (DNS pendiente por el dev).
-- [ ] Crear cuenta Mapbox + obtener token público.
+- [~] Crear cuenta Mapbox + obtener token público.
+  - [x] Wrapper `src/lib/integrations/mapbox/` con `geocodeAddress` (forward) y `reverseGeocode`, errores tipados, 13 tests (2026-06-09).
+  - [ ] Crear cuenta Mapbox + pegar `NEXT_PUBLIC_MAPBOX_TOKEN` en `.env.local` (en curso por el dev).
+  - [ ] Sustituir dropdown estático del Hero (`any | near-me | barcelona | castellar | llica-vall`) por un autocomplete real con `geocodeAddress`. **Pieza de Fase 1** porque implica rediseño UX del Hero — el wrapper queda listo para enchufar.
 - [~] Crear cuenta Sentry + integrar SDK en Next.js.
   - [x] SDK `@sentry/nextjs` + `instrumentation` (server/edge) + `instrumentation-client` + `global-error` + `withSentryConfig` con tunnel `/monitoring` + scrubbing de PII (`__session`, `stripe-signature`, `svix-*`, `email`) y filtrado de control-flow (`NEXT_REDIRECT`, `NEXT_NOT_FOUND`). 15 tests (2026-06-09).
   - [ ] Crear proyecto en Sentry y pegar `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_AUTH_TOKEN` + `SENTRY_ORG` + `SENTRY_PROJECT` en `.env.local`.
