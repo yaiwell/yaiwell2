@@ -115,7 +115,7 @@
 - [~] Búsqueda con PostgreSQL full-text search (tsvector + pg_trgm para fuzzy matching).
   - [x] Migración `2_fts_search`: `search_vector` GENERATED STORED en `services` y `providers`, 2 triggers + `category_label_cache` para cross-table, 6 índices (2 GIN tsvector + 4 GIN trigram), spanish+simple combinados para multi-lengua es/ca (2026-06-09).
   - [x] Módulo `src/lib/services/search/` con `searchServices` / `searchProviders` (ranking 70% FTS + 30% trigram, validación Zod, 12 tests verde, 2026-06-09).
-  - [ ] Seed-dev con 10-15 services + 3-4 providers fake para smoke E2E del motor (typo tolerance "masage"→"masaje", multilengua, ranking por peso A/B/C).
+  - [x] Seed-dev con 36 services + 12 providers fake (`prisma/seed-dev.ts`, idempotente vía `ON CONFLICT (slug)`) + smoke script `scripts/search-smoke.ts` con 8 casos representativos: match directo, typo "masage"→"masaje", catalán, description hit, stemming "depilaciones"→"depilación", provider por nombre/dirección/typo. Todos devuelven rankings esperados (2026-06-09).
   - [ ] API route `/api/search` que exponga ambos métodos.
   - [ ] UI: sustituir buscador placeholder por input real cableado a `/api/search` con debounce.
 - [ ] Flujo de reserva real con Stripe Connect.
