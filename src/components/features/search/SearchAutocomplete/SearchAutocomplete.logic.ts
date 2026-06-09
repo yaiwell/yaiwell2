@@ -1,23 +1,34 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 
-import { searchSuggestions, type Suggestion } from '@/lib/fake-data/search-suggestions';
+import { fetchSuggestions, type Suggestion } from '@/lib/services/suggestions';
 
 import type { UseSearchAutocompleteResult } from './SearchAutocomplete.types';
 
 /**
  * Retardo del debounce en ms para no calcular sugerencias en cada keystroke.
- * Está en el rango 250-300 recomendado por la tarea: 250 ms da feedback ágil
- * sin saturar de renders cuando el usuario teclea rápido.
+ * 250 ms da feedback ágil sin saturar de fetches cuando el usuario teclea
+ * rápido (también es el rango recomendado por la tarea original).
  */
 const DEBOUNCE_MS = 250;
+
+/**
+ * Mínimo de caracteres para disparar la query. Coincide con la heurística
+ * histórica del autocomplete (`searchSuggestions` ignoraba <2 chars):
+ * mantenerla aquí evita hacer ida y vuelta a `/api/suggestions` para
+ * términos casi vacíos.
+ */
+const MIN_QUERY_LENGTH = 2;
 
 /**
  * Hook orquestador del autocomplete del buscador.
  *
  * Responsabilidades:
- *  - Mantener la lista de sugerencias actualizada con debounce.
+ *  - Pedir sugerencias al endpoint `/api/suggestions` con debounce.
+ *  - Cachear y deduplicar peticiones vía TanStack Query (cuyo provider
+ *    se monta en el layout root).
  *  - Gestionar la apertura/cierre del dropdown.
  *  - Navegación con teclado (↑/↓/Enter/Esc) sobre las sugerencias.
  *  - IDs estables para `aria-controls` / `aria-activedescendant`.
@@ -32,12 +43,21 @@ export function useSearchAutocomplete(
   onSubmit: (value: string) => void,
   onSelectSuggestion: (suggestion: Suggestion) => void,
 ): UseSearchAutocompleteResult {
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   // Permite suprimir el dropdown justo después de seleccionar una sugerencia
   // o pulsar Esc; se reactivará en el siguiente cambio de valor manual.
   const [suppressOpen, setSuppressOpen] = useState(false);
+
+  // Valor debounced que alimenta la queryKey. Lo mantenemos separado del
+  // input para que el usuario vea su texto al instante pero las requests
+  // solo se disparen tras el debounce.
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handle = window.setTimeout(() => setDebouncedValue(value), DEBOUNCE_MS);
+    return () => window.clearTimeout(handle);
+  }, [value]);
 
   const reactId = useId();
   const listboxId = `${reactId}-listbox`;
@@ -45,23 +65,40 @@ export function useSearchAutocomplete(
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // Debounce: el efecto vive en cliente y limpia el timer al re-disparar.
-  // Cuando `suppressOpen` está activo no programamos el timeout y dejamos
-  // las sugerencias previas intactas: el `useMemo` de `isOpen` ya las oculta
-  // y el siguiente keystroke (handleInputChange) reabrirá el dropdown.
-  // Evitamos `setState` síncrono dentro del efecto (regla react-hooks/purity).
-  useEffect(() => {
-    if (suppressOpen) return;
-    const handle = window.setTimeout(() => {
-      const next = searchSuggestions(value, locale);
-      setSuggestions(next);
-      // Reset del índice activo cuando cambia la lista para evitar
-      // quedarnos apuntando a un índice fuera de rango.
-      setActiveIndex(next.length > 0 ? 0 : -1);
-    }, DEBOUNCE_MS);
+  const trimmedDebounced = debouncedValue.trim();
+  const shouldQuery = !suppressOpen && trimmedDebounced.length >= MIN_QUERY_LENGTH;
 
-    return () => window.clearTimeout(handle);
-  }, [value, locale, suppressOpen]);
+  // TanStack Query maneja cache, dedupe, cancelación vía `signal` y reuso
+  // si el usuario borra y vuelve a teclear lo mismo dentro de `staleTime`.
+  // `placeholderData: (prev) => prev` evita el parpadeo del dropdown
+  // mientras llega la nueva respuesta cuando el usuario sigue tipeando.
+  const { data } = useQuery({
+    queryKey: ['suggestions', trimmedDebounced, locale],
+    queryFn: ({ signal }) =>
+      fetchSuggestions({ query: trimmedDebounced, language: locale, signal }),
+    enabled: shouldQuery,
+    staleTime: 30_000,
+    placeholderData: (prev) => prev,
+    // Si el fetch falla degradamos a lista vacía y dejamos que la UI
+    // simplemente esconda el dropdown — sin toast, sin throw.
+    retry: false,
+  });
+
+  const suggestions = useMemo<Suggestion[]>(() => {
+    if (!shouldQuery) return [];
+    return data?.results ?? [];
+  }, [data, shouldQuery]);
+
+  // Reset del índice activo cuando cambia el tamaño de la lista. Aplicamos
+  // el patrón oficial de React "ajustar estado durante el render"
+  // (https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes)
+  // para no caer en `setState` dentro de `useEffect`, que React 19 ahora
+  // sanciona con el lint `react-hooks/set-state-in-effect`.
+  const [prevSuggestionsLength, setPrevSuggestionsLength] = useState(suggestions.length);
+  if (prevSuggestionsLength !== suggestions.length) {
+    setPrevSuggestionsLength(suggestions.length);
+    setActiveIndex(suggestions.length > 0 ? 0 : -1);
+  }
 
   // Cuando el dropdown está suprimido no exponemos las sugerencias previas:
   // así los listeners/aria-controls reflejan un listbox vacío y los tests

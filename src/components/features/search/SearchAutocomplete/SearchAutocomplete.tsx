@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Fragment } from 'react';
 
 import { cn } from '@/lib/utils';
-import type { Suggestion } from '@/lib/fake-data/search-suggestions';
+import type { Suggestion } from '@/lib/services/suggestions';
 
 import { useSearchAutocomplete } from './SearchAutocomplete.logic';
 import { searchAutocompleteStyles as s } from './SearchAutocomplete.styles';

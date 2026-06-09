@@ -27,9 +27,9 @@
 - [x] Crear webhook handler vacío en `/api/webhooks/clerk` para sync futuro (2026-06-04, stub 501 hasta tener `CLERK_WEBHOOK_SECRET` y URL pública).
 - [~] Crear cuenta Stripe (modo test) + activar Stripe Connect. (Cuenta creada y Connect activado por el dev 2026-06-08; pendiente pegar `STRIPE_SECRET_KEY` + `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` + `STRIPE_CONNECT_CLIENT_ID` en `.env.local`.)
 - [x] Crear webhook handler vacío en `/api/webhooks/stripe` (2026-06-08, `lib/integrations/stripe/` + handler con verificación de firma + 14 tests).
-- [~] Crear cuenta Resend + verificar dominio para emails.
+- [x] Crear cuenta Resend + verificar dominio para emails.
   - [x] SDK Resend + wrapper `sendEmail()` con errores tipados y 13 tests (2026-06-09).
-  - [ ] Cuenta Resend + verificación del dominio `yaiwell.com` (DNS pendiente por el dev).
+  - [x] Cuenta Resend + verificación del dominio `yaiwell.com` confirmada por el dev (2026-06-09). Emails ya pueden salir desde `noreply@yaiwell.com`.
 - [~] Crear cuenta Mapbox + obtener token público.
   - [x] Wrapper `src/lib/integrations/mapbox/` con `geocodeAddress` (forward) y `reverseGeocode`, errores tipados, 13 tests (2026-06-09).
   - [ ] Crear cuenta Mapbox + pegar `NEXT_PUBLIC_MAPBOX_TOKEN` en `.env.local` (en curso por el dev).
@@ -106,6 +106,7 @@
 *Se detallará al cerrar Fase 0. Por ahora referencia genérica.*
 
 - [x] Auth real con Clerk + sync a Supabase via webhook. (Capa 1 UI custom + Capa 2 webhook svix + Capa 3 roles/guards, 2026-06-04. Bloque Clerk completo.)
+- [ ] Clerk JWT template (prioridad baja): exponer `publicMetadata.role` en los claims del JWT para que los guards (`requireRole`) lean el rol del token en vez de llamar a `currentUser()` en cada request. Config 100% en el dashboard de Clerk + ajuste de 1-2 líneas en `getRoleFromSessionClaims`. Ahorra ~50-100ms por request protegido. No es blocker — los guards funcionan vía fallback hoy.
 - [ ] Onboarding de cliente.
 - [ ] Onboarding de proveedor con verificación.
 - [ ] Panel admin con cola de verificación real.
@@ -116,8 +117,10 @@
   - [x] Migración `2_fts_search`: `search_vector` GENERATED STORED en `services` y `providers`, 2 triggers + `category_label_cache` para cross-table, 6 índices (2 GIN tsvector + 4 GIN trigram), spanish+simple combinados para multi-lengua es/ca (2026-06-09).
   - [x] Módulo `src/lib/services/search/` con `searchServices` / `searchProviders` (ranking 70% FTS + 30% trigram, validación Zod, 12 tests verde, 2026-06-09).
   - [x] Seed-dev con 36 services + 12 providers fake (`prisma/seed-dev.ts`, idempotente vía `ON CONFLICT (slug)`) + smoke script `scripts/search-smoke.ts` con 8 casos representativos: match directo, typo "masage"→"masaje", catalán, description hit, stemming "depilaciones"→"depilación", provider por nombre/dirección/typo. Todos devuelven rankings esperados (2026-06-09).
-  - [ ] API route `/api/search` que exponga ambos métodos.
-  - [ ] UI: sustituir buscador placeholder por input real cableado a `/api/search` con debounce.
+  - [x] API route `/api/search` (`GET ?type=services|providers&q&lang&limit&offset`) con validación Zod + cliente HTTP tipado en `src/lib/services/search/search.client.ts` + `SearchRequestError` (2026-06-09, 8 tests).
+  - [x] API route `/api/suggestions` (`GET ?q&lang`) + módulo `src/lib/services/suggestions/` (service async, client HTTP, validation, errors). El service delega hoy en `searchSuggestions` fake; cuando llegue Postgres solo cambia esa función (2026-06-09, 7 tests).
+  - [x] `SearchAutocomplete` cableado a `/api/suggestions` vía TanStack Query v5 (debounce 250ms en `debouncedValue`, `staleTime` 30s, `placeholderData` para evitar parpadeo, cancelación con `AbortSignal`) — `QueryProvider` montado en `[locale]/layout.tsx` entre NextIntl y Theme (2026-06-09).
+  - [ ] **Pendiente para datos reales**: sustituir `searchSuggestions` fake-data por consulta a Postgres en `getSuggestions` (combinar `searchServices` + `searchProviders` + categorías). UI y endpoint quedan intactos.
 - [ ] Flujo de reserva real con Stripe Connect.
 - [~] Cancelación y refunds (política de 2h).
   - [x] Regla 2h en `booking.service.cancelBookingByProvider` (validada en Zod + servicio, no solo en UI) y antelación mínima 2h también en `createBooking` para que no nazcan reservas "incancelables" (2026-06-03).

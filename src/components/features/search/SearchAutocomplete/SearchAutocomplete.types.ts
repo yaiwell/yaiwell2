@@ -1,4 +1,4 @@
-import type { Suggestion } from '@/lib/fake-data/search-suggestions';
+import type { Suggestion } from '@/lib/services/suggestions';
 
 /**
  * Props del autocomplete del buscador.

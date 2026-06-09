@@ -12,6 +12,10 @@ export { searchRepository } from './search.repository';
 
 export { SearchValidationError } from './search.errors';
 
+export { fetchProviderSearch, fetchServiceSearch, SearchRequestError } from './search.client';
+
+export type { SearchClientOptions, SearchResponse } from './search.client';
+
 export type {
   ProviderSearchResult,
   SearchLanguage,

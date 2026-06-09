@@ -12,6 +12,7 @@ import {
   Header,
   LocationPermissionBanner,
   MobileNav,
+  QueryProvider,
   UserLocationProvider,
 } from '@/components/shared';
 import { ThemeProvider } from '@/components/shared/ThemeToggle';
@@ -226,33 +227,39 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
         </head>
         <body className="flex min-h-full flex-col">
           <NextIntlClientProvider>
-            <ThemeProvider initialPreference={initialThemePreference}>
-              {/* UserLocationProvider envuelve el shell para que cabecera,
+            {/* QueryProvider envuelve la app para que cualquier client
+                component pueda usar `useQuery` (búsqueda, disponibilidad,
+                etc.). Va dentro de NextIntlClientProvider para que los
+                children puedan traducir mensajes de error/loading. */}
+            <QueryProvider>
+              <ThemeProvider initialPreference={initialThemePreference}>
+                {/* UserLocationProvider envuelve el shell para que cabecera,
                   contenido y mobile nav puedan leer la ubicación con el
                   mismo hook (`useUserLocation`). Se monta dentro del
                   NextIntlClientProvider para que su UI hija pueda traducir. */}
-              <UserLocationProvider initialLocation={initialUserLocation}>
-                {/* Skip link para usuarios de teclado y lectores de pantalla:
+                <UserLocationProvider initialLocation={initialUserLocation}>
+                  {/* Skip link para usuarios de teclado y lectores de pantalla:
                     solo es visible al recibir foco y permite saltar la
                     navegación cabecera para ir directo al contenido. */}
-                <SkipToContent />
-                <Header />
-                {/* El padding inferior en mobile reserva espacio para el bottom
+                  <SkipToContent />
+                  <Header />
+                  {/* El padding inferior en mobile reserva espacio para el bottom
                     tab bar (MobileNav). En desktop el tab bar se oculta y no
                     hace falta el padding extra. El `id="main"` es el destino
                     del skip link. */}
-                <main id="main" className="flex flex-1 flex-col pb-20 md:pb-0">
-                  {children}
-                </main>
-                <Footer />
-                <MobileNav />
-                {/* Banner discreto que solicita permiso de ubicación la
+                  <main id="main" className="flex flex-1 flex-col pb-20 md:pb-0">
+                    {children}
+                  </main>
+                  <Footer />
+                  <MobileNav />
+                  {/* Banner discreto que solicita permiso de ubicación la
                     primera vez. Se monta fuera del flujo (fixed) y se
                     oculta solo cuando el usuario ya ha decidido o lo ha
                     descartado en esta sesión. */}
-                <LocationPermissionBanner />
-              </UserLocationProvider>
-            </ThemeProvider>
+                  <LocationPermissionBanner />
+                </UserLocationProvider>
+              </ThemeProvider>
+            </QueryProvider>
           </NextIntlClientProvider>
         </body>
       </html>
