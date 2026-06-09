@@ -27,7 +27,9 @@
 - [x] Crear webhook handler vacío en `/api/webhooks/clerk` para sync futuro (2026-06-04, stub 501 hasta tener `CLERK_WEBHOOK_SECRET` y URL pública).
 - [~] Crear cuenta Stripe (modo test) + activar Stripe Connect. (Cuenta creada y Connect activado por el dev 2026-06-08; pendiente pegar `STRIPE_SECRET_KEY` + `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` + `STRIPE_CONNECT_CLIENT_ID` en `.env.local`.)
 - [x] Crear webhook handler vacío en `/api/webhooks/stripe` (2026-06-08, `lib/integrations/stripe/` + handler con verificación de firma + 14 tests).
-- [ ] Crear cuenta Resend + verificar dominio para emails.
+- [~] Crear cuenta Resend + verificar dominio para emails.
+  - [x] SDK Resend + wrapper `sendEmail()` con errores tipados y 13 tests (2026-06-09).
+  - [ ] Cuenta Resend + verificación del dominio `yaiwell.com` (DNS pendiente por el dev).
 - [ ] Crear cuenta Mapbox + obtener token público.
 - [ ] Crear cuenta Sentry + integrar SDK en Next.js.
 
@@ -156,5 +158,5 @@
 
 ---
 
-*Última actualización: 2026-06-08 (Stripe Fase 0: SDK + handler `/api/webhooks/stripe` con verificación de firma listos; cuenta Stripe creada en modo test con Connect activado, pendiente pegar claves en `.env.local`).*
+*Última actualización: 2026-06-09 (Resend Fase 0: SDK + wrapper `sendEmail()` con errores tipados; pendiente verificación DNS de `yaiwell.com` para salir del sandbox).*
 
