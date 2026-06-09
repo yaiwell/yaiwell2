@@ -4,7 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { AdminShell } from '@/components/features/admin';
 import { routing } from '@/i18n/routing';
-import { requireRole } from '@/lib/auth';
+import { requireRole } from '@/lib/auth/server';
 
 interface AdminLayoutProps {
   children: React.ReactNode;

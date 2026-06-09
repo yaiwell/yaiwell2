@@ -4,7 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { PanelLayout } from '@/components/features/provider-panel/PanelLayout';
 import { routing } from '@/i18n/routing';
-import { requireRole } from '@/lib/auth';
+import { requireRole } from '@/lib/auth/server';
 import { getProviderById } from '@/lib/fake-data/providers';
 
 interface PanelLayoutRouteProps {

@@ -66,7 +66,7 @@ vi.mock('@/lib/services/user', () => ({
   UserNotFoundError: UserNotFoundErrorStub,
 }));
 
-vi.mock('@/lib/auth', () => ({
+vi.mock('@/lib/auth/server', () => ({
   promoteRoleToPublicMetadata: promoteRoleMock,
 }));
 

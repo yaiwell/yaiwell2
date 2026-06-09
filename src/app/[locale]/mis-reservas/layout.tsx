@@ -4,7 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { CustomerShell } from '@/components/features/customer';
 import { routing } from '@/i18n/routing';
-import { requireRole } from '@/lib/auth';
+import { requireRole } from '@/lib/auth/server';
 
 interface CustomerLayoutProps {
   children: React.ReactNode;

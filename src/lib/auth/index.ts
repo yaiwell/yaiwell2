@@ -1,15 +1,18 @@
 /**
- * API pública del módulo de autenticación.
+ * API pública del módulo de autenticación — **solo cliente-safe**.
  *
- * Los consumidores (formularios, guards, webhook) importan desde aquí
- * y nunca desde archivos internos, para que podamos refactorizar la
- * organización del módulo sin romper imports.
+ * Este barrel se importa desde Client Components (formularios de
+ * sign-up/sign-in). Por eso NO re-exportamos nada que toque
+ * `@clerk/nextjs/server` ni `server-only`: si Webpack ve cualquier
+ * referencia transitiva a server-only desde un Client Component
+ * Bundle, el build revienta.
+ *
+ * Para los módulos server-only (`requireRole`, `promoteRoleToPublicMetadata`)
+ * existe la fachada paralela `@/lib/auth/server`. Los consumidores
+ * server-side (layouts protegidos, webhooks) importan desde ahí.
  */
 
 export { AuthError } from './errors';
 export { mapClerkError } from './mapClerkError';
 export { getRoleFromUser, getRoleFromSessionClaims, resolvePostAuthDestination } from './role';
-export { requireRole } from './guard';
-export type { GuardResult } from './guard';
-export { promoteRoleToPublicMetadata } from './promoteRole';
 export type { AuthErrorCode, UserRole } from './types';

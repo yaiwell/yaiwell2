@@ -38,6 +38,12 @@ export default defineConfig({
       // Mapeamos al archivo CJS real para que los tests de componentes
       // que usan el `Link` de next-intl puedan renderizar.
       'next/navigation': path.resolve(__dirname, './node_modules/next/navigation.js'),
+      // `server-only` lanza en cualquier entorno tipo browser (happy-dom)
+      // porque está pensado para que Webpack lo detecte en build. En
+      // tests no hay Webpack, así que lo neutralizamos con un stub vacío.
+      // Es el patrón recomendado por Next.js y Vitest para tests de
+      // server actions / route handlers.
+      'server-only': path.resolve(__dirname, './tests/stubs/server-only.ts'),
     },
   },
 });

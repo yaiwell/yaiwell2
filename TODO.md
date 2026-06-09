@@ -31,7 +31,9 @@
   - [x] SDK Resend + wrapper `sendEmail()` con errores tipados y 13 tests (2026-06-09).
   - [ ] Cuenta Resend + verificación del dominio `yaiwell.com` (DNS pendiente por el dev).
 - [ ] Crear cuenta Mapbox + obtener token público.
-- [ ] Crear cuenta Sentry + integrar SDK en Next.js.
+- [~] Crear cuenta Sentry + integrar SDK en Next.js.
+  - [x] SDK `@sentry/nextjs` + `instrumentation` (server/edge) + `instrumentation-client` + `global-error` + `withSentryConfig` con tunnel `/monitoring` + scrubbing de PII (`__session`, `stripe-signature`, `svix-*`, `email`) y filtrado de control-flow (`NEXT_REDIRECT`, `NEXT_NOT_FOUND`). 15 tests (2026-06-09).
+  - [ ] Crear proyecto en Sentry y pegar `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_AUTH_TOKEN` + `SENTRY_ORG` + `SENTRY_PROJECT` en `.env.local`.
 
 ### Bloque C — Sistema de diseño base
 

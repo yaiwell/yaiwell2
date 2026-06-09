@@ -1,3 +1,4 @@
+import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
@@ -7,9 +8,7 @@ const nextConfig: NextConfig = {
   // `unoptimized` (audit 2026-05-27 §D.1). En Fase 1 estas URLs serán
   // sustituidas por Supabase Storage, que tendrá su propio remotePattern.
   images: {
-    remotePatterns: [
-      { protocol: 'https', hostname: 'images.unsplash.com' },
-    ],
+    remotePatterns: [{ protocol: 'https', hostname: 'images.unsplash.com' }],
   },
 };
 
@@ -23,4 +22,45 @@ const nextConfig: NextConfig = {
  */
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
-export default withNextIntl(nextConfig);
+/**
+ * Sentry envuelve la config para:
+ *  - Crear releases automáticamente desde Vercel (asocia el `VERCEL_GIT_COMMIT_SHA`).
+ *  - Subir source maps al build de producción (requiere `SENTRY_AUTH_TOKEN`).
+ *  - Tunelizar peticiones del SDK por `/monitoring` para sortear ad-blockers
+ *    que tiran las peticiones directas a `ingest.sentry.io`.
+ *
+ * Solo se activa si `SENTRY_AUTH_TOKEN` existe en build — sin token, el
+ * wrapper no rompe el build pero tampoco sube source maps (los errores
+ * de prod aparecerían como código minificado en Sentry). Mantiene la
+ * config funcional en local sin necesidad del token.
+ */
+const baseConfig = withNextIntl(nextConfig);
+
+const sentryEnabled = Boolean(
+  process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT,
+);
+
+export default sentryEnabled
+  ? withSentryConfig(baseConfig, {
+      org: process.env.SENTRY_ORG,
+      project: process.env.SENTRY_PROJECT,
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      // Silenciamos logs informativos durante el build local; en CI
+      // (Vercel) los queremos visibles si algo falla al subir maps.
+      silent: !process.env.CI,
+      // Tunel para esquivar ad-blockers que filtran `ingest.sentry.io`.
+      // Los eventos van primero a nuestro dominio y de ahí a Sentry.
+      tunnelRoute: '/monitoring',
+      // No subir react component annotation: añade peso al bundle.
+      reactComponentAnnotation: { enabled: false },
+      // Source maps solo en server + edge; hide en client para no
+      // exponer paths internos en el `.map.js` público.
+      sourcemaps: {
+        disable: false,
+        deleteSourcemapsAfterUpload: true,
+      },
+      // Auto-instrumentación de Vercel cron monitors: la apagamos
+      // porque no usamos crons todavía.
+      automaticVercelMonitors: false,
+    })
+  : baseConfig;

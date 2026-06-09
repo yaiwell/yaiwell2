@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { Webhook } from 'svix';
 
-import { promoteRoleToPublicMetadata } from '@/lib/auth';
+import { promoteRoleToPublicMetadata } from '@/lib/auth/server';
 import {
   deleteUserFromClerk,
   MissingPrimaryEmailError,
