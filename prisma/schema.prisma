@@ -200,6 +200,11 @@ model Provider {
   /// Verificación operativa: solo `approved` puede recibir reservas reales.
   verificationStatus VerificationStatus @default(pending)
 
+  /// Generated `tsvector` para FTS sobre proveedor (businessName, description,
+  /// address). La columna se materializa via migración SQL (`migrations/2_fts_search/`);
+  /// Prisma no la conoce, las queries de búsqueda usan raw SQL.
+  /// searchVector  tsvector  -- gestionado fuera de Prisma.
+
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
@@ -294,8 +299,9 @@ model Service {
   description     Json
   durationMinutes Int
   priceCents      Int
-  /// Generated `tsvector` para FTS. La columna se materializa via trigger
-  /// SQL (`migrations/.../init.sql`); Prisma no la conoce, las queries de
+  /// Generated `tsvector` para FTS sobre servicio (name, description,
+  /// category_label_cache). La columna se materializa via migración SQL
+  /// (`migrations/2_fts_search/`); Prisma no la conoce, las queries de
   /// búsqueda usan raw SQL.
   /// searchVector  tsvector  -- gestionado fuera de Prisma.
 

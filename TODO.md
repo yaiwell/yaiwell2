@@ -112,7 +112,12 @@
 - [ ] Sistema de servicios con jerarquía de categorías editable.
 - [x] Motor de scheduling (slots de disponibilidad reales) — `availability.service` con tests vía Prisma mockeado (2026-06-03). Falta conectar a UI y al panel del proveedor.
 - [ ] Búsqueda geoespacial con PostGIS.
-- [ ] Búsqueda con PostgreSQL full-text search (tsvector + pg_trgm para fuzzy matching).
+- [~] Búsqueda con PostgreSQL full-text search (tsvector + pg_trgm para fuzzy matching).
+  - [x] Migración `2_fts_search`: `search_vector` GENERATED STORED en `services` y `providers`, 2 triggers + `category_label_cache` para cross-table, 6 índices (2 GIN tsvector + 4 GIN trigram), spanish+simple combinados para multi-lengua es/ca (2026-06-09).
+  - [x] Módulo `src/lib/services/search/` con `searchServices` / `searchProviders` (ranking 70% FTS + 30% trigram, validación Zod, 12 tests verde, 2026-06-09).
+  - [ ] Seed-dev con 10-15 services + 3-4 providers fake para smoke E2E del motor (typo tolerance "masage"→"masaje", multilengua, ranking por peso A/B/C).
+  - [ ] API route `/api/search` que exponga ambos métodos.
+  - [ ] UI: sustituir buscador placeholder por input real cableado a `/api/search` con debounce.
 - [ ] Flujo de reserva real con Stripe Connect.
 - [~] Cancelación y refunds (política de 2h).
   - [x] Regla 2h en `booking.service.cancelBookingByProvider` (validada en Zod + servicio, no solo en UI) y antelación mínima 2h también en `createBooking` para que no nazcan reservas "incancelables" (2026-06-03).
