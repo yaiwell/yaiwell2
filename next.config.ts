@@ -51,16 +51,19 @@ export default sentryEnabled
       // Tunel para esquivar ad-blockers que filtran `ingest.sentry.io`.
       // Los eventos van primero a nuestro dominio y de ahí a Sentry.
       tunnelRoute: '/monitoring',
-      // No subir react component annotation: añade peso al bundle.
-      reactComponentAnnotation: { enabled: false },
       // Source maps solo en server + edge; hide en client para no
       // exponer paths internos en el `.map.js` público.
       sourcemaps: {
         disable: false,
         deleteSourcemapsAfterUpload: true,
       },
-      // Auto-instrumentación de Vercel cron monitors: la apagamos
-      // porque no usamos crons todavía.
-      automaticVercelMonitors: false,
+      // `reactComponentAnnotation` y `automaticVercelMonitors` se
+      // movieron bajo `webpack` en versiones recientes del plugin.
+      // Turbopack ignora esta rama en dev; el build de Vercel sí la
+      // aplica (usa webpack para el build final).
+      webpack: {
+        reactComponentAnnotation: { enabled: false },
+        automaticVercelMonitors: false,
+      },
     })
   : baseConfig;
