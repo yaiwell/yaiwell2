@@ -44,6 +44,16 @@
     "goToPhoto": "Ir a la foto {index}",
     "viewPhoto": "Ver foto {index}"
   },
+  "photoUploader": {
+    "title": "Sube fotos",
+    "drop": "Arrastra archivos aquí o haz clic para elegir.",
+    "browse": "Examinar",
+    "uploading": "Subiendo…",
+    "error": "Error al subir",
+    "remove": "Eliminar foto",
+    "maxFilesReached": "Has alcanzado el máximo de {max} fotos.",
+    "remaining": "Puedes subir {count} más (máx. {max})."
+  },
   "footer": {
     "tagline": "Belleza, bienestar y deporte con disponibilidad inmediata.",
     "product": {

@@ -6,3 +6,5 @@ export { LocationPermissionBanner } from './LocationPermissionBanner';
 export { LocationPill } from './LocationPill';
 export { UserLocationProvider, useUserLocation } from './UserLocationProvider';
 export { QueryProvider } from './QueryProvider';
+export { PhotoUploader } from './PhotoUploader';
+export type { PhotoUploaderProps, UploadedPhoto } from './PhotoUploader';

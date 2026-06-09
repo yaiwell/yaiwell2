@@ -110,6 +110,7 @@
 - [ ] Onboarding de cliente.
 - [~] Onboarding de proveedor con verificación.
   - [x] Resolver `userId → providerId` + helper `requireCurrentProvider` aplicado en `/panel/layout.tsx` (kill del `getProviderById('prov-01')` hardcodeado). Si el provider no existe aún, redirige a `/panel/onboarding` (el wizard lo creará). 7 tests verde (2026-06-09).
+  - [x] Supabase Storage: 3 buckets públicos (`provider-photos`, `service-photos`, `avatars`) con RLS deny-all + writes vía service-role en backend. Wrapper `src/lib/integrations/supabase/` (upload/delete/getPublicUrl + errores tipados), endpoint `POST /api/storage/upload` con authorization (avatars↔clerkId, provider/service-photos↔Provider.userId), componente compartido `PhotoUploader` (drag&drop, preview, max files, i18n 4 locales). 8 tests endpoint + integración i18n es/ca/en/de (2026-06-09).
   - [ ] Wizard `/panel/onboarding` (5 pasos: tipo → datos + geocoding → fotos → primer servicio → plan).
 - [ ] Panel admin con cola de verificación real.
 - [ ] Sistema de servicios con jerarquía de categorías editable.

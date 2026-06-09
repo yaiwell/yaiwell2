@@ -44,6 +44,16 @@
     "goToPhoto": "Zu Foto {index} springen",
     "viewPhoto": "Foto {index} ansehen"
   },
+  "photoUploader": {
+    "title": "Fotos hochladen",
+    "drop": "Dateien hierher ziehen oder klicken zum Auswählen.",
+    "browse": "Durchsuchen",
+    "uploading": "Wird hochgeladen…",
+    "error": "Fehler beim Hochladen",
+    "remove": "Foto entfernen",
+    "maxFilesReached": "Du hast das Limit von {max} Fotos erreicht.",
+    "remaining": "Du kannst noch {count} hochladen (max. {max})."
+  },
   "footer": {
     "tagline": "Beauty, Wellness und Sport mit sofortiger Verfügbarkeit.",
     "product": {

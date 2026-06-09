@@ -44,6 +44,16 @@
     "goToPhoto": "Go to photo {index}",
     "viewPhoto": "View photo {index}"
   },
+  "photoUploader": {
+    "title": "Upload photos",
+    "drop": "Drag files here or click to choose.",
+    "browse": "Browse",
+    "uploading": "Uploading…",
+    "error": "Upload failed",
+    "remove": "Remove photo",
+    "maxFilesReached": "You've reached the {max} photo limit.",
+    "remaining": "You can upload {count} more (max. {max})."
+  },
   "footer": {
     "tagline": "Beauty, wellness and sport with instant availability.",
     "product": {

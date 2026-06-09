@@ -44,6 +44,16 @@
     "goToPhoto": "Ves a la foto {index}",
     "viewPhoto": "Veure foto {index}"
   },
+  "photoUploader": {
+    "title": "Puja fotos",
+    "drop": "Arrossega arxius aquí o fes clic per triar.",
+    "browse": "Examinar",
+    "uploading": "Pujant…",
+    "error": "Error en pujar",
+    "remove": "Eliminar foto",
+    "maxFilesReached": "Has arribat al màxim de {max} fotos.",
+    "remaining": "Pots pujar {count} més (màx. {max})."
+  },
   "footer": {
     "tagline": "Bellesa, benestar i esport amb disponibilitat immediata.",
     "product": {
