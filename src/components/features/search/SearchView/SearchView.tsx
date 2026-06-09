@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 
 import { getCategoryBySlug } from '@/lib/fake-data/categories';
+import { pickLocalized } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
 import { ActiveFiltersChips } from '../ActiveFiltersChips';
@@ -43,7 +44,7 @@ const SearchMapLazy = dynamic(() => import('../SearchMap/SearchMap').then((m) =>
  */
 export function SearchView({ initial }: SearchViewProps) {
   const t = useTranslations('search');
-  const locale = useLocale() as 'es' | 'ca';
+  const locale = useLocale() as 'es' | 'ca' | 'en' | 'de';
   const {
     advancedValue,
     hasAdvancedFilters,
@@ -76,7 +77,7 @@ export function SearchView({ initial }: SearchViewProps) {
   const activeCategory = initial.filters.categorySlug
     ? getCategoryBySlug(initial.filters.categorySlug)
     : null;
-  const categoryLabel = activeCategory ? activeCategory.name[locale] : null;
+  const categoryLabel = activeCategory ? pickLocalized(activeCategory.name, locale) : null;
 
   return (
     <div className={s.root} data-component="search-view">

@@ -9,7 +9,7 @@ import type { Provider } from '@/types/domain';
 
 export interface ProviderInfoPanelProps {
   provider: Provider;
-  locale: 'es' | 'ca';
+  locale: 'es' | 'ca' | 'en' | 'de';
 }
 
 /**

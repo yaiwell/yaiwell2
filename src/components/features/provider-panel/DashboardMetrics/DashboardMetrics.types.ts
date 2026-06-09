@@ -6,7 +6,7 @@ import type { PanelWeeklyMetrics } from '@/lib/fake-data/panel-metrics';
  * Replicamos el subset aquí para no acoplar el componente al tipo más
  * amplio de routing — si añadimos un idioma habrá que extenderlo.
  */
-export type SupportedLocale = 'es' | 'ca';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
 
 /**
  * Props del bloque de métricas del dashboard. Recibe el snapshot

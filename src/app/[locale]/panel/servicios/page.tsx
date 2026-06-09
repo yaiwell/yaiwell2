@@ -25,7 +25,7 @@ export default async function PanelServicesPage({ params }: PanelServicesPagePro
   }
   setRequestLocale(locale);
 
-  const panelLocale = locale as 'es' | 'ca';
+  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
 
   return <ServicesList services={fakePanelServices} locale={panelLocale} />;
 }

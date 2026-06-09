@@ -5,6 +5,8 @@ import { useFormatter, useLocale, useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
+import type { AppLocale } from '@/i18n/routing';
+import { pickLocalized } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { canCancelBooking } from '@/lib/utils/booking-cancellation';
 
@@ -53,7 +55,7 @@ export function BookingCard({ booking, variant, now }: BookingCardProps) {
   const isCancelled = state === 'cancelled' || booking.status === 'cancelled';
   // El nombre del servicio viene del dominio (`LocalizedText`) y se
   // resuelve aquí según el locale activo para evitar lookups en JSX.
-  const serviceName = booking.serviceName[locale as 'es' | 'ca'] ?? booking.serviceName.es;
+  const serviceName = pickLocalized(booking.serviceName, locale as AppLocale);
   const priceFormatted = format.number(booking.priceCents / 100, {
     style: 'currency',
     currency: 'EUR',

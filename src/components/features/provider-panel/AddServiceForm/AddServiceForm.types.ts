@@ -1,5 +1,5 @@
 /** Locales soportados en la UI del panel. */
-export type SupportedLocale = 'es' | 'ca';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
 
 /** Props del formulario de alta de servicio. */
 export interface AddServiceFormProps {

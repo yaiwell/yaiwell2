@@ -20,7 +20,7 @@ export const searchOptionsSchema = z.object({
     .min(1, 'La consulta no puede estar vacía.')
     .max(120, 'La consulta es demasiado larga.')
     .regex(QUERY_PATTERN, 'La consulta contiene caracteres no permitidos.'),
-  language: z.enum(['es', 'ca']).optional().default('es'),
+  language: z.enum(['es', 'ca', 'en', 'de']).optional().default('es'),
   limit: z.number().int().min(1).max(50).optional().default(20),
   offset: z.number().int().min(0).optional().default(0),
 });

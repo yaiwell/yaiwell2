@@ -25,9 +25,11 @@ import type { ProviderSearchResult, SearchLanguage, ServiceSearchResult } from '
  * posibles vía Zod) — no hay vector de inyección.
  */
 
-const REGCONFIG_BY_LANG: Record<SearchLanguage, 'spanish' | 'simple'> = {
+const REGCONFIG_BY_LANG: Record<SearchLanguage, 'spanish' | 'simple' | 'english' | 'german'> = {
   es: 'spanish',
   ca: 'simple',
+  en: 'english',
+  de: 'german',
 };
 
 /** Umbral mínimo de similitud trigram para considerar el match. */
@@ -71,7 +73,9 @@ export const searchRepository = {
           )
           + 0.3 * GREATEST(
             similarity(COALESCE(name->>'es', ''), ${query}),
-            similarity(COALESCE(name->>'ca', ''), ${query})
+            similarity(COALESCE(name->>'ca', ''), ${query}),
+            similarity(COALESCE(name->>'en', ''), ${query}),
+            similarity(COALESCE(name->>'de', ''), ${query})
           )
         )::float8 AS score
       FROM services
@@ -80,6 +84,8 @@ export const searchRepository = {
           search_vector @@ websearch_to_tsquery(${regconfig}, ${query})
           OR similarity(COALESCE(name->>'es', ''), ${query}) > ${TRIGRAM_THRESHOLD}
           OR similarity(COALESCE(name->>'ca', ''), ${query}) > ${TRIGRAM_THRESHOLD}
+          OR similarity(COALESCE(name->>'en', ''), ${query}) > ${TRIGRAM_THRESHOLD}
+          OR similarity(COALESCE(name->>'de', ''), ${query}) > ${TRIGRAM_THRESHOLD}
         )
       ORDER BY score DESC, id ASC
       LIMIT ${limit}

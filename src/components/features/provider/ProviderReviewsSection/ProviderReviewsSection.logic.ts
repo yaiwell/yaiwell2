@@ -54,6 +54,20 @@ const RELATIVE_DICT = {
     month: { one: 'fa {n} mes', other: 'fa {n} mesos' },
     year: { one: 'fa {n} any', other: 'fa {n} anys' },
   },
+  en: {
+    now: 'just now',
+    day: { one: '{n} day ago', other: '{n} days ago' },
+    week: { one: '{n} wk ago', other: '{n} wks ago' },
+    month: { one: '{n} mo ago', other: '{n} mos ago' },
+    year: { one: '{n} yr ago', other: '{n} yrs ago' },
+  },
+  de: {
+    now: 'gerade eben',
+    day: { one: 'vor {n} Tag', other: 'vor {n} Tagen' },
+    week: { one: 'vor {n} Wo.', other: 'vor {n} Wo.' },
+    month: { one: 'vor {n} Mon.', other: 'vor {n} Mon.' },
+    year: { one: 'vor {n} J.', other: 'vor {n} J.' },
+  },
 } as const;
 
 /**
@@ -70,7 +84,7 @@ const RELATIVE_DICT = {
  */
 export function formatRelativeDate(
   date: Date,
-  locale: 'es' | 'ca',
+  locale: 'es' | 'ca' | 'en' | 'de',
   now: Date = new Date(),
 ): string {
   const dict = RELATIVE_DICT[locale];

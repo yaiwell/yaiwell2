@@ -8,7 +8,7 @@ export interface SlotPickerProps {
   providerId: string;
   serviceId: string;
   serviceDurationMinutes: number;
-  locale: 'es' | 'ca';
+  locale: 'es' | 'ca' | 'en' | 'de';
   /** Slot actualmente seleccionado (su `startAtIso`), si lo hay. */
   selectedStartIso: string | null;
   /** Callback al seleccionar un slot disponible. */

@@ -33,7 +33,7 @@ Visión de producto completa en `VISION.md`.
 - **TypeScript strict** — nada de `any` salvo razón muy justificada.
 - **Tailwind CSS v4** + **shadcn/ui** como sistema de componentes base.
 - **Lucide React** para iconografía.
-- **next-intl** para i18n (español + catalán mínimo, inglés en fase 2).
+- **next-intl** para i18n (**ES + CA + EN + DE** obligatorios desde Fase 1 — España recibe fuerte turismo alemán y británico que necesita estos idiomas para descubrir y reservar; el mercado no es Mallorca-only pero sí justifica el soporte multi-idioma desde el inicio).
 
 ### Backend / Datos
 - **Supabase** (PostgreSQL gestionado) — auth NO se usa (delegamos en Clerk), pero sí storage, RLS, edge functions, realtime.

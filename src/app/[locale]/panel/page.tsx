@@ -26,7 +26,7 @@ export default async function PanelDashboardPage({ params }: PanelDashboardPageP
   setRequestLocale(locale);
 
   // El componente está tipado solo para los locales soportados en el panel.
-  const panelLocale = locale as 'es' | 'ca';
+  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
 
   return <DashboardMetrics metrics={fakePanelWeeklyMetrics} locale={panelLocale} />;
 }

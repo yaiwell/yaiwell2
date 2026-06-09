@@ -85,7 +85,10 @@ describe('VerificationsQueue', () => {
     renderWithIntl(<VerificationsQueue requests={requests} />);
 
     const link = screen.getByRole('link', { name: 'Revisar la solicitud de Centro Enlace' });
-    expect(link).toHaveAttribute('href', '/admin/verificaciones/ver-link');
+    // Con `localePrefix: 'always'`, next-intl prefija todas las rutas con
+    // el locale activo en el test (es), de modo que el href construido
+    // por <Link> incluye `/es/...`.
+    expect(link).toHaveAttribute('href', '/es/admin/verificaciones/ver-link');
   });
 
   it('muestra el tipo correcto en el pill (centro / autonomo)', () => {

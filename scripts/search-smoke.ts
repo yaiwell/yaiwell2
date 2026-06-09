@@ -62,6 +62,22 @@ const SERVICE_CASES: SmokeCase[] = [
     query: 'depilaciones',
     expectations: 'Recupera "depilación" via stemming spanish dict',
   },
+  {
+    label: 'Match en inglés (en)',
+    query: 'haircut',
+    language: 'en',
+    expectations:
+      'Valida que la query ejecuta sin error con regconfig english. ' +
+      'Probablemente 0 resultados hasta que los services tengan name/description en EN.',
+  },
+  {
+    label: 'Match en alemán (de)',
+    query: 'Friseur',
+    language: 'de',
+    expectations:
+      'Valida que la query ejecuta sin error con regconfig german. ' +
+      'Probablemente 0 resultados hasta que los services tengan name/description en DE.',
+  },
 ];
 
 const PROVIDER_CASES: SmokeCase[] = [

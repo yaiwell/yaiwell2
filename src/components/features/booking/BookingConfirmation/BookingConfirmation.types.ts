@@ -10,7 +10,7 @@ import type { Provider, Service } from '@/types/domain';
 export interface BookingConfirmationProps {
   provider: Provider;
   service: Service;
-  locale: 'es' | 'ca';
+  locale: 'es' | 'ca' | 'en' | 'de';
   slotStartIso: string;
   slotEndIso: string;
   bookingId: string;

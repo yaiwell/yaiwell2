@@ -6,7 +6,7 @@ import type { Category, Service } from '@/types/domain';
  */
 
 /** Locales soportados por la UI (alineado con next-intl). */
-export type SupportedLocale = 'es' | 'ca';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
 
 /**
  * Grupo de servicios bajo una misma categoría raíz.

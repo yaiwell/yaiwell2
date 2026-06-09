@@ -64,7 +64,7 @@ export function haversineDistance(
  * @param locale — locale BCP-47 (`es`, `ca`, `en`...) o variantes con región.
  * @returns string ya formateado para mostrar al usuario.
  */
-export function formatDistance(meters: number, locale: 'es' | 'ca' | string): string {
+export function formatDistance(meters: number, locale: 'es' | 'ca' | 'en' | 'de' | string): string {
   if (!Number.isFinite(meters) || meters < 0) {
     // Devolvemos un guion largo para señalar "desconocido" sin romper layout.
     return '—';

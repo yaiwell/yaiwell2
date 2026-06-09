@@ -11,13 +11,38 @@ import type { LangSwitcherProps } from './LangSwitcher.types';
 /**
  * Selector de idioma para la barra de navegación.
  *
- * Renderiza un toggle pill con los dos locales soportados (es/ca) y al
- * pulsar redirige a la misma ruta en el idioma destino. La lógica vive en
- * `useLangSwitcher` para que el componente sea puramente presentacional.
+ * **Desktop**: renderiza un toggle pill con los 4 locales soportados
+ * (es/ca/en/de). Caben porque los códigos son de 2 chars y el header
+ * tiene espacio.
+ *
+ * **Mobile (compact)**: con 4 idiomas el toggle pill rompería el header
+ * (375px), así que conmutamos a un `<select>` nativo. Esto cuesta
+ * accesibilidad (no anuncia cambio de locale antes de pulsar) pero gana
+ * espacio y mantiene el patrón nativo del SO que los usuarios reconocen.
+ * La lógica de cambio sigue siendo la misma (`changeLocale`).
  */
 export function LangSwitcher({ compact = false }: LangSwitcherProps) {
   const { locales, currentLocale, changeLocale, isPending } = useLangSwitcher();
   const t = useTranslations('langSwitcher');
+
+  if (compact) {
+    return (
+      <select
+        className={s.select}
+        value={currentLocale}
+        disabled={isPending}
+        onChange={(e) => changeLocale(e.target.value as (typeof locales)[number])}
+        aria-label={t('groupLabel')}
+        data-component="lang-switcher"
+      >
+        {locales.map((locale) => (
+          <option key={locale} value={locale}>
+            {locale.toUpperCase()}
+          </option>
+        ))}
+      </select>
+    );
+  }
 
   return (
     <div
@@ -28,12 +53,6 @@ export function LangSwitcher({ compact = false }: LangSwitcherProps) {
     >
       {locales.map((locale) => {
         const isActive = locale === currentLocale;
-        // En modo compacto solo dejamos visible el activo y el primer
-        // alternativo para no robar espacio en mobile; con 2 locales esto
-        // implica mostrar ambos siempre, pero dejamos el flag preparado
-        // por si en el futuro añadimos más idiomas.
-        if (compact && !isActive && locales.indexOf(locale) > 1) return null;
-
         return (
           <button
             key={locale}

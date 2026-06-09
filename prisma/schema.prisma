@@ -64,6 +64,8 @@ enum UserRole {
 enum Locale {
   es
   ca
+  en
+  de
 }
 
 enum ProviderType {

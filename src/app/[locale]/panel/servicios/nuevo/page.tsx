@@ -24,7 +24,7 @@ export default async function PanelNewServicePage({ params }: PanelNewServicePag
   }
   setRequestLocale(locale);
 
-  const panelLocale = locale as 'es' | 'ca';
+  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
 
   return <AddServiceForm locale={panelLocale} />;
 }

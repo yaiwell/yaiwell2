@@ -26,7 +26,7 @@ export default async function PanelReviewsPage({ params }: PanelReviewsPageProps
   }
   setRequestLocale(locale);
 
-  const panelLocale = locale as 'es' | 'ca';
+  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
 
   return <ReceivedReviews reviews={fakePanelReviews} locale={panelLocale} />;
 }

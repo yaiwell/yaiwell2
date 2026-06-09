@@ -150,7 +150,7 @@ function SummaryBlock({
  * Avatar circular con iniciales, nombre, fecha relativa y estrellas.
  * El texto va debajo, full width.
  */
-function ReviewItem({ review, locale }: { review: Review; locale: 'es' | 'ca' }) {
+function ReviewItem({ review, locale }: { review: Review; locale: 'es' | 'ca' | 'en' | 'de' }) {
   const initials = getInitials(review.authorName);
   const relativeDate = formatRelativeDate(review.createdAt, locale);
 

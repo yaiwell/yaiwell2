@@ -4,8 +4,9 @@ import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { ProviderDetail } from '@/components/features/provider/ProviderDetail';
-import { routing } from '@/i18n/routing';
+import { routing, type AppLocale } from '@/i18n/routing';
 import { getAvailabilityStatus, getNextSlot } from '@/lib/fake-data/availability';
+import { pickLocalized } from '@/lib/i18n';
 import { getProviderDetail } from '@/lib/services/providers';
 import { parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
 import type { ProviderWithAvailability } from '@/types/domain';
@@ -38,7 +39,7 @@ export async function generateMetadata({ params }: ProviderPageProps): Promise<M
   }
 
   const { provider } = detail;
-  const description = provider.description[locale as 'es' | 'ca'] ?? provider.description.es;
+  const description = pickLocalized(provider.description, locale as AppLocale);
 
   return {
     title: `${provider.name} · Yaiwell`,
@@ -94,7 +95,7 @@ export default async function ProviderPage({ params }: ProviderPageProps) {
       services={detail.services}
       reviews={detail.reviews}
       ratingBreakdown={detail.ratingBreakdown}
-      locale={locale as 'es' | 'ca'}
+      locale={locale as 'es' | 'ca' | 'en' | 'de'}
     />
   );
 }

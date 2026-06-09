@@ -8,18 +8,30 @@
  * - futura app móvil (vía paquete compartido)
  *
  * Mantenemos los textos visibles al usuario (`name`, `description`) como
- * objetos `LocalizedText` con las dos lenguas soportadas hoy (es/ca) para
- * que el render dependa solo del locale activo, sin lookups externos.
+ * objetos `LocalizedText` con las cuatro lenguas soportadas (es/ca/en/de)
+ * para que el render dependa solo del locale activo, sin lookups externos.
  */
 
 /**
  * Texto traducido a los locales soportados.
+ *
  * Se usa para campos que vienen del dominio (nombre de proveedor,
  * descripción de servicio, etc.) y no del namespace i18n estático.
+ *
+ * **es/ca son requeridos** (mercado primario en Mallorca, garantía de
+ * cobertura mínima). **en/de son opcionales** porque el contenido cargado
+ * por el proveedor empieza en es/ca y la traducción a inglés/alemán llega
+ * después (manual desde el panel, o vía sugerencia automática en Fase 2).
+ *
+ * Para resolver un `LocalizedText` al locale activo usar `pickLocalized()`
+ * de `@/lib/i18n/pickLocalized` — aplica la cadena de fallback
+ * (`en` → `es`, `de` → `es`) sin que la UI tenga que repetir lógica.
  */
 export interface LocalizedText {
   es: string;
   ca: string;
+  en?: string;
+  de?: string;
 }
 
 /** Rango de precio cualitativo. Tres niveles para no abrumar la UI. */

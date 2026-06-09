@@ -33,7 +33,7 @@ export interface BookingDraft {
 export interface BookingFlowProps {
   provider: Provider;
   service: Service;
-  locale: 'es' | 'ca';
+  locale: 'es' | 'ca' | 'en' | 'de';
   /** Segmento `{slug}-{id}` para construir el enlace de vuelta a la ficha. */
   providerSlugWithId: string;
 }

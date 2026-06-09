@@ -1,3 +1,5 @@
+import { pickLocalized } from '@/lib/i18n';
+import type { AppLocale } from '@/i18n/routing';
 import type { LocalizedText } from '@/types/domain';
 
 import { fakeCategories } from './categories';
@@ -103,7 +105,7 @@ export function searchSuggestions(query: string, locale: SuggestionLocale = 'es'
   // 1. Categorías: una sugerencia por cada match.
   for (const category of fakeCategories) {
     if (results.length >= MAX_SUGGESTIONS) break;
-    const label = category.name[locale];
+    const label = pickLocalized(category.name, locale as AppLocale);
     const match = findMatch(label, normalizedQuery);
     if (match) {
       results.push({
@@ -119,7 +121,7 @@ export function searchSuggestions(query: string, locale: SuggestionLocale = 'es'
   // 2. Servicios.
   for (const service of fakeServices) {
     if (results.length >= MAX_SUGGESTIONS) break;
-    const label = service.name[locale];
+    const label = pickLocalized(service.name, locale as AppLocale);
     const match = findMatch(label, normalizedQuery);
     if (!match) continue;
 

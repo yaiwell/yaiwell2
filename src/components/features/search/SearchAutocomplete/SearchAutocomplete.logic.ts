@@ -27,7 +27,7 @@ const DEBOUNCE_MS = 250;
  */
 export function useSearchAutocomplete(
   value: string,
-  locale: 'es' | 'ca',
+  locale: 'es' | 'ca' | 'en' | 'de',
   onValueChange: (next: string) => void,
   onSubmit: (value: string) => void,
   onSelectSuggestion: (suggestion: Suggestion) => void,

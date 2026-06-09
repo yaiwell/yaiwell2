@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
   }
 
   const { provider, service } = detail;
-  const typedLocale = locale as 'es' | 'ca';
+  const typedLocale = locale as 'es' | 'ca' | 'en' | 'de';
   const serviceName = service.name[typedLocale] ?? service.name.es;
   const description = service.description[typedLocale] ?? service.description.es;
 
@@ -94,7 +94,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
       provider={provider}
       service={service}
       professional={null}
-      locale={locale as 'es' | 'ca'}
+      locale={locale as 'es' | 'ca' | 'en' | 'de'}
       reserveHref={reserveHref}
       providerSlugWithId={canonicalSlugWithId}
     />

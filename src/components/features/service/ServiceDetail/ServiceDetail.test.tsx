@@ -95,7 +95,7 @@ const service: Service = {
   priceCents: 5500,
 };
 
-function renderWithIntl(ui: React.ReactNode, locale: 'es' | 'ca' = 'es') {
+function renderWithIntl(ui: React.ReactNode, locale: 'es' | 'ca' | 'en' | 'de' = 'es') {
   return render(
     <NextIntlClientProvider locale={locale} messages={messages}>
       {ui}

@@ -1,0 +1,1045 @@
+{
+  "common": {
+    "appName": "Yaiwell",
+    "loading": "Wird geladen...",
+    "error": "Ein Fehler ist aufgetreten. Versuche es in ein paar Sekunden erneut.",
+    "goBack": "Zurück",
+    "comingSoon": "Demnächst verfügbar"
+  },
+  "theme": {
+    "groupLabel": "Design",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System"
+  },
+  "seo": {
+    "defaultTitle": "Yaiwell · Beauty, Wellness und Sport sofort verfügbar",
+    "defaultDescription": "Buche sofort bei verifizierten Profis für Beauty, Wellness und Sport in deiner Nähe. Echte Verfügbarkeit, ohne Anrufe und ohne Wartezeit.",
+    "ogImageAlt": "Yaiwell · Beauty, Wellness und Sport sofort verfügbar",
+    "search": {
+      "title": "Profis finden",
+      "description": "Filtere nach Kategorie, Gegend und sofortiger Verfügbarkeit. Finde Beauty-, Wellness- und Sport-Profis in deiner Nähe."
+    }
+  },
+  "nav": {
+    "home": "Start",
+    "search": "Suchen",
+    "bookings": "Buchungen",
+    "profile": "Profil",
+    "forProviders": "Für Profis",
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "openMenu": "Menü öffnen",
+    "skipToContent": "Zum Inhalt springen",
+    "primaryNavLabel": "Hauptnavigation",
+    "bottomNavLabel": "Untere Navigation"
+  },
+  "langSwitcher": {
+    "groupLabel": "Sprache"
+  },
+  "providerGallery": {
+    "galleryLabel": "Fotogalerie",
+    "prev": "Vorheriges Foto",
+    "next": "Nächstes Foto",
+    "goToPhoto": "Zu Foto {index} springen",
+    "viewPhoto": "Foto {index} ansehen"
+  },
+  "footer": {
+    "tagline": "Beauty, Wellness und Sport mit sofortiger Verfügbarkeit.",
+    "product": {
+      "title": "Produkt",
+      "howItWorks": "So funktioniert's",
+      "categories": "Kategorien",
+      "pricing": "Preise"
+    },
+    "company": {
+      "title": "Unternehmen",
+      "about": "Über uns",
+      "blog": "Blog",
+      "careers": "Karriere"
+    },
+    "legal": {
+      "title": "Rechtliches",
+      "terms": "AGB",
+      "privacy": "Datenschutz",
+      "cookies": "Cookies"
+    },
+    "madeIn": "Gemacht in {city}",
+    "copyright": "© {year} Yaiwell"
+  },
+  "home": {
+    "hero": {
+      "title": {
+        "line1": "Buche Beauty, Wellness und Sport",
+        "line2": "wann immer du willst"
+      },
+      "subtitle": "Entdecke Profis, die gerade jetzt in deiner Nähe verfügbar sind.",
+      "searchBar": {
+        "category": "Was suchst du?",
+        "location": "Wo?",
+        "when": "Wann?",
+        "now": "Jetzt",
+        "submit": "Suchen",
+        "locationOptions": {
+          "any": "Egal wo",
+          "nearMe": "In deiner Nähe",
+          "nearMeLocating": "Standort wird ermittelt…",
+          "nearMeDenied": "In deiner Nähe (ohne Berechtigung)",
+          "barcelona": "Barcelona",
+          "castellar": "Castellar del Vallès",
+          "llicaVall": "Lliçà de Vall"
+        },
+        "whenOptions": {
+          "now": "Jetzt",
+          "today": "Heute",
+          "tomorrow": "Morgen",
+          "thisWeek": "Diese Woche",
+          "any": "Egal wann"
+        }
+      }
+    },
+    "categories": {
+      "title": "Beliebte Kategorien",
+      "subtitle": "Diese Woche besonders gefragt in der Community.",
+      "peluqueria": "Friseur",
+      "masajes": "Massagen",
+      "manicura": "Maniküre",
+      "gimnasio": "Fitnessstudio",
+      "estetica": "Kosmetik",
+      "yoga": "Yoga"
+    },
+    "howItWorks": {
+      "title": "So funktioniert's",
+      "steps": {
+        "0": {
+          "title": "Suche in deiner Nähe",
+          "description": "Filtere nach Kategorie, Entfernung und echter Verfügbarkeit in diesem Moment."
+        },
+        "1": {
+          "title": "Sofort buchen",
+          "description": "In Sekunden bestätigt und bezahlt. Keine Anrufe, keine Wartezeit, kein WhatsApp, das nicht antwortet."
+        },
+        "2": {
+          "title": "Genießen und bewerten",
+          "description": "Hingehen, Service genießen und eine ehrliche Bewertung hinterlassen, um der Community zu helfen."
+        }
+      }
+    },
+    "differentiator": {
+      "title": "Warum Yaiwell",
+      "cards": {
+        "0": {
+          "title": "Echte Verfügbarkeit",
+          "body": "Du siehst, wer gerade jetzt Zeit hat. Keine Geister-Kalender, keine Termine, die in Wahrheit gar nicht frei sind."
+        },
+        "1": {
+          "title": "Premium-Kuratierung",
+          "body": "Nur Profis, die unser Team von Hand verifiziert. Qualität vor Quantität."
+        },
+        "2": {
+          "title": "Ohne Verpflichtung",
+          "body": "Stornierung bis 2 Stunden vorher ohne Gebühr. Echte Flexibilität."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Tu dir jetzt etwas Gutes",
+      "subtitle": "Profis in deiner Nähe, mit freien Terminen noch heute.",
+      "button": "Profis finden"
+    }
+  },
+  "search": {
+    "title": "Verfügbarkeit suchen",
+    "searchPlaceholder": "Suche nach Service, Studio oder Behandlung...",
+    "availableNowToggle": "Nur jetzt verfügbar",
+    "filters": {
+      "button": "Filter",
+      "title": "Erweiterte Filter",
+      "description": "Verfeinere deine Suche nach Preis und Mindestbewertung.",
+      "price": "Preis",
+      "priceLow": "Günstig",
+      "priceMid": "Mittel",
+      "priceHigh": "Premium",
+      "minRating": "Mindestbewertung",
+      "anyRating": "Egal",
+      "apply": "Filter anwenden",
+      "clear": "Zurücksetzen",
+      "close": "Schließen"
+    },
+    "tabs": {
+      "list": "Liste",
+      "map": "Karte"
+    },
+    "categories": {
+      "all": "Alle",
+      "belleza": "Beauty",
+      "estetica": "Kosmetik",
+      "bienestar": "Wellness",
+      "deporte": "Sport"
+    },
+    "empty": {
+      "title": "Vorerst keine Ergebnisse",
+      "subtitle": "Versuche, einen Filter zu entfernen oder den Kartenbereich zu erweitern.",
+      "nearMeTitle": "Nichts im Umkreis von {radius} km",
+      "nearMeSubtitle": "Im eingestellten Radius gibt es keine Profis. Erweitere die Suche und versuche es erneut.",
+      "disableNearMeCta": "Filter \"In deiner Nähe\" entfernen"
+    },
+    "card": {
+      "from": "ab",
+      "reviews": "{count, plural, one {# Bewertung} other {# Bewertungen}}",
+      "distance": "{km} km entfernt",
+      "distanceShort": "{distance} entfernt",
+      "distanceFromFallback": "{distance} entfernt *",
+      "distanceFromFallbackHint": "Geschätzte Entfernung vom Zentrum Barcelonas (ohne deinen echten Standort).",
+      "viewDetail": "Details ansehen",
+      "typeAutonomous": "Selbstständig",
+      "typeCenter": "Studio"
+    },
+    "availability": {
+      "now": "Sofort verfügbar",
+      "soon": "In {minutes} Min.",
+      "busy": "Heute ausgebucht"
+    },
+    "map": {
+      "attribution": "© OpenStreetMap",
+      "locating": "Standort wird ermittelt...",
+      "popupCta": "In der Liste ansehen",
+      "youAreHere": "Du bist hier",
+      "fallbackCenter": "Zentrum Barcelonas (Schätzung)"
+    },
+    "nearMeChip": "In deiner Nähe",
+    "nearMeChipAria": "Profis im Umkreis von {radius} km filtern",
+    "resultsCount": "{count, plural, one {# Ergebnis} other {# Ergebnisse}}"
+  },
+  "searchAutocomplete": {
+    "placeholder": "Suche nach Service, Studio oder Behandlung...",
+    "inputLabel": "Suchen",
+    "clear": "Suche zurücksetzen",
+    "suggestionsLabel": "Suchvorschläge",
+    "type": {
+      "category": "Kategorie",
+      "service": "Service",
+      "provider": "Studio"
+    }
+  },
+  "searchFilters": {
+    "chips": {
+      "groupLabel": "Aktive Filter",
+      "queryLabel": "Text: {value}",
+      "availabilityLabel": "Jetzt verfügbar",
+      "priceLabel": "Preis {value}",
+      "ratingLabel": "{value}+ Sterne",
+      "clearAll": "Alle zurücksetzen",
+      "removeAria": "Filter {label} entfernen"
+    }
+  },
+  "providerDetail": {
+    "breadcrumb": {
+      "home": "Start",
+      "search": "Suchen"
+    },
+    "header": {
+      "typeAutonomous": "Selbstständig",
+      "typeCenter": "Studio",
+      "reviewsLabel": "{count, plural, one {# Bewertung} other {# Bewertungen}}",
+      "ratingGroupLabel": "Bewertung"
+    },
+    "tabs": {
+      "services": "Services",
+      "reviews": "Bewertungen",
+      "info": "Das Studio"
+    },
+    "services": {
+      "title": "Service-Karte",
+      "subtitle": "Wähle den Service, der am besten zu dir passt.",
+      "duration": "{minutes} Min.",
+      "reserve": "Buchen",
+      "reserveComingSoon": "Demnächst verfügbar",
+      "empty": "Dieses Studio hat noch keine Services veröffentlicht.",
+      "groupHeader": "{category}",
+      "cardHint": "Tippen für Details",
+      "sheet": {
+        "title": "Diesen Service buchen",
+        "subtitle": "Prüfe die Details, bevor du fortfährst.",
+        "close": "Schließen",
+        "durationLabel": "Dauer",
+        "priceLabel": "Preis",
+        "professionalLabel": "Fachperson",
+        "anyProfessional": "Egal welche Fachperson",
+        "descriptionLabel": "Beschreibung",
+        "reserveCta": "Buchen (demnächst)",
+        "comingSoonNote": "Online-Buchung ist sehr bald verfügbar. Bis dahin kannst du das Studio direkt kontaktieren."
+      }
+    },
+    "reviews": {
+      "title": "Bewertungen",
+      "summary": "{rating} von 5 · {count, plural, one {# Bewertung} other {# Bewertungen}}",
+      "breakdownLabel": "{stars} Sterne",
+      "empty": "Noch keine Bewertungen. Sei der erste, der dieses Studio bewertet.",
+      "loadMore": "Weitere Bewertungen lesen",
+      "collapse": "Weniger anzeigen"
+    },
+    "info": {
+      "title": "Das Studio",
+      "addressLabel": "Wo wir sind",
+      "scheduleLabel": "Wann wir da sind",
+      "scheduleWeekdays": "Montag bis Freitag",
+      "scheduleSaturday": "Samstag",
+      "scheduleSunday": "Sonntag",
+      "scheduleClosed": "Geschlossen",
+      "descriptionLabel": "Über uns"
+    },
+    "notFound": {
+      "title": "Studio nicht gefunden",
+      "subtitle": "Möglicherweise ist es nicht mehr verfügbar oder der Link ist fehlerhaft.",
+      "backToSearch": "Zurück zur Suche"
+    }
+  },
+  "providerPanel": {
+    "nav": {
+      "title": "Studio-Panel",
+      "dashboard": "Übersicht",
+      "calendar": "Kalender",
+      "services": "Services",
+      "settings": "Studio",
+      "reviews": "Bewertungen",
+      "addService": "Service hinzufügen",
+      "providerLabel": "Aktives Studio",
+      "sidebarNavLabel": "Panel-Navigation",
+      "bottomNavLabel": "Schnellzugriffe im Panel"
+    },
+    "dashboard": {
+      "title": "Wochenübersicht",
+      "subtitle": "Deine Woche auf einen Blick.",
+      "metrics": {
+        "weekRevenue": "Umsatz Woche",
+        "weekBookings": "Buchungen Woche",
+        "averageTicket": "Durchschnittsbon",
+        "occupancy": "Auslastung",
+        "vsLastWeek": "vs. Vorwoche"
+      },
+      "chart": {
+        "title": "Umsatz pro Tag",
+        "subtitle": "Vergleich der letzten 7 Tage.",
+        "dayShort": {
+          "mon": "Mo",
+          "tue": "Di",
+          "wed": "Mi",
+          "thu": "Do",
+          "fri": "Fr",
+          "sat": "Sa",
+          "sun": "So"
+        },
+        "barAriaLabel": "{day}: {revenue}, {count, plural, one {# Buchung} other {# Buchungen}}"
+      },
+      "topServices": {
+        "title": "Meistgebuchte Services",
+        "subtitle": "Top 4 nach Buchungen diese Woche.",
+        "bookings": "{count, plural, one {# Buchung} other {# Buchungen}}"
+      }
+    },
+    "calendar": {
+      "title": "Wochenkalender",
+      "subtitle": "Deine Buchungen der nächsten 7 Tage.",
+      "weekdays": {
+        "mon": "Montag",
+        "tue": "Dienstag",
+        "wed": "Mittwoch",
+        "thu": "Donnerstag",
+        "fri": "Freitag",
+        "sat": "Samstag",
+        "sun": "Sonntag"
+      },
+      "weekdayShort": {
+        "mon": "Mo",
+        "tue": "Di",
+        "wed": "Mi",
+        "thu": "Do",
+        "fri": "Fr",
+        "sat": "Sa",
+        "sun": "So"
+      },
+      "status": {
+        "confirmed": "Bestätigt",
+        "pending": "Ausstehend",
+        "completed": "Abgeschlossen",
+        "cancelled": "Storniert"
+      },
+      "legend": "Legende",
+      "emptyDay": "Keine Buchungen",
+      "bookingAriaLabel": "{service} mit {client} um {time}",
+      "summary": "{count, plural, one {# Buchung diese Woche} other {# Buchungen diese Woche}}"
+    },
+    "services": {
+      "title": "Angebotene Services",
+      "subtitle": "Verwalte deine für Kunden sichtbare Service-Karte.",
+      "addCta": "Service hinzufügen",
+      "status": {
+        "active": "Aktiv",
+        "paused": "Pausiert"
+      },
+      "duration": "{minutes} Min.",
+      "bookings30d": "{count} Buchungen / 30 T.",
+      "edit": "Bearbeiten",
+      "pause": "Pausieren",
+      "resume": "Reaktivieren",
+      "empty": "Du hast noch keinen Service veröffentlicht."
+    },
+    "addService": {
+      "title": "Service hinzufügen",
+      "subtitle": "Definiere einen neuen Service für deine Karte.",
+      "back": "Zurück zur Liste",
+      "categoryStep": {
+        "title": "Einordnung",
+        "subtitle": "Wähle, zu welcher Kategorie der Service gehört.",
+        "rootLabel": "Kategorie",
+        "rootPlaceholder": "Kategorie auswählen",
+        "typeLabel": "Typ",
+        "typePlaceholder": "Typ auswählen",
+        "subtypeLabel": "Subtyp",
+        "subtypePlaceholder": "Subtyp auswählen",
+        "hintAfterRoot": "Wähle zuerst die Kategorie, um die verfügbaren Typen zu sehen.",
+        "hintAfterType": "Wähle einen Typ, um die verfügbaren Subtypen zu sehen."
+      },
+      "detailsStep": {
+        "title": "Service-Daten",
+        "subtitle": "Informationen, die der Kunde bei der Buchung sieht.",
+        "nameLabel": "Name des Services",
+        "namePlaceholder": "z. B. Damenhaarschnitt mit Waschen",
+        "descriptionLabel": "Beschreibung",
+        "descriptionPlaceholder": "Erzähle, was enthalten ist: Materialien, zugewiesene Profis usw.",
+        "durationLabel": "Dauer (Minuten)",
+        "priceLabel": "Preis (€)"
+      },
+      "submit": "Service veröffentlichen",
+      "cancel": "Abbrechen",
+      "mockNotice": "Dieses Formular speichert noch nichts. Die echte Veröffentlichung kommt mit dem Service-Backend."
+    },
+    "settings": {
+      "title": "Studio-Einstellungen",
+      "subtitle": "Öffentliche und operative Daten deines Geschäfts.",
+      "general": {
+        "title": "Allgemeine Daten",
+        "businessNameLabel": "Geschäftsname",
+        "vatLabel": "USt-IdNr. / Steuernummer",
+        "phoneLabel": "Kontakttelefon",
+        "emailLabel": "Kontakt-E-Mail",
+        "descriptionLabel": "Öffentliche Beschreibung"
+      },
+      "address": {
+        "title": "Adresse",
+        "streetLabel": "Straße und Hausnummer",
+        "cityLabel": "Stadt",
+        "postalLabel": "Postleitzahl"
+      },
+      "schedule": {
+        "title": "Öffnungszeiten",
+        "subtitle": "Öffnungszeiten des Studios.",
+        "weekdaysLabel": "Montag bis Freitag",
+        "saturdayLabel": "Samstag",
+        "sundayLabel": "Sonntag",
+        "closed": "Geschlossen",
+        "openFrom": "Öffnet",
+        "openTo": "Schließt"
+      },
+      "photos": {
+        "title": "Fotos",
+        "subtitle": "Die Fotos erscheinen auf deinem öffentlichen Profil. Wir empfehlen mindestens 3.",
+        "addCta": "Neues Foto hochladen",
+        "altLabel": "Foto des Studios {index}"
+      },
+      "save": "Änderungen speichern",
+      "savedNotice": "Die Änderungen werden gespeichert, sobald das Panel-Backend angebunden ist."
+    },
+    "reviews": {
+      "title": "Erhaltene Bewertungen",
+      "subtitle": "Auf Bewertungen zu antworten stärkt das Vertrauen künftiger Kunden.",
+      "summary": "{rating} von 5 · {count, plural, one {# Bewertung} other {# Bewertungen}}",
+      "filters": {
+        "starsLabel": "Sterne",
+        "allStars": "Alle",
+        "periodLabel": "Zeitraum",
+        "period7d": "Letzte 7 Tage",
+        "period30d": "Letzte 30 Tage",
+        "period90d": "Letzte 90 Tage",
+        "periodAll": "Alle",
+        "withoutResponse": "Nur ohne Antwort"
+      },
+      "card": {
+        "serviceLabel": "Service",
+        "respond": "Antworten",
+        "responseTitle": "Antwort des Studios",
+        "alreadyResponded": "Beantwortet",
+        "pending": "Antwort ausstehend"
+      },
+      "empty": "Keine Bewertungen entsprechen den Filtern."
+    }
+  },
+  "booking": {
+    "meta": {
+      "title": "Buchen · Yaiwell"
+    },
+    "flow": {
+      "eyebrow": "Schritt {current} von {total}",
+      "steps": {
+        "slot": "Wähle deinen Termin",
+        "summary": "Daten bestätigen",
+        "payment": "Sichere Zahlung",
+        "confirmation": "Buchung bestätigt"
+      },
+      "back": "Zurück",
+      "cancel": "Buchung abbrechen",
+      "continue": "Weiter",
+      "goToPayment": "Zur Zahlung"
+    },
+    "slotPicker": {
+      "dayStripLabel": "Verfügbare Tage",
+      "morning": "Vormittag",
+      "afternoon": "Nachmittag",
+      "noMorningSlots": "Keine Termine mehr am Vormittag.",
+      "noAfternoonSlots": "Keine Termine mehr am Nachmittag.",
+      "emptyTitle": "Keine Termine an diesem Tag",
+      "emptySubtitle": "Versuche einen anderen Tag im Kalender oder komm morgen wieder."
+    },
+    "summary": {
+      "serviceLabel": "Service",
+      "dateLabel": "Datum",
+      "rangeLabel": "Uhrzeit",
+      "durationValue": "{minutes} Min.",
+      "professionalLabel": "Fachperson",
+      "anyProfessional": "Egal welche Fachperson",
+      "totalLabel": "Gesamt",
+      "notesLabel": "Hinweise an das Studio (optional)",
+      "notesHelper": "Teile uns alles Wichtige mit: Allergien, erstes Mal, Vorlieben…",
+      "notesPlaceholder": "Schreib hier rein, falls du etwas ergänzen möchtest."
+    },
+    "policy": {
+      "title": "Kurze Richtlinie",
+      "clientCancel": "Du kannst bis 2 Stunden vor Servicebeginn kostenlos stornieren.",
+      "providerCancel": "Das Studio kann ebenfalls bis 2 Stunden vorher stornieren; in diesem Fall erhältst du automatisch die vollständige Rückerstattung.",
+      "compactNote": "Kostenlose Stornierung bis 2 Stunden vor dem Service, sowohl für dich als auch für das Studio."
+    },
+    "payment": {
+      "cardLabel": "Demo-Zahlung",
+      "totalLabel": "Zu zahlender Gesamtbetrag",
+      "payCta": "Bezahlen (Demo)",
+      "processing": "Wird verarbeitet…",
+      "mockNote": "Diese Bezahlseite ist eine visuelle Simulation. In Produktion wird sie an Stripe Connect angebunden und die echte Zahlung wird sicher abgewickelt."
+    },
+    "confirmation": {
+      "title": "Buchung bestätigt!",
+      "subtitle": "Wir haben die Details an deine E-Mail geschickt (simuliert). Wir freuen uns auf dich.",
+      "bookingIdLabel": "Buchungsnummer",
+      "providerLabel": "Studio",
+      "serviceLabel": "Service",
+      "whenLabel": "Wann",
+      "totalLabel": "Gesamt",
+      "backToProvider": "Zurück zum Studio",
+      "keepBrowsing": "Weiter stöbern"
+    }
+  },
+  "customerArea": {
+    "page": {
+      "title": "Meine Buchungen",
+      "subtitle": "Verwalte deine nächsten Termine, sieh dir den Verlauf an und bewerte abgeschlossene Services."
+    },
+    "identity": {
+      "demoName": "Jorge G.",
+      "role": "Kunde"
+    },
+    "nav": {
+      "ariaLabel": "Navigation im Kundenbereich",
+      "bookings": "Buchungen",
+      "favorites": "Favoriten",
+      "reviews": "Bewertungen",
+      "profile": "Profil"
+    },
+    "sections": {
+      "count": "{count, plural, =0 {Keine Einträge} one {# Eintrag} other {# Einträge}}",
+      "upcoming": {
+        "title": "Anstehende Buchungen",
+        "empty": "Du hast keine anstehenden Buchungen. Such einen Service und buche in Sekunden."
+      },
+      "pendingReview": {
+        "title": "Offene Bewertungen",
+        "empty": "Sobald ein Service als abgeschlossen markiert wird, kannst du hier deine Bewertung abgeben."
+      },
+      "past": {
+        "title": "Verlauf",
+        "empty": "Du hast noch keine vergangenen Buchungen."
+      }
+    },
+    "status": {
+      "pending": "Ausstehend",
+      "confirmed": "Bestätigt",
+      "completed": "Abgeschlossen",
+      "cancelled": "Storniert",
+      "refunded": "Erstattet"
+    },
+    "actions": {
+      "viewDetail": "Details ansehen",
+      "cancel": "Stornieren",
+      "cancelling": "Wird storniert…",
+      "cancelledHint": "Stornierung angefragt",
+      "cancelBlockedHint": "Stornierung nur mit mehr als 2 Std. Vorlauf möglich.",
+      "review": "Bewerten"
+    }
+  },
+  "adminArea": {
+    "badge": "Admin",
+    "title": "Moderations-Panel",
+    "subtitle": "Internes Tool des Yaiwell-Teams.",
+    "nav": {
+      "ariaLabel": "Navigation im Admin-Panel",
+      "dashboard": "Dashboard",
+      "queue": "Warteschlange",
+      "exit": "Panel verlassen"
+    },
+    "dashboard": {
+      "title": "Operative Übersicht",
+      "subtitle": "Globale Kennzahlen des Marktplatzes und Schnellzugriff auf die Warteschlange offener Verifizierungen."
+    },
+    "metrics": {
+      "bookingsToday": "Buchungen heute",
+      "weeklyGmv": "GMV Woche",
+      "pendingProviders": "Offene Profis",
+      "cancellationRate": "Stornoquote",
+      "weeklyDelta": "Wöchentliche Veränderung: {delta}"
+    },
+    "verifications": {
+      "type": {
+        "centro": "Studio",
+        "autonomo": "Selbstständig"
+      },
+      "queue": {
+        "title": "Verifizierungs-Warteschlange",
+        "count": "{count, plural, =0 {Keine offen} one {# offen} other {# offen}}",
+        "empty": "Keine offenen Anfragen.",
+        "open": "Prüfen",
+        "openAria": "Anfrage von {name} prüfen"
+      },
+      "detail": {
+        "back": "Zurück zur Warteschlange",
+        "contactTitle": "Kontaktdaten",
+        "descriptionTitle": "Beschreibung des Anbieters",
+        "documentsTitle": "Dokumente",
+        "fields": {
+          "email": "E-Mail",
+          "phone": "Telefon",
+          "vat": "USt-IdNr. / Steuernummer",
+          "category": "Kategorie"
+        },
+        "docType": {
+          "identity": "Identität",
+          "business": "Gewerbedokument",
+          "insurance": "Versicherung",
+          "portfolio": "Portfolio"
+        },
+        "actions": {
+          "approve": "Genehmigen",
+          "reject": "Ablehnen"
+        },
+        "toast": {
+          "approved": "Anfrage von {name} genehmigt (Demo).",
+          "rejected": "Anfrage von {name} abgelehnt (Demo).",
+          "dismiss": "Schließen"
+        }
+      }
+    }
+  },
+  "notFound": {
+    "eyebrow": "Fehler 404",
+    "title": "Wir haben uns auf der Suche nach diesem Link verlaufen",
+    "subtitle": "Die Seite, die du öffnen wolltest, existiert nicht oder ist nicht mehr verfügbar. Zurück zum Start oder entdecke Services in deiner Nähe.",
+    "illustrationAlt": "Dekorative Illustration eines leeren Spiegels",
+    "backHome": "Zurück zum Start",
+    "exploreServices": "Services suchen",
+    "helpHint": "Wenn du glaubst, dass dies ein Fehler ist, schreib uns an hola@yaiwell.com."
+  },
+  "serviceDetail": {
+    "breadcrumb": {
+      "home": "Start",
+      "search": "Suchen"
+    },
+    "header": {
+      "eyebrow": "Service",
+      "durationLabel": "Dauer",
+      "priceLabel": "Preis",
+      "professionalLabel": "Zugewiesene Fachperson",
+      "anyProfessional": "Egal welche Fachperson aus dem Studio",
+      "professionalPhotoAlt": "Foto von {name}"
+    },
+    "description": {
+      "title": "Über diesen Service"
+    },
+    "policy": {
+      "title": "Vor der Buchung",
+      "cancellationTitle": "Flexible Stornierung",
+      "cancellationBody": "Storniere bis 2 Stunden vor Beginn kostenlos. Unterhalb dieser Frist ist der Betrag nicht erstattbar.",
+      "punctualityTitle": "Komm 5 Minuten früher",
+      "punctualityBody": "Damit das Team deine Session in Ruhe vorbereitet und ihr pünktlich starten könnt.",
+      "paymentTitle": "Sichere Online-Zahlung",
+      "paymentBody": "Deine Buchung wird mit der Zahlung sofort bestätigt. Keine Überraschungen vor Ort.",
+      "ratingHint": "Du kannst den Service erst bewerten, nachdem die Fachperson ihn als abgeschlossen markiert hat."
+    },
+    "cta": {
+      "reserve": "Buchen",
+      "fromPrice": "ab {price}",
+      "secureNote": "Sofortige Bestätigung. Sichere Zahlung."
+    }
+  },
+  "forProviders": {
+    "meta": {
+      "title": "Für Profis",
+      "description": "Yaiwell ist der Marktplatz für Beauty, Wellness und Sport, auf dem deine Kunden dich finden, wenn sie bereit zum Buchen sind. Starte kostenlos und ohne Vertragsbindung."
+    },
+    "hero": {
+      "eyebrow": "Für Studios und Selbstständige",
+      "titleLine1": "Dein Kalender voll,",
+      "titleLine2": "ohne Aufwand.",
+      "subtitle": "Yaiwell ist der Marktplatz für Beauty, Wellness und Sport, auf dem deine Kunden dich finden, wenn sie bereit zum Buchen sind.",
+      "ctaPrimary": "Kostenlos starten",
+      "ctaSecondary": "So funktioniert's",
+      "trustNote": "Ohne Bindung · Ohne Anmeldegebühr · Sofortige Auszahlung",
+      "mockBadge": "Buchungen live",
+      "mockBookingService": "Schnitt + Waschen",
+      "mockBookingClient": "Marta · 18:30",
+      "mockBookingStatus": "Bestätigt",
+      "mockOccupancyLabel": "Auslastung diese Woche",
+      "mockOccupancyValue": "86 %"
+    },
+    "benefits": {
+      "eyebrow": "Vorteile",
+      "title": "Damit du nur noch die Türen aufschließen musst.",
+      "subtitle": "Wir kümmern uns um Marketing, Erinnerungen und Zahlungen. Du widmest deine Zeit dem, was du am besten kannst.",
+      "items": {
+        "liveBookings": {
+          "title": "Buchungen in Echtzeit",
+          "body": "Empfange Kunden mit echter Verfügbarkeit aus deinem Kalender. Keine Geister-Termine."
+        },
+        "noCalls": {
+          "title": "Null Anrufe",
+          "body": "Online-Zahlungen, automatische Erinnerungen und sofortige Bestätigung. Schluss mit dem Telefon."
+        },
+        "yourHours": {
+          "title": "Du bestimmst deine Zeiten",
+          "body": "Der Kalender gehört dir. Sperre Stunden, schließe Tage und öffne nur, wenn du arbeiten willst."
+        },
+        "noLockIn": {
+          "title": "Ohne Bindung",
+          "body": "Heute einsteigen und ausprobieren. Wenn es nicht passt, meldest du dich morgen kostenlos ab."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Tarife",
+      "title": "Starte kostenlos. Wachse, wenn es dir passt.",
+      "subtitle": "Du zahlst nur Provision auf das, was gebucht wird. Die Monatsgebühr senkt die Provision und schaltet Premium-Funktionen frei.",
+      "popularBadge": "Am beliebtesten",
+      "perMonth": "/Monat",
+      "commission": "Provision {rate}",
+      "ctaStart": "Loslegen",
+      "plans": {
+        "free": {
+          "name": "Kostenlos",
+          "tagline": "Um Yaiwell unverbindlich auszuprobieren.",
+          "feature1": "Bis zu 5 veröffentlichte Services",
+          "feature2": "Unbegrenzte Online-Buchungen",
+          "feature3": "Sichere Zahlung mit Stripe",
+          "feature4": "Öffentliches Profil im Marktplatz"
+        },
+        "basic": {
+          "name": "Basis",
+          "tagline": "Für Profis, die ihren Kalender füllen wollen.",
+          "feature1": "Bis zu 20 veröffentlichte Services",
+          "feature2": "Automatische E-Mail-Erinnerungen",
+          "feature3": "Basis-Auslastungsstatistiken",
+          "feature4": "E-Mail-Support innerhalb von 48 Std."
+        },
+        "pro": {
+          "name": "Pro",
+          "tagline": "Für Studios mit mehreren Profis.",
+          "feature1": "Unbegrenzte Services",
+          "feature2": "Multi-Profi-Verwaltung",
+          "feature3": "Last-Minute-Termin-Aktionen",
+          "feature4": "Priorisierter Support innerhalb von 24 Std."
+        },
+        "premium": {
+          "name": "Premium",
+          "tagline": "Für Gruppen mit mehreren Studios.",
+          "feature1": "Mehrere Studios unter einem Account",
+          "feature2": "Konsolidiertes Kontrollpanel",
+          "feature3": "Persönlicher Account Manager",
+          "feature4": "Onboarding mit Unterstützung vom Team"
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "Häufige Fragen",
+      "title": "Was uns immer gefragt wird.",
+      "items": {
+        "start": {
+          "question": "Wie lange dauert es, bis ich Buchungen erhalte?",
+          "answer": "Sobald dein Account verifiziert ist (durchschnittlich in 24 Werkstunden), wird dein Profil veröffentlicht und du kannst noch am selben Tag Buchungen erhalten. Du brauchst nur deinen Kalender und deine geladenen Services."
+        },
+        "payouts": {
+          "question": "Wie bekomme ich das Geld für die Buchungen?",
+          "answer": "Yaiwell nutzt Stripe Connect. Der Kunde zahlt bei der Bestätigung der Buchung und wir überweisen dir den Betrag (abzüglich Provision) wöchentlich automatisch auf dein Bankkonto."
+        },
+        "cancel": {
+          "question": "Kann ich eine Buchung stornieren?",
+          "answer": "Ja, bis 2 Stunden vor Servicebeginn aus deinem Panel. Wenn du stornierst, erhält der Kunde automatisch die vollständige Rückerstattung ohne Strafe für dich."
+        },
+        "regret": {
+          "question": "Was, wenn ich es mir anders überlege?",
+          "answer": "Keine Bindung, keine Strafe für die Abmeldung. Heute rein, morgen raus. Deine Daten bleiben 30 Tage gespeichert, falls du es dir wieder anders überlegst."
+        },
+        "platform": {
+          "question": "Ist Yaiwell App oder Web?",
+          "answer": "Heute sind wir Web, optimiert für Mobilgeräte; dein Panel funktioniert in jedem Browser. Die native App für iOS/Android kommt in der nächsten Phase, ohne Zusatzkosten für dich."
+        },
+        "verification": {
+          "question": "Was brauche ich zur Anmeldung?",
+          "answer": "Eine E-Mail-Adresse, deine USt-IdNr./Steuernummer und je nach Kategorie einige berufliche Dokumente (Versicherung, Zertifikate). Wir führen dich Schritt für Schritt durch die Anmeldung."
+        }
+      }
+    },
+    "cta": {
+      "eyebrow": "Bereit zum Start",
+      "title": "Bereit, deinen Kalender zu füllen?",
+      "subtitle": "Erstelle deinen kostenlosen Account in weniger als 5 Minuten. Ohne Karte, ohne Bindung, ohne Verpflichtung.",
+      "primary": "Kostenlosen Account erstellen",
+      "secondary": "Mit dem Vertrieb sprechen"
+    }
+  },
+  "signIn": {
+    "meta": {
+      "title": "Anmelden · Yaiwell",
+      "description": "Zugang zu deinem Yaiwell-Account, um Beauty, Wellness und Sport in deiner Nähe zu buchen."
+    },
+    "title": "Bei Yaiwell anmelden",
+    "subtitle": "Buche Beauty, Wellness und Sport in Sekunden.",
+    "aside": {
+      "badge": "Zugang",
+      "title": "Dein Kalender immer dabei.",
+      "subtitle": "Buche sofort, verwalte deine Termine und entdecke Profis in deiner Nähe.",
+      "bullet1": "Echte Verfügbarkeit, ohne Anrufe und ohne Wartezeit.",
+      "bullet2": "Kostenlose Stornierung bis 2 Std. vorher."
+    },
+    "tabs": {
+      "ariaLabel": "Account-Typ wählen",
+      "client": "Ich bin Kunde",
+      "provider": "Ich bin Profi",
+      "clientDescription": "Anmeldung als Kunde.",
+      "providerDescription": "Anmeldung als Profi."
+    },
+    "fields": {
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "du@email.com",
+      "passwordLabel": "Passwort",
+      "passwordPlaceholder": "Dein Passwort",
+      "remember": "Angemeldet bleiben",
+      "forgot": "Passwort vergessen?"
+    },
+    "actions": {
+      "submit": "Anmelden",
+      "submitting": "Wird angemeldet…"
+    },
+    "divider": "oder weiter mit",
+    "social": {
+      "google": "Google",
+      "googleAria": "Mit Google fortfahren (demnächst)",
+      "apple": "Apple",
+      "appleAria": "Mit Apple fortfahren (demnächst)",
+      "comingSoon": "Demnächst verfügbar"
+    },
+    "footer": {
+      "noAccount": "Noch keinen Account?",
+      "createOne": "Jetzt erstellen"
+    },
+    "errors": {
+      "emailRequired": "Gib deine E-Mail ein, um fortzufahren.",
+      "emailInvalid": "Diese E-Mail scheint nicht gültig zu sein. Bitte überprüfe sie und versuche es erneut.",
+      "passwordRequired": "Gib dein Passwort ein, um fortzufahren.",
+      "invalidCredentials": "E-Mail oder Passwort falsch. Bitte überprüfe die Daten und versuche es erneut.",
+      "tooManyAttempts": "Zu viele Versuche in Folge. Warte ein paar Minuten, bevor du es erneut versuchst.",
+      "sessionExists": "In diesem Browser ist bereits eine Sitzung aktiv. Melde dich ab, bevor du den Account wechselst.",
+      "networkError": "Verbindung fehlgeschlagen. Überprüfe deine Verbindung und versuche es erneut.",
+      "unknown": "Etwas ist schiefgelaufen. Versuche es in ein paar Sekunden erneut."
+    }
+  },
+  "account": {
+    "meta": {
+      "title": "Dein Account",
+      "description": "Zugriff auf deine Buchungen, Favoriten und Einstellungen an einem Ort bei Yaiwell."
+    },
+    "hero": {
+      "badgeGuest": "Noch nicht angemeldet",
+      "badgeAuthenticated": "Dein Account",
+      "titleGuest": "Anmelden oder Account erstellen",
+      "titleAuthenticated": "Hallo, was machen wir heute?",
+      "subtitleGuest": "Melde dich an, um deine Buchungen zu sehen, Lieblingsstudios zu speichern und Bestätigungen per E-Mail zu erhalten.",
+      "subtitleAuthenticated": "Verwalte deine Buchungen, Favoriten und Vorlieben an einem Ort."
+    },
+    "guest": {
+      "signInCta": "Anmelden",
+      "signUpCta": "Account erstellen"
+    },
+    "authenticated": {
+      "navLabel": "Zugriff auf deinen Account",
+      "bookings": "Meine Buchungen",
+      "favorites": "Meine Favoriten",
+      "settings": "Einstellungen und Vorlieben"
+    }
+  },
+  "signUp": {
+    "meta": {
+      "title": "Account erstellen",
+      "description": "Registriere dich bei Yaiwell, um Beauty, Wellness und Sport in deiner Nähe zu buchen oder um deine Services anzubieten."
+    },
+    "eyebrow": "Werde Teil von Yaiwell",
+    "title": "Account erstellen",
+    "subtitle": "Buche sofort oder fange an, deine Services anzubieten. Dauert nur eine Minute.",
+    "tabs": {
+      "client": "Ich bin Kunde",
+      "provider": "Ich bin Profi"
+    },
+    "fields": {
+      "fullName": "Vor- und Nachname",
+      "contactName": "Name der verantwortlichen Person",
+      "businessName": "Name des Studios",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "passwordRepeat": "Passwort wiederholen"
+    },
+    "verificationNotice": "Bevor wir dich veröffentlichen, prüfen wir deine Angaben und Unterlagen. Wir informieren dich per E-Mail, sobald dein Profil verifiziert ist.",
+    "termsLabel": "Ich habe die <terms>Nutzungsbedingungen</terms> und die <privacy>Datenschutzerklärung</privacy> gelesen und akzeptiere sie.",
+    "cta": {
+      "submit": "Account erstellen",
+      "submitting": "Account wird erstellt…"
+    },
+    "socialDivider": "oder registriere dich mit",
+    "social": {
+      "google": "Mit Google fortfahren",
+      "apple": "Mit Apple fortfahren"
+    },
+    "haveAccount": "Schon einen Account? <link>Hier anmelden</link>",
+    "illustration": {
+      "badge": "Yaiwell Premium",
+      "title": "Sich um sich zu kümmern sollte nicht warten.",
+      "subtitle": "Verbinde deinen Kalender mit dem der besten Profis in deiner Nähe.",
+      "footer": "Wir nehmen nur handverlesene, verifizierte Profis auf. Qualität vor Quantität."
+    },
+    "verification": {
+      "eyebrow": "E-Mail-Verifizierung",
+      "title": "Bestätige deine E-Mail",
+      "subtitle": "Wir haben einen Code an {email} geschickt. Gib ihn hier ein, um deinen Account zu aktivieren.",
+      "codeLabel": "6-stelliger Code",
+      "submit": "Bestätigen und einsteigen",
+      "submitting": "Wird bestätigt…",
+      "back": "Zurück und Daten ändern"
+    },
+    "errors": {
+      "required": "Dieses Feld ist erforderlich.",
+      "fullNameMin": "Gib mindestens einen Namen mit 2 Zeichen ein.",
+      "businessNameMin": "Der Name des Studios muss mindestens 2 Zeichen haben.",
+      "emailInvalid": "Gib eine gültige E-Mail-Adresse ein.",
+      "passwordShort": "Das Passwort muss mindestens 8 Zeichen haben.",
+      "passwordMismatch": "Die Passwörter stimmen nicht überein.",
+      "termsRequired": "Du musst die Bedingungen akzeptieren, um fortzufahren.",
+      "emailAlreadyExists": "Es existiert bereits ein Account mit dieser E-Mail. Versuche stattdessen, dich anzumelden.",
+      "passwordCompromised": "Dieses Passwort taucht in bekannten Datenlecks auf. Wähle ein anderes.",
+      "verificationCodeInvalid": "Der Code ist nicht korrekt. Bitte überprüfen und erneut versuchen.",
+      "verificationCodeExpired": "Der Code ist abgelaufen. Geh zurück, um einen neuen zu erhalten.",
+      "invalidCredentials": "Daten falsch. Bitte überprüfen und erneut versuchen.",
+      "tooManyAttempts": "Zu viele Versuche in Folge. Warte ein paar Minuten, bevor du es erneut versuchst.",
+      "sessionExists": "In diesem Browser ist bereits eine Sitzung aktiv.",
+      "networkError": "Verbindung fehlgeschlagen. Überprüfe deine Verbindung und versuche es erneut.",
+      "unknown": "Etwas ist schiefgelaufen. Versuche es in ein paar Sekunden erneut."
+    }
+  },
+  "location": {
+    "label": "Dein Standort",
+    "labelNone": "Kein Standort",
+    "permissionTitle": "Sollen wir dir zeigen, was in deiner Nähe ist?",
+    "permissionBody": "Aktiviere den Standort, um zuerst die Profis zu sehen, die dir am nächsten sind. Du kannst ihn jederzeit deaktivieren.",
+    "permissionEnable": "Standort aktivieren",
+    "permissionDismiss": "Jetzt nicht",
+    "requesting": "Standort wird gesucht…",
+    "granted": "Standort aktiv",
+    "denied": "Du hast den Standort abgelehnt",
+    "deniedHelp": "Um ihn zu aktivieren, suche das Schloss-Symbol in der Adressleiste und erlaube den Standort für diese Seite.",
+    "unavailable": "Wir konnten deinen Standort nicht ermitteln",
+    "unavailableHelp": "Überprüfe deine Verbindung oder versuche es in ein paar Sekunden erneut.",
+    "timeout": "Es hat zu lange gedauert",
+    "notSupported": "Dein Browser unterstützt keine Standortermittlung",
+    "retry": "Erneut versuchen",
+    "clear": "Standort entfernen",
+    "useFallback": "Ergebnisse aus Barcelona anzeigen",
+    "fallbackHint": "Wir zeigen Ergebnisse aus dem Zentrum Barcelonas. Aktiviere deinen Standort, um zu sehen, was dir am nächsten ist.",
+    "distanceAway": "{distance} entfernt",
+    "nearYou": "In deiner Nähe",
+    "barcelona": "Barcelona",
+    "defaultBadge": "Standard",
+    "pill": {
+      "ariaLabel": "Aktueller Standort",
+      "openAria": "Standortoptionen öffnen",
+      "fallbackTitle": "Du siehst gerade Barcelona",
+      "fallbackBody": "Aktiviere deinen Standort, um zu sehen, was dir am nächsten ist.",
+      "grantedTitle": "Standort aktiv",
+      "grantedBody": "Wir zeigen dir Ergebnisse sortiert nach der Nähe zu deiner Position.",
+      "deniedTitle": "Berechtigung blockiert",
+      "requestingTitle": "Standort wird gesucht…",
+      "unavailableTitle": "Standort nicht verfügbar",
+      "shortLabelDefault": "Barcelona",
+      "shortLabelGranted": "In deiner Nähe",
+      "shortLabelRequesting": "Wird ermittelt…",
+      "shortLabelUnavailable": "Kein Standort"
+    }
+  },
+  "designSystem": {
+    "meta": {
+      "title": "Designsystem",
+      "description": "Interne Galerie von Markentokens, Typografie und shadcn-Komponenten."
+    },
+    "title": "Designsystem",
+    "subtitle": "Lebender Katalog von Tokens und Komponenten. Interne Seite für visuelles QA; erscheint nicht in der Navigation.",
+    "colors": {
+      "title": "Semantische Farben",
+      "description": "shadcn-Basistokens, gemappt auf die Yaiwell-Palette (warmes Plum + Cremetöne).",
+      "sample": "Aa Text"
+    },
+    "brand": {
+      "title": "Marken-Pastell",
+      "description": "Paare aus gesättigt/soft, gedacht für Badges, Chips und Icons auf warmen Hintergründen.",
+      "solid": "Gesättigt",
+      "soft": "Soft"
+    },
+    "typography": {
+      "title": "Typografie",
+      "description": "Display via Fraunces für Überschriften; Inter als Standard-Sans-Serif.",
+      "displaySample": "Beauty, Wellness und Sport",
+      "headlineSample": "Buchen in Sekunden",
+      "leadSample": "Entdecke Profis in deiner Nähe mit sofortiger Verfügbarkeit.",
+      "bodySample": "Standard-Fließtext für Servicebeschreibungen, Profile und Formulare.",
+      "captionSample": "Sekundärer Text für Metadaten und kontextuelle Hilfe."
+    },
+    "buttons": {
+      "title": "Buttons",
+      "description": "Varianten und Größen der Button-Komponente (cva).",
+      "label": "{variant} · {size}"
+    },
+    "radius": {
+      "title": "Radius",
+      "description": "Skalierung der Radien abgeleitet von --radius (0.875rem)."
+    },
+    "components": {
+      "title": "Komponenten",
+      "description": "Lebende Beispiele der installierten shadcn-Komponenten.",
+      "selectPlaceholder": "Eine Option wählen",
+      "selectOption": "Option {index}",
+      "tabLabel": "Tab {index}",
+      "tabContent": "Inhalt von Tab {index}"
+    }
+  }
+}

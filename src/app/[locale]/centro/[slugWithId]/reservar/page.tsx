@@ -77,7 +77,7 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
     <BookingFlow
       provider={loaded.provider}
       service={loaded.service}
-      locale={locale as 'es' | 'ca'}
+      locale={locale as 'es' | 'ca' | 'en' | 'de'}
       providerSlugWithId={slugWithId}
     />
   );

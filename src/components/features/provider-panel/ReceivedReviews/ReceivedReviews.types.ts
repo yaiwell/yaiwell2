@@ -1,7 +1,7 @@
 import type { PanelReview } from '@/lib/fake-data/panel-reviews';
 
 /** Locales soportados en la UI del panel. */
-export type SupportedLocale = 'es' | 'ca';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
 
 /** Periodo de filtrado por antigüedad. */
 export type ReviewPeriod = '7d' | '30d' | '90d' | 'all';

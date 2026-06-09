@@ -17,9 +17,11 @@ import type {
 const STAR_OPTIONS: ReviewStarsFilter[] = [5, 4, 3, 2, 1];
 
 /** Formateador estable de fecha relativa (mes y año). */
-const DATE_FORMATTERS: Record<'es' | 'ca', Intl.DateTimeFormat> = {
+const DATE_FORMATTERS: Record<'es' | 'ca' | 'en' | 'de', Intl.DateTimeFormat> = {
   es: new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
   ca: new Intl.DateTimeFormat('ca-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
+  en: new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+  de: new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'short', year: 'numeric' }),
 };
 
 /**

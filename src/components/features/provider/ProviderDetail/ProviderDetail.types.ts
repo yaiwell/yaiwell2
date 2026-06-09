@@ -15,5 +15,5 @@ export interface ProviderDetailProps {
   services: Service[];
   reviews: Review[];
   ratingBreakdown: RatingBreakdown;
-  locale: 'es' | 'ca';
+  locale: 'es' | 'ca' | 'en' | 'de';
 }

@@ -3,6 +3,8 @@
 import { ChevronRight, Clock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { pickLocalized } from '@/lib/i18n';
+
 import {
   formatPriceCents,
   groupServicesByRootCategory,
@@ -60,7 +62,7 @@ export function ProviderServicesList({
         groups.map((group) => {
           const groupSlug = getGroupSlug(group);
           const categoryName = group.rootCategory
-            ? group.rootCategory.name[locale]
+            ? pickLocalized(group.rootCategory.name, locale)
             : fallbackCategoryName;
 
           return (
@@ -79,7 +81,7 @@ export function ProviderServicesList({
                     onClick={() => openWith(service)}
                     className={s.item}
                     aria-haspopup="dialog"
-                    aria-label={`${service.name[locale]} · ${formatPriceCents(service.priceCents, locale)}`}
+                    aria-label={`${pickLocalized(service.name, locale)} · ${formatPriceCents(service.priceCents, locale)}`}
                     data-component={`provider-services-list-item-${service.id}`}
                   >
                     <div className={s.itemInfo}>

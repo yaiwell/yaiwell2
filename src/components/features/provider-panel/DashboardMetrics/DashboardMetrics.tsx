@@ -1,6 +1,7 @@
 import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { pickLocalized } from '@/lib/i18n';
 import { getMaxDailyRevenueCents } from '@/lib/fake-data/panel-metrics';
 
 import {
@@ -108,7 +109,7 @@ export function DashboardMetrics({ metrics, locale }: DashboardMetricsProps) {
                 data-component={`dashboard-top-service-${service.serviceId}`}
               >
                 <div className={s.topItemInfo}>
-                  <span className={s.topItemName}>{service.name[locale]}</span>
+                  <span className={s.topItemName}>{pickLocalized(service.name, locale)}</span>
                   <span className={s.topItemMeta}>
                     {t('topServices.bookings', { count: service.bookingsCount })}
                   </span>

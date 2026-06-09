@@ -31,7 +31,7 @@ export default async function PanelSettingsPage({ params }: PanelSettingsPagePro
     notFound();
   }
 
-  const panelLocale = locale as 'es' | 'ca';
+  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
 
   return <ProviderSettings provider={provider} locale={panelLocale} />;
 }

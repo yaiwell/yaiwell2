@@ -1,0 +1,1045 @@
+{
+  "common": {
+    "appName": "Yaiwell",
+    "loading": "Loading...",
+    "error": "Something went wrong. Please try again in a few seconds.",
+    "goBack": "Back",
+    "comingSoon": "Coming soon"
+  },
+  "theme": {
+    "groupLabel": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "seo": {
+    "defaultTitle": "Yaiwell · Beauty, wellness and sport available right now",
+    "defaultDescription": "Book instantly with verified beauty, wellness and sport professionals near you. Real-time availability, no calls, no waiting.",
+    "ogImageAlt": "Yaiwell · Beauty, wellness and sport available right now",
+    "search": {
+      "title": "Find professionals",
+      "description": "Filter by category, area and instant availability. Find beauty, wellness and sport professionals near you."
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "search": "Search",
+    "bookings": "Bookings",
+    "profile": "Profile",
+    "forProviders": "For professionals",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "openMenu": "Open menu",
+    "skipToContent": "Skip to content",
+    "primaryNavLabel": "Primary navigation",
+    "bottomNavLabel": "Bottom navigation"
+  },
+  "langSwitcher": {
+    "groupLabel": "Language"
+  },
+  "providerGallery": {
+    "galleryLabel": "Photo gallery",
+    "prev": "Previous photo",
+    "next": "Next photo",
+    "goToPhoto": "Go to photo {index}",
+    "viewPhoto": "View photo {index}"
+  },
+  "footer": {
+    "tagline": "Beauty, wellness and sport with instant availability.",
+    "product": {
+      "title": "Product",
+      "howItWorks": "How it works",
+      "categories": "Categories",
+      "pricing": "Pricing"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About us",
+      "blog": "Blog",
+      "careers": "Careers"
+    },
+    "legal": {
+      "title": "Legal",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "cookies": "Cookies"
+    },
+    "madeIn": "Made in {city}",
+    "copyright": "© {year} Yaiwell"
+  },
+  "home": {
+    "hero": {
+      "title": {
+        "line1": "Book beauty, wellness and sport",
+        "line2": "whenever you like"
+      },
+      "subtitle": "Discover professionals available near you right now.",
+      "searchBar": {
+        "category": "What are you after?",
+        "location": "Where?",
+        "when": "When?",
+        "now": "Now",
+        "submit": "Search",
+        "locationOptions": {
+          "any": "Anywhere",
+          "nearMe": "Near you",
+          "nearMeLocating": "Locating…",
+          "nearMeDenied": "Near you (permission denied)",
+          "barcelona": "Barcelona",
+          "castellar": "Castellar del Vallès",
+          "llicaVall": "Lliçà de Vall"
+        },
+        "whenOptions": {
+          "now": "Now",
+          "today": "Today",
+          "tomorrow": "Tomorrow",
+          "thisWeek": "This week",
+          "any": "Any day"
+        }
+      }
+    },
+    "categories": {
+      "title": "Popular categories",
+      "subtitle": "Most booked by the community this week.",
+      "peluqueria": "Hair",
+      "masajes": "Massage",
+      "manicura": "Manicure",
+      "gimnasio": "Gym",
+      "estetica": "Aesthetics",
+      "yoga": "Yoga"
+    },
+    "howItWorks": {
+      "title": "How it works",
+      "steps": {
+        "0": {
+          "title": "Search near you",
+          "description": "Filter by category, distance and real availability at this very moment."
+        },
+        "1": {
+          "title": "Book instantly",
+          "description": "Confirm and pay in seconds. No phone calls, no waiting, no messages to a WhatsApp that never replies."
+        },
+        "2": {
+          "title": "Enjoy and review",
+          "description": "Show up, enjoy the service and leave an honest review to help the community."
+        }
+      }
+    },
+    "differentiator": {
+      "title": "Why Yaiwell",
+      "cards": {
+        "0": {
+          "title": "Real availability",
+          "body": "See who's free right now. No phantom diaries, no slots that don't actually exist."
+        },
+        "1": {
+          "title": "Premium curation",
+          "body": "Only professionals hand-verified by our team. Quality before quantity."
+        },
+        "2": {
+          "title": "No strings attached",
+          "body": "Cancel up to 2 hours beforehand with no penalty. True flexibility."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Start looking after yourself now",
+      "subtitle": "Professionals near you, with availability today.",
+      "button": "Find professionals"
+    }
+  },
+  "search": {
+    "title": "Find availability",
+    "searchPlaceholder": "Search for a service, centre or treatment...",
+    "availableNowToggle": "Available now only",
+    "filters": {
+      "button": "Filters",
+      "title": "Advanced filters",
+      "description": "Refine your search by price and minimum rating.",
+      "price": "Price",
+      "priceLow": "Budget",
+      "priceMid": "Mid-range",
+      "priceHigh": "Premium",
+      "minRating": "Minimum rating",
+      "anyRating": "Any",
+      "apply": "Apply filters",
+      "clear": "Clear",
+      "close": "Close"
+    },
+    "tabs": {
+      "list": "List",
+      "map": "Map"
+    },
+    "categories": {
+      "all": "All",
+      "belleza": "Beauty",
+      "estetica": "Aesthetics",
+      "bienestar": "Wellness",
+      "deporte": "Sport"
+    },
+    "empty": {
+      "title": "No results just yet",
+      "subtitle": "Try removing a filter or widening the map area.",
+      "nearMeTitle": "Nothing within {radius} km",
+      "nearMeSubtitle": "There are no professionals within the radius we've set. Widen your search and try again.",
+      "disableNearMeCta": "Remove \"Near you\" filter"
+    },
+    "card": {
+      "from": "from",
+      "reviews": "{count, plural, one {# review} other {# reviews}}",
+      "distance": "{km} km away",
+      "distanceShort": "{distance} away",
+      "distanceFromFallback": "{distance} away *",
+      "distanceFromFallbackHint": "Estimated distance from central Barcelona (your actual location isn't being used).",
+      "viewDetail": "View details",
+      "typeAutonomous": "Freelancer",
+      "typeCenter": "Centre"
+    },
+    "availability": {
+      "now": "Available now",
+      "soon": "In {minutes} min",
+      "busy": "Fully booked today"
+    },
+    "map": {
+      "attribution": "© OpenStreetMap",
+      "locating": "Locating...",
+      "popupCta": "View in list",
+      "youAreHere": "You are here",
+      "fallbackCenter": "Central Barcelona (estimate)"
+    },
+    "nearMeChip": "Near you",
+    "nearMeChipAria": "Filter to professionals within a {radius} km radius",
+    "resultsCount": "{count, plural, one {# result} other {# results}}"
+  },
+  "searchAutocomplete": {
+    "placeholder": "Search for a service, centre or treatment...",
+    "inputLabel": "Search",
+    "clear": "Clear search",
+    "suggestionsLabel": "Search suggestions",
+    "type": {
+      "category": "Category",
+      "service": "Service",
+      "provider": "Centre"
+    }
+  },
+  "searchFilters": {
+    "chips": {
+      "groupLabel": "Active filters",
+      "queryLabel": "Text: {value}",
+      "availabilityLabel": "Available now",
+      "priceLabel": "Price {value}",
+      "ratingLabel": "{value}+ stars",
+      "clearAll": "Clear all",
+      "removeAria": "Remove filter {label}"
+    }
+  },
+  "providerDetail": {
+    "breadcrumb": {
+      "home": "Home",
+      "search": "Search"
+    },
+    "header": {
+      "typeAutonomous": "Freelancer",
+      "typeCenter": "Centre",
+      "reviewsLabel": "{count, plural, one {# review} other {# reviews}}",
+      "ratingGroupLabel": "Rating"
+    },
+    "tabs": {
+      "services": "Services",
+      "reviews": "Reviews",
+      "info": "The place"
+    },
+    "services": {
+      "title": "Service menu",
+      "subtitle": "Pick the service that best fits what you're after.",
+      "duration": "{minutes} min",
+      "reserve": "Book",
+      "reserveComingSoon": "Coming soon",
+      "empty": "This centre hasn't published any services yet.",
+      "groupHeader": "{category}",
+      "cardHint": "Tap to see details",
+      "sheet": {
+        "title": "Book this service",
+        "subtitle": "Review the details before you carry on.",
+        "close": "Close",
+        "durationLabel": "Duration",
+        "priceLabel": "Price",
+        "professionalLabel": "Professional",
+        "anyProfessional": "Any available professional",
+        "descriptionLabel": "Description",
+        "reserveCta": "Book (coming soon)",
+        "comingSoonNote": "Online booking will be available very soon. In the meantime, feel free to contact the centre directly."
+      }
+    },
+    "reviews": {
+      "title": "Reviews",
+      "summary": "{rating} out of 5 · {count, plural, one {# review} other {# reviews}}",
+      "breakdownLabel": "{stars} stars",
+      "empty": "No reviews yet. Be the first to review this centre.",
+      "loadMore": "Read more reviews",
+      "collapse": "Show less"
+    },
+    "info": {
+      "title": "The place",
+      "addressLabel": "Where to find us",
+      "scheduleLabel": "When to find us",
+      "scheduleWeekdays": "Monday to Friday",
+      "scheduleSaturday": "Saturdays",
+      "scheduleSunday": "Sundays",
+      "scheduleClosed": "Closed",
+      "descriptionLabel": "The house"
+    },
+    "notFound": {
+      "title": "Centre not found",
+      "subtitle": "It may no longer be available or the link could be incorrect.",
+      "backToSearch": "Back to search"
+    }
+  },
+  "providerPanel": {
+    "nav": {
+      "title": "Centre panel",
+      "dashboard": "Overview",
+      "calendar": "Calendar",
+      "services": "Services",
+      "settings": "Centre",
+      "reviews": "Reviews",
+      "addService": "Add service",
+      "providerLabel": "Active centre",
+      "sidebarNavLabel": "Panel navigation",
+      "bottomNavLabel": "Panel quick access"
+    },
+    "dashboard": {
+      "title": "Weekly overview",
+      "subtitle": "Your week at a glance.",
+      "metrics": {
+        "weekRevenue": "Week's revenue",
+        "weekBookings": "Week's bookings",
+        "averageTicket": "Average ticket",
+        "occupancy": "Occupancy",
+        "vsLastWeek": "vs. last week"
+      },
+      "chart": {
+        "title": "Revenue by day",
+        "subtitle": "Comparison across the last 7 days.",
+        "dayShort": {
+          "mon": "Mon",
+          "tue": "Tue",
+          "wed": "Wed",
+          "thu": "Thu",
+          "fri": "Fri",
+          "sat": "Sat",
+          "sun": "Sun"
+        },
+        "barAriaLabel": "{day}: {revenue}, {count, plural, one {# booking} other {# bookings}}"
+      },
+      "topServices": {
+        "title": "Most booked services",
+        "subtitle": "Top 4 by number of bookings this week.",
+        "bookings": "{count, plural, one {# booking} other {# bookings}}"
+      }
+    },
+    "calendar": {
+      "title": "Weekly calendar",
+      "subtitle": "Your bookings for the next 7 days.",
+      "weekdays": {
+        "mon": "Monday",
+        "tue": "Tuesday",
+        "wed": "Wednesday",
+        "thu": "Thursday",
+        "fri": "Friday",
+        "sat": "Saturday",
+        "sun": "Sunday"
+      },
+      "weekdayShort": {
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun"
+      },
+      "status": {
+        "confirmed": "Confirmed",
+        "pending": "Pending",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "legend": "Legend",
+      "emptyDay": "No bookings",
+      "bookingAriaLabel": "{service} with {client} at {time}",
+      "summary": "{count, plural, one {# booking this week} other {# bookings this week}}"
+    },
+    "services": {
+      "title": "Services on offer",
+      "subtitle": "Manage the menu your clients see.",
+      "addCta": "Add service",
+      "status": {
+        "active": "Active",
+        "paused": "Paused"
+      },
+      "duration": "{minutes} min",
+      "bookings30d": "{count} bookings / 30d",
+      "edit": "Edit",
+      "pause": "Pause",
+      "resume": "Reactivate",
+      "empty": "You haven't published any services yet."
+    },
+    "addService": {
+      "title": "Add service",
+      "subtitle": "Define a new service for your menu.",
+      "back": "Back to list",
+      "categoryStep": {
+        "title": "Classification",
+        "subtitle": "Choose which category the service belongs to.",
+        "rootLabel": "Category",
+        "rootPlaceholder": "Select a category",
+        "typeLabel": "Type",
+        "typePlaceholder": "Select a type",
+        "subtypeLabel": "Subtype",
+        "subtypePlaceholder": "Select a subtype",
+        "hintAfterRoot": "Pick a category first to see the available types.",
+        "hintAfterType": "Pick a type to see the available subtypes."
+      },
+      "detailsStep": {
+        "title": "Service details",
+        "subtitle": "Information the client will see when booking.",
+        "nameLabel": "Service name",
+        "namePlaceholder": "E.g. Women's cut with wash",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Tell us what's included, products used, who delivers it, etc.",
+        "durationLabel": "Duration (minutes)",
+        "priceLabel": "Price (€)"
+      },
+      "submit": "Publish service",
+      "cancel": "Cancel",
+      "mockNotice": "This form doesn't save anything yet. Real publishing will arrive with the services backend."
+    },
+    "settings": {
+      "title": "Centre settings",
+      "subtitle": "Public and operational details of your business.",
+      "general": {
+        "title": "General details",
+        "businessNameLabel": "Trading name",
+        "vatLabel": "VAT / Company number",
+        "phoneLabel": "Contact phone",
+        "emailLabel": "Contact email",
+        "descriptionLabel": "Public description"
+      },
+      "address": {
+        "title": "Address",
+        "streetLabel": "Street and number",
+        "cityLabel": "City",
+        "postalLabel": "Postcode"
+      },
+      "schedule": {
+        "title": "Opening hours",
+        "subtitle": "When the centre is open.",
+        "weekdaysLabel": "Monday to Friday",
+        "saturdayLabel": "Saturdays",
+        "sundayLabel": "Sundays",
+        "closed": "Closed",
+        "openFrom": "Opens",
+        "openTo": "Closes"
+      },
+      "photos": {
+        "title": "Photos",
+        "subtitle": "Photos appear on your public profile. We recommend at least 3.",
+        "addCta": "Upload new photo",
+        "altLabel": "Centre photo {index}"
+      },
+      "save": "Save changes",
+      "savedNotice": "Changes will be saved once we connect the panel backend."
+    },
+    "reviews": {
+      "title": "Reviews received",
+      "subtitle": "Replying to reviews builds trust with future clients.",
+      "summary": "{rating} out of 5 · {count, plural, one {# review} other {# reviews}}",
+      "filters": {
+        "starsLabel": "Stars",
+        "allStars": "All",
+        "periodLabel": "Period",
+        "period7d": "Last 7 days",
+        "period30d": "Last 30 days",
+        "period90d": "Last 90 days",
+        "periodAll": "All",
+        "withoutResponse": "Awaiting reply only"
+      },
+      "card": {
+        "serviceLabel": "Service",
+        "respond": "Reply",
+        "responseTitle": "Centre's reply",
+        "alreadyResponded": "Replied",
+        "pending": "Awaiting reply"
+      },
+      "empty": "No reviews match these filters."
+    }
+  },
+  "booking": {
+    "meta": {
+      "title": "Book · Yaiwell"
+    },
+    "flow": {
+      "eyebrow": "Step {current} of {total}",
+      "steps": {
+        "slot": "Pick your slot",
+        "summary": "Confirm the details",
+        "payment": "Secure payment",
+        "confirmation": "Booking confirmed"
+      },
+      "back": "Back",
+      "cancel": "Cancel booking",
+      "continue": "Continue",
+      "goToPayment": "Go to payment"
+    },
+    "slotPicker": {
+      "dayStripLabel": "Available days",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "noMorningSlots": "No morning slots left.",
+      "noAfternoonSlots": "No afternoon slots left.",
+      "emptyTitle": "No slots this day",
+      "emptySubtitle": "Try another day on the calendar or come back tomorrow."
+    },
+    "summary": {
+      "serviceLabel": "Service",
+      "dateLabel": "Date",
+      "rangeLabel": "Time",
+      "durationValue": "{minutes} min",
+      "professionalLabel": "Professional",
+      "anyProfessional": "Any available professional",
+      "totalLabel": "Total",
+      "notesLabel": "Notes for the centre (optional)",
+      "notesHelper": "Let us know anything relevant: allergies, first visit, preferences…",
+      "notesPlaceholder": "Write here if you'd like to add something."
+    },
+    "policy": {
+      "title": "Quick policy",
+      "clientCancel": "You can cancel for free up to 2 hours before the service starts.",
+      "providerCancel": "The centre can also cancel up to 2 hours beforehand; if so, you'll get a full automatic refund.",
+      "compactNote": "Free cancellation up to 2 hours before the service, both for you and the centre."
+    },
+    "payment": {
+      "cardLabel": "Demo payment",
+      "totalLabel": "Total to pay",
+      "payCta": "Pay (mock)",
+      "processing": "Processing…",
+      "mockNote": "This checkout is a visual simulation. In production it will connect to Stripe Connect and the real gateway will process payment securely."
+    },
+    "confirmation": {
+      "title": "Booking confirmed!",
+      "subtitle": "We've sent the details to your email (simulated). See you soon.",
+      "bookingIdLabel": "Booking no.",
+      "providerLabel": "Centre",
+      "serviceLabel": "Service",
+      "whenLabel": "When",
+      "totalLabel": "Total",
+      "backToProvider": "Back to centre",
+      "keepBrowsing": "Keep exploring"
+    }
+  },
+  "customerArea": {
+    "page": {
+      "title": "My bookings",
+      "subtitle": "Manage your upcoming appointments, check your history and review services you've already had."
+    },
+    "identity": {
+      "demoName": "Jorge G.",
+      "role": "Client"
+    },
+    "nav": {
+      "ariaLabel": "Client area navigation",
+      "bookings": "Bookings",
+      "favorites": "Favourites",
+      "reviews": "Reviews",
+      "profile": "Profile"
+    },
+    "sections": {
+      "count": "{count, plural, =0 {No items} one {# item} other {# items}}",
+      "upcoming": {
+        "title": "Upcoming bookings",
+        "empty": "You have no upcoming bookings. Find a service and book in seconds."
+      },
+      "pendingReview": {
+        "title": "Pending reviews",
+        "empty": "Once a service is marked as finished, you'll be able to leave your review here."
+      },
+      "past": {
+        "title": "History",
+        "empty": "You haven't any past bookings yet."
+      }
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled",
+      "refunded": "Refunded"
+    },
+    "actions": {
+      "viewDetail": "View details",
+      "cancel": "Cancel",
+      "cancelling": "Cancelling…",
+      "cancelledHint": "Cancellation requested",
+      "cancelBlockedHint": "You can only cancel more than 2 hours in advance.",
+      "review": "Review"
+    }
+  },
+  "adminArea": {
+    "badge": "Admin",
+    "title": "Moderation panel",
+    "subtitle": "Internal tool for the Yaiwell team.",
+    "nav": {
+      "ariaLabel": "Admin panel navigation",
+      "dashboard": "Dashboard",
+      "queue": "Queue",
+      "exit": "Exit panel"
+    },
+    "dashboard": {
+      "title": "Operational overview",
+      "subtitle": "Marketplace-wide metrics and quick access to the pending verifications queue."
+    },
+    "metrics": {
+      "bookingsToday": "Bookings today",
+      "weeklyGmv": "Weekly GMV",
+      "pendingProviders": "Pending pros",
+      "cancellationRate": "Cancellation rate",
+      "weeklyDelta": "Weekly change: {delta}"
+    },
+    "verifications": {
+      "type": {
+        "centro": "Centre",
+        "autonomo": "Freelancer"
+      },
+      "queue": {
+        "title": "Verifications queue",
+        "count": "{count, plural, =0 {Nothing pending} one {# pending} other {# pending}}",
+        "empty": "There are no pending requests.",
+        "open": "Review",
+        "openAria": "Review {name}'s request"
+      },
+      "detail": {
+        "back": "Back to queue",
+        "contactTitle": "Contact details",
+        "descriptionTitle": "Provider description",
+        "documentsTitle": "Documentation",
+        "fields": {
+          "email": "Email",
+          "phone": "Phone",
+          "vat": "VAT / Company number",
+          "category": "Category"
+        },
+        "docType": {
+          "identity": "Identity",
+          "business": "Business document",
+          "insurance": "Insurance",
+          "portfolio": "Portfolio"
+        },
+        "actions": {
+          "approve": "Approve",
+          "reject": "Reject"
+        },
+        "toast": {
+          "approved": "{name}'s request approved (demo).",
+          "rejected": "{name}'s request rejected (demo).",
+          "dismiss": "Close"
+        }
+      }
+    }
+  },
+  "notFound": {
+    "eyebrow": "Error 404",
+    "title": "We've got lost looking for this link",
+    "subtitle": "The page you tried to open doesn't exist or is no longer available. Head back home or explore services near you.",
+    "illustrationAlt": "Decorative illustration of an empty mirror",
+    "backHome": "Back to home",
+    "exploreServices": "Find services",
+    "helpHint": "If you think this is a mistake, drop us a line at hola@yaiwell.com."
+  },
+  "serviceDetail": {
+    "breadcrumb": {
+      "home": "Home",
+      "search": "Search"
+    },
+    "header": {
+      "eyebrow": "Service",
+      "durationLabel": "Duration",
+      "priceLabel": "Price",
+      "professionalLabel": "Assigned professional",
+      "anyProfessional": "Any available professional from the centre",
+      "professionalPhotoAlt": "Photo of {name}"
+    },
+    "description": {
+      "title": "About this service"
+    },
+    "policy": {
+      "title": "Before you book",
+      "cancellationTitle": "Flexible cancellation",
+      "cancellationBody": "Cancel up to 2 hours before the start at no cost. Below that window the amount isn't refundable.",
+      "punctualityTitle": "Arrive 5 minutes early",
+      "punctualityBody": "So the team can prepare your session calmly and start on time.",
+      "paymentTitle": "Secure online payment",
+      "paymentBody": "Your booking is confirmed instantly with payment. No surprises at the centre.",
+      "ratingHint": "You'll only be able to review the service after the professional marks it as completed."
+    },
+    "cta": {
+      "reserve": "Book",
+      "fromPrice": "from {price}",
+      "secureNote": "Instant confirmation. Secure payment."
+    }
+  },
+  "forProviders": {
+    "meta": {
+      "title": "For professionals",
+      "description": "Yaiwell is the beauty, wellness and sport marketplace where your clients find you when they're ready to book. Start free, no lock-in."
+    },
+    "hero": {
+      "eyebrow": "For centres and freelancers",
+      "titleLine1": "Your diary full,",
+      "titleLine2": "effortlessly.",
+      "subtitle": "Yaiwell is the beauty, wellness and sport marketplace where your clients find you when they're ready to book.",
+      "ctaPrimary": "Start free",
+      "ctaSecondary": "How it works",
+      "trustNote": "No lock-in · No sign-up fee · Get paid instantly",
+      "mockBadge": "Live bookings",
+      "mockBookingService": "Cut + wash",
+      "mockBookingClient": "Marta · 18:30",
+      "mockBookingStatus": "Confirmed",
+      "mockOccupancyLabel": "Occupancy this week",
+      "mockOccupancyValue": "86%"
+    },
+    "benefits": {
+      "eyebrow": "Benefits",
+      "title": "Designed so all you have to do is open the doors.",
+      "subtitle": "We handle marketing, reminders and payments. You spend your time on what you do best.",
+      "items": {
+        "liveBookings": {
+          "title": "Live bookings",
+          "body": "Welcome clients with real availability from your calendar. No phantom slots."
+        },
+        "noCalls": {
+          "title": "Zero phone calls",
+          "body": "Online payments, automatic reminders and instant confirmation. Goodbye phone."
+        },
+        "yourHours": {
+          "title": "You set your hours",
+          "body": "The calendar is yours. Block hours, close days and open up only when you want to work."
+        },
+        "noLockIn": {
+          "title": "No lock-in",
+          "body": "Sign up today and give it a go. If it's not for you, leave tomorrow at no cost."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Plans",
+      "title": "Start free. Grow when it suits you.",
+      "subtitle": "You only pay commission on what you book. The monthly fee lowers the commission and unlocks premium features.",
+      "popularBadge": "Most popular",
+      "perMonth": "/month",
+      "commission": "{rate} commission",
+      "ctaStart": "Get started",
+      "plans": {
+        "free": {
+          "name": "Free",
+          "tagline": "Try Yaiwell with no strings attached.",
+          "feature1": "Up to 5 published services",
+          "feature2": "Unlimited online bookings",
+          "feature3": "Secure payment with Stripe",
+          "feature4": "Public profile on the marketplace"
+        },
+        "basic": {
+          "name": "Basic",
+          "tagline": "For professionals starting to fill their diary.",
+          "feature1": "Up to 20 published services",
+          "feature2": "Automatic email reminders",
+          "feature3": "Basic occupancy statistics",
+          "feature4": "Email support within 48 h"
+        },
+        "pro": {
+          "name": "Pro",
+          "tagline": "For centres with several professionals.",
+          "feature1": "Unlimited services",
+          "feature2": "Multi-professional management",
+          "feature3": "Last-minute slot promotions",
+          "feature4": "Priority support within 24 h"
+        },
+        "premium": {
+          "name": "Premium",
+          "tagline": "For groups with multiple centres.",
+          "feature1": "Multi-centre under one account",
+          "feature2": "Consolidated control panel",
+          "feature3": "Dedicated account manager",
+          "feature4": "Onboarding assisted by our team"
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "Frequently asked",
+      "title": "What you always ask us.",
+      "items": {
+        "start": {
+          "question": "How long until I start receiving bookings?",
+          "answer": "Once your account is verified (on average within 24 working hours), your profile goes live and you can receive bookings the same day. All you need is your calendar and your services loaded."
+        },
+        "payouts": {
+          "question": "How do I get paid for bookings?",
+          "answer": "Yaiwell uses Stripe Connect. The client pays when confirming the booking and we transfer the amount (minus commission) to your bank account weekly, automatically."
+        },
+        "cancel": {
+          "question": "Can I cancel a booking?",
+          "answer": "Yes, up to 2 hours before the service starts from your panel. If you cancel, the client gets an automatic full refund with no penalty on your side."
+        },
+        "regret": {
+          "question": "What if I change my mind?",
+          "answer": "There's no lock-in and no penalty for leaving. Sign up today, leave tomorrow. Your information is kept for 30 days in case you change your mind again."
+        },
+        "platform": {
+          "question": "Is Yaiwell an app or a website?",
+          "answer": "Today we're a mobile-optimised website; your panel works in any browser. The native iOS/Android app is coming in the next phase, at no extra cost to you."
+        },
+        "verification": {
+          "question": "What do I need to sign up?",
+          "answer": "An email, your VAT/company number and, depending on the category, some professional documentation (insurance, certificates). We'll guide you through it step by step."
+        }
+      }
+    },
+    "cta": {
+      "eyebrow": "Ready to start",
+      "title": "Ready to fill your diary?",
+      "subtitle": "Create your free account in under 5 minutes. No card, no lock-in, no strings attached.",
+      "primary": "Create free account",
+      "secondary": "Talk to sales"
+    }
+  },
+  "signIn": {
+    "meta": {
+      "title": "Sign in · Yaiwell",
+      "description": "Access your Yaiwell account to book beauty, wellness and sport near you."
+    },
+    "title": "Sign in to Yaiwell",
+    "subtitle": "Book beauty, wellness and sport in seconds.",
+    "aside": {
+      "badge": "Access",
+      "title": "Your diary, wherever you go.",
+      "subtitle": "Book instantly, manage your appointments and discover professionals near you.",
+      "bullet1": "Real availability, no calls and no waiting.",
+      "bullet2": "Free cancellation up to 2 h beforehand."
+    },
+    "tabs": {
+      "ariaLabel": "Choose account type",
+      "client": "I'm a client",
+      "provider": "I'm a professional",
+      "clientDescription": "Sign in as a client.",
+      "providerDescription": "Sign in as a professional."
+    },
+    "fields": {
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Your password",
+      "remember": "Remember me",
+      "forgot": "Forgotten your password?"
+    },
+    "actions": {
+      "submit": "Sign in",
+      "submitting": "Signing in…"
+    },
+    "divider": "or continue with",
+    "social": {
+      "google": "Google",
+      "googleAria": "Continue with Google (coming soon)",
+      "apple": "Apple",
+      "appleAria": "Continue with Apple (coming soon)",
+      "comingSoon": "Coming soon"
+    },
+    "footer": {
+      "noAccount": "Haven't got an account?",
+      "createOne": "Create one"
+    },
+    "errors": {
+      "emailRequired": "Enter your email to continue.",
+      "emailInvalid": "That email doesn't look valid. Check it and try again.",
+      "passwordRequired": "Enter your password to continue.",
+      "invalidCredentials": "Email or password incorrect. Check the details and try again.",
+      "tooManyAttempts": "Too many attempts in a row. Wait a few minutes before trying again.",
+      "sessionExists": "There's already an active session in this browser. Sign out before switching accounts.",
+      "networkError": "We couldn't connect. Check your connection and try again.",
+      "unknown": "Something went wrong. Try again in a few seconds."
+    }
+  },
+  "account": {
+    "meta": {
+      "title": "Your account",
+      "description": "Access your bookings, favourites and settings from a single place on Yaiwell."
+    },
+    "hero": {
+      "badgeGuest": "Not signed in",
+      "badgeAuthenticated": "Your account",
+      "titleGuest": "Sign in or create your account",
+      "titleAuthenticated": "Hello, what shall we do today?",
+      "subtitleGuest": "Sign in to see your bookings, save favourite centres and receive email confirmations.",
+      "subtitleAuthenticated": "Manage your bookings, favourites and preferences from a single place."
+    },
+    "guest": {
+      "signInCta": "Sign in",
+      "signUpCta": "Create account"
+    },
+    "authenticated": {
+      "navLabel": "Your account shortcuts",
+      "bookings": "My bookings",
+      "favorites": "My favourites",
+      "settings": "Settings and preferences"
+    }
+  },
+  "signUp": {
+    "meta": {
+      "title": "Create your account",
+      "description": "Sign up to Yaiwell to book beauty, wellness and sport near you, or to start offering your services."
+    },
+    "eyebrow": "Join Yaiwell",
+    "title": "Create your account",
+    "subtitle": "Book instantly or start offering your services. It only takes a minute.",
+    "tabs": {
+      "client": "I'm a client",
+      "provider": "I'm a professional"
+    },
+    "fields": {
+      "fullName": "Full name",
+      "contactName": "Contact name",
+      "businessName": "Centre name",
+      "email": "Email",
+      "password": "Password",
+      "passwordRepeat": "Repeat password"
+    },
+    "verificationNotice": "Before going live we'll review your information and documentation. We'll let you know by email once your profile is verified.",
+    "termsLabel": "I have read and accept the <terms>terms of use</terms> and the <privacy>privacy policy</privacy>.",
+    "cta": {
+      "submit": "Create account",
+      "submitting": "Creating account…"
+    },
+    "socialDivider": "or sign up with",
+    "social": {
+      "google": "Continue with Google",
+      "apple": "Continue with Apple"
+    },
+    "haveAccount": "Already have an account? <link>Sign in here</link>",
+    "illustration": {
+      "badge": "Yaiwell Premium",
+      "title": "Looking after yourself shouldn't wait.",
+      "subtitle": "Sync your diary with the best professionals near you.",
+      "footer": "We only accept professionals hand-verified by us. Quality before quantity."
+    },
+    "verification": {
+      "eyebrow": "Email verification",
+      "title": "Confirm your email",
+      "subtitle": "We've sent a code to {email}. Enter it here to activate your account.",
+      "codeLabel": "6-digit code",
+      "submit": "Confirm and sign in",
+      "submitting": "Confirming…",
+      "back": "Back and change my details"
+    },
+    "errors": {
+      "required": "This field is required.",
+      "fullNameMin": "Give us at least a name with 2 characters.",
+      "businessNameMin": "The centre name must have at least 2 characters.",
+      "emailInvalid": "Enter a valid email.",
+      "passwordShort": "The password must be at least 8 characters long.",
+      "passwordMismatch": "The passwords don't match.",
+      "termsRequired": "You must accept the terms to continue.",
+      "emailAlreadyExists": "An account with this email already exists. Try signing in instead.",
+      "passwordCompromised": "This password appears in known leaks. Choose a different one.",
+      "verificationCodeInvalid": "The code isn't correct. Check it and try again.",
+      "verificationCodeExpired": "The code has expired. Go back to receive a new one.",
+      "invalidCredentials": "Details incorrect. Check them and try again.",
+      "tooManyAttempts": "Too many attempts in a row. Wait a few minutes before trying again.",
+      "sessionExists": "There's already an active session in this browser.",
+      "networkError": "We couldn't connect. Check your connection and try again.",
+      "unknown": "Something went wrong. Try again in a few seconds."
+    }
+  },
+  "location": {
+    "label": "Your location",
+    "labelNone": "No location",
+    "permissionTitle": "Shall we show you what's near you?",
+    "permissionBody": "Turn on location to see the closest professionals first. You can switch it off whenever you like.",
+    "permissionEnable": "Turn on location",
+    "permissionDismiss": "Not now",
+    "requesting": "Finding your location…",
+    "granted": "Location active",
+    "denied": "You've denied location",
+    "deniedHelp": "To turn it on, find the padlock icon in the address bar and allow location for this site.",
+    "unavailable": "We couldn't get your location",
+    "unavailableHelp": "Check your connection or try again in a few seconds.",
+    "timeout": "It's taken too long",
+    "notSupported": "Your browser doesn't support location",
+    "retry": "Retry",
+    "clear": "Clear location",
+    "useFallback": "Show Barcelona results",
+    "fallbackHint": "We're showing results from central Barcelona. Turn on your location to see what's closest to you.",
+    "distanceAway": "{distance} away",
+    "nearYou": "Near you",
+    "barcelona": "Barcelona",
+    "defaultBadge": "default",
+    "pill": {
+      "ariaLabel": "Current location",
+      "openAria": "Open location options",
+      "fallbackTitle": "You're viewing Barcelona",
+      "fallbackBody": "Turn on your location to see what's closest to you.",
+      "grantedTitle": "Location active",
+      "grantedBody": "We're showing results sorted by proximity to your position.",
+      "deniedTitle": "Permission blocked",
+      "requestingTitle": "Finding your location…",
+      "unavailableTitle": "Location not available",
+      "shortLabelDefault": "Barcelona",
+      "shortLabelGranted": "Near you",
+      "shortLabelRequesting": "Locating…",
+      "shortLabelUnavailable": "No location"
+    }
+  },
+  "designSystem": {
+    "meta": {
+      "title": "Design system",
+      "description": "Internal gallery of brand tokens, typography and shadcn components."
+    },
+    "title": "Design system",
+    "subtitle": "Living catalogue of tokens and components. Internal page for visual QA; not shown in navigation.",
+    "colors": {
+      "title": "Semantic colours",
+      "description": "Base shadcn tokens already mapped to the Yaiwell palette (warm plum + creams).",
+      "sample": "Aa Text"
+    },
+    "brand": {
+      "title": "Brand palette",
+      "description": "Saturated/soft pairs designed for badges, chips and icons over warm backgrounds.",
+      "solid": "Saturated",
+      "soft": "Soft"
+    },
+    "typography": {
+      "title": "Typography",
+      "description": "Display via Fraunces for headlines; Inter as the default sans-serif.",
+      "displaySample": "Beauty, wellness and sport",
+      "headlineSample": "Book in seconds",
+      "leadSample": "Discover professionals near you with instant availability.",
+      "bodySample": "Standard body text for service descriptions, profiles and forms.",
+      "captionSample": "Secondary text for metadata and contextual help."
+    },
+    "buttons": {
+      "title": "Buttons",
+      "description": "Variants and sizes of the Button component (cva).",
+      "label": "{variant} · {size}"
+    },
+    "radius": {
+      "title": "Radius",
+      "description": "Radius scale derived from --radius (0.875rem)."
+    },
+    "components": {
+      "title": "Components",
+      "description": "Live samples of installed shadcn components.",
+      "selectPlaceholder": "Choose an option",
+      "selectOption": "Option {index}",
+      "tabLabel": "Tab {index}",
+      "tabContent": "Content of tab {index}"
+    }
+  }
+}

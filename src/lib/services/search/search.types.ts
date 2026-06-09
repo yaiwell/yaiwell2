@@ -8,7 +8,7 @@
 
 import type { LocalizedText } from '@/types/domain';
 
-export type SearchLanguage = 'es' | 'ca';
+export type SearchLanguage = 'es' | 'ca' | 'en' | 'de';
 
 export interface SearchOptions {
   /** Texto introducido por el usuario. Se sanitiza en la validación. */

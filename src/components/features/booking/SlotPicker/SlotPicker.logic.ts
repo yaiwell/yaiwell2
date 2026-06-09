@@ -23,7 +23,7 @@ const VISIBLE_DAYS = 14;
  * la primera letra en mayúscula y sin punto final. `Intl.DateTimeFormat`
  * ya entrega la forma localizada; aquí solo normalizamos formato.
  */
-function formatWeekdayShort(date: Date, locale: 'es' | 'ca'): string {
+function formatWeekdayShort(date: Date, locale: 'es' | 'ca' | 'en' | 'de'): string {
   const formatter = new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
     weekday: 'short',
   });
@@ -66,7 +66,7 @@ export function splitSlotsByDayPart(slots: BookingSlot[]): {
  * Formatea un slot a `HH:MM` localizado. Usamos `Intl.DateTimeFormat`
  * para respetar el formato 24h del usuario europeo sin reimplementar.
  */
-export function formatSlotTime(slot: BookingSlot, locale: 'es' | 'ca'): string {
+export function formatSlotTime(slot: BookingSlot, locale: 'es' | 'ca' | 'en' | 'de'): string {
   return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
     hour: '2-digit',
     minute: '2-digit',
@@ -89,7 +89,7 @@ export function useSlotPicker(args: {
   providerId: string;
   serviceId: string;
   serviceDurationMinutes: number;
-  locale: 'es' | 'ca';
+  locale: 'es' | 'ca' | 'en' | 'de';
   now?: Date;
 }) {
   // El instante de referencia se fija al montar el hook para que el

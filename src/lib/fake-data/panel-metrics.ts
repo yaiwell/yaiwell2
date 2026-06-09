@@ -21,8 +21,12 @@ export interface PanelDailyRevenuePoint {
 /** Resumen de un servicio top del proveedor (ranking semanal). */
 export interface PanelTopService {
   serviceId: string;
-  /** Nombre ya localizado para ahorrar lookups en la UI. */
-  name: { es: string; ca: string };
+  /**
+   * Nombre ya localizado para ahorrar lookups en la UI. Solo se rellenan
+   * es/ca en fake data; en/de son opcionales y la UI hace fallback a es
+   * vía `pickLocalized`.
+   */
+  name: { es: string; ca: string; en?: string; de?: string };
   bookingsCount: number;
   revenueCents: number;
 }

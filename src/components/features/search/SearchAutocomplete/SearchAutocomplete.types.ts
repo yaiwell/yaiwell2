@@ -28,7 +28,7 @@ export interface SearchAutocompleteProps {
   /** Aria-label del input (textual). */
   inputAriaLabel?: string;
   /** Locale activo para escoger el texto localizado de las sugerencias. */
-  locale: 'es' | 'ca';
+  locale: 'es' | 'ca' | 'en' | 'de';
   /** Identificador opcional para el input (útil para asociar labels). */
   inputId?: string;
   /**

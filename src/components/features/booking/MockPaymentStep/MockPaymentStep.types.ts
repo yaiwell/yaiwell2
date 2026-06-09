@@ -5,7 +5,7 @@
 export interface MockPaymentStepProps {
   /** Importe total a pagar en céntimos. */
   amountCents: number;
-  locale: 'es' | 'ca';
+  locale: 'es' | 'ca' | 'en' | 'de';
   /** Callback al confirmar el "pago" simulado. */
   onComplete: () => void;
 }

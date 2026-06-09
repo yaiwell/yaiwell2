@@ -9,7 +9,7 @@ export interface SearchBarProps {
    * Locale activo para que el autocomplete escoja el texto localizado
    * de las sugerencias (categorías y servicios en es/ca).
    */
-  locale: 'es' | 'ca';
+  locale: 'es' | 'ca' | 'en' | 'de';
   /**
    * Manejador opcional para cuando el usuario elige una sugerencia
    * (categoría, servicio o proveedor). El caller decide la navegación.

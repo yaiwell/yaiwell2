@@ -31,5 +31,5 @@ export interface ProviderReviewsSectionProps {
   ratingAvg: number;
   reviewsCount: number;
   ratingBreakdown: RatingBreakdown;
-  locale: 'es' | 'ca';
+  locale: 'es' | 'ca' | 'en' | 'de';
 }
