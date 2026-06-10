@@ -1,11 +1,17 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { auth } from '@clerk/nextjs/server';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { Link } from '@/i18n/navigation';
+import { OnboardingWizard } from '@/components/features/onboarding/OnboardingWizard';
+import type { OnboardingApiState, RootCategory } from '@/components/features/onboarding/shared';
+import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
+import type { AppLocale } from '@/i18n/routing';
 import { requireRole } from '@/lib/auth/server';
+import { prisma } from '@/lib/db/prisma';
+import { loadOnboardingState } from '@/lib/services/provider-onboarding';
 
 interface OnboardingPageProps {
   // En Next.js 16 los `params` son asíncronos.
@@ -13,17 +19,17 @@ interface OnboardingPageProps {
 }
 
 /**
- * Stub temporal del wizard de onboarding del proveedor (#57 Capa 2).
+ * Página del wizard de onboarding del proveedor (#57).
  *
- * La Capa 1 (#57) ya tiene el backend listo (servicio, repositorio y
- * endpoints), pero la UI de los 5 pasos sigue pendiente. Esta página
- * existe para que `requireCurrentProvider` (panel/layout.tsx) tenga
- * destino real al redirigir a proveedores sin Provider asociado, en
- * lugar de un 404 que rompe la navegación.
+ * Server Component que pre-carga:
+ *  - Categorías raíz (parentId: null) para el paso 4.
+ *  - Estado actual del onboarding (`OnboardingApiState`) para hidratar.
+ *  - Flag `userPending` cuando la sincronización Clerk→DB aún no ha
+ *    propagado el `User` interno.
  *
- * Vive **fuera** de `/panel/` deliberadamente: el layout de `/panel/`
- * llama a `requireCurrentProvider` y, si redirigiéramos a `/panel/...`,
- * entraríamos en un bucle infinito.
+ * Vive fuera de `/panel/` deliberadamente: el layout de `/panel` llama
+ * a `requireCurrentProvider`, que redirige a `/onboarding` cuando no
+ * hay row de Provider. Mantenerlo aquí evita el bucle.
  */
 export async function generateMetadata({ params }: OnboardingPageProps): Promise<Metadata> {
   const { locale } = await params;
@@ -43,32 +49,71 @@ export default async function OnboardingPage({ params }: OnboardingPageProps) {
   }
   setRequestLocale(locale);
 
-  // Solo proveedores autenticados acceden al wizard. Clientes/admins son
-  // redirigidos por `requireRole` a su destino natural.
+  // Solo proveedores autenticados acceden al wizard. Clerk redirige
+  // automáticamente a clientes/admins a su destino natural.
   await requireRole(['provider'], locale);
 
-  const t = await getTranslations('onboarding');
+  // Resolución del `User` interno a partir del `clerkId` activo. Si
+  // todavía no existe el espejo en BD (webhook de Clerk en vuelo),
+  // el wizard renderiza pantalla "syncing…" y reintenta solo.
+  const { userId: clerkUserId } = await auth();
+  const internalUser = clerkUserId
+    ? await prisma.user.findUnique({
+        where: { clerkId: clerkUserId },
+        select: { id: true },
+      })
+    : null;
+
+  // Estado inicial del wizard. Si el user aún no existe lo damos vacío
+  // para que la UI pinte el syncing screen y reintente desde el cliente.
+  let initialState: OnboardingApiState = {
+    providerId: null,
+    step: 1,
+    hasPhotos: false,
+    hasFirstService: false,
+    planTier: null,
+  };
+  const userPending = !internalUser;
+
+  if (internalUser) {
+    const state = await loadOnboardingState(internalUser.id);
+    // Si el onboarding ya está completo, no tiene sentido entrar al
+    // wizard: lo enviamos directamente al panel.
+    if (state.step === 'completed') {
+      redirect({ href: '/panel', locale });
+    }
+    initialState = {
+      providerId: state.providerId,
+      step: state.step,
+      hasPhotos: state.hasPhotos,
+      hasFirstService: state.hasFirstService,
+      planTier: state.planTier,
+    };
+  }
+
+  // Pre-carga de categorías raíz para el paso 4. Ordenadas por nombre
+  // estable; el componente las muestra en el locale activo.
+  const rawCategories = await prisma.category.findMany({
+    where: { parentId: null },
+    select: { id: true, slug: true, name: true, icon: true },
+    orderBy: { slug: 'asc' },
+  });
+
+  // El campo `name` es Json en Prisma; lo normalizamos al shape que
+  // espera la UI sin acoplarla a tipos de Prisma.
+  const categoriesPreloaded: RootCategory[] = rawCategories.map((c) => ({
+    id: c.id,
+    slug: c.slug,
+    name: c.name as RootCategory['name'],
+    icon: c.icon,
+  }));
 
   return (
-    <section className="mx-auto flex w-full max-w-xl flex-col gap-6 px-4 py-16 sm:py-24">
-      <header className="flex flex-col gap-3">
-        <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-stone-100 px-3 py-1 text-xs font-medium text-stone-700 dark:bg-stone-800/60 dark:text-stone-300">
-          {t('badge')}
-        </span>
-        <h1 className="font-serif text-3xl tracking-tight text-stone-900 sm:text-4xl dark:text-stone-50">
-          {t('title')}
-        </h1>
-        <p className="text-base text-stone-600 dark:text-stone-400">{t('subtitle')}</p>
-      </header>
-      <p className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-4 text-sm text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-300">
-        {t('comingSoon')}
-      </p>
-      <Link
-        href="/"
-        className="inline-flex w-fit items-center justify-center rounded-full border border-stone-300 bg-white px-5 py-2 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800"
-      >
-        {t('backHome')}
-      </Link>
-    </section>
+    <OnboardingWizard
+      initialState={initialState}
+      categoriesPreloaded={categoriesPreloaded}
+      locale={locale as AppLocale}
+      userPending={userPending}
+    />
   );
 }

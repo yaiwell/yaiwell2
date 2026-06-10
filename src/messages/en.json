@@ -925,13 +925,108 @@
   "onboarding": {
     "meta": {
       "title": "Set up your venue",
-      "description": "Configure your Yaiwell in 5 steps: business details, photos, first service and plan."
+      "description": "Configure your Yaiwell in 5 steps: type, details, location, first service and review."
     },
     "badge": "Provider onboarding",
-    "title": "We're still building the wizard",
-    "subtitle": "The venue setup assistant is almost ready. In the meantime, we've saved your account so you can pick it up later.",
-    "comingSoon": "Soon you'll be able to set up your venue in 5 quick steps.",
-    "backHome": "Back to home"
+    "title": "Set up your venue",
+    "subtitle": "Five quick steps to start receiving bookings.",
+    "stepper": {
+      "step1": "Type",
+      "step2": "Details",
+      "step3": "Location",
+      "step4": "Service",
+      "step5": "Confirm",
+      "current": "Step {current} of {total}"
+    },
+    "common": {
+      "next": "Next",
+      "back": "Back",
+      "saving": "Saving…",
+      "publishCta": "Publish and open my dashboard",
+      "requiredField": "Required field"
+    },
+    "syncing": {
+      "title": "Syncing your account…",
+      "subtitle": "We're finishing setting up your access. This takes a few seconds."
+    },
+    "errors": {
+      "UNAUTHORIZED": "Session expired. Please sign in again to continue.",
+      "USER_NOT_SYNCED": "Your account is still syncing. Please wait a few seconds and try again.",
+      "INVALID_BODY": "Some data is missing or has an incorrect format.",
+      "SLUG_ALREADY_TAKEN": "This URL is already in use. Choose another one.",
+      "ONBOARDING_ALREADY_COMPLETE": "Your business is already set up.",
+      "PROVIDER_FOR_ONBOARDING_NOT_FOUND": "We can't find your business. Go back to step one.",
+      "CATEGORY_NOT_FOUND": "The selected category is no longer available.",
+      "PLAN_TIER_NOT_FOUND": "The selected plan isn't available. Please contact support.",
+      "FREE_PLAN_NOT_SEEDED": "The free plan isn't available right now. Please contact support.",
+      "INTERNAL": "Something went wrong. Please try again in a few minutes.",
+      "NETWORK": "Couldn't connect. Check your connection and try again."
+    },
+    "businessType": {
+      "title": "How do you work?",
+      "subtitle": "This helps us set up your dashboard from day one.",
+      "autonomo": {
+        "title": "I'm a freelancer",
+        "description": "I work on my own and manage my own schedule."
+      },
+      "centro": {
+        "title": "I run a venue",
+        "description": "I coordinate several professionals under the same roof."
+      }
+    },
+    "businessData": {
+      "title": "Business details",
+      "subtitle": "What your clients will see on your public profile.",
+      "fields": {
+        "businessName": "Business name",
+        "businessNamePlaceholder": "Studio Aura",
+        "slug": "Public URL",
+        "slugPrefix": "yaiwell.com/venue/",
+        "slugChecking": "Checking availability…",
+        "slugAvailable": "Available",
+        "slugTaken": "This URL is already in use",
+        "slugInvalid": "Lowercase letters, numbers and hyphens only (3–60 characters).",
+        "slugHelp": "It will appear on your public profile. It can't be changed easily.",
+        "vatNumber": "VAT number (optional)",
+        "vatNumberHelp": "Only used for invoicing.",
+        "description": "Public description",
+        "descriptionCharCount": "{count}/{max}",
+        "descriptionHelp": "One or two sentences. Your clients will see it.",
+        "priceRange": "Price range",
+        "priceRangeHelp": "An indication that helps clients get a sense."
+      }
+    },
+    "location": {
+      "title": "Where you are",
+      "subtitle": "Type the address and pick a suggestion to lock in the coordinates.",
+      "addressLabel": "Venue address",
+      "locationMissing": "Pick a suggestion from the list to lock the location.",
+      "mapHint": "You can fine-tune the location later by dragging the marker on the map."
+    },
+    "categoriesService": {
+      "title": "Category and first service",
+      "subtitle": "Pick your main category and describe the first service you'll offer.",
+      "categoriesLabel": "Main category",
+      "service": {
+        "title": "Your first service",
+        "name": "Service name",
+        "namePlaceholder": "Haircut and style",
+        "duration": "Duration",
+        "durationMinutes": "{minutes} min",
+        "priceEuros": "Price (€)",
+        "priceFreeHint": "Leave it at 0 if it's free."
+      }
+    },
+    "confirm": {
+      "title": "Review and publish",
+      "subtitle": "Confirm everything looks right before publishing your profile.",
+      "termsLabel": "I have read and accept the provider terms.",
+      "sections": {
+        "business": "Business",
+        "location": "Location",
+        "service": "First service"
+      }
+    }
   },
   "signUp": {
     "meta": {

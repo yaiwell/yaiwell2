@@ -114,8 +114,8 @@
   - [~] Wizard `/onboarding` (5 pasos: tipo → datos + geocoding → fotos → primer servicio → plan).
     - [x] **Vía A routing**: redirect del panel ahora apunta a `/onboarding` (no `/panel/onboarding`) para evitar bucle con el layout. Helper `slugifyBusinessName` añadido. Proxy `GET /api/geocoding/forward` con auth Clerk + Zod + mapeo de `MapboxConfigError`/`MapboxRequestError` (2026-06-09, 9 tests endpoint + 7 tests slugify).
     - [x] **Capa 1 backend**: módulo `src/lib/services/provider-onboarding/` (Opción B — crea Provider al cerrar paso 2, updates idempotentes en 3-5). 6 errores tipados (`SlugAlreadyTakenError`, `FreePlanNotSeededError`, `OnboardingAlreadyCompleteError`, `ProviderForOnboardingNotFoundError`, `CategoryNotFoundError`, `PlanTierNotFoundError`). 5 endpoints REST + `slug-availability` (auth, ownership, validación Zod). Componente compartido `AddressAutocomplete` (TanStack Query, debounce 300ms, ARIA combobox, navegación teclado) + namespace i18n `addressAutocomplete` en 4 locales. 79 tests nuevos (19 service + 51 API + 9 UI), total 427 verdes (2026-06-09).
-    - [ ] **Capa 2 UI**: composición del wizard en `src/app/[locale]/onboarding/` (skeleton + 5 step components + page.tsx con hidratación desde `loadOnboardingState`).
-    - [ ] **Capa 3**: pulido i18n + E2E del flujo completo.
+    - [x] **Capa 2 UI**: orquestador `OnboardingWizard` + 5 step components (BusinessType → BusinessData → Location → CategoriesService → Confirm), draft persistido en sessionStorage, polling sync de Clerk, errores tipados con i18n en 4 locales, 20 tests UI (2026-06-10). Decisión: sin paso de fotos (post-onboarding) y plan `free` por defecto.
+    - [ ] **Capa 3**: pulido i18n + E2E del flujo completo (Playwright).
 - [ ] Panel admin con cola de verificación real.
 - [ ] Sistema de servicios con jerarquía de categorías editable.
 - [x] Motor de scheduling (slots de disponibilidad reales) — `availability.service` con tests vía Prisma mockeado (2026-06-03). Falta conectar a UI y al panel del proveedor.
@@ -178,5 +178,5 @@
 
 ---
 
-*Última actualización: 2026-06-09 (Resend Fase 0: SDK + wrapper `sendEmail()` con errores tipados; pendiente verificación DNS de `yaiwell.com` para salir del sandbox).*
+*Última actualización: 2026-06-10 (Onboarding wizard #57 Capa 2 UI cerrada: orquestador + 5 steps + 20 tests + i18n 4 locales. Pendiente Capa 3: pulido + E2E Playwright).*
 

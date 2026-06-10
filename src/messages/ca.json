@@ -925,13 +925,108 @@
   "onboarding": {
     "meta": {
       "title": "Crea el teu centre",
-      "description": "Configura el teu Yaiwell en 5 passos: dades del negoci, fotos, primer servei i pla."
+      "description": "Configura el teu Yaiwell en 5 passos: tipus, dades, ubicació, primer servei i revisió."
     },
     "badge": "Onboarding del proveïdor",
-    "title": "Encara estem preparant el wizard",
-    "subtitle": "L'assistent d'alta del centre està gairebé llest. Mentrestant, hem guardat el teu compte perquè puguis continuar més endavant.",
-    "comingSoon": "Aviat podràs donar d'alta el teu centre en 5 passos ràpids.",
-    "backHome": "Tornar a l'inici"
+    "title": "Dona d'alta el teu centre",
+    "subtitle": "Cinc passos ràpids per començar a rebre reserves.",
+    "stepper": {
+      "step1": "Tipus",
+      "step2": "Dades",
+      "step3": "Ubicació",
+      "step4": "Servei",
+      "step5": "Confirmar",
+      "current": "Pas {current} de {total}"
+    },
+    "common": {
+      "next": "Següent",
+      "back": "Enrere",
+      "saving": "Desant…",
+      "publishCta": "Publicar i entrar al panell",
+      "requiredField": "Camp obligatori"
+    },
+    "syncing": {
+      "title": "Sincronitzant el teu compte…",
+      "subtitle": "Estem acabant de preparar el teu accés. Triga uns segons."
+    },
+    "errors": {
+      "UNAUTHORIZED": "Sessió caducada. Torna a iniciar sessió per continuar.",
+      "USER_NOT_SYNCED": "El teu compte encara s'està sincronitzant. Espera uns segons i torna-ho a provar.",
+      "INVALID_BODY": "Falten dades o tenen un format incorrecte.",
+      "SLUG_ALREADY_TAKEN": "Aquesta URL ja està en ús. Tria'n una altra.",
+      "ONBOARDING_ALREADY_COMPLETE": "El teu negoci ja està donat d'alta.",
+      "PROVIDER_FOR_ONBOARDING_NOT_FOUND": "No trobem el teu negoci. Torna al primer pas.",
+      "CATEGORY_NOT_FOUND": "La categoria seleccionada ja no està disponible.",
+      "PLAN_TIER_NOT_FOUND": "El pla seleccionat no està disponible. Contacta amb suport.",
+      "FREE_PLAN_NOT_SEEDED": "El pla gratuït no està disponible ara. Contacta amb suport.",
+      "INTERNAL": "Alguna cosa ha anat malament. Torna-ho a provar d'aquí a uns minuts.",
+      "NETWORK": "No hem pogut connectar. Revisa la teva connexió i torna-ho a provar."
+    },
+    "businessType": {
+      "title": "Com treballes?",
+      "subtitle": "Ens ajuda a configurar el teu panell des del primer moment.",
+      "autonomo": {
+        "title": "Soc autònom/a",
+        "description": "Treballo sol o sola i gestiono la meva pròpia agenda."
+      },
+      "centro": {
+        "title": "Tinc un centre",
+        "description": "Coordino diversos professionals sota el mateix sostre."
+      }
+    },
+    "businessData": {
+      "title": "Dades del negoci",
+      "subtitle": "El que veuran els teus clients a la teva fitxa pública.",
+      "fields": {
+        "businessName": "Nom del negoci",
+        "businessNamePlaceholder": "Studio Aura",
+        "slug": "URL pública",
+        "slugPrefix": "yaiwell.com/centre/",
+        "slugChecking": "Comprovant disponibilitat…",
+        "slugAvailable": "Disponible",
+        "slugTaken": "Aquesta URL ja està en ús",
+        "slugInvalid": "Només minúscules, números i guions (3–60 caràcters).",
+        "slugHelp": "Apareixerà a la teva fitxa pública. No es podrà canviar fàcilment.",
+        "vatNumber": "CIF / NIF (opcional)",
+        "vatNumberHelp": "Només s'utilitza per a facturació.",
+        "description": "Descripció pública",
+        "descriptionCharCount": "{count}/{max}",
+        "descriptionHelp": "Una o dues frases. Ho veuran els teus clients.",
+        "priceRange": "Rang de preus",
+        "priceRangeHelp": "Orientatiu, ajuda els teus clients a fer-se'n una idea."
+      }
+    },
+    "location": {
+      "title": "On ets",
+      "subtitle": "Escriu l'adreça i selecciona un suggeriment per fixar les coordenades.",
+      "addressLabel": "Adreça del local",
+      "locationMissing": "Selecciona un suggeriment de la llista per fixar la ubicació.",
+      "mapHint": "Més endavant podràs afinar la ubicació arrossegant el marcador al mapa."
+    },
+    "categoriesService": {
+      "title": "Categoria i primer servei",
+      "subtitle": "Tria la teva categoria principal i descriu el primer servei que oferiràs.",
+      "categoriesLabel": "Categoria principal",
+      "service": {
+        "title": "El teu primer servei",
+        "name": "Nom del servei",
+        "namePlaceholder": "Tall i pentinat",
+        "duration": "Durada",
+        "durationMinutes": "{minutes} min",
+        "priceEuros": "Preu (€)",
+        "priceFreeHint": "Deixa'l a 0 si és gratuït."
+      }
+    },
+    "confirm": {
+      "title": "Revisa i publica",
+      "subtitle": "Confirma que les dades són correctes abans de publicar la teva fitxa.",
+      "termsLabel": "He llegit i accepto les condicions del proveïdor.",
+      "sections": {
+        "business": "Negoci",
+        "location": "Ubicació",
+        "service": "Primer servei"
+      }
+    }
   },
   "signUp": {
     "meta": {

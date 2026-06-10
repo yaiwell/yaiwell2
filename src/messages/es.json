@@ -925,13 +925,108 @@
   "onboarding": {
     "meta": {
       "title": "Crea tu centro",
-      "description": "Configura tu Yaiwell en 5 pasos: datos del negocio, fotos, primer servicio y plan."
+      "description": "Configura tu Yaiwell en 5 pasos: tipo, datos, ubicación, primer servicio y revisión."
     },
     "badge": "Onboarding del proveedor",
-    "title": "Aún estamos preparando el wizard",
-    "subtitle": "El asistente de alta del centro está casi listo. Mientras tanto, hemos guardado tu cuenta para que puedas continuar más adelante.",
-    "comingSoon": "Próximamente podrás dar de alta tu centro en 5 pasos rápidos.",
-    "backHome": "Volver al inicio"
+    "title": "Da de alta tu centro",
+    "subtitle": "Cinco pasos rápidos para empezar a recibir reservas.",
+    "stepper": {
+      "step1": "Tipo",
+      "step2": "Datos",
+      "step3": "Ubicación",
+      "step4": "Servicio",
+      "step5": "Confirmar",
+      "current": "Paso {current} de {total}"
+    },
+    "common": {
+      "next": "Siguiente",
+      "back": "Atrás",
+      "saving": "Guardando…",
+      "publishCta": "Publicar y entrar al panel",
+      "requiredField": "Campo obligatorio"
+    },
+    "syncing": {
+      "title": "Sincronizando tu cuenta…",
+      "subtitle": "Estamos terminando de preparar tu acceso. Esto tarda unos segundos."
+    },
+    "errors": {
+      "UNAUTHORIZED": "Sesión expirada. Vuelve a iniciar sesión para continuar.",
+      "USER_NOT_SYNCED": "Tu cuenta aún se está sincronizando. Espera unos segundos e inténtalo de nuevo.",
+      "INVALID_BODY": "Faltan datos o tienen un formato incorrecto.",
+      "SLUG_ALREADY_TAKEN": "Esta URL ya está en uso. Elige otra.",
+      "ONBOARDING_ALREADY_COMPLETE": "Tu negocio ya está dado de alta.",
+      "PROVIDER_FOR_ONBOARDING_NOT_FOUND": "No encontramos tu negocio. Vuelve al primer paso.",
+      "CATEGORY_NOT_FOUND": "La categoría seleccionada ya no está disponible.",
+      "PLAN_TIER_NOT_FOUND": "El plan seleccionado no está disponible. Contacta con soporte.",
+      "FREE_PLAN_NOT_SEEDED": "El plan gratuito no está disponible ahora. Contacta con soporte.",
+      "INTERNAL": "Algo ha ido mal. Inténtalo de nuevo en unos minutos.",
+      "NETWORK": "No hemos podido conectar. Revisa tu conexión e inténtalo de nuevo."
+    },
+    "businessType": {
+      "title": "¿Cómo trabajas?",
+      "subtitle": "Esto nos ayuda a configurar tu panel desde el primer momento.",
+      "autonomo": {
+        "title": "Soy autónomo",
+        "description": "Trabajo solo o sola y gestiono mi propia agenda."
+      },
+      "centro": {
+        "title": "Tengo un centro",
+        "description": "Coordino a varios profesionales bajo el mismo techo."
+      }
+    },
+    "businessData": {
+      "title": "Datos del negocio",
+      "subtitle": "Lo que verán tus clientes en tu ficha pública.",
+      "fields": {
+        "businessName": "Nombre del negocio",
+        "businessNamePlaceholder": "Studio Aura",
+        "slug": "URL pública",
+        "slugPrefix": "yaiwell.com/centro/",
+        "slugChecking": "Comprobando disponibilidad…",
+        "slugAvailable": "Disponible",
+        "slugTaken": "Esta URL ya está en uso",
+        "slugInvalid": "Solo minúsculas, números y guiones (3–60 caracteres).",
+        "slugHelp": "Aparecerá en tu ficha pública. No se podrá cambiar fácilmente.",
+        "vatNumber": "CIF / NIF (opcional)",
+        "vatNumberHelp": "Solo se usa para facturación.",
+        "description": "Descripción pública",
+        "descriptionCharCount": "{count}/{max}",
+        "descriptionHelp": "Una o dos frases. Lo verán tus clientes.",
+        "priceRange": "Rango de precios",
+        "priceRangeHelp": "Orientativo, ayuda a tus clientes a hacerse una idea."
+      }
+    },
+    "location": {
+      "title": "Dónde estás",
+      "subtitle": "Escribe la dirección y selecciona una sugerencia para fijar las coordenadas.",
+      "addressLabel": "Dirección del local",
+      "locationMissing": "Selecciona una sugerencia del listado para fijar la ubicación.",
+      "mapHint": "Más adelante podrás afinar la ubicación arrastrando el marcador en el mapa."
+    },
+    "categoriesService": {
+      "title": "Categoría y primer servicio",
+      "subtitle": "Elige tu categoría principal y describe el primer servicio que ofrecerás.",
+      "categoriesLabel": "Categoría principal",
+      "service": {
+        "title": "Tu primer servicio",
+        "name": "Nombre del servicio",
+        "namePlaceholder": "Corte y peinado",
+        "duration": "Duración",
+        "durationMinutes": "{minutes} min",
+        "priceEuros": "Precio (€)",
+        "priceFreeHint": "Déjalo en 0 si es gratuito."
+      }
+    },
+    "confirm": {
+      "title": "Revisa y publica",
+      "subtitle": "Confirma que los datos están bien antes de publicar tu ficha.",
+      "termsLabel": "He leído y acepto las condiciones del proveedor.",
+      "sections": {
+        "business": "Negocio",
+        "location": "Ubicación",
+        "service": "Primer servicio"
+      }
+    }
   },
   "signUp": {
     "meta": {

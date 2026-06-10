@@ -925,13 +925,108 @@
   "onboarding": {
     "meta": {
       "title": "Salon einrichten",
-      "description": "Richte dein Yaiwell in 5 Schritten ein: Geschäftsdaten, Fotos, erste Dienstleistung und Tarif."
+      "description": "Richte dein Yaiwell in 5 Schritten ein: Typ, Daten, Standort, erste Dienstleistung und Überprüfung."
     },
     "badge": "Anbieter-Onboarding",
-    "title": "Der Assistent wird noch vorbereitet",
-    "subtitle": "Der Einrichtungsassistent ist fast fertig. Wir haben deinen Account gespeichert, damit du später weitermachen kannst.",
-    "comingSoon": "Bald kannst du deinen Salon in 5 schnellen Schritten einrichten.",
-    "backHome": "Zurück zur Startseite"
+    "title": "Richte deinen Salon ein",
+    "subtitle": "Fünf schnelle Schritte, um Buchungen zu empfangen.",
+    "stepper": {
+      "step1": "Typ",
+      "step2": "Daten",
+      "step3": "Standort",
+      "step4": "Service",
+      "step5": "Bestätigen",
+      "current": "Schritt {current} von {total}"
+    },
+    "common": {
+      "next": "Weiter",
+      "back": "Zurück",
+      "saving": "Speichern…",
+      "publishCta": "Veröffentlichen und Dashboard öffnen",
+      "requiredField": "Pflichtfeld"
+    },
+    "syncing": {
+      "title": "Konto wird synchronisiert…",
+      "subtitle": "Wir richten deinen Zugang gerade fertig ein. Das dauert wenige Sekunden."
+    },
+    "errors": {
+      "UNAUTHORIZED": "Sitzung abgelaufen. Bitte melde dich erneut an.",
+      "USER_NOT_SYNCED": "Dein Konto wird noch synchronisiert. Warte ein paar Sekunden und versuche es erneut.",
+      "INVALID_BODY": "Es fehlen Daten oder das Format ist falsch.",
+      "SLUG_ALREADY_TAKEN": "Diese URL ist bereits vergeben. Wähle eine andere.",
+      "ONBOARDING_ALREADY_COMPLETE": "Dein Geschäft ist bereits eingerichtet.",
+      "PROVIDER_FOR_ONBOARDING_NOT_FOUND": "Wir finden dein Geschäft nicht. Gehe zurück zum ersten Schritt.",
+      "CATEGORY_NOT_FOUND": "Die gewählte Kategorie ist nicht mehr verfügbar.",
+      "PLAN_TIER_NOT_FOUND": "Der gewählte Tarif ist nicht verfügbar. Bitte kontaktiere den Support.",
+      "FREE_PLAN_NOT_SEEDED": "Der kostenlose Tarif ist derzeit nicht verfügbar. Bitte kontaktiere den Support.",
+      "INTERNAL": "Etwas ist schiefgelaufen. Versuche es in ein paar Minuten erneut.",
+      "NETWORK": "Verbindung fehlgeschlagen. Überprüfe deine Verbindung und versuche es erneut."
+    },
+    "businessType": {
+      "title": "Wie arbeitest du?",
+      "subtitle": "Damit richten wir dein Dashboard von Anfang an passend ein.",
+      "autonomo": {
+        "title": "Ich bin selbstständig",
+        "description": "Ich arbeite allein und verwalte meinen eigenen Kalender."
+      },
+      "centro": {
+        "title": "Ich führe einen Salon",
+        "description": "Ich koordiniere mehrere Fachkräfte unter einem Dach."
+      }
+    },
+    "businessData": {
+      "title": "Geschäftsdaten",
+      "subtitle": "Was deine Kund:innen auf deinem öffentlichen Profil sehen.",
+      "fields": {
+        "businessName": "Geschäftsname",
+        "businessNamePlaceholder": "Studio Aura",
+        "slug": "Öffentliche URL",
+        "slugPrefix": "yaiwell.com/salon/",
+        "slugChecking": "Verfügbarkeit wird geprüft…",
+        "slugAvailable": "Verfügbar",
+        "slugTaken": "Diese URL ist bereits vergeben",
+        "slugInvalid": "Nur Kleinbuchstaben, Zahlen und Bindestriche (3–60 Zeichen).",
+        "slugHelp": "Erscheint auf deinem öffentlichen Profil. Lässt sich nicht leicht ändern.",
+        "vatNumber": "USt-IdNr. (optional)",
+        "vatNumberHelp": "Wird nur zur Rechnungsstellung verwendet.",
+        "description": "Öffentliche Beschreibung",
+        "descriptionCharCount": "{count}/{max}",
+        "descriptionHelp": "Ein bis zwei Sätze. Deine Kund:innen sehen das.",
+        "priceRange": "Preisspanne",
+        "priceRangeHelp": "Orientierung, damit deine Kund:innen ein Gefühl bekommen."
+      }
+    },
+    "location": {
+      "title": "Wo du bist",
+      "subtitle": "Tippe die Adresse und wähle einen Vorschlag, um die Koordinaten zu fixieren.",
+      "addressLabel": "Salonadresse",
+      "locationMissing": "Wähle einen Vorschlag aus der Liste, um den Standort zu fixieren.",
+      "mapHint": "Du kannst den Standort später durch Ziehen des Markers auf der Karte feinjustieren."
+    },
+    "categoriesService": {
+      "title": "Kategorie und erste Dienstleistung",
+      "subtitle": "Wähle deine Hauptkategorie und beschreibe deine erste Dienstleistung.",
+      "categoriesLabel": "Hauptkategorie",
+      "service": {
+        "title": "Deine erste Dienstleistung",
+        "name": "Name der Dienstleistung",
+        "namePlaceholder": "Schneiden und Styling",
+        "duration": "Dauer",
+        "durationMinutes": "{minutes} Min.",
+        "priceEuros": "Preis (€)",
+        "priceFreeHint": "Lass es bei 0, wenn es kostenlos ist."
+      }
+    },
+    "confirm": {
+      "title": "Überprüfen und veröffentlichen",
+      "subtitle": "Bestätige, dass alles passt, bevor du dein Profil veröffentlichst.",
+      "termsLabel": "Ich habe die Anbieterbedingungen gelesen und akzeptiere sie.",
+      "sections": {
+        "business": "Geschäft",
+        "location": "Standort",
+        "service": "Erste Dienstleistung"
+      }
+    }
   },
   "signUp": {
     "meta": {
