@@ -3,7 +3,8 @@
  *
  * Mockeamos:
  *  - `@clerk/nextjs/server` para controlar la sesión.
- *  - `@/lib/db/prisma` para controlar la resolución clerkId → userId.
+ *  - `@/lib/services/user` para controlar la resolución clerkId → userId
+ *    sin tocar Clerk Backend ni Prisma.
  *  - `@/lib/services/provider-onboarding` para no tocar BD ni reglas reales.
  */
 
@@ -11,18 +12,27 @@ import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
-const { authMock, findUniqueMock, createProviderMock } = vi.hoisted(() => ({
-  authMock: vi.fn(),
-  findUniqueMock: vi.fn(),
-  createProviderMock: vi.fn(),
-}));
+const { authMock, ensureUserMock, createProviderMock, MockMissingPrimaryEmailError } = vi.hoisted(
+  () => {
+    class MockMissingPrimaryEmailError extends Error {
+      readonly code = 'MISSING_PRIMARY_EMAIL';
+    }
+    return {
+      authMock: vi.fn(),
+      ensureUserMock: vi.fn(),
+      createProviderMock: vi.fn(),
+      MockMissingPrimaryEmailError,
+    };
+  },
+);
 
 vi.mock('@clerk/nextjs/server', () => ({
   auth: authMock,
 }));
 
-vi.mock('@/lib/db/prisma', () => ({
-  prisma: { user: { findUnique: findUniqueMock } },
+vi.mock('@/lib/services/user', () => ({
+  ensureUserFromClerk: ensureUserMock,
+  MissingPrimaryEmailError: MockMissingPrimaryEmailError,
 }));
 
 vi.mock('@/lib/services/provider-onboarding', () => ({
@@ -69,7 +79,7 @@ describe('POST /api/provider-onboarding/create', () => {
 
   it('devuelve 401 USER_NOT_SYNCED si el usuario no existe en BD', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue(null);
+    ensureUserMock.mockRejectedValue(new MockMissingPrimaryEmailError());
     const res = await POST(buildRequest({ businessName: 'Foo' }));
     expect(res.status).toBe(401);
     const body = await res.json();
@@ -78,7 +88,7 @@ describe('POST /api/provider-onboarding/create', () => {
 
   it('llama al servicio con el userId interno (no el clerkId) y devuelve 200 con providerId', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     createProviderMock.mockResolvedValue({ providerId: 'prov-xyz' });
 
     const input = { businessName: 'Foo', slug: 'foo', type: 'salon' };
@@ -92,7 +102,7 @@ describe('POST /api/provider-onboarding/create', () => {
 
   it('mapea ZodError lanzado por el servicio a 400 INVALID_BODY con issues', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     const issues: z.ZodIssue[] = [{ code: 'custom', path: ['slug'], message: 'Slug requerido' }];
     createProviderMock.mockRejectedValue(new z.ZodError(issues));
 
@@ -105,7 +115,7 @@ describe('POST /api/provider-onboarding/create', () => {
 
   it('mapea SlugAlreadyTakenError del servicio a 409', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     createProviderMock.mockRejectedValue(new SlugAlreadyTakenError('taken'));
 
     const res = await POST(buildRequest({ slug: 'taken' }));
@@ -116,7 +126,7 @@ describe('POST /api/provider-onboarding/create', () => {
 
   it('mapea OnboardingAlreadyCompleteError del servicio a 409', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     createProviderMock.mockRejectedValue(new OnboardingAlreadyCompleteError('done'));
 
     const res = await POST(buildRequest({}));
@@ -127,7 +137,7 @@ describe('POST /api/provider-onboarding/create', () => {
 
   it('mapea FreePlanNotSeededError del servicio a 500', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     createProviderMock.mockRejectedValue(new FreePlanNotSeededError('no plan'));
 
     const res = await POST(buildRequest({}));
@@ -138,7 +148,7 @@ describe('POST /api/provider-onboarding/create', () => {
 
   it('mapea cualquier otro error a 500 INTERNAL', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     createProviderMock.mockRejectedValue(new Error('boom'));
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -151,7 +161,7 @@ describe('POST /api/provider-onboarding/create', () => {
 
   it('devuelve 400 INVALID_BODY si el body no es JSON válido', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
 
     const req = new NextRequest(new URL('/api/provider-onboarding/create', 'http://localhost'), {
       method: 'POST',

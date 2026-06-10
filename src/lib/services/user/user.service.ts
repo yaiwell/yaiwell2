@@ -1,4 +1,5 @@
-import type { DeletedObjectJSON, UserJSON } from '@clerk/backend';
+import type { DeletedObjectJSON, User as ClerkBackendUser, UserJSON } from '@clerk/backend';
+import { clerkClient } from '@clerk/nextjs/server';
 import type { Locale, UserRole } from '@prisma/client';
 
 import { MissingPrimaryEmailError, UserNotFoundError } from './user.errors';
@@ -37,6 +38,33 @@ const VALID_LOCALES = ['es', 'ca'] as const satisfies readonly Locale[];
  */
 export async function syncUserFromClerk(payload: UserJSON) {
   const input = normalizeClerkUser(payload);
+  return userRepository.upsertByClerkId(input);
+}
+
+/**
+ * Garantiza que existe un row `User` en Supabase asociado al `clerkId`.
+ *
+ * Idempotente: si el row ya existe (y no está soft-deleted) lo devuelve
+ * directo. Si falta — porque el webhook `user.created` nunca llegó,
+ * llegó con error, o el user se creó manualmente en el dashboard —
+ * hacemos el sync sobre la marcha leyendo el user desde Clerk Backend
+ * y persistiéndolo igual que haría el webhook.
+ *
+ * Esta defensa en profundidad evita el escenario "wizard de onboarding
+ * colgado en 'Sincronizando…' para siempre" cuando por cualquier
+ * motivo la sincronización webhook no se materializó.
+ *
+ * Lanza `MissingPrimaryEmailError` si el user de Clerk no tiene un
+ * email del que tirar — caso patológico que solo se da si el dev borró
+ * el email primario a mano.
+ */
+export async function ensureUserFromClerk(clerkUserId: string) {
+  const existing = await userRepository.findByClerkId(clerkUserId);
+  if (existing && !existing.deletedAt) return existing;
+
+  const client = await clerkClient();
+  const clerkUser = await client.users.getUser(clerkUserId);
+  const input = normalizeBackendClerkUser(clerkUser);
   return userRepository.upsertByClerkId(input);
 }
 
@@ -146,5 +174,65 @@ function resolveFullName(payload: UserJSON): string | null {
  */
 function resolveAvatarUrl(payload: UserJSON): string | null {
   const url = payload.image_url?.trim();
+  return url && url.length > 0 ? url : null;
+}
+
+/**
+ * Convierte el `User` de `@clerk/backend` (REST API, shape camelCase)
+ * al input que entiende `userRepository.upsertByClerkId`. Espejo de
+ * `normalizeClerkUser` pero para la API REST en vez de webhooks.
+ *
+ * Exportado para tests; producción usa `ensureUserFromClerk`.
+ */
+export function normalizeBackendClerkUser(user: ClerkBackendUser): ClerkUserSyncInput {
+  const email = resolvePrimaryEmailFromBackend(user);
+  if (!email) {
+    throw new MissingPrimaryEmailError();
+  }
+  return {
+    clerkId: user.id,
+    email,
+    role: resolveRoleFromBackend(user),
+    locale: resolveLocaleFromBackend(user),
+    fullName: resolveFullNameFromBackend(user),
+    avatarUrl: resolveAvatarUrlFromBackend(user),
+  };
+}
+
+function resolvePrimaryEmailFromBackend(user: ClerkBackendUser): string | null {
+  const emails = user.emailAddresses ?? [];
+  if (emails.length === 0) return null;
+  const primary = emails.find((e) => e.id === user.primaryEmailAddressId);
+  if (primary?.emailAddress) return primary.emailAddress;
+  const verified = emails.find((e) => e.verification?.status === 'verified');
+  if (verified?.emailAddress) return verified.emailAddress;
+  return emails[0]?.emailAddress ?? null;
+}
+
+function resolveRoleFromBackend(user: ClerkBackendUser): UserRole {
+  const fromPublic = (user.publicMetadata as { role?: unknown } | null | undefined)?.role;
+  if (isValidRole(fromPublic)) return fromPublic;
+  const fromUnsafe = (user.unsafeMetadata as { role?: unknown } | null | undefined)?.role;
+  if (isValidRole(fromUnsafe)) return fromUnsafe;
+  return 'client';
+}
+
+function resolveLocaleFromBackend(user: ClerkBackendUser): Locale {
+  const fromUnsafe = (user.unsafeMetadata as { locale?: unknown } | null | undefined)?.locale;
+  if (typeof fromUnsafe === 'string' && (VALID_LOCALES as readonly string[]).includes(fromUnsafe)) {
+    return fromUnsafe as Locale;
+  }
+  return 'es';
+}
+
+function resolveFullNameFromBackend(user: ClerkBackendUser): string | null {
+  const first = user.firstName?.trim() ?? '';
+  const last = user.lastName?.trim() ?? '';
+  const composed = [first, last].filter(Boolean).join(' ').trim();
+  return composed.length > 0 ? composed : null;
+}
+
+function resolveAvatarUrlFromBackend(user: ClerkBackendUser): string | null {
+  const url = user.imageUrl?.trim();
   return url && url.length > 0 ? url : null;
 }

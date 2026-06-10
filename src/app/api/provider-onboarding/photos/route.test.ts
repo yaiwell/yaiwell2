@@ -6,18 +6,27 @@ import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
-const { authMock, findUniqueMock, updatePhotosMock } = vi.hoisted(() => ({
-  authMock: vi.fn(),
-  findUniqueMock: vi.fn(),
-  updatePhotosMock: vi.fn(),
-}));
+const { authMock, ensureUserMock, updatePhotosMock, MockMissingPrimaryEmailError } = vi.hoisted(
+  () => {
+    class MockMissingPrimaryEmailError extends Error {
+      readonly code = 'MISSING_PRIMARY_EMAIL';
+    }
+    return {
+      authMock: vi.fn(),
+      ensureUserMock: vi.fn(),
+      updatePhotosMock: vi.fn(),
+      MockMissingPrimaryEmailError,
+    };
+  },
+);
 
 vi.mock('@clerk/nextjs/server', () => ({
   auth: authMock,
 }));
 
-vi.mock('@/lib/db/prisma', () => ({
-  prisma: { user: { findUnique: findUniqueMock } },
+vi.mock('@/lib/services/user', () => ({
+  ensureUserFromClerk: ensureUserMock,
+  MissingPrimaryEmailError: MockMissingPrimaryEmailError,
 }));
 
 vi.mock('@/lib/services/provider-onboarding', () => ({
@@ -54,7 +63,7 @@ describe('PATCH /api/provider-onboarding/photos', () => {
 
   it('devuelve 401 USER_NOT_SYNCED si el user no existe en BD', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue(null);
+    ensureUserMock.mockRejectedValue(new MockMissingPrimaryEmailError());
     const res = await PATCH(buildRequest({ providerId: 'p1', photos: [] }));
     expect(res.status).toBe(401);
     const body = await res.json();
@@ -63,7 +72,7 @@ describe('PATCH /api/provider-onboarding/photos', () => {
 
   it('devuelve 400 INVALID_BODY si falta providerId', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     const res = await PATCH(buildRequest({ photos: [] }));
     expect(res.status).toBe(400);
     const body = await res.json();
@@ -72,7 +81,7 @@ describe('PATCH /api/provider-onboarding/photos', () => {
 
   it('llama al servicio con providerId, { photos } y userId; responde 204', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     updatePhotosMock.mockResolvedValue(undefined);
 
     const photos = ['https://cdn/1.jpg', 'https://cdn/2.jpg'];
@@ -84,7 +93,7 @@ describe('PATCH /api/provider-onboarding/photos', () => {
 
   it('mapea ZodError del servicio (photos inválidas) a 400 INVALID_BODY', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     const issues: z.ZodIssue[] = [
       { code: 'custom', path: ['photos'], message: 'Demasiadas fotos' },
     ];
@@ -98,7 +107,7 @@ describe('PATCH /api/provider-onboarding/photos', () => {
 
   it('mapea ProviderForOnboardingNotFoundError a 404', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     updatePhotosMock.mockRejectedValue(new ProviderForOnboardingNotFoundError('nope'));
 
     const res = await PATCH(buildRequest({ providerId: 'prov-xyz', photos: [] }));
@@ -109,7 +118,7 @@ describe('PATCH /api/provider-onboarding/photos', () => {
 
   it('mapea cualquier otro error a 500 INTERNAL', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     updatePhotosMock.mockRejectedValue(new Error('boom'));
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 

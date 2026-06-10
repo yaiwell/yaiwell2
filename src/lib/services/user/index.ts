@@ -7,7 +7,13 @@
  * prohibido por convención (§6.bis CLAUDE.md).
  */
 
-export { deleteUserFromClerk, normalizeClerkUser, syncUserFromClerk } from './user.service';
+export {
+  deleteUserFromClerk,
+  ensureUserFromClerk,
+  normalizeBackendClerkUser,
+  normalizeClerkUser,
+  syncUserFromClerk,
+} from './user.service';
 export { userRepository } from './user.repository';
 export { MissingPrimaryEmailError, UserNotFoundError } from './user.errors';
 export type { ClerkUserSyncInput, ClerkWebhookEventType } from './user.types';

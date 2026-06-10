@@ -5,18 +5,27 @@
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { authMock, findUniqueMock, selectPlanMock } = vi.hoisted(() => ({
-  authMock: vi.fn(),
-  findUniqueMock: vi.fn(),
-  selectPlanMock: vi.fn(),
-}));
+const { authMock, ensureUserMock, selectPlanMock, MockMissingPrimaryEmailError } = vi.hoisted(
+  () => {
+    class MockMissingPrimaryEmailError extends Error {
+      readonly code = 'MISSING_PRIMARY_EMAIL';
+    }
+    return {
+      authMock: vi.fn(),
+      ensureUserMock: vi.fn(),
+      selectPlanMock: vi.fn(),
+      MockMissingPrimaryEmailError,
+    };
+  },
+);
 
 vi.mock('@clerk/nextjs/server', () => ({
   auth: authMock,
 }));
 
-vi.mock('@/lib/db/prisma', () => ({
-  prisma: { user: { findUnique: findUniqueMock } },
+vi.mock('@/lib/services/user', () => ({
+  ensureUserFromClerk: ensureUserMock,
+  MissingPrimaryEmailError: MockMissingPrimaryEmailError,
 }));
 
 vi.mock('@/lib/services/provider-onboarding', () => ({
@@ -59,7 +68,7 @@ describe('PATCH /api/provider-onboarding/plan', () => {
 
   it('devuelve 401 USER_NOT_SYNCED si el user no está sincronizado', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue(null);
+    ensureUserMock.mockRejectedValue(new MockMissingPrimaryEmailError());
     const res = await PATCH(buildRequest({ providerId: 'p1', planTier: 'free' }));
     expect(res.status).toBe(401);
     const body = await res.json();
@@ -68,7 +77,7 @@ describe('PATCH /api/provider-onboarding/plan', () => {
 
   it('devuelve 400 INVALID_BODY si planTier no es válido', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     const res = await PATCH(buildRequest({ providerId: 'p1', planTier: 'enterprise' }));
     expect(res.status).toBe(400);
     const body = await res.json();
@@ -77,14 +86,14 @@ describe('PATCH /api/provider-onboarding/plan', () => {
 
   it('devuelve 400 INVALID_BODY si falta providerId', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     const res = await PATCH(buildRequest({ planTier: 'pro' }));
     expect(res.status).toBe(400);
   });
 
   it('llama al servicio con providerId, { planTier } y userId; responde 204', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     selectPlanMock.mockResolvedValue(undefined);
 
     const res = await PATCH(buildRequest({ providerId: 'prov-xyz', planTier: 'pro' }));
@@ -94,7 +103,7 @@ describe('PATCH /api/provider-onboarding/plan', () => {
 
   it('mapea ProviderForOnboardingNotFoundError a 404', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     selectPlanMock.mockRejectedValue(new ProviderForOnboardingNotFoundError('nope'));
 
     const res = await PATCH(buildRequest({ providerId: 'prov-xyz', planTier: 'free' }));
@@ -105,7 +114,7 @@ describe('PATCH /api/provider-onboarding/plan', () => {
 
   it('mapea PlanTierNotFoundError a 422', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     selectPlanMock.mockRejectedValue(new PlanTierNotFoundError('no plan in DB'));
 
     const res = await PATCH(buildRequest({ providerId: 'prov-xyz', planTier: 'free' }));
@@ -116,7 +125,7 @@ describe('PATCH /api/provider-onboarding/plan', () => {
 
   it('mapea cualquier otro error a 500 INTERNAL', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     selectPlanMock.mockRejectedValue(new Error('boom'));
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 

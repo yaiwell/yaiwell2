@@ -3,13 +3,13 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { prisma } from '@/lib/db/prisma';
 import {
   createProviderFromOnboarding,
   FreePlanNotSeededError,
   OnboardingAlreadyCompleteError,
   SlugAlreadyTakenError,
 } from '@/lib/services/provider-onboarding';
+import { ensureUserFromClerk, MissingPrimaryEmailError } from '@/lib/services/user';
 
 /**
  * Endpoint del wizard de onboarding — paso 1: crear el `Provider`.
@@ -49,13 +49,18 @@ export async function POST(request: NextRequest): Promise<NextResponse<SuccessBo
     return NextResponse.json({ error: { code: 'UNAUTHORIZED' } }, { status: 401 });
   }
 
-  // 2. Resolución del userId interno a partir del clerkId.
-  const user = await prisma.user.findUnique({
-    where: { clerkId: clerkUserId },
-    select: { id: true },
-  });
-  if (!user) {
-    return NextResponse.json({ error: { code: 'USER_NOT_SYNCED' } }, { status: 401 });
+  // 2. Resolución del userId interno con auto-sync defensivo. Si el
+  //    webhook `user.created` no llegó a tiempo, lo creamos sobre la
+  //    marcha desde Clerk Backend para no bloquear el wizard.
+  let user: { id: string };
+  try {
+    user = await ensureUserFromClerk(clerkUserId);
+  } catch (err) {
+    if (err instanceof MissingPrimaryEmailError) {
+      return NextResponse.json({ error: { code: 'USER_NOT_SYNCED' } }, { status: 401 });
+    }
+    console.error('[api/provider-onboarding/create] ensureUserFromClerk error:', err);
+    return NextResponse.json({ error: { code: 'INTERNAL' } }, { status: 500 });
   }
 
   // 3. Parseo del JSON. Si no llega body JSON válido, 400.

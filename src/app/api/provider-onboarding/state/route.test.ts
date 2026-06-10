@@ -4,18 +4,30 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { authMock, findUniqueMock, loadStateMock } = vi.hoisted(() => ({
-  authMock: vi.fn(),
-  findUniqueMock: vi.fn(),
-  loadStateMock: vi.fn(),
-}));
+// Clase fake que reemplaza la real en `@/lib/services/user`. El handler
+// hace `err instanceof MissingPrimaryEmailError` y como `vi.mock` exporta
+// esta misma clase, el `instanceof` matchea cuando el test lanza una
+// instancia de esta. Declarada dentro de `vi.hoisted` para que esté
+// disponible cuando el factory de `vi.mock` se ejecuta (también hoisted).
+const { authMock, ensureUserMock, loadStateMock, MockMissingPrimaryEmailError } = vi.hoisted(() => {
+  class MockMissingPrimaryEmailError extends Error {
+    readonly code = 'MISSING_PRIMARY_EMAIL';
+  }
+  return {
+    authMock: vi.fn(),
+    ensureUserMock: vi.fn(),
+    loadStateMock: vi.fn(),
+    MockMissingPrimaryEmailError,
+  };
+});
 
 vi.mock('@clerk/nextjs/server', () => ({
   auth: authMock,
 }));
 
-vi.mock('@/lib/db/prisma', () => ({
-  prisma: { user: { findUnique: findUniqueMock } },
+vi.mock('@/lib/services/user', () => ({
+  ensureUserFromClerk: ensureUserMock,
+  MissingPrimaryEmailError: MockMissingPrimaryEmailError,
 }));
 
 vi.mock('@/lib/services/provider-onboarding', () => ({
@@ -37,9 +49,9 @@ describe('GET /api/provider-onboarding/state', () => {
     expect(body.error.code).toBe('UNAUTHORIZED');
   });
 
-  it('devuelve 401 USER_NOT_SYNCED si el user no está sincronizado', async () => {
+  it('devuelve 401 USER_NOT_SYNCED si el user de Clerk no tiene email primario', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue(null);
+    ensureUserMock.mockRejectedValue(new MockMissingPrimaryEmailError());
     const res = await GET();
     expect(res.status).toBe(401);
     const body = await res.json();
@@ -48,7 +60,7 @@ describe('GET /api/provider-onboarding/state', () => {
 
   it('llama al servicio con el userId interno y devuelve 200 con el OnboardingState', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     const fakeState = {
       step: 'photos',
       providerId: 'prov-xyz',
@@ -65,7 +77,7 @@ describe('GET /api/provider-onboarding/state', () => {
 
   it('mapea cualquier error inesperado a 500 INTERNAL', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     loadStateMock.mockRejectedValue(new Error('boom'));
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 

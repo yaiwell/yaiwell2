@@ -12,6 +12,7 @@ import type { AppLocale } from '@/i18n/routing';
 import { requireRole } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
 import { loadOnboardingState } from '@/lib/services/provider-onboarding';
+import { ensureUserFromClerk, MissingPrimaryEmailError } from '@/lib/services/user';
 
 interface OnboardingPageProps {
   // En Next.js 16 los `params` son asíncronos.
@@ -53,16 +54,24 @@ export default async function OnboardingPage({ params }: OnboardingPageProps) {
   // automáticamente a clientes/admins a su destino natural.
   await requireRole(['provider'], locale);
 
-  // Resolución del `User` interno a partir del `clerkId` activo. Si
-  // todavía no existe el espejo en BD (webhook de Clerk en vuelo),
-  // el wizard renderiza pantalla "syncing…" y reintenta solo.
+  // Resolución del `User` interno a partir del `clerkId` activo.
+  // `ensureUserFromClerk` lo crea sobre la marcha si no existe (por
+  // ejemplo cuando el webhook `user.created` no llegó). Sin esta red,
+  // el wizard quedaba colgado en "Sincronizando…" para usuarios que
+  // se crearon en Clerk antes de configurar el webhook.
   const { userId: clerkUserId } = await auth();
-  const internalUser = clerkUserId
-    ? await prisma.user.findUnique({
-        where: { clerkId: clerkUserId },
-        select: { id: true },
-      })
-    : null;
+  let internalUser: { id: string } | null = null;
+  if (clerkUserId) {
+    try {
+      internalUser = await ensureUserFromClerk(clerkUserId);
+    } catch (err) {
+      // Caso patológico: el user de Clerk no tiene ningún email del que
+      // tirar. Dejamos `internalUser=null` para que la UI muestre la
+      // pantalla "syncing…" (es lo más informativo en este edge case;
+      // soporte tendrá que intervenir manualmente).
+      if (!(err instanceof MissingPrimaryEmailError)) throw err;
+    }
+  }
 
   // Estado inicial del wizard. Si el user aún no existe lo damos vacío
   // para que la UI pinte el syncing screen y reintente desde el cliente.

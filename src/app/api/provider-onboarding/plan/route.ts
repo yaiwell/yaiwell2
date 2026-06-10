@@ -3,12 +3,12 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { prisma } from '@/lib/db/prisma';
 import {
   PlanTierNotFoundError,
   ProviderForOnboardingNotFoundError,
   selectPlan,
 } from '@/lib/services/provider-onboarding';
+import { ensureUserFromClerk, MissingPrimaryEmailError } from '@/lib/services/user';
 
 /**
  * Endpoint del wizard de onboarding — paso final: selección de plan.
@@ -43,13 +43,16 @@ export async function PATCH(request: NextRequest): Promise<NextResponse<ErrorBod
     return NextResponse.json({ error: { code: 'UNAUTHORIZED' } }, { status: 401 });
   }
 
-  // 2. Resolución del userId interno.
-  const user = await prisma.user.findUnique({
-    where: { clerkId: clerkUserId },
-    select: { id: true },
-  });
-  if (!user) {
-    return NextResponse.json({ error: { code: 'USER_NOT_SYNCED' } }, { status: 401 });
+  // 2. Resolución del userId interno con auto-sync defensivo.
+  let user: { id: string };
+  try {
+    user = await ensureUserFromClerk(clerkUserId);
+  } catch (err) {
+    if (err instanceof MissingPrimaryEmailError) {
+      return NextResponse.json({ error: { code: 'USER_NOT_SYNCED' } }, { status: 401 });
+    }
+    console.error('[api/provider-onboarding/plan] ensureUserFromClerk error:', err);
+    return NextResponse.json({ error: { code: 'INTERNAL' } }, { status: 500 });
   }
 
   // 3. Parseo + validación de shape.

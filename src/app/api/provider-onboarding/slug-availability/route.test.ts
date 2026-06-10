@@ -5,18 +5,27 @@
 import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { authMock, findUniqueMock, isSlugAvailableMock } = vi.hoisted(() => ({
-  authMock: vi.fn(),
-  findUniqueMock: vi.fn(),
-  isSlugAvailableMock: vi.fn(),
-}));
+const { authMock, ensureUserMock, isSlugAvailableMock, MockMissingPrimaryEmailError } = vi.hoisted(
+  () => {
+    class MockMissingPrimaryEmailError extends Error {
+      readonly code = 'MISSING_PRIMARY_EMAIL';
+    }
+    return {
+      authMock: vi.fn(),
+      ensureUserMock: vi.fn(),
+      isSlugAvailableMock: vi.fn(),
+      MockMissingPrimaryEmailError,
+    };
+  },
+);
 
 vi.mock('@clerk/nextjs/server', () => ({
   auth: authMock,
 }));
 
-vi.mock('@/lib/db/prisma', () => ({
-  prisma: { user: { findUnique: findUniqueMock } },
+vi.mock('@/lib/services/user', () => ({
+  ensureUserFromClerk: ensureUserMock,
+  MissingPrimaryEmailError: MockMissingPrimaryEmailError,
 }));
 
 vi.mock('@/lib/services/provider-onboarding', () => ({
@@ -48,7 +57,7 @@ describe('GET /api/provider-onboarding/slug-availability', () => {
 
   it('devuelve 401 USER_NOT_SYNCED si el usuario no está sincronizado', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue(null);
+    ensureUserMock.mockRejectedValue(new MockMissingPrimaryEmailError());
     const res = await GET(buildRequest('mi-centro'));
     expect(res.status).toBe(401);
     const body = await res.json();
@@ -57,7 +66,7 @@ describe('GET /api/provider-onboarding/slug-availability', () => {
 
   it('devuelve 400 si el slug está vacío o ausente', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     const res = await GET(buildRequest(null));
     expect(res.status).toBe(400);
     const body = await res.json();
@@ -66,21 +75,21 @@ describe('GET /api/provider-onboarding/slug-availability', () => {
 
   it('devuelve 400 si el slug tiene caracteres no permitidos', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     const res = await GET(buildRequest('Foo Bar!'));
     expect(res.status).toBe(400);
   });
 
   it('devuelve 400 si el slug es demasiado corto', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     const res = await GET(buildRequest('ab'));
     expect(res.status).toBe(400);
   });
 
   it('llama al servicio y devuelve { available: true } en éxito', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     isSlugAvailableMock.mockResolvedValue(true);
 
     const res = await GET(buildRequest('mi-centro'));
@@ -92,7 +101,7 @@ describe('GET /api/provider-onboarding/slug-availability', () => {
 
   it('devuelve { available: false } cuando el servicio reporta el slug como ocupado', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     isSlugAvailableMock.mockResolvedValue(false);
 
     const res = await GET(buildRequest('mi-centro'));
@@ -103,7 +112,7 @@ describe('GET /api/provider-onboarding/slug-availability', () => {
 
   it('mapea cualquier error inesperado a 500 INTERNAL', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
-    findUniqueMock.mockResolvedValue({ id: 'user-abc' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     isSlugAvailableMock.mockRejectedValue(new Error('boom'));
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
 

@@ -3,8 +3,8 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { prisma } from '@/lib/db/prisma';
 import { isSlugAvailable } from '@/lib/services/provider-onboarding';
+import { ensureUserFromClerk, MissingPrimaryEmailError } from '@/lib/services/user';
 
 /**
  * Endpoint del wizard de onboarding — comprobación de disponibilidad de slug.
@@ -46,13 +46,15 @@ export async function GET(request: NextRequest): Promise<NextResponse<SuccessBod
     return NextResponse.json({ error: { code: 'UNAUTHORIZED' } }, { status: 401 });
   }
 
-  // 2. Resolución del userId interno.
-  const user = await prisma.user.findUnique({
-    where: { clerkId: clerkUserId },
-    select: { id: true },
-  });
-  if (!user) {
-    return NextResponse.json({ error: { code: 'USER_NOT_SYNCED' } }, { status: 401 });
+  // 2. Resolución del userId interno con auto-sync defensivo.
+  try {
+    await ensureUserFromClerk(clerkUserId);
+  } catch (err) {
+    if (err instanceof MissingPrimaryEmailError) {
+      return NextResponse.json({ error: { code: 'USER_NOT_SYNCED' } }, { status: 401 });
+    }
+    console.error('[api/provider-onboarding/slug-availability] ensureUserFromClerk error:', err);
+    return NextResponse.json({ error: { code: 'INTERNAL' } }, { status: 500 });
   }
 
   // 3. Validación del query param `slug`.
