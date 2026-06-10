@@ -924,11 +924,11 @@
   },
   "onboarding": {
     "meta": {
-      "title": "Crea el teu centre",
-      "description": "Configura el teu Yaiwell en 5 passos: tipus, dades, ubicació, primer servei i revisió."
+      "title": "Dona d'alta el teu negoci",
+      "description": "Dona d'alta el teu negoci a Yaiwell en 5 passos: tipus, dades, ubicació, primer servei i revisió."
     },
     "badge": "Onboarding del proveïdor",
-    "title": "Dona d'alta el teu centre",
+    "title": "Dona d'alta el teu negoci",
     "subtitle": "Cinc passos ràpids per començar a rebre reserves.",
     "stepper": {
       "step1": "Tipus",
@@ -964,10 +964,10 @@
     },
     "businessType": {
       "title": "Com treballes?",
-      "subtitle": "Ens ajuda a configurar el teu panell des del primer moment.",
+      "subtitle": "Ens ajuda a preparar el teu panell des del primer dia.",
       "autonomo": {
-        "title": "Soc autònom/a",
-        "description": "Treballo sol o sola i gestiono la meva pròpia agenda."
+        "title": "Pel meu compte",
+        "description": "Treballo per compte propi i gestiono la meva agenda."
       },
       "centro": {
         "title": "Tinc un centre",
@@ -981,7 +981,7 @@
         "businessName": "Nom del negoci",
         "businessNamePlaceholder": "Studio Aura",
         "slug": "URL pública",
-        "slugPrefix": "yaiwell.com/centre/",
+        "slugPrefix": "yaiwell.com/centro/",
         "slugChecking": "Comprovant disponibilitat…",
         "slugAvailable": "Disponible",
         "slugTaken": "Aquesta URL ja està en ús",
@@ -993,7 +993,7 @@
         "descriptionCharCount": "{count}/{max}",
         "descriptionHelp": "Una o dues frases. Ho veuran els teus clients.",
         "priceRange": "Rang de preus",
-        "priceRangeHelp": "Orientatiu, ajuda els teus clients a fer-se'n una idea."
+        "priceRangeHelp": "Orientatiu: ajuda els teus clients a fer-se'n una idea."
       }
     },
     "location": {

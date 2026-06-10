@@ -924,11 +924,11 @@
   },
   "onboarding": {
     "meta": {
-      "title": "Salon einrichten",
-      "description": "Richte dein Yaiwell in 5 Schritten ein: Typ, Daten, Standort, erste Dienstleistung und Überprüfung."
+      "title": "Geschäft einrichten",
+      "description": "Richte dein Geschäft auf Yaiwell in 5 Schritten ein: Typ, Daten, Standort, erste Dienstleistung und Überprüfung."
     },
     "badge": "Anbieter-Onboarding",
-    "title": "Richte deinen Salon ein",
+    "title": "Richte dein Geschäft ein",
     "subtitle": "Fünf schnelle Schritte, um Buchungen zu empfangen.",
     "stepper": {
       "step1": "Typ",
@@ -964,13 +964,13 @@
     },
     "businessType": {
       "title": "Wie arbeitest du?",
-      "subtitle": "Damit richten wir dein Dashboard von Anfang an passend ein.",
+      "subtitle": "So passen wir dein Dashboard von Anfang an an dich an.",
       "autonomo": {
-        "title": "Ich bin selbstständig",
+        "title": "Auf eigene Rechnung",
         "description": "Ich arbeite allein und verwalte meinen eigenen Kalender."
       },
       "centro": {
-        "title": "Ich führe einen Salon",
+        "title": "Ich habe ein Studio",
         "description": "Ich koordiniere mehrere Fachkräfte unter einem Dach."
       }
     },
@@ -981,7 +981,7 @@
         "businessName": "Geschäftsname",
         "businessNamePlaceholder": "Studio Aura",
         "slug": "Öffentliche URL",
-        "slugPrefix": "yaiwell.com/salon/",
+        "slugPrefix": "yaiwell.com/centro/",
         "slugChecking": "Verfügbarkeit wird geprüft…",
         "slugAvailable": "Verfügbar",
         "slugTaken": "Diese URL ist bereits vergeben",
@@ -993,13 +993,13 @@
         "descriptionCharCount": "{count}/{max}",
         "descriptionHelp": "Ein bis zwei Sätze. Deine Kund:innen sehen das.",
         "priceRange": "Preisspanne",
-        "priceRangeHelp": "Orientierung, damit deine Kund:innen ein Gefühl bekommen."
+        "priceRangeHelp": "Orientierung, damit Kund:innen die Preise einordnen können."
       }
     },
     "location": {
       "title": "Wo du bist",
       "subtitle": "Tippe die Adresse und wähle einen Vorschlag, um die Koordinaten zu fixieren.",
-      "addressLabel": "Salonadresse",
+      "addressLabel": "Geschäftsadresse",
       "locationMissing": "Wähle einen Vorschlag aus der Liste, um den Standort zu fixieren.",
       "mapHint": "Du kannst den Standort später durch Ziehen des Markers auf der Karte feinjustieren."
     },
@@ -1014,7 +1014,7 @@
         "duration": "Dauer",
         "durationMinutes": "{minutes} Min.",
         "priceEuros": "Preis (€)",
-        "priceFreeHint": "Lass es bei 0, wenn es kostenlos ist."
+        "priceFreeHint": "Auf 0 lassen, wenn kostenlos."
       }
     },
     "confirm": {

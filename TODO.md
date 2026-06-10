@@ -115,7 +115,9 @@
     - [x] **Vía A routing**: redirect del panel ahora apunta a `/onboarding` (no `/panel/onboarding`) para evitar bucle con el layout. Helper `slugifyBusinessName` añadido. Proxy `GET /api/geocoding/forward` con auth Clerk + Zod + mapeo de `MapboxConfigError`/`MapboxRequestError` (2026-06-09, 9 tests endpoint + 7 tests slugify).
     - [x] **Capa 1 backend**: módulo `src/lib/services/provider-onboarding/` (Opción B — crea Provider al cerrar paso 2, updates idempotentes en 3-5). 6 errores tipados (`SlugAlreadyTakenError`, `FreePlanNotSeededError`, `OnboardingAlreadyCompleteError`, `ProviderForOnboardingNotFoundError`, `CategoryNotFoundError`, `PlanTierNotFoundError`). 5 endpoints REST + `slug-availability` (auth, ownership, validación Zod). Componente compartido `AddressAutocomplete` (TanStack Query, debounce 300ms, ARIA combobox, navegación teclado) + namespace i18n `addressAutocomplete` en 4 locales. 79 tests nuevos (19 service + 51 API + 9 UI), total 427 verdes (2026-06-09).
     - [x] **Capa 2 UI**: orquestador `OnboardingWizard` + 5 step components (BusinessType → BusinessData → Location → CategoriesService → Confirm), draft persistido en sessionStorage, polling sync de Clerk, errores tipados con i18n en 4 locales, 20 tests UI (2026-06-10). Decisión: sin paso de fotos (post-onboarding) y plan `free` por defecto.
-    - [ ] **Capa 3**: pulido i18n + E2E del flujo completo (Playwright).
+    - [~] **Capa 3**: pulido i18n + E2E del flujo completo (Playwright).
+      - [x] Pulido i18n 4 locales (2026-06-10): título y `addressLabel` neutralizados (servían sólo para "centro" cuando el wizard cubre autónomos también), `slugPrefix` unificado a `yaiwell.com/centro/` (era bug: la URL real es siempre `/centro/[slug]-[id]` pero el prefijo mostrado variaba por locale), "Salon" alemán → "Studio/Geschäft" (Salon es demasiado específico de peluquería), género neutralizado en ES/CA (`solo o sola` → `por mi cuenta`, `Soc autònom/a` → `Pel meu compte`).
+      - [ ] E2E con Playwright recorriendo los 5 pasos contra Supabase dev.
 - [ ] Panel admin con cola de verificación real.
 - [ ] Sistema de servicios con jerarquía de categorías editable.
 - [x] Motor de scheduling (slots de disponibilidad reales) — `availability.service` con tests vía Prisma mockeado (2026-06-03). Falta conectar a UI y al panel del proveedor.
@@ -178,5 +180,5 @@
 
 ---
 
-*Última actualización: 2026-06-10 (Onboarding wizard #57 Capa 2 UI cerrada: orquestador + 5 steps + 20 tests + i18n 4 locales. Pendiente Capa 3: pulido + E2E Playwright).*
+*Última actualización: 2026-06-10 (Onboarding wizard #57 Capa 3 ya con i18n pulido: bug `slugPrefix` por locale arreglado a `/centro/` unificado, título neutralizado, "Salon" DE → "Geschäft/Studio". Pendiente E2E Playwright).*
 

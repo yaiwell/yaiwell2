@@ -924,11 +924,11 @@
   },
   "onboarding": {
     "meta": {
-      "title": "Set up your venue",
-      "description": "Configure your Yaiwell in 5 steps: type, details, location, first service and review."
+      "title": "Set up your business",
+      "description": "Set up your business on Yaiwell in 5 steps: type, details, location, first service and review."
     },
     "badge": "Provider onboarding",
-    "title": "Set up your venue",
+    "title": "Set up your business",
     "subtitle": "Five quick steps to start receiving bookings.",
     "stepper": {
       "step1": "Type",
@@ -964,10 +964,10 @@
     },
     "businessType": {
       "title": "How do you work?",
-      "subtitle": "This helps us set up your dashboard from day one.",
+      "subtitle": "Helps us tailor your dashboard from day one.",
       "autonomo": {
-        "title": "I'm a freelancer",
-        "description": "I work on my own and manage my own schedule."
+        "title": "On my own",
+        "description": "I work solo and manage my own schedule."
       },
       "centro": {
         "title": "I run a venue",
@@ -981,7 +981,7 @@
         "businessName": "Business name",
         "businessNamePlaceholder": "Studio Aura",
         "slug": "Public URL",
-        "slugPrefix": "yaiwell.com/venue/",
+        "slugPrefix": "yaiwell.com/centro/",
         "slugChecking": "Checking availability…",
         "slugAvailable": "Available",
         "slugTaken": "This URL is already in use",
@@ -993,13 +993,13 @@
         "descriptionCharCount": "{count}/{max}",
         "descriptionHelp": "One or two sentences. Your clients will see it.",
         "priceRange": "Price range",
-        "priceRangeHelp": "An indication that helps clients get a sense."
+        "priceRangeHelp": "Just a hint to help clients set expectations."
       }
     },
     "location": {
       "title": "Where you are",
       "subtitle": "Type the address and pick a suggestion to lock in the coordinates.",
-      "addressLabel": "Venue address",
+      "addressLabel": "Business address",
       "locationMissing": "Pick a suggestion from the list to lock the location.",
       "mapHint": "You can fine-tune the location later by dragging the marker on the map."
     },

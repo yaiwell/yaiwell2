@@ -924,11 +924,11 @@
   },
   "onboarding": {
     "meta": {
-      "title": "Crea tu centro",
-      "description": "Configura tu Yaiwell en 5 pasos: tipo, datos, ubicación, primer servicio y revisión."
+      "title": "Da de alta tu negocio",
+      "description": "Da de alta tu negocio en Yaiwell en 5 pasos: tipo, datos, ubicación, primer servicio y revisión."
     },
     "badge": "Onboarding del proveedor",
-    "title": "Da de alta tu centro",
+    "title": "Da de alta tu negocio",
     "subtitle": "Cinco pasos rápidos para empezar a recibir reservas.",
     "stepper": {
       "step1": "Tipo",
@@ -964,10 +964,10 @@
     },
     "businessType": {
       "title": "¿Cómo trabajas?",
-      "subtitle": "Esto nos ayuda a configurar tu panel desde el primer momento.",
+      "subtitle": "Nos ayuda a preparar tu panel desde el primer día.",
       "autonomo": {
-        "title": "Soy autónomo",
-        "description": "Trabajo solo o sola y gestiono mi propia agenda."
+        "title": "Por mi cuenta",
+        "description": "Trabajo en solitario y gestiono mi propia agenda."
       },
       "centro": {
         "title": "Tengo un centro",
@@ -993,7 +993,7 @@
         "descriptionCharCount": "{count}/{max}",
         "descriptionHelp": "Una o dos frases. Lo verán tus clientes.",
         "priceRange": "Rango de precios",
-        "priceRangeHelp": "Orientativo, ayuda a tus clientes a hacerse una idea."
+        "priceRangeHelp": "Orientativo: ayuda a tus clientes a hacerse una idea."
       }
     },
     "location": {
