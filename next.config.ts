@@ -8,7 +8,11 @@ const nextConfig: NextConfig = {
   // `unoptimized` (audit 2026-05-27 §D.1). En Fase 1 estas URLs serán
   // sustituidas por Supabase Storage, que tendrá su propio remotePattern.
   images: {
-    remotePatterns: [{ protocol: 'https', hostname: 'images.unsplash.com' }],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+      // Avatares de usuarios de Clerk (perfil + Google/Apple OAuth).
+      { protocol: 'https', hostname: 'img.clerk.com' },
+    ],
   },
 };
 

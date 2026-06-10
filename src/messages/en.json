@@ -29,6 +29,8 @@
     "forProviders": "For professionals",
     "signIn": "Sign in",
     "signUp": "Sign up",
+    "account": "My account",
+    "panel": "My panel",
     "openMenu": "Open menu",
     "skipToContent": "Skip to content",
     "primaryNavLabel": "Primary navigation",
@@ -906,8 +908,21 @@
       "navLabel": "Your account shortcuts",
       "bookings": "My bookings",
       "favorites": "My favourites",
-      "settings": "Settings and preferences"
+      "settings": "Settings and preferences",
+      "signOut": "Sign out",
+      "signedInAs": "Signed in as"
     }
+  },
+  "onboarding": {
+    "meta": {
+      "title": "Set up your venue",
+      "description": "Configure your Yaiwell in 5 steps: business details, photos, first service and plan."
+    },
+    "badge": "Provider onboarding",
+    "title": "We're still building the wizard",
+    "subtitle": "The venue setup assistant is almost ready. In the meantime, we've saved your account so you can pick it up later.",
+    "comingSoon": "Soon you'll be able to set up your venue in 5 quick steps.",
+    "backHome": "Back to home"
   },
   "signUp": {
     "meta": {

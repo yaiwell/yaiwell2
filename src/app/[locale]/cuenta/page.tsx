@@ -1,14 +1,17 @@
-import { auth } from '@clerk/nextjs/server';
+import { SignOutButton } from '@clerk/nextjs';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import {
   Bookmark,
   CalendarCheck,
   ChevronRight,
   LogIn,
+  LogOut,
   Settings,
   Sparkles,
   UserPlus,
 } from 'lucide-react';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
@@ -56,6 +59,13 @@ const accountStyles = {
   heroTitle: 'font-serif text-3xl tracking-tight text-stone-900 sm:text-4xl dark:text-stone-50',
   heroSubtitle: 'text-base text-stone-600 dark:text-stone-400',
 
+  identityCard:
+    'flex items-center gap-4 rounded-2xl border border-stone-200 bg-white p-4 dark:border-stone-800 dark:bg-stone-900',
+  identityAvatar:
+    'inline-flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-stone-200 text-stone-700 dark:bg-stone-800 dark:text-stone-300',
+  identityName: 'text-sm font-medium text-stone-900 dark:text-stone-100',
+  identityEmail: 'text-xs text-stone-500 dark:text-stone-400',
+
   ctaStack: 'flex flex-col gap-3',
   primaryCta:
     'inline-flex items-center justify-center gap-2 rounded-full bg-stone-900 px-6 py-3 text-sm font-medium text-stone-50 transition-colors hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-stone-200',
@@ -66,9 +76,16 @@ const accountStyles = {
     'flex flex-col divide-y divide-stone-200 overflow-hidden rounded-2xl border border-stone-200 bg-white dark:divide-stone-800 dark:border-stone-800 dark:bg-stone-900',
   linkItem:
     'flex items-center justify-between gap-3 px-4 py-3 text-sm text-stone-800 transition-colors hover:bg-stone-50 dark:text-stone-200 dark:hover:bg-stone-800/60',
+  linkItemDisabled:
+    'flex items-center justify-between gap-3 px-4 py-3 text-sm text-stone-400 cursor-not-allowed dark:text-stone-500',
   linkLeft: 'flex items-center gap-3',
   linkIcon: 'size-4 text-stone-500 dark:text-stone-400',
   linkChevron: 'size-4 text-stone-400 dark:text-stone-500',
+  comingSoonTag:
+    'rounded-full bg-stone-100 px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-stone-600 dark:bg-stone-800 dark:text-stone-300',
+
+  signOutButton:
+    'inline-flex w-full items-center justify-center gap-2 rounded-full border border-stone-300 bg-white px-6 py-3 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800',
 
   sectionTitle: 'text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-stone-400',
 } as const;
@@ -83,13 +100,15 @@ const accountStyles = {
  *    sin sesión. Es la primera parada de un usuario que pulsa la pestaña
  *    "Cuenta" del MobileNav sin haber iniciado sesión.
  *
- *  - **Autenticado:** muestra accesos al área cliente (reservas,
- *    favoritos, ajustes) y un botón de cerrar sesión.
+ *  - **Autenticado:** muestra identidad (avatar + email), accesos al
+ *    área cliente (reservas reales; favoritos y ajustes quedan como
+ *    "Próximamente" hasta que existan las rutas) y un botón de cerrar
+ *    sesión vía `SignOutButton` de Clerk.
  *
- *  Detectamos la sesión con `auth()` server-side (`@clerk/nextjs/server`).
- *  Mientras el sign-in real con Clerk no esté cableado, `userId` será
- *  siempre `null` y veremos la rama "no autenticado", que es el
- *  comportamiento esperado en Fase 0.
+ *  Detectamos la sesión con `auth()` server-side. Cuando hay `userId`,
+ *  pedimos `currentUser()` para resolver email y avatar — es un fetch
+ *  extra a Clerk, pero solo se ejecuta en la rama autenticada, así que
+ *  la página de bienvenida (mucho más visitada) no paga ese coste.
  */
 export default async function AccountPage({ params }: AccountPageProps) {
   const { locale } = await params;
@@ -102,7 +121,18 @@ export default async function AccountPage({ params }: AccountPageProps) {
 
   const { userId } = await auth();
   const isAuthenticated = userId !== null;
+  // Solo pedimos `currentUser()` cuando ya sabemos que hay sesión, para
+  // no abrir un fetch a Clerk en cada visita anónima a la home logueada.
+  const user = isAuthenticated ? await currentUser() : null;
+  const primaryEmail = user?.emailAddresses?.find(
+    (e) => e.id === user.primaryEmailAddressId,
+  )?.emailAddress;
+  const displayName =
+    [user?.firstName, user?.lastName].filter(Boolean).join(' ') || primaryEmail || '';
+  const avatarUrl = user?.imageUrl;
+
   const t = await getTranslations('account');
+  const tCommon = await getTranslations('common');
 
   return (
     <section className={accountStyles.shell} data-component="account-page">
@@ -120,33 +150,81 @@ export default async function AccountPage({ params }: AccountPageProps) {
       </header>
 
       {isAuthenticated ? (
-        <nav
-          className={accountStyles.linkList}
-          aria-label={t('authenticated.navLabel')}
-          data-component="account-authenticated-links"
-        >
-          <Link href="/mis-reservas" className={accountStyles.linkItem}>
-            <span className={accountStyles.linkLeft}>
-              <CalendarCheck className={accountStyles.linkIcon} aria-hidden="true" />
-              {t('authenticated.bookings')}
-            </span>
-            <ChevronRight className={accountStyles.linkChevron} aria-hidden="true" />
-          </Link>
-          <Link href="/mis-reservas" className={accountStyles.linkItem}>
-            <span className={accountStyles.linkLeft}>
-              <Bookmark className={accountStyles.linkIcon} aria-hidden="true" />
-              {t('authenticated.favorites')}
-            </span>
-            <ChevronRight className={accountStyles.linkChevron} aria-hidden="true" />
-          </Link>
-          <Link href="/mis-reservas" className={accountStyles.linkItem}>
-            <span className={accountStyles.linkLeft}>
-              <Settings className={accountStyles.linkIcon} aria-hidden="true" />
-              {t('authenticated.settings')}
-            </span>
-            <ChevronRight className={accountStyles.linkChevron} aria-hidden="true" />
-          </Link>
-        </nav>
+        <>
+          {/* Identidad: avatar + nombre/email. Permite al usuario verificar
+              con qué cuenta está logueado antes de tocar acciones. */}
+          <div className={accountStyles.identityCard} data-component="account-identity">
+            <div className={accountStyles.identityAvatar} aria-hidden="true">
+              {avatarUrl ? (
+                <Image
+                  src={avatarUrl}
+                  alt=""
+                  width={48}
+                  height={48}
+                  className="size-full object-cover"
+                />
+              ) : (
+                <span className="text-sm font-medium">
+                  {(displayName || '·').slice(0, 1).toUpperCase()}
+                </span>
+              )}
+            </div>
+            <div className="flex min-w-0 flex-col">
+              {displayName ? <p className={accountStyles.identityName}>{displayName}</p> : null}
+              {primaryEmail ? (
+                <p className={accountStyles.identityEmail}>{primaryEmail}</p>
+              ) : (
+                <p className={accountStyles.identityEmail}>{t('authenticated.signedInAs')}</p>
+              )}
+            </div>
+          </div>
+
+          <nav
+            className={accountStyles.linkList}
+            aria-label={t('authenticated.navLabel')}
+            data-component="account-authenticated-links"
+          >
+            {/* "Mis reservas" sí existe como ruta (layout protegido por rol
+                cliente). Favoritos y Ajustes aún no — los dejamos visibles
+                como "Próximamente" en lugar de enlazar a /panel, que era el
+                bug previo (los 3 links llevaban al mismo sitio). */}
+            <Link href="/mis-reservas" className={accountStyles.linkItem}>
+              <span className={accountStyles.linkLeft}>
+                <CalendarCheck className={accountStyles.linkIcon} aria-hidden="true" />
+                {t('authenticated.bookings')}
+              </span>
+              <ChevronRight className={accountStyles.linkChevron} aria-hidden="true" />
+            </Link>
+            <div className={accountStyles.linkItemDisabled} aria-disabled="true">
+              <span className={accountStyles.linkLeft}>
+                <Bookmark className={accountStyles.linkIcon} aria-hidden="true" />
+                {t('authenticated.favorites')}
+              </span>
+              <span className={accountStyles.comingSoonTag}>{tCommon('comingSoon')}</span>
+            </div>
+            <div className={accountStyles.linkItemDisabled} aria-disabled="true">
+              <span className={accountStyles.linkLeft}>
+                <Settings className={accountStyles.linkIcon} aria-hidden="true" />
+                {t('authenticated.settings')}
+              </span>
+              <span className={accountStyles.comingSoonTag}>{tCommon('comingSoon')}</span>
+            </div>
+          </nav>
+
+          {/* Logout. `SignOutButton` es un Client Component de Clerk;
+              renderizarlo desde aquí (Server Component) es válido porque
+              Next.js permite componer client desde server. */}
+          <SignOutButton redirectUrl={`/${locale}`}>
+            <button
+              type="button"
+              className={accountStyles.signOutButton}
+              data-component="account-sign-out"
+            >
+              <LogOut className="size-4" aria-hidden="true" />
+              {t('authenticated.signOut')}
+            </button>
+          </SignOutButton>
+        </>
       ) : (
         <div className={accountStyles.ctaStack} data-component="account-guest-cta">
           <Link

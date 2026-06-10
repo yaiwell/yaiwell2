@@ -29,6 +29,8 @@
     "forProviders": "Para profesionales",
     "signIn": "Entrar",
     "signUp": "Registrarse",
+    "account": "Mi cuenta",
+    "panel": "Mi panel",
     "openMenu": "Abrir menú",
     "skipToContent": "Saltar al contenido",
     "primaryNavLabel": "Navegación principal",
@@ -906,8 +908,21 @@
       "navLabel": "Accesos de tu cuenta",
       "bookings": "Mis reservas",
       "favorites": "Mis favoritos",
-      "settings": "Ajustes y preferencias"
+      "settings": "Ajustes y preferencias",
+      "signOut": "Cerrar sesión",
+      "signedInAs": "Sesión iniciada como"
     }
+  },
+  "onboarding": {
+    "meta": {
+      "title": "Crea tu centro",
+      "description": "Configura tu Yaiwell en 5 pasos: datos del negocio, fotos, primer servicio y plan."
+    },
+    "badge": "Onboarding del proveedor",
+    "title": "Aún estamos preparando el wizard",
+    "subtitle": "El asistente de alta del centro está casi listo. Mientras tanto, hemos guardado tu cuenta para que puedas continuar más adelante.",
+    "comingSoon": "Próximamente podrás dar de alta tu centro en 5 pasos rápidos.",
+    "backHome": "Volver al inicio"
   },
   "signUp": {
     "meta": {

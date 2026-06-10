@@ -29,6 +29,8 @@
     "forProviders": "Per a professionals",
     "signIn": "Entrar",
     "signUp": "Registra't",
+    "account": "El meu compte",
+    "panel": "El meu panell",
     "openMenu": "Obrir menú",
     "skipToContent": "Salta al contingut",
     "primaryNavLabel": "Navegació principal",
@@ -906,8 +908,21 @@
       "navLabel": "Accessos del teu compte",
       "bookings": "Les meves reserves",
       "favorites": "Els meus preferits",
-      "settings": "Ajustos i preferències"
+      "settings": "Ajustos i preferències",
+      "signOut": "Tancar sessió",
+      "signedInAs": "Sessió iniciada com a"
     }
+  },
+  "onboarding": {
+    "meta": {
+      "title": "Crea el teu centre",
+      "description": "Configura el teu Yaiwell en 5 passos: dades del negoci, fotos, primer servei i pla."
+    },
+    "badge": "Onboarding del proveïdor",
+    "title": "Encara estem preparant el wizard",
+    "subtitle": "L'assistent d'alta del centre està gairebé llest. Mentrestant, hem guardat el teu compte perquè puguis continuar més endavant.",
+    "comingSoon": "Aviat podràs donar d'alta el teu centre en 5 passos ràpids.",
+    "backHome": "Tornar a l'inici"
   },
   "signUp": {
     "meta": {

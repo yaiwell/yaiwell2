@@ -29,6 +29,8 @@
     "forProviders": "Für Profis",
     "signIn": "Anmelden",
     "signUp": "Registrieren",
+    "account": "Mein Konto",
+    "panel": "Mein Panel",
     "openMenu": "Menü öffnen",
     "skipToContent": "Zum Inhalt springen",
     "primaryNavLabel": "Hauptnavigation",
@@ -906,8 +908,21 @@
       "navLabel": "Zugriff auf deinen Account",
       "bookings": "Meine Buchungen",
       "favorites": "Meine Favoriten",
-      "settings": "Einstellungen und Vorlieben"
+      "settings": "Einstellungen und Vorlieben",
+      "signOut": "Abmelden",
+      "signedInAs": "Angemeldet als"
     }
+  },
+  "onboarding": {
+    "meta": {
+      "title": "Salon einrichten",
+      "description": "Richte dein Yaiwell in 5 Schritten ein: Geschäftsdaten, Fotos, erste Dienstleistung und Tarif."
+    },
+    "badge": "Anbieter-Onboarding",
+    "title": "Der Assistent wird noch vorbereitet",
+    "subtitle": "Der Einrichtungsassistent ist fast fertig. Wir haben deinen Account gespeichert, damit du später weitermachen kannst.",
+    "comingSoon": "Bald kannst du deinen Salon in 5 schnellen Schritten einrichten.",
+    "backHome": "Zurück zur Startseite"
   },
   "signUp": {
     "meta": {
