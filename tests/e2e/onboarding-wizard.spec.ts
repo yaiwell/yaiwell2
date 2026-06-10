@@ -4,6 +4,7 @@ import { expect, test } from '@playwright/test';
 import {
   cleanupTestProviderBD,
   disconnectPrisma,
+  ensureTestProviderInternalUser,
   ensureTestProviderRole,
 } from './utils/clerk-test-user';
 
@@ -35,6 +36,10 @@ test.describe('Wizard de onboarding del proveedor', () => {
     // en el dashboard arranca con metadata vacío y `requireRole` lo
     // rechazaría.
     await ensureTestProviderRole();
+    // Y crea el row `User` interno en Supabase: cuando el user se crea
+    // a mano en Clerk dashboard el webhook `user.created` no se dispara,
+    // así que sin esto el wizard se queda en "Sincronizando…" infinito.
+    await ensureTestProviderInternalUser();
   });
 
   test.beforeEach(async () => {

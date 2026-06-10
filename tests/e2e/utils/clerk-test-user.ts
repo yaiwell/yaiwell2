@@ -101,6 +101,51 @@ export async function ensureTestProviderRole(): Promise<string> {
 }
 
 /**
+ * Garantiza el row `User` interno en Supabase para el user de pruebas.
+ *
+ * Cuando creas un user manualmente en el dashboard de Clerk dev, **no**
+ * se dispara el webhook `user.created` que sincroniza el espejo en BD.
+ * El wizard detecta la ausencia y se queda en pantalla "Sincronizando…"
+ * infinitamente, porque el webhook que nunca llegará no va a crear el
+ * row.
+ *
+ * Hacemos un upsert directo con los datos del user de Clerk, replicando
+ * lo que el webhook real haría. Si llegara un día el webhook (cambias
+ * de email en Clerk, p. ej.) sobreescribirá esto sin conflicto porque
+ * la clave es `clerkId`.
+ */
+export async function ensureTestProviderInternalUser(): Promise<void> {
+  const clerkId = await getTestProviderClerkId();
+  const clerkUser = await getClerk().users.getUser(clerkId);
+  const email = clerkUser.emailAddresses[0]?.emailAddress;
+  if (!email) {
+    throw new Error(`El user "${clerkId}" no tiene email en Clerk; no se puede sincronizar.`);
+  }
+  const fullName = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ') || null;
+
+  await getPrisma().user.upsert({
+    where: { clerkId },
+    create: {
+      clerkId,
+      email,
+      role: 'provider',
+      locale: 'es',
+      fullName,
+      avatarUrl: clerkUser.imageUrl || null,
+    },
+    update: {
+      // Re-afirmamos los campos por si el dev cambió algo desde el
+      // dashboard. El email es UNIQUE, así que si chocara aquí
+      // sabríamos que hay duplicados manuales.
+      email,
+      role: 'provider',
+      fullName,
+      avatarUrl: clerkUser.imageUrl || null,
+    },
+  });
+}
+
+/**
  * Borra el `Provider` (con cascade a `Service` y demás) asociado al
  * usuario de pruebas. También elimina el row `User` interno para forzar
  * la pantalla "syncing…" si el webhook todavía no ha disparado — útil

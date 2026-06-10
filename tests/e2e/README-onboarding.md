@@ -53,23 +53,27 @@ El test:
 
 1. Asegura el rol `provider` del usuario de pruebas vía Clerk Backend
    API.
-2. Borra cualquier `Provider` (y servicios en cascada) del usuario en
+2. Crea/actualiza el row `User` interno en Supabase replicando lo que
+   haría el webhook `user.created` (que no se dispara cuando creas el
+   user a mano en el dashboard).
+3. Borra cualquier `Provider` (y servicios en cascada) del usuario en
    Supabase dev para que el wizard arranque en paso 1.
-3. Login programático con `clerk.signIn` (sin UI).
-4. Recorre los 5 pasos del wizard (interceptando `/api/geocoding/forward`
+4. Login programático con `clerk.signIn` (sin UI).
+5. Recorre los 5 pasos del wizard (interceptando `/api/geocoding/forward`
    con `page.route()` para no quemar requests contra Mapbox).
-5. Publica y verifica el redirect a `/panel`.
+6. Publica y verifica el redirect a `/panel`.
 
 ## Si algo falla
 
-| Síntoma                                      | Causa probable                                                 | Solución                                                            |
-| -------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------- |
-| `CLERK_SECRET_KEY no está definida`          | `globalSetup` no encontró `.env.local`                         | Comprueba que `.env.local` está en la raíz del repo.                |
-| `No se encontró el usuario "..." en Clerk`   | El user no se ha creado en el dashboard                        | Pasos 1-3 de Setup.                                                 |
-| `clerk.signIn` cuelga en captcha             | El email no usa `+clerk_test`                                  | Reemplaza el user por uno con el patrón mágico.                     |
-| Test cuelga en step 2 esperando "Disponible" | El endpoint `/api/onboarding/slug-availability` tarda o falla  | Mira los logs del `npm run dev` en otra terminal.                   |
-| Test cuelga en step 3 sin sugerencias        | El intercept de Mapbox no aplica                               | Verifica que el `page.route()` se registra antes del primer `goto`. |
-| Test pasa pero deja basura en BD             | El `cleanupTestProviderBD` lo limpia al inicio del próximo run | OK, no action.                                                      |
+| Síntoma                                       | Causa probable                                                 | Solución                                                                                                                |
+| --------------------------------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `CLERK_SECRET_KEY no está definida`           | `globalSetup` no encontró `.env.local`                         | Comprueba que `.env.local` está en la raíz del repo.                                                                    |
+| `No se encontró el usuario "..." en Clerk`    | El user no se ha creado en el dashboard                        | Pasos 1-3 de Setup.                                                                                                     |
+| `clerk.signIn` cuelga en captcha              | El email no usa `+clerk_test`                                  | Reemplaza el user por uno con el patrón mágico.                                                                         |
+| Test cuelga en step 2 esperando "Disponible"  | El endpoint `/api/onboarding/slug-availability` tarda o falla  | Mira los logs del `npm run dev` en otra terminal.                                                                       |
+| Test cuelga en step 3 sin sugerencias         | El intercept de Mapbox no aplica                               | Verifica que el `page.route()` se registra antes del primer `goto`.                                                     |
+| Wizard se queda en "Sincronizando tu cuenta…" | Falta el row `User` interno en Supabase                        | El helper `ensureTestProviderInternalUser` ya lo crea; si fallara, revisa que el user de Clerk tenga al menos un email. |
+| Test pasa pero deja basura en BD              | El `cleanupTestProviderBD` lo limpia al inicio del próximo run | OK, no action.                                                                                                          |
 
 ## Limpieza manual de Supabase dev
 
