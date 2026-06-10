@@ -7,8 +7,11 @@
  */
 export const mobileNavStyles = {
   root: 'fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70 md:hidden',
+  // El contenedor usa `auto-cols-fr` + `grid-flow-col` para que las
+  // columnas se distribuyan equitativamente sin depender del número
+  // exacto de items (3 para provider, 4 para cliente).
   inner:
-    'mx-auto grid max-w-md grid-cols-4 gap-1 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]',
+    'mx-auto grid max-w-md auto-cols-fr grid-flow-col gap-1 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]',
   // Microinteracciones: feedback de tap (`active:scale-95`) y focus visible
   // para usuarios de teclado. Es la nav principal en mobile.
   // `min-h-11` garantiza el touch target de 44px que recomienda WCAG/Apple

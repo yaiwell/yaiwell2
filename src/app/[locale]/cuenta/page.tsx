@@ -4,11 +4,13 @@ import {
   Bookmark,
   CalendarCheck,
   ChevronRight,
+  LayoutDashboard,
   LogIn,
   LogOut,
   Settings,
   Sparkles,
   UserPlus,
+  UserRound,
 } from 'lucide-react';
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -18,6 +20,10 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
+import { getRoleFromSessionClaims, getRoleFromUser } from '@/lib/auth/role';
+import { getUiMode } from '@/lib/auth/ui-mode';
+
+import { switchUiModeAction } from './ui-mode.actions';
 
 interface AccountPageProps {
   // En Next.js 16 los `params` son asíncronos.
@@ -88,6 +94,20 @@ const accountStyles = {
     'inline-flex w-full items-center justify-center gap-2 rounded-full border border-stone-300 bg-white px-6 py-3 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800',
 
   sectionTitle: 'text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-stone-400',
+
+  // Tarjeta del swap de modo UI para providers. Visible solo si el rol
+  // real es `provider`. El badge a la izquierda recuerda en qué modo
+  // está ahora; el botón submit lanza la Server Action que invierte
+  // la cookie y redirige al destino natural del nuevo modo.
+  modeCard:
+    'flex flex-col gap-3 rounded-2xl border border-stone-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between dark:border-stone-800 dark:bg-stone-900',
+  modeInfo: 'flex flex-col gap-1',
+  modeLabel: 'text-xs font-medium uppercase tracking-wider text-stone-500 dark:text-stone-400',
+  modeValue: 'text-sm font-medium text-stone-900 dark:text-stone-100',
+  modeHint: 'text-xs text-stone-500 dark:text-stone-400',
+  modeForm: 'flex',
+  modeSwitchButton:
+    'inline-flex w-full items-center justify-center gap-2 rounded-full border border-stone-300 bg-white px-5 py-2.5 text-sm font-medium text-stone-900 transition-colors hover:bg-stone-50 sm:w-auto dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 dark:hover:bg-stone-800',
 } as const;
 
 /**
@@ -119,7 +139,7 @@ export default async function AccountPage({ params }: AccountPageProps) {
 
   setRequestLocale(locale);
 
-  const { userId } = await auth();
+  const { userId, sessionClaims } = await auth();
   const isAuthenticated = userId !== null;
   // Solo pedimos `currentUser()` cuando ya sabemos que hay sesión, para
   // no abrir un fetch a Clerk en cada visita anónima a la home logueada.
@@ -130,6 +150,23 @@ export default async function AccountPage({ params }: AccountPageProps) {
   const displayName =
     [user?.firstName, user?.lastName].filter(Boolean).join(' ') || primaryEmail || '';
   const avatarUrl = user?.imageUrl;
+
+  // Resolución de rol y modo UI activo. Sólo los providers ven la
+  // tarjeta de "modo de uso" (swap usuario ⇄ proveedor). Para clientes
+  // puros y admins el toggle no aplica.
+  let role = isAuthenticated
+    ? getRoleFromSessionClaims(
+        sessionClaims as unknown as Parameters<typeof getRoleFromSessionClaims>[0],
+      )
+    : null;
+  if (isAuthenticated && !role) {
+    role = getRoleFromUser(user);
+  }
+  const uiMode = await getUiMode(role ?? 'client');
+  const isProvider = role === 'provider';
+  // En modo `provider` el botón ofrece cambiar a cliente; viceversa
+  // en modo `client`. Mostramos el opuesto del modo actual.
+  const nextMode = uiMode === 'provider' ? 'client' : 'provider';
 
   const t = await getTranslations('account');
   const tCommon = await getTranslations('common');
@@ -210,6 +247,45 @@ export default async function AccountPage({ params }: AccountPageProps) {
               <span className={accountStyles.comingSoonTag}>{tCommon('comingSoon')}</span>
             </div>
           </nav>
+
+          {/* Tarjeta de modo de uso — sólo visible para providers reales.
+              Permite alternar entre la app como herramienta de gestión
+              (modo `provider`) y como marketplace público (modo `client`),
+              sin necesidad de crear una segunda cuenta. La preferencia se
+              persiste en una cookie de 1 año (ver `lib/auth/ui-mode.ts`). */}
+          {isProvider ? (
+            <section
+              className={accountStyles.modeCard}
+              data-component="account-mode-card"
+              aria-labelledby="account-mode-label"
+            >
+              <div className={accountStyles.modeInfo}>
+                <span id="account-mode-label" className={accountStyles.modeLabel}>
+                  {t('mode.label')}
+                </span>
+                <span className={accountStyles.modeValue}>
+                  {uiMode === 'provider' ? t('mode.providerActive') : t('mode.clientActive')}
+                </span>
+                <span className={accountStyles.modeHint}>{t('mode.hint')}</span>
+              </div>
+              <form action={switchUiModeAction} className={accountStyles.modeForm}>
+                <input type="hidden" name="mode" value={nextMode} />
+                <input type="hidden" name="locale" value={locale} />
+                <button
+                  type="submit"
+                  className={accountStyles.modeSwitchButton}
+                  data-component="account-mode-switch"
+                >
+                  {nextMode === 'client' ? (
+                    <UserRound className="size-4" aria-hidden="true" />
+                  ) : (
+                    <LayoutDashboard className="size-4" aria-hidden="true" />
+                  )}
+                  {nextMode === 'client' ? t('mode.switchToClient') : t('mode.switchToProvider')}
+                </button>
+              </form>
+            </section>
+          ) : null}
 
           {/* Logout. `SignOutButton` es un Client Component de Clerk;
               renderizarlo desde aquí (Server Component) es válido porque

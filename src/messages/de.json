@@ -26,6 +26,7 @@
     "search": "Suchen",
     "bookings": "Buchungen",
     "profile": "Profil",
+    "venue": "Standort",
     "forProviders": "Für Profis",
     "signIn": "Anmelden",
     "signUp": "Registrieren",
@@ -911,6 +912,14 @@
       "settings": "Einstellungen und Vorlieben",
       "signOut": "Abmelden",
       "signedInAs": "Angemeldet als"
+    },
+    "mode": {
+      "label": "Nutzungsmodus",
+      "providerActive": "Du nutzt die App als Profi",
+      "clientActive": "Du nutzt die App als Nutzer",
+      "hint": "Wechsle zwischen deinem Management-Panel und der öffentlichen App ohne Zweitkonto.",
+      "switchToClient": "Zum Nutzermodus wechseln",
+      "switchToProvider": "Zurück zum Profi-Modus"
     }
   },
   "onboarding": {

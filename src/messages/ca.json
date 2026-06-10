@@ -26,6 +26,7 @@
     "search": "Cercar",
     "bookings": "Reserves",
     "profile": "Perfil",
+    "venue": "Centre",
     "forProviders": "Per a professionals",
     "signIn": "Entrar",
     "signUp": "Registra't",
@@ -911,6 +912,14 @@
       "settings": "Ajustos i preferències",
       "signOut": "Tancar sessió",
       "signedInAs": "Sessió iniciada com a"
+    },
+    "mode": {
+      "label": "Mode d'ús",
+      "providerActive": "Estàs fent servir l'app com a professional",
+      "clientActive": "Estàs fent servir l'app com a usuari",
+      "hint": "Canvia entre el teu tauler de gestió i l'app pública sense crear un altre compte.",
+      "switchToClient": "Canviar a mode usuari",
+      "switchToProvider": "Tornar a mode professional"
     }
   },
   "onboarding": {

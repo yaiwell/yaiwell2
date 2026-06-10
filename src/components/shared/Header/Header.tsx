@@ -7,21 +7,30 @@ import { Button } from '@/components/ui/button';
 import { LangSwitcher } from '@/components/shared/LangSwitcher';
 import { LocationPill } from '@/components/shared/LocationPill';
 import { ThemeToggle } from '@/components/shared/ThemeToggle';
-import { getRoleFromSessionClaims } from '@/lib/auth/role';
+import type { UiMode } from '@/lib/auth/ui-mode.types';
 
 import { headerStyles as s } from './Header.styles';
 import type { HeaderNavItem } from './Header.types';
 
 /**
- * Items de navegación principal en desktop.
+ * Items de navegación principal en desktop para el shell cliente.
  *
- * El item "Categorías" se renderiza como link a `/buscar` por ahora; cuando
- * tengamos un menú real con subcategorías abriremos un dropdown.
+ * En modo provider la nav central se oculta — el usuario está usando la
+ * app como herramienta de gestión y debe ir al panel, no a buscar.
  */
-const navItems: HeaderNavItem[] = [
+const clientNavItems: HeaderNavItem[] = [
   { href: '/', labelKey: 'home' },
   { href: '/buscar', labelKey: 'search' },
 ];
+
+export interface HeaderProps {
+  /**
+   * Modo de UI activo (resuelto en el layout raíz). Determina el shell:
+   *  - `client`: nav pública (Inicio/Buscar) + CTAs anónimo o "Mi cuenta".
+   *  - `provider`: nav vacía + acceso directo a "Mi panel".
+   */
+  mode: UiMode;
+}
 
 /**
  * Header principal de la app.
@@ -32,32 +41,21 @@ const navItems: HeaderNavItem[] = [
  * que aquí sólo aparecen logo + `LangSwitcher`. (Decisión post-feedback:
  * el botón hamburguesa duplicaba navegación y se eliminó.)
  *
- * Las CTAs "Entrar / Registrarse" solo se muestran a usuarios anónimos.
- * Con sesión activa mostramos un acceso directo a la "cuenta" (que ya
- * resuelve el destino real según rol: cliente, proveedor o admin) — el
- * logout vive en `/cuenta` para no abarrotar la barra. Esto es un
- * Server Component: usa `auth()` de Clerk en el servidor para no
- * necesitar JS de hidratación solo para distinguir sesión.
+ * Cuando el usuario está en modo provider, el Header se simplifica: se
+ * ocultan los items "Inicio / Buscar / Para profesionales" porque no
+ * forman parte de su flujo de trabajo. Mantiene solo logo, idioma, tema
+ * y un CTA hacia el panel. Esto es un Server Component: usa `auth()` de
+ * Clerk en el servidor para distinguir sesión sin JS de hidratación.
  */
-export async function Header() {
+export async function Header({ mode }: HeaderProps) {
   const tNav = await getTranslations('nav');
   const tCommon = await getTranslations('common');
-  const { userId, sessionClaims } = await auth();
+  const { userId } = await auth();
   const isAuthenticated = userId !== null;
-  // Si hay sesión, intentamos resolver el destino natural del usuario:
-  // proveedor → /panel, admin → /admin, cliente → /cuenta. Usamos los
-  // sessionClaims directamente (sin `currentUser()`) para no añadir un
-  // fetch en cada render del Header — si los claims no traen rol,
-  // caemos a '/cuenta' que es seguro para cualquier sesión.
-  // Cast defensivo: el `JwtPayload` real de Clerk no expone publicMetadata
-  // en su tipo, pero sí en runtime si hay JWT template configurado.
-  // `getRoleFromSessionClaims` hace el narrowing seguro de cada campo.
-  const role = isAuthenticated
-    ? getRoleFromSessionClaims(
-        sessionClaims as unknown as Parameters<typeof getRoleFromSessionClaims>[0],
-      )
-    : null;
-  const accountHref = role === 'provider' ? '/panel' : role === 'admin' ? '/admin' : '/cuenta';
+  const isProviderMode = mode === 'provider';
+  // En modo cliente autenticado el CTA lleva a /cuenta. En modo provider
+  // lleva al panel. Anónimos no ven CTA único — ven entrar/registrarse.
+  const accountHref = isProviderMode ? '/panel' : '/cuenta';
 
   return (
     <header className={s.root} data-component="header">
@@ -75,27 +73,32 @@ export async function Header() {
           <span className={s.brandText}>{tCommon('appName')}</span>
         </Link>
 
-        {/* Navegación central (solo desktop). */}
-        <nav
-          className={s.desktopNav}
-          aria-label={tNav('primaryNavLabel')}
-          data-component="header-nav"
-        >
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={s.navLink}
-              data-component={`header-nav-${item.labelKey}`}
-            >
-              {tNav(item.labelKey)}
-            </Link>
-          ))}
-        </nav>
+        {/* Navegación central solo en modo cliente. Modo provider tiene
+            su propia nav dentro del PanelLayout. */}
+        {!isProviderMode ? (
+          <nav
+            className={s.desktopNav}
+            aria-label={tNav('primaryNavLabel')}
+            data-component="header-nav"
+          >
+            {clientNavItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={s.navLink}
+                data-component={`header-nav-${item.labelKey}`}
+              >
+                {tNav(item.labelKey)}
+              </Link>
+            ))}
+          </nav>
+        ) : null}
 
         {/* Acciones a la derecha en desktop. */}
         <div className={s.desktopActions} data-component="header-desktop-actions">
-          {!isAuthenticated ? (
+          {/* "Para profesionales" solo aparece a anónimos en modo
+              cliente: en modo provider ya estás dentro de ese mundo. */}
+          {!isAuthenticated && !isProviderMode ? (
             <Link
               href="/profesionales"
               className={s.desktopProvidersLink}
@@ -110,12 +113,12 @@ export async function Header() {
           {isAuthenticated ? (
             <Button asChild variant="outline" size="lg" data-component="header-account">
               <Link href={accountHref} className="inline-flex items-center gap-2">
-                {role === 'provider' ? (
+                {isProviderMode ? (
                   <LayoutDashboard className="size-4" aria-hidden="true" />
                 ) : (
                   <User className="size-4" aria-hidden="true" />
                 )}
-                {role === 'provider' ? tNav('panel') : tNav('account')}
+                {isProviderMode ? tNav('panel') : tNav('account')}
               </Link>
             </Button>
           ) : (

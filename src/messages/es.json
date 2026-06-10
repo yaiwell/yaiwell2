@@ -26,6 +26,7 @@
     "search": "Buscar",
     "bookings": "Reservas",
     "profile": "Perfil",
+    "venue": "Centro",
     "forProviders": "Para profesionales",
     "signIn": "Entrar",
     "signUp": "Registrarse",
@@ -911,6 +912,14 @@
       "settings": "Ajustes y preferencias",
       "signOut": "Cerrar sesión",
       "signedInAs": "Sesión iniciada como"
+    },
+    "mode": {
+      "label": "Modo de uso",
+      "providerActive": "Estás usando la app como profesional",
+      "clientActive": "Estás usando la app como usuario",
+      "hint": "Cambia entre tu panel de gestión y la app pública sin crear otra cuenta.",
+      "switchToClient": "Cambiar a modo usuario",
+      "switchToProvider": "Volver a modo profesional"
     }
   },
   "onboarding": {

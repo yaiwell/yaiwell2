@@ -1,48 +1,78 @@
 'use client';
 
-import { CalendarDays, Home, Search, User } from 'lucide-react';
+import { CalendarDays, Home, LayoutDashboard, Search, Store, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
+
+import type { UiMode } from '@/lib/auth/ui-mode.types';
 
 import { useIsActiveTab } from './MobileNav.logic';
 import { mobileNavStyles as s } from './MobileNav.styles';
 import type { MobileNavItem } from './MobileNav.types';
 
 /**
- * Configuración estática de las pestañas del bottom tab bar.
+ * Pestañas del bottom tab bar para clientes / anónimos.
  *
- * Mantenerla como constante a nivel de módulo evita recrearla en cada
- * render y la hace fácil de extender (por ejemplo, añadir badges de
- * notificaciones más adelante).
+ * Refleja el shell público de marketplace: Inicio + Buscar + Mis reservas
+ * + Cuenta (pasarela de identidad / login).
  */
-const items: MobileNavItem[] = [
+const clientItems: MobileNavItem[] = [
   { href: '/', labelKey: 'home', icon: Home },
   { href: '/buscar', labelKey: 'search', icon: Search },
   // `/mis-reservas` es la ruta real del área cliente. La pestaña
   // "Cuenta" apunta a `/cuenta`, una página puente que muestra CTAs de
   // entrar/registrarse cuando no hay sesión y los accesos del usuario
-  // cuando sí la hay. Ambas rutas existen — antes apuntábamos a
-  // `/reservas` y `/perfil` que daban 404 y rompían el prefetch RSC
-  // del bottom nav.
+  // cuando sí la hay.
   { href: '/mis-reservas', labelKey: 'bookings', icon: CalendarDays },
   { href: '/cuenta', labelKey: 'profile', icon: User },
 ];
 
 /**
+ * Pestañas del bottom tab bar para proveedores autenticados.
+ *
+ * La app se convierte en herramienta de gestión: el shell público
+ * (Inicio/Buscar/Reservas) deja de tener sentido porque el provider
+ * no opera como cliente — gestiona su centro y revisa su agenda. Los
+ * 3 items cubren los flujos que más necesita fuera del propio panel:
+ *  - **Panel**: vuelta al dashboard.
+ *  - **Centro**: configuración del local (datos, fotos, horarios).
+ *  - **Perfil**: identidad + cerrar sesión.
+ */
+const providerItems: MobileNavItem[] = [
+  { href: '/panel', labelKey: 'panel', icon: LayoutDashboard },
+  { href: '/panel/centro', labelKey: 'venue', icon: Store },
+  { href: '/cuenta', labelKey: 'profile', icon: User },
+];
+
+export interface MobileNavProps {
+  /**
+   * Modo de UI activo (resuelto en el layout raíz a partir del rol real
+   * de Clerk + cookie `yaiwell.uiMode`). Determina qué set de pestañas
+   * se muestra. Cliente puro y anónimo siempre reciben `client`; sólo
+   * el provider real puede recibir `provider`.
+   */
+  mode: UiMode;
+}
+
+/**
  * Barra de navegación inferior para dispositivos móviles.
  *
- * Patrón clásico de app nativa: 4 pestañas con icono + etiqueta. Se oculta
- * en >=768px porque ahí el Header desktop ya cubre la navegación.
+ * Patrón clásico de app nativa: 3-4 pestañas con icono + etiqueta. Se
+ * oculta en >=768px porque ahí el Header desktop ya cubre la navegación.
  *
  * Bajo `/panel/*` el panel de proveedor renderiza su propio bottom nav
  * (`PanelLayout.bottomNav`). Para evitar dos barras apiladas en móvil
  * (audit 2026-05-27 §A.9), ocultamos esta cuando estamos en esa rama.
  * El panel admin (`/admin`) también se considera UI interna y se oculta
  * por la misma razón.
+ *
+ * El set de items depende del rol: proveedor ve un shell de gestión
+ * (Panel/Centro/Perfil); cliente y anónimo ven el shell público
+ * (Inicio/Buscar/Reservas/Cuenta).
  */
-export function MobileNav() {
+export function MobileNav({ mode }: MobileNavProps) {
   const t = useTranslations('nav');
   const pathname = usePathname();
 
@@ -50,6 +80,8 @@ export function MobileNav() {
   if (pathname.startsWith('/panel') || pathname.startsWith('/admin')) {
     return null;
   }
+
+  const items = mode === 'provider' ? providerItems : clientItems;
 
   return (
     <nav className={s.root} aria-label={t('bottomNavLabel')} data-component="mobile-nav">

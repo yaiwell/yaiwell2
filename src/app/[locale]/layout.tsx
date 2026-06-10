@@ -1,4 +1,5 @@
 import { ClerkProvider } from '@clerk/nextjs';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import type { Metadata } from 'next';
 import { Fraunces, Geist_Mono, Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
@@ -17,6 +18,8 @@ import {
 } from '@/components/shared';
 import { ThemeProvider } from '@/components/shared/ThemeToggle';
 import { SkipToContent } from '@/components/shared/SkipToContent';
+import { getRoleFromSessionClaims, getRoleFromUser } from '@/lib/auth/role';
+import { getUiMode } from '@/lib/auth/ui-mode';
 import {
   COOKIE_NAME as LOCATION_COOKIE_NAME,
   readLocationFromHeaders,
@@ -210,6 +213,27 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
     ? readLocationFromHeaders(`${LOCATION_COOKIE_NAME}=${rawLocationCookie}`)
     : null;
 
+  // Resolución de rol + modo UI:
+  //  - El rol real (Clerk) decide qué puede HACER el usuario.
+  //  - El modo UI (cookie) decide qué VE en el shell. Un provider real
+  //    puede activar el modo cliente para usar el marketplace como uno
+  //    más, sin tener que crear una segunda cuenta.
+  // Pasamos el modo (no el rol) al shell para que MobileNav/Header
+  // muestren las pestañas correctas en cada caso.
+  const { userId, sessionClaims } = await auth();
+  let resolvedRole = userId
+    ? getRoleFromSessionClaims(
+        sessionClaims as unknown as Parameters<typeof getRoleFromSessionClaims>[0],
+      )
+    : null;
+  if (userId && !resolvedRole) {
+    // Solo pagamos el fetch a `currentUser()` si los claims no traen rol
+    // (gap entre sign-up y webhook que promueve a publicMetadata).
+    const user = await currentUser();
+    resolvedRole = getRoleFromUser(user);
+  }
+  const uiMode = await getUiMode(resolvedRole ?? 'client');
+
   return (
     // ClerkProvider envuelve toda la app para que `useAuth`, `useUser` y
     // los componentes Clerk (SignIn, UserButton, etc.) tengan contexto
@@ -242,7 +266,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
                     solo es visible al recibir foco y permite saltar la
                     navegación cabecera para ir directo al contenido. */}
                   <SkipToContent />
-                  <Header />
+                  <Header mode={uiMode} />
                   {/* El padding inferior en mobile reserva espacio para el bottom
                     tab bar (MobileNav). En desktop el tab bar se oculta y no
                     hace falta el padding extra. El `id="main"` es el destino
@@ -251,7 +275,7 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
                     {children}
                   </main>
                   <Footer />
-                  <MobileNav />
+                  <MobileNav mode={uiMode} />
                   {/* Banner discreto que solicita permiso de ubicación la
                     primera vez. Se monta fuera del flujo (fixed) y se
                     oculta solo cuando el usuario ya ha decidido o lo ha

@@ -26,6 +26,7 @@
     "search": "Search",
     "bookings": "Bookings",
     "profile": "Profile",
+    "venue": "Venue",
     "forProviders": "For professionals",
     "signIn": "Sign in",
     "signUp": "Sign up",
@@ -911,6 +912,14 @@
       "settings": "Settings and preferences",
       "signOut": "Sign out",
       "signedInAs": "Signed in as"
+    },
+    "mode": {
+      "label": "Usage mode",
+      "providerActive": "You are using the app as a professional",
+      "clientActive": "You are using the app as a customer",
+      "hint": "Switch between your management panel and the public app without a second account.",
+      "switchToClient": "Switch to customer mode",
+      "switchToProvider": "Back to professional mode"
     }
   },
   "onboarding": {

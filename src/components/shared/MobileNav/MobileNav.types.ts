@@ -5,6 +5,10 @@ import type { LucideIcon } from 'lucide-react';
  */
 export interface MobileNavItem {
   href: string;
-  labelKey: 'home' | 'search' | 'bookings' | 'profile';
+  /**
+   * Clave de traducción dentro de `nav.*`. Aceptamos las del shell cliente
+   * (home/search/bookings/profile) y las del shell provider (panel/venue).
+   */
+  labelKey: 'home' | 'search' | 'bookings' | 'profile' | 'panel' | 'venue';
   icon: LucideIcon;
 }
