@@ -123,7 +123,7 @@ export async function ensureTestProviderInternalUser(): Promise<void> {
   }
   const fullName = [clerkUser.firstName, clerkUser.lastName].filter(Boolean).join(' ') || null;
 
-  await getPrisma().user.upsert({
+  const upserted = await getPrisma().user.upsert({
     where: { clerkId },
     create: {
       clerkId,
@@ -141,8 +141,19 @@ export async function ensureTestProviderInternalUser(): Promise<void> {
       role: 'provider',
       fullName,
       avatarUrl: clerkUser.imageUrl || null,
+      // Resucitamos el row si quedó soft-deleted en runs anteriores.
+      deletedAt: null,
     },
+    select: { id: true, clerkId: true, role: true, deletedAt: true },
   });
+
+  // Trazas mínimas para debugging cuando el wizard se queda en
+  // "Sincronizando…": confirman que el row está en la BD que el
+  // dev server está leyendo y con qué clerkId.
+  // eslint-disable-next-line no-console
+  console.log(
+    `[e2e] User interno sembrado: id=${upserted.id} clerkId=${upserted.clerkId} role=${upserted.role}`,
+  );
 }
 
 /**

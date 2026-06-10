@@ -75,8 +75,11 @@ test.describe('Wizard de onboarding del proveedor', () => {
       });
     });
 
-    // 1. Login programático.
-    await page.goto('/');
+    // 1. Login programático. Cargamos `/es/entrar` (no `/`) porque ese
+    //    page monta el componente `<SignIn />` de Clerk que inicializa
+    //    el cliente JS — requisito de `clerk.signIn` para poder firmar
+    //    la sesión sin UI.
+    await page.goto(`${ES_PREFIX}/entrar`);
     await clerk.signIn({
       page,
       signInParams: {
@@ -86,7 +89,14 @@ test.describe('Wizard de onboarding del proveedor', () => {
       },
     });
 
-    // 2. Entrar al wizard.
+    // 2. Smoke de auth: tras firmar la sesión navegamos a `/es/cuenta`
+    //    (protegida). Si el `clerk.signIn` cuajó, no nos redirige a
+    //    sign-in. Esto separa "fallo de auth" de "fallo del wizard" en
+    //    los errores futuros.
+    await page.goto(`${ES_PREFIX}/cuenta`);
+    await expect(page).toHaveURL(/\/cuenta(?!\/sign-in)/, { timeout: 10_000 });
+
+    // 3. Entrar al wizard.
     await page.goto(`${ES_PREFIX}/onboarding`);
 
     // Si el webhook `user.created` aún no ha completado, vemos pantalla
