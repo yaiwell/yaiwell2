@@ -54,6 +54,13 @@
     "maxFilesReached": "Has alcanzado el máximo de {max} fotos.",
     "remaining": "Puedes subir {count} más (máx. {max})."
   },
+  "addressAutocomplete": {
+    "placeholder": "Calle, número, ciudad…",
+    "loading": "Buscando direcciones…",
+    "error": "No se han podido cargar las sugerencias.",
+    "no_results": "Sin resultados.",
+    "clear": "Borrar dirección"
+  },
   "footer": {
     "tagline": "Belleza, bienestar y deporte con disponibilidad inmediata.",
     "product": {

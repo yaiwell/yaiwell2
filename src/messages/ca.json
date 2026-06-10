@@ -54,6 +54,13 @@
     "maxFilesReached": "Has arribat al màxim de {max} fotos.",
     "remaining": "Pots pujar {count} més (màx. {max})."
   },
+  "addressAutocomplete": {
+    "placeholder": "Carrer, número, ciutat…",
+    "loading": "Cercant adreces…",
+    "error": "No s'han pogut carregar els suggeriments.",
+    "no_results": "Sense resultats.",
+    "clear": "Esborrar adreça"
+  },
   "footer": {
     "tagline": "Bellesa, benestar i esport amb disponibilitat immediata.",
     "product": {

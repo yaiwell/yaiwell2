@@ -111,7 +111,11 @@
 - [~] Onboarding de proveedor con verificación.
   - [x] Resolver `userId → providerId` + helper `requireCurrentProvider` aplicado en `/panel/layout.tsx` (kill del `getProviderById('prov-01')` hardcodeado). Si el provider no existe aún, redirige a `/panel/onboarding` (el wizard lo creará). 7 tests verde (2026-06-09).
   - [x] Supabase Storage: 3 buckets públicos (`provider-photos`, `service-photos`, `avatars`) con RLS deny-all + writes vía service-role en backend. Wrapper `src/lib/integrations/supabase/` (upload/delete/getPublicUrl + errores tipados), endpoint `POST /api/storage/upload` con authorization (avatars↔clerkId, provider/service-photos↔Provider.userId), componente compartido `PhotoUploader` (drag&drop, preview, max files, i18n 4 locales). 8 tests endpoint + integración i18n es/ca/en/de (2026-06-09).
-  - [ ] Wizard `/panel/onboarding` (5 pasos: tipo → datos + geocoding → fotos → primer servicio → plan).
+  - [~] Wizard `/onboarding` (5 pasos: tipo → datos + geocoding → fotos → primer servicio → plan).
+    - [x] **Vía A routing**: redirect del panel ahora apunta a `/onboarding` (no `/panel/onboarding`) para evitar bucle con el layout. Helper `slugifyBusinessName` añadido. Proxy `GET /api/geocoding/forward` con auth Clerk + Zod + mapeo de `MapboxConfigError`/`MapboxRequestError` (2026-06-09, 9 tests endpoint + 7 tests slugify).
+    - [x] **Capa 1 backend**: módulo `src/lib/services/provider-onboarding/` (Opción B — crea Provider al cerrar paso 2, updates idempotentes en 3-5). 6 errores tipados (`SlugAlreadyTakenError`, `FreePlanNotSeededError`, `OnboardingAlreadyCompleteError`, `ProviderForOnboardingNotFoundError`, `CategoryNotFoundError`, `PlanTierNotFoundError`). 5 endpoints REST + `slug-availability` (auth, ownership, validación Zod). Componente compartido `AddressAutocomplete` (TanStack Query, debounce 300ms, ARIA combobox, navegación teclado) + namespace i18n `addressAutocomplete` en 4 locales. 79 tests nuevos (19 service + 51 API + 9 UI), total 427 verdes (2026-06-09).
+    - [ ] **Capa 2 UI**: composición del wizard en `src/app/[locale]/onboarding/` (skeleton + 5 step components + page.tsx con hidratación desde `loadOnboardingState`).
+    - [ ] **Capa 3**: pulido i18n + E2E del flujo completo.
 - [ ] Panel admin con cola de verificación real.
 - [ ] Sistema de servicios con jerarquía de categorías editable.
 - [x] Motor de scheduling (slots de disponibilidad reales) — `availability.service` con tests vía Prisma mockeado (2026-06-03). Falta conectar a UI y al panel del proveedor.

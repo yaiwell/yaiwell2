@@ -54,6 +54,13 @@
     "maxFilesReached": "Du hast das Limit von {max} Fotos erreicht.",
     "remaining": "Du kannst noch {count} hochladen (max. {max})."
   },
+  "addressAutocomplete": {
+    "placeholder": "Straße, Hausnummer, Stadt…",
+    "loading": "Adressen werden gesucht…",
+    "error": "Vorschläge konnten nicht geladen werden.",
+    "no_results": "Keine Ergebnisse.",
+    "clear": "Adresse löschen"
+  },
   "footer": {
     "tagline": "Beauty, Wellness und Sport mit sofortiger Verfügbarkeit.",
     "product": {
