@@ -117,7 +117,7 @@
     - [x] **Capa 2 UI**: orquestador `OnboardingWizard` + 5 step components (BusinessType → BusinessData → Location → CategoriesService → Confirm), draft persistido en sessionStorage, polling sync de Clerk, errores tipados con i18n en 4 locales, 20 tests UI (2026-06-10). Decisión: sin paso de fotos (post-onboarding) y plan `free` por defecto.
     - [~] **Capa 3**: pulido i18n + E2E del flujo completo (Playwright).
       - [x] Pulido i18n 4 locales (2026-06-10): título y `addressLabel` neutralizados (servían sólo para "centro" cuando el wizard cubre autónomos también), `slugPrefix` unificado a `yaiwell.com/centro/` (era bug: la URL real es siempre `/centro/[slug]-[id]` pero el prefijo mostrado variaba por locale), "Salon" alemán → "Studio/Geschäft" (Salon es demasiado específico de peluquería), género neutralizado en ES/CA (`solo o sola` → `por mi cuenta`, `Soc autònom/a` → `Pel meu compte`).
-      - [ ] E2E con Playwright recorriendo los 5 pasos contra Supabase dev.
+      - [~] E2E con Playwright recorriendo los 5 pasos contra Supabase dev (2026-06-10): infra montada (`@clerk/testing` + `clerkSetup` + helpers `ensureTestProviderRole` / `cleanupTestProviderBD` + intercept Mapbox vía `page.route()`); spec `tests/e2e/onboarding-wizard.spec.ts` recorre tipo → datos → ubicación → categoría+servicio → publicar → redirect a `/panel`. **Pendiente del dev**: crear user provider de pruebas en dashboard de Clerk con email `<tu>+clerk_test@…` y password, pegar `CLERK_TEST_PROVIDER_EMAIL`/`PASSWORD` en `.env.local`. Instrucciones completas en `tests/e2e/README-onboarding.md`. Tras eso, `npm run test:e2e` debería pasar.
 - [ ] Panel admin con cola de verificación real.
 - [ ] Sistema de servicios con jerarquía de categorías editable.
 - [x] Motor de scheduling (slots de disponibilidad reales) — `availability.service` con tests vía Prisma mockeado (2026-06-03). Falta conectar a UI y al panel del proveedor.
@@ -180,5 +180,5 @@
 
 ---
 
-*Última actualización: 2026-06-10 (Onboarding wizard #57 Capa 3 ya con i18n pulido: bug `slugPrefix` por locale arreglado a `/centro/` unificado, título neutralizado, "Salon" DE → "Geschäft/Studio". Pendiente E2E Playwright).*
+*Última actualización: 2026-06-10 (Onboarding wizard #57 Capa 3 con i18n pulido + infra E2E lista (`@clerk/testing` + spec + helpers + intercept Mapbox). Pendiente: dev crea user provider de pruebas en Clerk dashboard y corre `npm run test:e2e` — instrucciones en `tests/e2e/README-onboarding.md`).*
 

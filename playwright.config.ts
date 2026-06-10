@@ -14,6 +14,9 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './tests/e2e',
+  // `globalSetup` carga `.env.local` y obtiene el testing token de
+  // Clerk para los E2E que usan auth real (wizard de onboarding).
+  globalSetup: require.resolve('./tests/e2e/global-setup.ts'),
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
