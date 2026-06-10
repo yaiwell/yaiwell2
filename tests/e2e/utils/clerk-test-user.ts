@@ -1,5 +1,9 @@
+import path from 'node:path';
+
 import { createClerkClient } from '@clerk/backend';
+import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
+import dotenv from 'dotenv';
 
 /**
  * Helpers para gestionar el usuario provider de pruebas usado por los
@@ -10,7 +14,16 @@ import { PrismaClient } from '@prisma/client';
  * encargan del estado runtime: promocionar el rol a `provider` y limpiar
  * la fila `Provider` (+ servicios) en Supabase entre tests para que el
  * wizard pueda recorrerse de cero cada vez.
+ *
+ * Carga de `.env.local`: Playwright corre `globalSetup` en un proceso
+ * master separado de los workers donde viven los tests, así que las
+ * variables que cargue allí NO se ven aquí. Cargamos `.env.local` en el
+ * propio módulo (top-level, idempotente) para que `process.env` tenga
+ * `DATABASE_URL`, `CLERK_SECRET_KEY` y `CLERK_TEST_PROVIDER_*` cuando
+ * cualquiera de los helpers lo necesite.
  */
+
+dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
 let prisma: PrismaClient | null = null;
 let clerk: ReturnType<typeof createClerkClient> | null = null;
@@ -18,7 +31,14 @@ let clerk: ReturnType<typeof createClerkClient> | null = null;
 /** Lazy singletons para que los helpers no inicialicen clientes en import. */
 function getPrisma(): PrismaClient {
   if (!prisma) {
-    prisma = new PrismaClient();
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) {
+      throw new Error('DATABASE_URL no está definida. ¿Cargaste .env.local?');
+    }
+    // Prisma 7 exige un driver adapter. Usamos `@prisma/adapter-pg`
+    // igual que el runtime de la app (`src/lib/db/prisma.ts`).
+    const adapter = new PrismaPg({ connectionString });
+    prisma = new PrismaClient({ adapter });
   }
   return prisma;
 }
