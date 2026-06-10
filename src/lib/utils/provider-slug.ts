@@ -34,3 +34,33 @@ export function parseProviderIdFromSlugWithId(slugWithId: string): string | null
   const match = slugWithId.match(PROVIDER_ID_SUFFIX_REGEX);
   return match ? match[1] : null;
 }
+
+/**
+ * Normaliza un texto en bruto a un slug URL-safe.
+ *
+ * Reglas:
+ *  - Quita acentos y diacríticos vía NFD + strip de combining marks
+ *    (resuelve ç → c, ñ → n, ü → u, è → e). Hecho a mano para no
+ *    arrastrar dependencias (`slugify` npm trae locale data inútil).
+ *  - Pasa a minúsculas.
+ *  - Sustituye todo lo que no sea alfanumérico por guion (incluye
+ *    espacios, emojis, símbolos y apóstrofos).
+ *  - Colapsa guiones repetidos y recorta los de los extremos.
+ *
+ * Pensado para alimentar el campo `slug` del wizard de onboarding
+ * (#57). El servidor sigue validando con regex estricto y la BD con
+ * el UNIQUE constraint, este helper solo da un punto de partida
+ * sensato al usuario.
+ *
+ * @param raw — texto libre (típicamente `businessName`).
+ * @returns slug normalizado, posiblemente vacío si el input no tiene
+ *   ningún carácter alfanumérico.
+ */
+export function slugifyBusinessName(raw: string): string {
+  return raw
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}

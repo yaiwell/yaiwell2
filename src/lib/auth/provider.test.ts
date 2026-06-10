@@ -109,14 +109,14 @@ describe('requireCurrentProvider', () => {
     prismaMock.provider.findUnique.mockReset();
   });
 
-  it('redirige a /panel/onboarding si no hay Provider asociado', async () => {
+  it('redirige a /onboarding si no hay Provider asociado', async () => {
     authMock.mockResolvedValue({ userId: 'user_clerk_1' });
     prismaMock.user.findUnique.mockResolvedValue({ id: 'user-1' });
     prismaMock.provider.findFirst.mockResolvedValue(null);
 
     const dest = await captureRedirect(requireCurrentProvider('es'));
 
-    expect(dest).toEqual({ href: '/panel/onboarding', locale: 'es' });
+    expect(dest).toEqual({ href: '/onboarding', locale: 'es' });
     expect(requireRoleMock).toHaveBeenCalledWith(['provider'], 'es');
   });
 
@@ -128,7 +128,7 @@ describe('requireCurrentProvider', () => {
 
     const dest = await captureRedirect(requireCurrentProvider('ca'));
 
-    expect(dest).toEqual({ href: '/panel/onboarding', locale: 'ca' });
+    expect(dest).toEqual({ href: '/onboarding', locale: 'ca' });
   });
 
   it('devuelve datos del Provider cuando todo está bien', async () => {

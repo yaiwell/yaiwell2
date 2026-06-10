@@ -19,8 +19,10 @@ interface PanelLayoutRouteProps {
  * desktop + bottom tab bar mobile). Protegido por `requireCurrentProvider`:
  *  - Anónimos → redirect a `/entrar` (vía `requireRole`).
  *  - Cliente / admin → redirect al destino natural de su rol.
- *  - Provider sin Provider asociado → redirect a `/panel/onboarding`
- *    (el wizard #57 lo creará y devolverá al panel).
+ *  - Provider sin Provider asociado → redirect a `/onboarding`
+ *    (el wizard #57 lo creará y devolverá al panel). La ruta vive
+ *    fuera de `/panel/` adrede para evitar bucle infinito con este
+ *    propio layout.
  *  - Provider con Provider asociado → resuelve nombre y datos reales.
  */
 export default async function PanelRouteLayout({ children, params }: PanelLayoutRouteProps) {

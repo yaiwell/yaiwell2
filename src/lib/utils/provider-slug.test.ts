@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildProviderSlugWithId, parseProviderIdFromSlugWithId } from './provider-slug';
+import {
+  buildProviderSlugWithId,
+  parseProviderIdFromSlugWithId,
+  slugifyBusinessName,
+} from './provider-slug';
 
 /**
  * Tests del helper de slug + id del proveedor.
@@ -69,5 +73,42 @@ describe('parseProviderIdFromSlugWithId', () => {
     const parsedId = parseProviderIdFromSlugWithId(segment);
 
     expect(parsedId).toBe(provider.id);
+  });
+});
+
+/**
+ * Tests del slugify usado por el wizard de onboarding (#57) para
+ * sugerir un slug al usuario partiendo del nombre del negocio.
+ */
+describe('slugifyBusinessName', () => {
+  it('pasa a minúsculas y reemplaza espacios por guiones', () => {
+    expect(slugifyBusinessName('Atelier Norte')).toBe('atelier-norte');
+  });
+
+  it('elimina acentos y diacríticos comunes (ñ, ç, è, ü)', () => {
+    expect(slugifyBusinessName('Peluquería Niño')).toBe('peluqueria-nino');
+    expect(slugifyBusinessName('Espai Çinc')).toBe('espai-cinc');
+    expect(slugifyBusinessName('Crème Brûlée')).toBe('creme-brulee');
+  });
+
+  it('colapsa runs de separadores en un único guion', () => {
+    expect(slugifyBusinessName('Casa   Mar   --   Massatges')).toBe('casa-mar-massatges');
+  });
+
+  it('elimina símbolos, apóstrofos y emojis', () => {
+    expect(slugifyBusinessName(`L'Atelier - 100% bio 💆`)).toBe('l-atelier-100-bio');
+  });
+
+  it('recorta guiones de los extremos', () => {
+    expect(slugifyBusinessName('  --- Studio Zen --- ')).toBe('studio-zen');
+  });
+
+  it('devuelve cadena vacía si no hay alfanuméricos', () => {
+    expect(slugifyBusinessName('***')).toBe('');
+    expect(slugifyBusinessName('   ')).toBe('');
+  });
+
+  it('preserva números', () => {
+    expect(slugifyBusinessName('Estudio 360 Wellness')).toBe('estudio-360-wellness');
   });
 });

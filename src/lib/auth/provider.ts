@@ -63,7 +63,9 @@ export async function getCurrentProviderId(): Promise<string | null> {
  * Aplica el guard de rol `provider` (mismo patrón que el resto de
  * layouts) y, si todo está bien, resuelve el Provider asociado al
  * usuario. Si no existe (caso típico: provider recién registrado),
- * redirige a `/panel/onboarding` para que el wizard lo cree.
+ * redirige a `/onboarding` para que el wizard lo cree. La ruta vive
+ * fuera de `/panel/` adrede para evitar bucle infinito (el layout de
+ * `/panel/` invoca este helper y nos redirigiría a sí mismo).
  *
  * Nota arquitectónica: optamos por **Opción B** — el Provider no se
  * pre-crea en el webhook con campos placeholder, lo crea el wizard
@@ -84,7 +86,7 @@ export async function requireCurrentProvider(locale: AppLocale): Promise<Current
 
   const providerId = await getCurrentProviderId();
   if (!providerId) {
-    redirect({ href: '/panel/onboarding', locale });
+    redirect({ href: '/onboarding', locale });
     throw new Error('unreachable: redirect should have thrown');
   }
 
@@ -101,7 +103,7 @@ export async function requireCurrentProvider(locale: AppLocale): Promise<Current
   // Defensa contra una carrera muy improbable: provider eliminado
   // entre los dos queries. Tratamos igual que "no existe".
   if (!provider) {
-    redirect({ href: '/panel/onboarding', locale });
+    redirect({ href: '/onboarding', locale });
     throw new Error('unreachable: redirect should have thrown');
   }
 
