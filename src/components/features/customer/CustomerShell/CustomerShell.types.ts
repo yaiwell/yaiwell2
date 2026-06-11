@@ -18,10 +18,32 @@ export interface CustomerNavItem {
   href: string;
   labelKey: CustomerNavLabelKey;
   iconKey: 'calendar' | 'star' | 'user' | 'heart';
+  /**
+   * Si es `true`, el item se renderiza como pill no clickable con un
+   * chip "Próximamente". Patrón espejo del que ya usa `/cuenta` para
+   * las features que aún no existen como ruta (Fase 1).
+   */
+  disabled?: boolean;
+}
+
+/**
+ * Datos del usuario autenticado que la shell necesita para renderizar
+ * la tarjeta de identidad. Resueltos en el layout server-side desde
+ * Clerk y pasados como prop para que la shell sea agnóstica de auth.
+ */
+export interface CustomerShellIdentity {
+  /** Nombre legible (firstName + lastName) o email si no hay nombre. */
+  displayName: string;
+  /** Email principal — útil como fallback y para subtítulo. */
+  email: string;
+  /** URL del avatar de Clerk (puede ser undefined). */
+  avatarUrl?: string;
 }
 
 export interface CustomerShellProps {
   children: ReactNode;
   /** Ruta actual sin prefijo de locale, ej. `/mis-reservas`. */
   activePath: string;
+  /** Identidad del usuario autenticado, resuelta en el layout. */
+  identity: CustomerShellIdentity;
 }

@@ -48,13 +48,15 @@ export default async function CustomerLayout({ children, params }: CustomerLayou
     return null;
   }
 
-  // Resolución de rol: claims primero, fallback a currentUser solo si
-  // los claims no traen rol (gap entre sign-up y webhook).
+  // Resolución de rol + identidad. Compartimos un único fetch a
+  // `currentUser()` cuando los claims no traen rol — el shell del área
+  // cliente necesita el avatar y nombre real para la sidebar, así que
+  // aprovechamos el mismo objeto `user` para ambas cosas.
   let role = getRoleFromSessionClaims(
     sessionClaims as unknown as Parameters<typeof getRoleFromSessionClaims>[0],
   );
+  let user = role ? null : await currentUser();
   if (!role) {
-    const user = await currentUser();
     role = getRoleFromUser(user);
   }
 
@@ -71,5 +73,26 @@ export default async function CustomerLayout({ children, params }: CustomerLayou
     }
   }
 
-  return <CustomerShell activePath="/mis-reservas">{children}</CustomerShell>;
+  // Si el rol vino de los claims, todavía no hemos cargado el `user` y
+  // necesitamos su `imageUrl` + nombre para la sidebar. Lo pedimos aquí
+  // — un único fetch extra por visita autenticada al área cliente.
+  if (!user) {
+    user = await currentUser();
+  }
+  const primaryEmail =
+    user?.emailAddresses?.find((e) => e.id === user?.primaryEmailAddressId)?.emailAddress ?? '';
+  const displayName = [user?.firstName, user?.lastName].filter(Boolean).join(' ') || '';
+
+  return (
+    <CustomerShell
+      activePath="/mis-reservas"
+      identity={{
+        displayName,
+        email: primaryEmail,
+        avatarUrl: user?.imageUrl ?? undefined,
+      }}
+    >
+      {children}
+    </CustomerShell>
+  );
 }
