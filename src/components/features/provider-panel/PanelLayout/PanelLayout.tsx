@@ -1,7 +1,9 @@
 'use client';
 
-import { CalendarDays, LayoutDashboard, Scissors, Settings, Star } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { CalendarDays, LayoutDashboard, Scissors, Settings, Star, UserRound } from 'lucide-react';
+import { useLocale, useTranslations } from 'next-intl';
+
+import { switchUiModeAction } from '@/app/[locale]/cuenta/ui-mode.actions';
 
 import { PanelBottomNavLink, PanelLayoutLink } from './PanelLayout.links';
 import { panelLayoutStyles as s } from './PanelLayout.styles';
@@ -42,6 +44,13 @@ const navItems: PanelNavItem[] = [
  */
 export function PanelLayout({ children, providerName }: PanelLayoutProps) {
   const tNav = useTranslations('providerPanel.nav');
+  // Reutilizamos los textos del namespace `account.mode` para no duplicar
+  // strings: ya están traducidos en los 4 locales y describen la misma
+  // acción (alternar entre modo proveedor y modo cliente).
+  const tMode = useTranslations('account.mode');
+  // `locale` se pasa al server action como hidden input para que el
+  // redirect final respete el idioma actual del usuario.
+  const locale = useLocale();
 
   return (
     <div className={s.root} data-component="panel-layout">
@@ -56,6 +65,25 @@ export function PanelLayout({ children, providerName }: PanelLayoutProps) {
             <PanelLayoutLink key={item.href} item={item} label={tNav(item.labelKey)} />
           ))}
         </nav>
+
+        {/* Footer de la sidebar: toggle de modo UI hacia cliente. En el
+            panel siempre se está en modo `provider`, así que el destino
+            del swap es fijo (`client`). El propio Server Action verifica
+            de nuevo el rol antes de escribir la cookie. */}
+        <div className={s.sidebarFooter} data-component="panel-sidebar-footer">
+          <form action={switchUiModeAction} className={s.sidebarSwitchForm}>
+            <input type="hidden" name="mode" value="client" />
+            <input type="hidden" name="locale" value={locale} />
+            <button
+              type="submit"
+              className={s.sidebarSwitchButton}
+              data-component="panel-mode-switch"
+            >
+              <UserRound className="size-4" aria-hidden />
+              {tMode('switchToClient')}
+            </button>
+          </form>
+        </div>
       </aside>
 
       <section className={s.content} data-component="panel-content">

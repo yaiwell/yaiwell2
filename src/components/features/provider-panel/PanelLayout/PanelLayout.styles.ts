@@ -15,6 +15,16 @@ export const panelLayoutStyles = {
   sidebarTitle: 'font-display text-lg text-foreground',
   sidebarProvider: 'text-sm text-foreground/70',
   sidebarNav: 'flex flex-col gap-1',
+
+  // Footer de la sidebar: alberga el toggle "Ver como cliente". El
+  // `mt-auto` lo empuja al fondo de la columna flex de la sidebar para
+  // que los links de navegación queden agrupados arriba y la acción
+  // secundaria (salir a modo cliente) viva separada visualmente.
+  sidebarFooter: 'mt-auto flex flex-col gap-2 border-t border-border/40 pt-4',
+  sidebarSwitchForm: 'flex',
+  sidebarSwitchButton:
+    'inline-flex w-full items-center justify-center gap-2 rounded-full border border-border/60 bg-card px-4 py-2.5 text-sm font-medium text-foreground/80 transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+
   sidebarLink:
     'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
   sidebarLinkActive: 'bg-primary/10 text-foreground',
