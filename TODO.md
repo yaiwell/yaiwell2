@@ -149,6 +149,7 @@
 - [ ] Panel de métricas para proveedores.
 - [ ] Términos, política de privacidad, cookies, GDPR compliance.
 - [ ] Tests E2E de los flujos críticos.
+- [ ] **Pulido visual**: migrar `/cuenta` (`src/app/[locale]/cuenta/page.tsx`) de tokens `bg-stone-*` / `border-stone-*` / `text-stone-*` hardcoded a tokens semánticos shadcn (`bg-card`, `border-border/60`, `text-foreground`, `text-muted-foreground`, `bg-muted`). Detectado en auditoría P7 del 2026-06-11: divergencia visible al navegar `/panel` → `/cuenta` → `/mis-reservas` (los shells nuevos ya usan tokens semánticos, `/cuenta` se quedó con la paleta stone hardcoded heredada de Fase 0). Sin urgencia — no rompe nada, sólo coherencia.
 
 ---
 

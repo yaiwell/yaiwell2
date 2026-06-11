@@ -24,10 +24,15 @@ export const customerShellStyles = {
   navItemActive: 'border-primary/30 bg-primary/10 text-primary hover:text-primary',
   // Items pendientes de implementar (Fase 1). Visualmente apagados, sin
   // hover, cursor not-allowed, y con un chip "Próximamente" al lado.
+  // El bg en `bg-muted/40` (no `bg-background/40`) le da presencia mínima
+  // en dark mode — sin esto el contenedor se disuelve sobre la sidebar
+  // `bg-card/60` y el chip interno pesa más que el item entero.
   navItemDisabled:
-    'inline-flex shrink-0 cursor-not-allowed items-center gap-2 rounded-full border border-border/40 bg-background/40 px-3 py-2 text-sm text-muted-foreground md:rounded-2xl md:px-3.5',
+    'inline-flex shrink-0 cursor-not-allowed items-center gap-2 rounded-full border border-border/40 bg-muted/40 px-3 py-2 text-sm text-muted-foreground md:rounded-2xl md:px-3.5',
+  // `whitespace-nowrap` evita que el chip se parta en DE ("Demnächst
+  // verfügbar", 18 chars) cuando la sidebar es estrecha.
   navItemComingSoon:
-    'ml-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground',
+    'ml-1 whitespace-nowrap rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground',
   navIcon: 'size-4',
   main: 'flex flex-1 flex-col gap-6',
   pageHeader: 'flex flex-col gap-2',

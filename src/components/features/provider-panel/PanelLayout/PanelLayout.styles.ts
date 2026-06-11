@@ -23,7 +23,7 @@ export const panelLayoutStyles = {
   sidebarFooter: 'mt-auto flex flex-col gap-2 border-t border-border/40 pt-4',
   sidebarSwitchForm: 'flex',
   sidebarSwitchButton:
-    'inline-flex w-full items-center justify-center gap-2 rounded-full border border-border/60 bg-card px-4 py-2.5 text-sm font-medium text-foreground/80 transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+    'inline-flex w-full items-center justify-center gap-2 rounded-full border border-border/60 bg-muted px-4 py-2.5 text-sm font-medium text-foreground/80 transition-colors duration-150 hover:bg-muted/70 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
 
   sidebarLink:
     'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-foreground/80 transition-colors duration-150 hover:bg-muted hover:text-foreground focus-visible:bg-muted focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
