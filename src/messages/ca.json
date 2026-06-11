@@ -328,6 +328,10 @@
       "sidebarNavLabel": "Navegació del panell",
       "bottomNavLabel": "Accessos ràpids del panell"
     },
+    "mockBanner": {
+      "title": "Dades d'exemple",
+      "description": "Aquesta secció encara mostra una demostració. Les teves dades reals apareixeran quan connectem aquesta funció amb el backend."
+    },
     "dashboard": {
       "title": "Resum setmanal",
       "subtitle": "Com va la teva setmana d'un cop d'ull.",

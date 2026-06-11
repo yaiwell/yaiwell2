@@ -328,6 +328,10 @@
       "sidebarNavLabel": "Navegación del panel",
       "bottomNavLabel": "Accesos rápidos del panel"
     },
+    "mockBanner": {
+      "title": "Datos de ejemplo",
+      "description": "Esta sección aún muestra una demostración. Tus datos reales aparecerán cuando conectemos esta función con el backend."
+    },
     "dashboard": {
       "title": "Resumen semanal",
       "subtitle": "Cómo va tu semana de un vistazo.",

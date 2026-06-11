@@ -3,6 +3,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 
 import { ServicesList } from '@/components/features/provider-panel/ServicesList';
+import { MockDataBanner } from '@/components/shared/MockDataBanner';
 import { routing } from '@/i18n/routing';
 import { fakePanelServices } from '@/lib/fake-data/panel-services';
 
@@ -27,5 +28,10 @@ export default async function PanelServicesPage({ params }: PanelServicesPagePro
 
   const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
 
-  return <ServicesList services={fakePanelServices} locale={panelLocale} />;
+  return (
+    <div className="flex flex-col gap-6">
+      <MockDataBanner />
+      <ServicesList services={fakePanelServices} locale={panelLocale} />
+    </div>
+  );
 }

@@ -3,6 +3,7 @@ import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { WeeklyCalendar } from '@/components/features/provider-panel/WeeklyCalendar';
+import { MockDataBanner } from '@/components/shared/MockDataBanner';
 import { routing } from '@/i18n/routing';
 import { fakePanelBookings } from '@/lib/fake-data/panel-bookings';
 
@@ -34,6 +35,7 @@ export default async function PanelCalendarPage({ params }: PanelCalendarPagePro
         <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
       </header>
 
+      <MockDataBanner />
       <WeeklyCalendar bookings={fakePanelBookings} />
     </section>
   );

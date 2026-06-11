@@ -3,6 +3,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 
 import { DashboardMetrics } from '@/components/features/provider-panel/DashboardMetrics';
+import { MockDataBanner } from '@/components/shared/MockDataBanner';
 import { routing } from '@/i18n/routing';
 import { fakePanelWeeklyMetrics } from '@/lib/fake-data/panel-metrics';
 
@@ -28,5 +29,10 @@ export default async function PanelDashboardPage({ params }: PanelDashboardPageP
   // El componente está tipado solo para los locales soportados en el panel.
   const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
 
-  return <DashboardMetrics metrics={fakePanelWeeklyMetrics} locale={panelLocale} />;
+  return (
+    <div className="flex flex-col gap-6">
+      <MockDataBanner />
+      <DashboardMetrics metrics={fakePanelWeeklyMetrics} locale={panelLocale} />
+    </div>
+  );
 }

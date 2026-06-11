@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
+import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
 import { providerSettingsStyles as s } from './ProviderSettings.styles';
 import type { ProviderSettingsProps } from './ProviderSettings.types';
@@ -10,14 +11,20 @@ import type { ProviderSettingsProps } from './ProviderSettings.types';
 /**
  * Pantalla de configuración del centro.
  *
- * Server Component puro: muestra los datos generales, dirección,
- * horario y fotos del proveedor activo. Los campos son `defaultValue`
- * para mantener el formulario sin estado (mock visual). Cuando exista
- * persistencia real este componente pasará a Client con un hook
- * dedicado, manteniendo la separación de styles/logic.
+ * Server Component puro: muestra los datos reales del proveedor activo
+ * (los que el wizard de onboarding guarda en BD) y deja en blanco los
+ * campos que aún no se piden al alta (phone, email de contacto, ciudad
+ * y código postal por separado, horario). Los campos son `defaultValue`
+ * para mantener el formulario sin estado; el botón "Guardar" es solo
+ * visual mientras no exista persistencia. Cuando exista, este componente
+ * pasará a Client con un hook dedicado, manteniendo la separación de
+ * styles/logic.
  */
 export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
   const t = useTranslations('providerPanel.settings');
+  // `pickLocalized` aplica fallback locale → es si el JSON no tiene
+  // la lengua actual (los providers nuevos solo guardan ES/CA).
+  const description = pickLocalized(provider.description, locale);
 
   return (
     <section className={s.root} data-component="provider-settings">
@@ -40,15 +47,24 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
               id="settings-name"
               type="text"
               className={s.input}
-              defaultValue={provider.name}
+              defaultValue={provider.businessName}
             />
           </div>
           <div className={s.field}>
             <label className={s.label} htmlFor="settings-vat">
               {t('general.vatLabel')}
             </label>
-            <input id="settings-vat" type="text" className={s.input} defaultValue="B65432198" />
+            <input
+              id="settings-vat"
+              type="text"
+              className={s.input}
+              defaultValue={provider.vatNumber ?? ''}
+              placeholder="B12345678"
+            />
           </div>
+          {/* Teléfono y email de contacto del negocio no se piden en el
+              wizard de alta — quedan en blanco con placeholder hasta que
+              el flujo Fase 1 los recoja. */}
           <div className={s.field}>
             <label className={s.label} htmlFor="settings-phone">
               {t('general.phoneLabel')}
@@ -57,7 +73,8 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
               id="settings-phone"
               type="tel"
               className={s.input}
-              defaultValue="+34 932 11 22 33"
+              defaultValue=""
+              placeholder="+34 600 000 000"
             />
           </div>
           <div className={s.field}>
@@ -68,7 +85,8 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
               id="settings-email"
               type="email"
               className={s.input}
-              defaultValue="hola@ateliernorte.com"
+              defaultValue=""
+              placeholder="contacto@ejemplo.com"
             />
           </div>
         </div>
@@ -77,11 +95,7 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
           <label className={s.label} htmlFor="settings-description">
             {t('general.descriptionLabel')}
           </label>
-          <textarea
-            id="settings-description"
-            className={s.textarea}
-            defaultValue={provider.description[locale]}
-          />
+          <textarea id="settings-description" className={s.textarea} defaultValue={description} />
         </div>
       </article>
 
@@ -102,18 +116,34 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
           />
         </div>
 
+        {/* Ciudad y código postal no se guardan por separado en BD
+            (la dirección viene de Mapbox como string completo). Dejamos
+            los inputs vacíos con placeholder hasta que el flujo Fase 1
+            decida si descomponer o no la dirección. */}
         <div className={s.fieldGrid}>
           <div className={s.field}>
             <label className={s.label} htmlFor="settings-city">
               {t('address.cityLabel')}
             </label>
-            <input id="settings-city" type="text" className={s.input} defaultValue="Barcelona" />
+            <input
+              id="settings-city"
+              type="text"
+              className={s.input}
+              defaultValue=""
+              placeholder="Barcelona"
+            />
           </div>
           <div className={s.field}>
             <label className={s.label} htmlFor="settings-postal">
               {t('address.postalLabel')}
             </label>
-            <input id="settings-postal" type="text" className={s.input} defaultValue="08008" />
+            <input
+              id="settings-postal"
+              type="text"
+              className={s.input}
+              defaultValue=""
+              placeholder="08008"
+            />
           </div>
         </div>
       </article>

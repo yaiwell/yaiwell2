@@ -328,6 +328,10 @@
       "sidebarNavLabel": "Panel navigation",
       "bottomNavLabel": "Panel quick access"
     },
+    "mockBanner": {
+      "title": "Sample data",
+      "description": "This section still shows a demo. Your real data will appear here once we wire this feature to the backend."
+    },
     "dashboard": {
       "title": "Weekly overview",
       "subtitle": "Your week at a glance.",

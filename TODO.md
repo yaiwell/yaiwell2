@@ -120,6 +120,14 @@
       - [~] E2E con Playwright recorriendo los 5 pasos contra Supabase dev (2026-06-10): infra montada (`@clerk/testing` + `clerkSetup` + helpers `ensureTestProviderRole` / `cleanupTestProviderBD` + intercept Mapbox vía `page.route()`); spec `tests/e2e/onboarding-wizard.spec.ts` recorre tipo → datos → ubicación → categoría+servicio → publicar → redirect a `/panel`. **Pendiente del dev**: crear user provider de pruebas en dashboard de Clerk con email `<tu>+clerk_test@…` y password, pegar `CLERK_TEST_PROVIDER_EMAIL`/`PASSWORD` en `.env.local`. Instrucciones completas en `tests/e2e/README-onboarding.md`. Tras eso, `npm run test:e2e` debería pasar.
 - [ ] Panel admin con cola de verificación real.
 - [ ] Sistema de servicios con jerarquía de categorías editable.
+- [~] Panel del proveedor (`/panel/*`) sobre datos reales — queda pendiente persistencia + queries reales para 4 páginas que hoy llevan `MockDataBanner`.
+  - [x] `/panel/centro` lee Provider real desde BD (businessName, vatNumber, description, address, photos). Botón Guardar sigue siendo visual; persistencia en pendiente abajo (2026-06-11).
+  - [ ] `/panel` (dashboard): sustituir `fakePanelWeeklyMetrics` por agregaciones reales sobre `bookings` del provider activo (ingresos, reservas, ticket medio, ocupación). Empty state cuando el provider no tiene aún reservas en la semana en curso.
+  - [ ] `/panel/calendario`: sustituir `fakePanelBookings` por query de `bookings` del provider en la semana actual con joins a `services`/`professionals`.
+  - [ ] `/panel/servicios`: sustituir `fakePanelServices` por listado real de `Service` del provider activo (el servicio creado en el wizard debe aparecer aquí). Permitir crear/editar/eliminar — afecta al formulario `AddServiceForm` también mock.
+  - [ ] `/panel/valoraciones`: sustituir `fakePanelReviews` por listado real de `Review` recibidas por el provider, con filtros estrellas/periodo/sin respuesta y la acción "responder" del proveedor cableada a `replyToReview` (ya implementado en `review.service` 2026-06-03).
+  - [ ] Persistencia del botón "Guardar" en `/panel/centro`: pasar `ProviderSettings` a Client Component con server action `updateProviderSettings` (PATCH a Provider con validación Zod). Mientras tanto, el `savedNotice` lo advierte.
+  - [ ] Campos no recogidos en el wizard que el formulario de `/panel/centro` ya pinta vacíos con placeholder y necesitarán flujo: phone, email de contacto, city/postal separados, horario semanal. Decidir si city/postal se descomponen de `Provider.address` o se añaden como columnas extra.
 - [x] Motor de scheduling (slots de disponibilidad reales) — `availability.service` con tests vía Prisma mockeado (2026-06-03). Falta conectar a UI y al panel del proveedor.
 - [ ] Búsqueda geoespacial con PostGIS.
 - [~] Búsqueda con PostgreSQL full-text search (tsvector + pg_trgm para fuzzy matching).

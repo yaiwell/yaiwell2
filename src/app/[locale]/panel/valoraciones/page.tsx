@@ -3,6 +3,7 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 
 import { ReceivedReviews } from '@/components/features/provider-panel/ReceivedReviews';
+import { MockDataBanner } from '@/components/shared/MockDataBanner';
 import { routing } from '@/i18n/routing';
 import { fakePanelReviews } from '@/lib/fake-data/panel-reviews';
 
@@ -28,5 +29,10 @@ export default async function PanelReviewsPage({ params }: PanelReviewsPageProps
 
   const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
 
-  return <ReceivedReviews reviews={fakePanelReviews} locale={panelLocale} />;
+  return (
+    <div className="flex flex-col gap-6">
+      <MockDataBanner />
+      <ReceivedReviews reviews={fakePanelReviews} locale={panelLocale} />
+    </div>
+  );
 }
