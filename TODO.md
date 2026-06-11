@@ -30,10 +30,10 @@
 - [x] Crear cuenta Resend + verificar dominio para emails.
   - [x] SDK Resend + wrapper `sendEmail()` con errores tipados y 13 tests (2026-06-09).
   - [x] Cuenta Resend + verificación del dominio `yaiwell.com` confirmada por el dev (2026-06-09). Emails ya pueden salir desde `noreply@yaiwell.com`.
-- [~] Crear cuenta Mapbox + obtener token público.
+- [x] Crear cuenta Mapbox + obtener token público.
   - [x] Wrapper `src/lib/integrations/mapbox/` con `geocodeAddress` (forward) y `reverseGeocode`, errores tipados, 13 tests (2026-06-09).
-  - [ ] Crear cuenta Mapbox + pegar `NEXT_PUBLIC_MAPBOX_TOKEN` en `.env.local` (en curso por el dev).
-  - [ ] Sustituir dropdown estático del Hero (`any | near-me | barcelona | castellar | llica-vall`) por un autocomplete real con `geocodeAddress`. **Pieza de Fase 1** porque implica rediseño UX del Hero — el wrapper queda listo para enchufar.
+  - [x] Cuenta Mapbox creada + `NEXT_PUBLIC_MAPBOX_TOKEN` pegado en `.env.local` y validado con `geocodeAddress` real contra `api.mapbox.com/geocoding/v5` (200 OK, Passeig de Gràcia 92 geocodificado correctamente) (2026-06-11).
+  - [ ] **Fase 1**: sustituir dropdown estático del Hero (`any | near-me | barcelona | castellar | llica-vall`) por un autocomplete real con `geocodeAddress`. Requiere rediseño UX del Hero — el wrapper queda listo para enchufar (movido a Fase 1).
 - [~] Crear cuenta Sentry + integrar SDK en Next.js.
   - [x] SDK `@sentry/nextjs` + `instrumentation` (server/edge) + `instrumentation-client` + `global-error` + `withSentryConfig` con tunnel `/monitoring` + scrubbing de PII (`__session`, `stripe-signature`, `svix-*`, `email`) y filtrado de control-flow (`NEXT_REDIRECT`, `NEXT_NOT_FOUND`). 15 tests (2026-06-09).
   - [ ] Crear proyecto en Sentry y pegar `NEXT_PUBLIC_SENTRY_DSN` + `SENTRY_AUTH_TOKEN` + `SENTRY_ORG` + `SENTRY_PROJECT` en `.env.local`.
@@ -180,5 +180,5 @@
 
 ---
 
-*Última actualización: 2026-06-10 (Onboarding wizard #57 Capa 3 con i18n pulido + infra E2E lista (`@clerk/testing` + spec + helpers + intercept Mapbox). Pendiente: dev crea user provider de pruebas en Clerk dashboard y corre `npm run test:e2e` — instrucciones en `tests/e2e/README-onboarding.md`).*
+*Última actualización: 2026-06-11 (Mapbox: cuenta creada + token público pegado en `.env.local` y validado con llamada real al endpoint de geocoding. Bloque B operativo solo pendiente de Sentry y E2E del wizard).*
 

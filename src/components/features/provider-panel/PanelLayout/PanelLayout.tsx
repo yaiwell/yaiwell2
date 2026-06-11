@@ -1,3 +1,5 @@
+'use client';
+
 import { CalendarDays, LayoutDashboard, Scissors, Settings, Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -25,12 +27,18 @@ const navItems: PanelNavItem[] = [
  * - Mobile: oculta la sidebar y muestra una bottom tab bar flotante con
  *   los mismos accesos, situada justo encima del MobileNav global.
  *
- * Es un Server Component que delega el cálculo de "ruta activa" a los
- * sub-componentes cliente declarados en `PanelLayout.links.tsx`. La
- * extracción a otro módulo es obligatoria: un Server Component puede
- * renderizar componentes cliente, pero no puede llamar a hooks cliente
- * directamente (lo que rompió este layout en producción al invocar
- * `useIsActivePanelLink` desde funciones definidas aquí).
+ * Es un Client Component. Aunque el árbol no tiene estado propio, los
+ * `navItems` referencian iconos de Lucide (`forwardRef`) y se pasan a
+ * `PanelLayoutLink` / `PanelBottomNavLink` (clientes). Si este shell
+ * fuese Server Component, RSC intentaría serializar el icono como prop
+ * y rompería en producción con "Functions cannot be passed directly to
+ * Client Components" (digest 1621801304). Mantener todo el shell en
+ * cliente evita la frontera de serialización; el coste en bundle es
+ * nulo porque los iconos ya viajaban al cliente vía `PanelLayoutLink`.
+ *
+ * El cálculo de "ruta activa" sigue viviendo en `PanelLayout.links.tsx`
+ * porque cada link instancia `useIsActivePanelLink` (que llama a
+ * `usePathname`).
  */
 export function PanelLayout({ children, providerName }: PanelLayoutProps) {
   const tNav = useTranslations('providerPanel.nav');
