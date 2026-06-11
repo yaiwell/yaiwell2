@@ -317,14 +317,14 @@
   },
   "providerPanel": {
     "nav": {
-      "title": "Panel del centro",
+      "title": "Panel del negocio",
       "dashboard": "Resumen",
       "calendar": "Calendario",
       "services": "Servicios",
-      "settings": "Centro",
+      "settings": "Mi negocio",
       "reviews": "Valoraciones",
       "addService": "Añadir servicio",
-      "providerLabel": "Centro activo",
+      "providerLabel": "Negocio activo",
       "sidebarNavLabel": "Navegación del panel",
       "bottomNavLabel": "Accesos rápidos del panel"
     },
@@ -436,7 +436,7 @@
       "mockNotice": "Este formulario aún no guarda nada. La publicación real llegará con el backend de servicios."
     },
     "settings": {
-      "title": "Configuración del centro",
+      "title": "Configuración del negocio",
       "subtitle": "Datos públicos y operativos de tu negocio.",
       "general": {
         "title": "Datos generales",

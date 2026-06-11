@@ -317,14 +317,14 @@
   },
   "providerPanel": {
     "nav": {
-      "title": "Panell del centre",
+      "title": "Panell del negoci",
       "dashboard": "Resum",
       "calendar": "Calendari",
       "services": "Serveis",
-      "settings": "Centre",
+      "settings": "El meu negoci",
       "reviews": "Valoracions",
       "addService": "Afegir servei",
-      "providerLabel": "Centre actiu",
+      "providerLabel": "Negoci actiu",
       "sidebarNavLabel": "Navegació del panell",
       "bottomNavLabel": "Accessos ràpids del panell"
     },
@@ -436,7 +436,7 @@
       "mockNotice": "Aquest formulari encara no desa res. La publicació real arribarà amb el backend de serveis."
     },
     "settings": {
-      "title": "Configuració del centre",
+      "title": "Configuració del negoci",
       "subtitle": "Dades públiques i operatives del teu negoci.",
       "general": {
         "title": "Dades generals",

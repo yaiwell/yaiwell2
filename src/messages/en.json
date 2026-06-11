@@ -317,14 +317,14 @@
   },
   "providerPanel": {
     "nav": {
-      "title": "Centre panel",
+      "title": "Business panel",
       "dashboard": "Overview",
       "calendar": "Calendar",
       "services": "Services",
-      "settings": "Centre",
+      "settings": "My business",
       "reviews": "Reviews",
       "addService": "Add service",
-      "providerLabel": "Active centre",
+      "providerLabel": "Active business",
       "sidebarNavLabel": "Panel navigation",
       "bottomNavLabel": "Panel quick access"
     },
@@ -436,7 +436,7 @@
       "mockNotice": "This form doesn't save anything yet. Real publishing will arrive with the services backend."
     },
     "settings": {
-      "title": "Centre settings",
+      "title": "Business settings",
       "subtitle": "Public and operational details of your business.",
       "general": {
         "title": "General details",

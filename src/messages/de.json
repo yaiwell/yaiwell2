@@ -317,14 +317,14 @@
   },
   "providerPanel": {
     "nav": {
-      "title": "Studio-Panel",
+      "title": "Geschäftsbereich",
       "dashboard": "Übersicht",
       "calendar": "Kalender",
       "services": "Services",
-      "settings": "Studio",
+      "settings": "Mein Geschäft",
       "reviews": "Bewertungen",
       "addService": "Service hinzufügen",
-      "providerLabel": "Aktives Studio",
+      "providerLabel": "Aktives Geschäft",
       "sidebarNavLabel": "Panel-Navigation",
       "bottomNavLabel": "Schnellzugriffe im Panel"
     },
@@ -436,7 +436,7 @@
       "mockNotice": "Dieses Formular speichert noch nichts. Die echte Veröffentlichung kommt mit dem Service-Backend."
     },
     "settings": {
-      "title": "Studio-Einstellungen",
+      "title": "Geschäftseinstellungen",
       "subtitle": "Öffentliche und operative Daten deines Geschäfts.",
       "general": {
         "title": "Allgemeine Daten",
