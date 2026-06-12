@@ -2,9 +2,9 @@ import {
   PANEL_CALENDAR_END_HOUR,
   PANEL_CALENDAR_START_HOUR,
   type PanelBooking,
-} from '@/lib/fake-data/panel-bookings';
-
-import type { PositionedBooking, WeekdayKey } from './WeeklyCalendar.types';
+  type PositionedBooking,
+  type WeekdayKey,
+} from './WeeklyCalendar.types';
 
 /**
  * Orden visible de los días en la cabecera del calendario.

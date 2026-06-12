@@ -1,13 +1,12 @@
 import { useTranslations } from 'next-intl';
 
-import type { PanelBookingStatus } from '@/lib/fake-data/panel-bookings';
-
 import {
   WEEKDAY_KEYS,
   formatHourLabel,
   getHoursRange,
   groupBookingsByWeekday,
 } from './WeeklyCalendar.logic';
+import type { PanelBookingStatus } from './WeeklyCalendar.types';
 import {
   bookingBlockByStatus,
   legendDotByStatus,

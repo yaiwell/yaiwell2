@@ -1,35 +1,21 @@
 /**
  * Reservas ficticias de la semana actual para el panel del proveedor.
  *
- * Las fechas se calculan relativas a un anchor fijo (`REFERENCE_MONDAY`)
- * para que la demo sea determinista entre renders y entre máquinas.
- * En producción vendrán de `Booking.findMany` filtrado por providerId
- * y rango `startAt` semanal.
+ * El calendario real (`/panel/calendario`) ya consulta BD desde
+ * 2026-06-12. Este módulo se mantiene como fixture de tests; los
+ * tipos viven junto al componente que los consume.
  */
 
-/** Estado de una reserva, alineado con `BookingStatus` del dominio. */
-export type PanelBookingStatus = 'confirmed' | 'pending' | 'completed' | 'cancelled';
+import {
+  PANEL_CALENDAR_END_HOUR,
+  PANEL_CALENDAR_START_HOUR,
+  type PanelBooking,
+  type PanelBookingStatus,
+} from '@/components/features/provider-panel/WeeklyCalendar/WeeklyCalendar.types';
 
-/**
- * Reserva tal y como se pinta en el calendario semanal del panel.
- *
- * El profesional es opcional porque para autónomos no aplica
- * desambiguar (siempre es la misma persona).
- */
-export interface PanelBooking {
-  id: string;
-  /** Día de la semana en que cae (0 = lunes, 6 = domingo). */
-  weekday: 0 | 1 | 2 | 3 | 4 | 5 | 6;
-  /** Hora de inicio en formato 24h (`HH:mm`). */
-  startTime: string;
-  /** Hora de fin en formato 24h (`HH:mm`). */
-  endTime: string;
-  clientName: string;
-  serviceName: string;
-  professionalName: string | null;
-  status: PanelBookingStatus;
-  priceCents: number;
-}
+// Re-export para no romper imports antiguos.
+export type { PanelBooking, PanelBookingStatus };
+export { PANEL_CALENDAR_START_HOUR, PANEL_CALENDAR_END_HOUR };
 
 /**
  * 20 reservas distribuidas por la semana del proveedor activo.
@@ -271,14 +257,3 @@ export const fakePanelBookings: PanelBooking[] = [
     priceCents: 5500,
   },
 ];
-
-/**
- * Rango horario que pinta el calendario semanal del panel.
- *
- * Fijamos un rango razonable (08:00 a 21:00) que cubre la mayoría de
- * horarios comerciales sin sobrecargar la cuadrícula. La hora de inicio
- * y fin se exportan como constantes para reutilizar tanto en el render
- * de la cuadrícula como en cálculos de posicionamiento.
- */
-export const PANEL_CALENDAR_START_HOUR = 8;
-export const PANEL_CALENDAR_END_HOUR = 21;
