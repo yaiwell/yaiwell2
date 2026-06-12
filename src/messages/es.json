@@ -478,6 +478,11 @@
         "addCta": "Subir nueva foto",
         "altLabel": "Foto del centro {index}"
       },
+      "multiBusiness": {
+        "title": "Añadir otro negocio",
+        "description": "Pronto podrás gestionar varios locales o cuentas profesionales desde el mismo panel.",
+        "cta": "Añadir negocio"
+      },
       "save": "Guardar cambios",
       "savedNotice": "Los cambios se guardarán cuando conectemos el backend del panel."
     },

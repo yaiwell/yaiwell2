@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Building2, Plus } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
@@ -22,6 +22,7 @@ import type { ProviderSettingsProps } from './ProviderSettings.types';
  */
 export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
   const t = useTranslations('providerPanel.settings');
+  const tCommon = useTranslations('common');
   // `pickLocalized` aplica fallback locale → es si el JSON no tiene
   // la lengua actual (los providers nuevos solo guardan ES/CA).
   const description = pickLocalized(provider.description, locale);
@@ -219,6 +220,35 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
           </button>
         </div>
       </article>
+
+      {/* Card "Próximamente": añadir otro negocio. Visible siempre — el
+          mensaje es neutro para autónomos y centros. La feature
+          multi-negocio entra en Fase 1 (CLAUDE.md §10). */}
+      <aside
+        className={s.multiBusinessCard}
+        data-component="provider-settings-multi-business"
+        aria-labelledby="multi-business-title"
+      >
+        <div className={s.multiBusinessInfo}>
+          <h2 id="multi-business-title" className={s.multiBusinessTitle}>
+            <Building2 className="size-5" aria-hidden />
+            {t('multiBusiness.title')}
+            <span className={s.multiBusinessChip}>{tCommon('comingSoon')}</span>
+          </h2>
+          <p className={s.multiBusinessDescription}>{t('multiBusiness.description')}</p>
+        </div>
+        <button
+          type="button"
+          className={s.multiBusinessButton}
+          aria-disabled="true"
+          disabled
+          data-component="provider-settings-add-business"
+          title={tCommon('comingSoon')}
+        >
+          <Plus className="size-4" aria-hidden />
+          {t('multiBusiness.cta')}
+        </button>
+      </aside>
 
       <p className={s.notice}>{t('savedNotice')}</p>
 

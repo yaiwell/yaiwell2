@@ -40,4 +40,18 @@ export const providerSettingsStyles = {
   notice:
     'rounded-2xl border border-dashed border-border bg-muted/40 p-3 text-xs text-muted-foreground',
   actions: 'flex justify-end',
+
+  // Card "Próximamente" para añadir otro negocio. Visualmente más
+  // ligero que las cards de formulario (`bg-muted/40` en vez de
+  // `bg-card`) para que se lea como roadmap, no como funcionalidad
+  // activa. El botón queda deshabilitado pero clickable visualmente.
+  multiBusinessCard:
+    'flex flex-col gap-3 rounded-3xl border border-dashed border-border/60 bg-muted/40 p-6 sm:flex-row sm:items-center sm:justify-between',
+  multiBusinessInfo: 'flex flex-col gap-1',
+  multiBusinessTitle: 'flex items-center gap-2 font-display text-lg text-foreground',
+  multiBusinessChip:
+    'rounded-full bg-background px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground',
+  multiBusinessDescription: 'text-sm text-muted-foreground',
+  multiBusinessButton:
+    'inline-flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-full border border-border/60 bg-background px-5 py-2.5 text-sm font-medium text-muted-foreground sm:w-auto',
 } as const;

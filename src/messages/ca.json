@@ -478,6 +478,11 @@
         "addCta": "Pujar nova foto",
         "altLabel": "Foto del centre {index}"
       },
+      "multiBusiness": {
+        "title": "Afegir un altre negoci",
+        "description": "Aviat podràs gestionar diversos locals o comptes professionals des del mateix panell.",
+        "cta": "Afegir negoci"
+      },
       "save": "Desar canvis",
       "savedNotice": "Els canvis es desaran quan connectem el backend del panell."
     },

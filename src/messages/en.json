@@ -478,6 +478,11 @@
         "addCta": "Upload new photo",
         "altLabel": "Centre photo {index}"
       },
+      "multiBusiness": {
+        "title": "Add another business",
+        "description": "Soon you'll be able to manage several venues or professional accounts from the same panel.",
+        "cta": "Add business"
+      },
       "save": "Save changes",
       "savedNotice": "Changes will be saved once we connect the panel backend."
     },

@@ -478,6 +478,11 @@
         "addCta": "Neues Foto hochladen",
         "altLabel": "Foto des Studios {index}"
       },
+      "multiBusiness": {
+        "title": "Weiteres Geschäft hinzufügen",
+        "description": "Bald kannst du mehrere Standorte oder Profikonten vom selben Panel aus verwalten.",
+        "cta": "Geschäft hinzufügen"
+      },
       "save": "Änderungen speichern",
       "savedNotice": "Die Änderungen werden gespeichert, sobald das Panel-Backend angebunden ist."
     },
