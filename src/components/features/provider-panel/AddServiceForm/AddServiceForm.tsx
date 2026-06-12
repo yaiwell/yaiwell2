@@ -2,10 +2,12 @@
 
 import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { type FormEvent } from 'react';
+import { useState, useTransition, type FormEvent } from 'react';
 
+import { createServiceAction } from '@/app/[locale]/panel/servicios/nuevo/actions';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
+import type { AppLocale } from '@/i18n/routing';
 
 import { useAddServiceForm } from './AddServiceForm.logic';
 import { addServiceFormStyles as s } from './AddServiceForm.styles';
@@ -21,7 +23,7 @@ import type { AddServiceFormProps } from './AddServiceForm.types';
  * El envío todavía no persiste nada (mock visual). Cuando exista API
  * real bastará con cambiar el handler `onSubmit` por una server action.
  */
-export function AddServiceForm({ locale }: AddServiceFormProps) {
+export function AddServiceForm({ locale, categoriesTree }: AddServiceFormProps) {
   const t = useTranslations('providerPanel.addService');
   const {
     draft,
@@ -33,13 +35,38 @@ export function AddServiceForm({ locale }: AddServiceFormProps) {
     selectSubtype,
     updateField,
     reset,
-  } = useAddServiceForm();
+  } = useAddServiceForm(categoriesTree);
 
-  // De momento el submit solo limpia el formulario; cuando exista API
-  // real, aquí dispararemos la mutación correspondiente.
+  // Estado para feedback del submit. `isPending` activa loading del CTA
+  // y `submitError` enseña un banner inline si la action devuelve `ok: false`.
+  const [isPending, startTransition] = useTransition();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  /**
+   * Disparador del alta real: empaqueta el draft y lo manda a la
+   * server action `createServiceAction`. Si triunfa, la action hace
+   * `redirect` server-side a `/panel/servicios` y este handler nunca
+   * llega a ver `ok: true` (la promesa se aborta). Si falla, mostramos
+   * el mensaje localizado tipo `errors.{code}`.
+   */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    reset();
+    setSubmitError(null);
+    startTransition(async () => {
+      const result = await createServiceAction(locale as AppLocale, {
+        rootCategoryId: draft.rootCategoryId,
+        typeId: draft.typeId,
+        subtypeId: draft.subtypeId,
+        name: draft.name,
+        description: draft.description,
+        durationMinutes: draft.durationMinutes,
+        priceEuros: draft.priceEuros,
+      });
+      if (result && !result.ok) {
+        const key = `errors.${result.code}` as const;
+        setSubmitError(result.message ?? t(key));
+      }
+    });
   }
 
   return (
@@ -201,14 +228,24 @@ export function AddServiceForm({ locale }: AddServiceFormProps) {
         </div>
       </section>
 
-      <p className={s.notice}>{t('mockNotice')}</p>
+      {submitError ? (
+        <p className={s.notice} role="alert" data-component="add-service-error">
+          {submitError}
+        </p>
+      ) : null}
 
       <div className={s.actions}>
-        <Button type="button" variant="ghost" onClick={reset} data-component="add-service-cancel">
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={reset}
+          disabled={isPending}
+          data-component="add-service-cancel"
+        >
           {t('cancel')}
         </Button>
-        <Button type="submit" size="lg" data-component="add-service-submit">
-          {t('submit')}
+        <Button type="submit" size="lg" disabled={isPending} data-component="add-service-submit">
+          {isPending ? t('submitting') : t('submit')}
         </Button>
       </div>
     </form>

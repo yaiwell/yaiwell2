@@ -436,8 +436,14 @@
         "priceLabel": "Preis (€)"
       },
       "submit": "Service veröffentlichen",
+      "submitting": "Wird veröffentlicht…",
       "cancel": "Abbrechen",
-      "mockNotice": "Dieses Formular speichert noch nichts. Die echte Veröffentlichung kommt mit dem Service-Backend."
+      "errors": {
+        "VALIDATION": "Bitte überprüfe die Formularfelder.",
+        "CATEGORY_NOT_FOUND": "Die ausgewählte Kategorie existiert nicht mehr. Bitte erneut wählen.",
+        "PROVIDER_NOT_FOUND": "Wir konnten dein Geschäft nicht finden. Bitte lade die Seite neu.",
+        "INTERNAL": "Service konnte nicht veröffentlicht werden. Versuche es in einigen Sekunden erneut."
+      }
     },
     "settings": {
       "title": "Geschäftseinstellungen",

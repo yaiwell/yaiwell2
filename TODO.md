@@ -126,7 +126,12 @@
   - [x] `/panel/calendario`: query real de bookings de la semana actual con joins (client/service/professional) y mapping en timezone Europe/Madrid (2026-06-12).
   - [x] `/panel/servicios`: listado real de Services del provider con conteo de bookings últimos 30 días por servicio (2026-06-12). El estado "paused" llega siempre como `'active'` porque BD no tiene columna; cuando se añada `Service.isActive` se mapea.
   - [x] `/panel/valoraciones`: listado real de Reviews del provider con joins a author/service (2026-06-12). Falta cablear la acción "responder" del proveedor al `replyToReview` ya existente (subitem aparte abajo).
-  - [ ] **CRUD de servicios** desde `/panel/servicios` (crear nuevo, editar, pausar/reactivar, eliminar). Afecta a `AddServiceForm` (todavía mock) y al estado `paused` que aún no existe en BD.
+  - [~] **CRUD de servicios** desde `/panel/servicios`:
+    - [x] **Crear nuevo** (`/panel/servicios/nuevo`): formulario cableado a server action `createServiceAction` reutilizando `createFirstServiceForProvider` del módulo de onboarding (validación Zod + ownership + creación en BD). Categorías cargadas server-side desde BD vía `getCategoriesTree` (jerarquía 3 niveles). `LocalizedText` se rellena solo en el locale activo; el resto de idiomas se completan más adelante con editor de traducciones (2026-06-12).
+    - [ ] **Editar** servicio existente (formulario reutilizable + server action `updateServiceAction`).
+    - [ ] **Pausar/reactivar** servicio. Requiere añadir `Service.isActive` o equivalente al schema; mientras tanto el listado del panel pinta todos como `'active'` y el botón es no-op.
+    - [ ] **Eliminar** servicio (soft delete via `deletedAt`). Confirmación modal + server action.
+    - [ ] **Refactor**: renombrar `createFirstServiceForProvider` a `createServiceForProvider` o similar — el "first" es histórico, la función ya se reutiliza fuera del onboarding.
   - [ ] **Acción "responder a reseña"** en `/panel/valoraciones`: cablear el botón al server action que llame a `replyToReview` (ya implementado en `review.service` desde 2026-06-03). Requiere pasar ese trozo del componente a Client Component con form action.
   - [ ] **Persistencia del botón "Guardar"** en `/panel/centro`: pasar `ProviderSettings` a Client Component con server action `updateProviderSettings` (PATCH a Provider con validación Zod). Mientras tanto, el `savedNotice` lo advierte.
   - [ ] **Cálculo de ocupación** en `/panel` (dashboard) basado en `Professional.schedule` (horas trabajables / día) vs horas reservadas. Hoy queda en 0%.

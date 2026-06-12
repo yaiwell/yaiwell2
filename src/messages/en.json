@@ -436,8 +436,14 @@
         "priceLabel": "Price (€)"
       },
       "submit": "Publish service",
+      "submitting": "Publishing…",
       "cancel": "Cancel",
-      "mockNotice": "This form doesn't save anything yet. Real publishing will arrive with the services backend."
+      "errors": {
+        "VALIDATION": "Please review the form fields.",
+        "CATEGORY_NOT_FOUND": "The selected category no longer exists. Pick it again.",
+        "PROVIDER_NOT_FOUND": "We couldn't find your business. Please reload the page.",
+        "INTERNAL": "Couldn't publish the service. Try again in a few seconds."
+      }
     },
     "settings": {
       "title": "Business settings",

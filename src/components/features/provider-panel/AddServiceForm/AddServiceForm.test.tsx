@@ -1,9 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+import { categoriesHierarchy } from '@/lib/fake-data/categories-hierarchy';
 
 import { AddServiceForm } from './AddServiceForm';
+
+// Mock de la server action — el módulo importa `auth` de @clerk/nextjs/server
+// y otros símbolos `server-only` que romperían el render en happy-dom.
+vi.mock('@/app/[locale]/panel/servicios/nuevo/actions', () => ({
+  createServiceAction: vi.fn(async () => ({ ok: true as const })),
+}));
 
 const messages = {
   providerPanel: {
@@ -34,8 +42,14 @@ const messages = {
         priceLabel: 'Precio (€)',
       },
       submit: 'Publicar servicio',
+      submitting: 'Publicando…',
       cancel: 'Cancelar',
-      mockNotice: 'Mock notice.',
+      errors: {
+        VALIDATION: 'Revisa los campos.',
+        CATEGORY_NOT_FOUND: 'Categoría no existe.',
+        PROVIDER_NOT_FOUND: 'Negocio no encontrado.',
+        INTERNAL: 'Error interno.',
+      },
     },
   },
 };
@@ -43,7 +57,7 @@ const messages = {
 function renderForm() {
   return render(
     <NextIntlClientProvider locale="es" messages={messages}>
-      <AddServiceForm locale="es" />
+      <AddServiceForm locale="es" categoriesTree={categoriesHierarchy} />
     </NextIntlClientProvider>,
   );
 }

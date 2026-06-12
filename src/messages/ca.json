@@ -436,8 +436,14 @@
         "priceLabel": "Preu (€)"
       },
       "submit": "Publicar servei",
+      "submitting": "Publicant…",
       "cancel": "Cancel·lar",
-      "mockNotice": "Aquest formulari encara no desa res. La publicació real arribarà amb el backend de serveis."
+      "errors": {
+        "VALIDATION": "Revisa els camps del formulari.",
+        "CATEGORY_NOT_FOUND": "La categoria seleccionada ja no existeix. Torna-la a triar.",
+        "PROVIDER_NOT_FOUND": "No hem pogut localitzar el teu negoci. Recarrega la pàgina.",
+        "INTERNAL": "No s'ha pogut publicar el servei. Torna-ho a provar en uns segons."
+      }
     },
     "settings": {
       "title": "Configuració del negoci",

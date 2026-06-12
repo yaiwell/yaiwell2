@@ -436,8 +436,14 @@
         "priceLabel": "Precio (€)"
       },
       "submit": "Publicar servicio",
+      "submitting": "Publicando…",
       "cancel": "Cancelar",
-      "mockNotice": "Este formulario aún no guarda nada. La publicación real llegará con el backend de servicios."
+      "errors": {
+        "VALIDATION": "Revisa los campos del formulario.",
+        "CATEGORY_NOT_FOUND": "La categoría seleccionada ya no existe. Vuelve a elegirla.",
+        "PROVIDER_NOT_FOUND": "No hemos podido localizar tu negocio. Recarga la página.",
+        "INTERNAL": "No se ha podido publicar el servicio. Inténtalo de nuevo en unos segundos."
+      }
     },
     "settings": {
       "title": "Configuración del negocio",

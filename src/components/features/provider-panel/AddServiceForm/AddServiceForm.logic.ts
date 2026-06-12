@@ -2,13 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 
-import {
-  categoriesHierarchy,
-  type CategoryRoot,
-  type CategoryType,
-} from '@/lib/fake-data/categories-hierarchy';
-
-import type { AddServiceDraft } from './AddServiceForm.types';
+import type { AddServiceDraft, CategoryRoot, CategoryType } from './AddServiceForm.types';
 
 /**
  * Estado inicial vacío del borrador de servicio.
@@ -33,19 +27,19 @@ const EMPTY_DRAFT: AddServiceDraft = {
  *  - cálculo de las opciones disponibles en cada nivel;
  *  - actualización de los campos de detalle (nombre, duración, precio).
  *
- * No persiste todavía: el `submit` solo limpia el draft. Cuando exista
- * API real, este hook expondrá un `submit` async con loading/error.
+ * El árbol de categorías llega por argumento desde el componente para
+ * que la fuente de verdad sea la página server-side (BD) y no un fake.
  */
-export function useAddServiceForm() {
+export function useAddServiceForm(categoriesTree: CategoryRoot[]) {
   const [draft, setDraft] = useState<AddServiceDraft>(EMPTY_DRAFT);
 
-  const rootOptions: CategoryRoot[] = categoriesHierarchy;
+  const rootOptions: CategoryRoot[] = categoriesTree;
 
   const typeOptions: CategoryType[] = useMemo(() => {
     if (!draft.rootCategoryId) return [];
-    const root = categoriesHierarchy.find((r) => r.id === draft.rootCategoryId);
+    const root = categoriesTree.find((r) => r.id === draft.rootCategoryId);
     return root?.types ?? [];
-  }, [draft.rootCategoryId]);
+  }, [categoriesTree, draft.rootCategoryId]);
 
   const subtypeOptions = useMemo(() => {
     if (!draft.typeId) return [];
