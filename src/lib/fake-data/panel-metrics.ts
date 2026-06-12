@@ -1,56 +1,22 @@
 /**
  * Métricas ficticias del dashboard del proveedor.
  *
- * Cifras calibradas a un centro pequeño/medio de Barcelona durante una
- * semana laboral típica. Todo en céntimos para mantener coherencia con
- * el resto del catálogo (`Service.priceCents`).
- *
- * Valores fijos (no aleatorios) para que la demo sea determinista entre
- * renders y entre máquinas. En producción se calcularán desde las
- * tablas `Booking` y `Service` filtradas por proveedor y rango temporal.
+ * El dashboard real (`/panel`) ya computa estos números desde BD desde
+ * 2026-06-12 vía `dashboard-metrics.service`. Este módulo se mantiene
+ * como **fixture de tests** del componente `DashboardMetrics`; los
+ * tipos viven junto al componente que los consume.
  */
 
-/** Punto de datos para la gráfica simple de ingresos por día. */
-export interface PanelDailyRevenuePoint {
-  /** Día abreviado (lunes a domingo) en clave i18n: `mon`, `tue`, etc. */
-  dayKey: 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
-  revenueCents: number;
-  bookingsCount: number;
-}
+import type {
+  PanelDailyRevenuePoint,
+  PanelTopService,
+  PanelWeeklyMetrics,
+} from '@/components/features/provider-panel/DashboardMetrics/DashboardMetrics.types';
+import { getMaxDailyRevenueCents } from '@/components/features/provider-panel/DashboardMetrics/DashboardMetrics.logic';
 
-/** Resumen de un servicio top del proveedor (ranking semanal). */
-export interface PanelTopService {
-  serviceId: string;
-  /**
-   * Nombre ya localizado para ahorrar lookups en la UI. Solo se rellenan
-   * es/ca en fake data; en/de son opcionales y la UI hace fallback a es
-   * vía `pickLocalized`.
-   */
-  name: { es: string; ca: string; en?: string; de?: string };
-  bookingsCount: number;
-  revenueCents: number;
-}
-
-/** Snapshot completo de métricas semanales mostradas en el dashboard. */
-export interface PanelWeeklyMetrics {
-  /** Ingresos totales de la semana en céntimos. */
-  weekRevenueCents: number;
-  /** Variación porcentual respecto a la semana anterior. */
-  weekRevenueDeltaPct: number;
-  /** Número total de reservas de la semana. */
-  weekBookingsCount: number;
-  weekBookingsDeltaPct: number;
-  /** Ticket medio (revenue / bookings). */
-  averageTicketCents: number;
-  averageTicketDeltaPct: number;
-  /** Ocupación: % de slots ocupados sobre el total disponible (0-100). */
-  occupancyPct: number;
-  occupancyDeltaPct: number;
-  /** Serie diaria para la mini-gráfica. */
-  dailyRevenue: PanelDailyRevenuePoint[];
-  /** Top 4 servicios más reservados. */
-  topServices: PanelTopService[];
-}
+// Re-export para no romper imports antiguos.
+export type { PanelDailyRevenuePoint, PanelTopService, PanelWeeklyMetrics };
+export { getMaxDailyRevenueCents };
 
 /**
  * Métricas semanales del proveedor activo (mock — siempre `prov-01`).
@@ -104,16 +70,3 @@ export const fakePanelWeeklyMetrics: PanelWeeklyMetrics = {
     },
   ],
 };
-
-/**
- * Devuelve el valor máximo de ingresos diarios de la serie semanal.
- *
- * Útil para escalar las barras de la mini-gráfica en porcentaje del
- * máximo, sin tener que recorrer la serie en el componente.
- */
-export function getMaxDailyRevenueCents(metrics: PanelWeeklyMetrics): number {
-  return metrics.dailyRevenue.reduce(
-    (max, point) => (point.revenueCents > max ? point.revenueCents : max),
-    0,
-  );
-}

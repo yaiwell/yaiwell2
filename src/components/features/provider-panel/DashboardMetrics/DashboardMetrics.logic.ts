@@ -1,4 +1,17 @@
-import type { SupportedLocale } from './DashboardMetrics.types';
+import type { PanelWeeklyMetrics, SupportedLocale } from './DashboardMetrics.types';
+
+/**
+ * Devuelve el valor máximo de ingresos diarios de la serie semanal.
+ *
+ * Útil para escalar las barras de la mini-gráfica en porcentaje del
+ * máximo sin tener que recorrer la serie en el componente.
+ */
+export function getMaxDailyRevenueCents(metrics: PanelWeeklyMetrics): number {
+  return metrics.dailyRevenue.reduce(
+    (max, point) => (point.revenueCents > max ? point.revenueCents : max),
+    0,
+  );
+}
 
 /**
  * Formatea un valor en céntimos como precio localizado (es-ES / ca-ES).

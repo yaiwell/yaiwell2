@@ -2,12 +2,12 @@ import { ArrowDownRight, ArrowUpRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { pickLocalized } from '@/lib/i18n';
-import { getMaxDailyRevenueCents } from '@/lib/fake-data/panel-metrics';
 
 import {
   computeBarHeightPct,
   formatCurrencyFromCents,
   formatDeltaPct,
+  getMaxDailyRevenueCents,
 } from './DashboardMetrics.logic';
 import { dashboardMetricsStyles as s } from './DashboardMetrics.styles';
 import type { DashboardMetricsProps, SupportedLocale } from './DashboardMetrics.types';
