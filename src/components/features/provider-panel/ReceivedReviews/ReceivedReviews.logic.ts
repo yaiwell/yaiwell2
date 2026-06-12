@@ -2,9 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-import type { PanelReview } from '@/lib/fake-data/panel-reviews';
-
-import type { ReviewPeriod, ReviewsFilterState } from './ReceivedReviews.types';
+import type { PanelReview, ReviewPeriod, ReviewsFilterState } from './ReceivedReviews.types';
 
 /** Estado inicial: sin filtros, periodo amplio. */
 const INITIAL_FILTERS: ReviewsFilterState = {

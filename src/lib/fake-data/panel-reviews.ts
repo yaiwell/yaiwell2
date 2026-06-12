@@ -2,30 +2,18 @@
  * Reseñas ficticias recibidas por el proveedor activo, con respuestas
  * opcionales del propio centro.
  *
- * Sirven para alimentar la vista `/panel/valoraciones`. Mantienen forma
- * cercana al tipo `Review` del dominio pero añaden el campo `providerResponse`
- * y `serviceName` para que la lista del panel se pueda renderizar sin
- * lookups adicionales.
+ * El listado real (`/panel/valoraciones`) ya consulta BD desde
+ * 2026-06-12. Este módulo se mantiene como fixture de tests y los
+ * tipos viven junto al componente que los consume.
  */
 
-/** Respuesta del proveedor a una reseña. */
-export interface PanelReviewResponse {
-  text: string;
-  /** Fecha en que el proveedor publicó la respuesta. */
-  respondedAt: Date;
-}
+import type {
+  PanelReview,
+  PanelReviewResponse,
+} from '@/components/features/provider-panel/ReceivedReviews/ReceivedReviews.types';
 
-/** Reseña enriquecida tal como se muestra en el panel del proveedor. */
-export interface PanelReview {
-  id: string;
-  authorName: string;
-  rating: 1 | 2 | 3 | 4 | 5;
-  text: string;
-  serviceName: string;
-  createdAt: Date;
-  /** Respuesta del proveedor (si ya ha contestado). */
-  providerResponse: PanelReviewResponse | null;
-}
+// Re-export para no romper imports antiguos.
+export type { PanelReview, PanelReviewResponse };
 
 /**
  * Fecha de referencia para los `createdAt`. Fija para que la demo sea
