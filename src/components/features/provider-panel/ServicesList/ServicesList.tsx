@@ -77,15 +77,13 @@ export function ServicesList({ services, locale }: ServicesListProps) {
                     {formatCurrencyFromCents(service.priceCents, locale)}
                   </span>
                   <div className={s.cardActions}>
-                    {/* TODO siguiente commit: convertir en `Link` a
-                        `/panel/servicios/[id]/editar` cuando exista
-                        esa ruta. */}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      data-component={`services-list-edit-${service.id}`}
-                    >
-                      {t('edit')}
+                    <Button asChild variant="outline" size="sm">
+                      <Link
+                        href={`/panel/servicios/${service.id}/editar`}
+                        data-component={`services-list-edit-${service.id}`}
+                      >
+                        {t('edit')}
+                      </Link>
                     </Button>
                     <ServiceToggleButton
                       locale={locale}

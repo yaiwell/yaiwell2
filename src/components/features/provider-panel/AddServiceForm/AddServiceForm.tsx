@@ -4,7 +4,10 @@ import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState, useTransition, type FormEvent } from 'react';
 
-import { createServiceAction } from '@/app/[locale]/panel/servicios/nuevo/actions';
+import {
+  createServiceAction,
+  updateServiceAction,
+} from '@/app/[locale]/panel/servicios/nuevo/actions';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
 import type { AppLocale } from '@/i18n/routing';
@@ -23,7 +26,12 @@ import type { AddServiceFormProps } from './AddServiceForm.types';
  * El envío todavía no persiste nada (mock visual). Cuando exista API
  * real bastará con cambiar el handler `onSubmit` por una server action.
  */
-export function AddServiceForm({ locale, categoriesTree }: AddServiceFormProps) {
+export function AddServiceForm({
+  locale,
+  categoriesTree,
+  serviceId,
+  initialValues,
+}: AddServiceFormProps) {
   const t = useTranslations('providerPanel.addService');
   const {
     draft,
@@ -35,7 +43,12 @@ export function AddServiceForm({ locale, categoriesTree }: AddServiceFormProps) 
     selectSubtype,
     updateField,
     reset,
-  } = useAddServiceForm(categoriesTree);
+  } = useAddServiceForm(categoriesTree, initialValues);
+
+  // `serviceId` presente → modo edición. Cambia la action y los copy
+  // del título y CTA (todos vienen del namespace `addService` para no
+  // duplicar; los específicos de edit tienen prefijo `edit*`).
+  const isEditing = Boolean(serviceId);
 
   // Estado para feedback del submit. `isPending` activa loading del CTA
   // y `submitError` enseña un banner inline si la action devuelve `ok: false`.
@@ -53,7 +66,7 @@ export function AddServiceForm({ locale, categoriesTree }: AddServiceFormProps) 
     event.preventDefault();
     setSubmitError(null);
     startTransition(async () => {
-      const result = await createServiceAction(locale as AppLocale, {
+      const payload = {
         rootCategoryId: draft.rootCategoryId,
         typeId: draft.typeId,
         subtypeId: draft.subtypeId,
@@ -61,7 +74,10 @@ export function AddServiceForm({ locale, categoriesTree }: AddServiceFormProps) 
         description: draft.description,
         durationMinutes: draft.durationMinutes,
         priceEuros: draft.priceEuros,
-      });
+      };
+      const result = serviceId
+        ? await updateServiceAction(serviceId, locale as AppLocale, payload)
+        : await createServiceAction(locale as AppLocale, payload);
       if (result && !result.ok) {
         const key = `errors.${result.code}` as const;
         setSubmitError(result.message ?? t(key));
@@ -77,8 +93,8 @@ export function AddServiceForm({ locale, categoriesTree }: AddServiceFormProps) 
       </Link>
 
       <header>
-        <h1 className={s.title}>{t('title')}</h1>
-        <p className={s.subtitle}>{t('subtitle')}</p>
+        <h1 className={s.title}>{isEditing ? t('editTitle') : t('title')}</h1>
+        <p className={s.subtitle}>{isEditing ? t('editSubtitle') : t('subtitle')}</p>
       </header>
 
       <section className={s.card} data-component="add-service-category-card">
@@ -245,7 +261,13 @@ export function AddServiceForm({ locale, categoriesTree }: AddServiceFormProps) 
           {t('cancel')}
         </Button>
         <Button type="submit" size="lg" disabled={isPending} data-component="add-service-submit">
-          {isPending ? t('submitting') : t('submit')}
+          {isPending
+            ? isEditing
+              ? t('updating')
+              : t('submitting')
+            : isEditing
+              ? t('editSubmit')
+              : t('submit')}
         </Button>
       </div>
     </form>

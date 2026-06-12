@@ -438,12 +438,18 @@
       },
       "submit": "Publish service",
       "submitting": "Publishing…",
+      "editTitle": "Edit service",
+      "editSubtitle": "Update the service details. Changes apply instantly.",
+      "editSubmit": "Save changes",
+      "updating": "Saving…",
       "cancel": "Cancel",
       "errors": {
         "VALIDATION": "Please review the form fields.",
         "CATEGORY_NOT_FOUND": "The selected category no longer exists. Pick it again.",
         "PROVIDER_NOT_FOUND": "We couldn't find your business. Please reload the page.",
-        "INTERNAL": "Couldn't publish the service. Try again in a few seconds."
+        "SERVICE_NOT_FOUND": "This service no longer exists.",
+        "FORBIDDEN": "You don't have permission to edit this service.",
+        "INTERNAL": "Couldn't save. Try again in a few seconds."
       }
     },
     "settings": {

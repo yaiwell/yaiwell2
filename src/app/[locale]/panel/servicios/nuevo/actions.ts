@@ -8,12 +8,14 @@ import type { AppLocale } from '@/i18n/routing';
 import { auth } from '@clerk/nextjs/server';
 
 import { requireCurrentProvider } from '@/lib/auth/server';
+import { prisma } from '@/lib/db/prisma';
 import {
   CategoryNotFoundError,
   createFirstServiceForProvider,
   ProviderForOnboardingNotFoundError,
 } from '@/lib/services/provider-onboarding';
 import { ensureUserFromClerk } from '@/lib/services/user';
+import type { LocalizedText } from '@/types/domain';
 
 /**
  * Resultado serializable de la server action. El form lo recibe en su
@@ -30,7 +32,13 @@ export type CreateServiceActionState =
        * Código tipado para que el cliente decida copy. Mantenemos un
        * conjunto pequeño para no filtrar detalles internos.
        */
-      code: 'VALIDATION' | 'CATEGORY_NOT_FOUND' | 'PROVIDER_NOT_FOUND' | 'INTERNAL';
+      code:
+        | 'VALIDATION'
+        | 'CATEGORY_NOT_FOUND'
+        | 'PROVIDER_NOT_FOUND'
+        | 'SERVICE_NOT_FOUND'
+        | 'FORBIDDEN'
+        | 'INTERNAL';
       /** Mensaje legible opcional para mostrar al usuario. */
       message?: string;
     };
@@ -143,5 +151,120 @@ export async function createServiceAction(
 
   // `redirect` lanza un error especial de Next; este return solo existe
   // para satisfacer al type checker (nunca se ejecuta).
+  return { ok: true };
+}
+
+/**
+ * Server action de edición de un Service existente del provider activo.
+ *
+ * Reutiliza el mismo shape `RawInput` que el alta (mismo formulario),
+ * y aplica las mismas reglas de validación. La categoría se elige
+ * por la hoja más profunda seleccionada (subtype > type > root).
+ *
+ * Para el `LocalizedText`, **fusionamos** la entrada del locale activo
+ * con las claves existentes de los otros idiomas para no perderlas en
+ * la edición (un editor que solo escribe ES no debe borrar la versión
+ * CA que el usuario haya añadido en el futuro).
+ */
+export async function updateServiceAction(
+  serviceId: string,
+  locale: AppLocale,
+  raw: RawInput,
+): Promise<CreateServiceActionState> {
+  const { userId: clerkId } = await auth();
+  if (!clerkId) {
+    return { ok: false, code: 'PROVIDER_NOT_FOUND', message: 'No autenticado.' };
+  }
+
+  const { id: providerId } = await requireCurrentProvider(locale);
+
+  // Ownership: traemos el Service para verificar que pertenece al
+  // provider activo y para tener los `name`/`description` actuales —
+  // los necesitamos para fusionar el locale editado con el resto.
+  const existing = await prisma.service.findUnique({
+    where: { id: serviceId },
+    select: {
+      id: true,
+      providerId: true,
+      deletedAt: true,
+      name: true,
+      description: true,
+    },
+  });
+  if (!existing || existing.deletedAt) {
+    return { ok: false, code: 'SERVICE_NOT_FOUND' };
+  }
+  if (existing.providerId !== providerId) {
+    return { ok: false, code: 'FORBIDDEN' };
+  }
+
+  const categoryId = raw.subtypeId || raw.typeId || raw.rootCategoryId;
+  if (!categoryId) {
+    return {
+      ok: false,
+      code: 'VALIDATION',
+      message: 'Selecciona al menos una categoría.',
+    };
+  }
+
+  const durationMinutes = Number(raw.durationMinutes);
+  const priceCents = Math.round(Number(raw.priceEuros) * 100);
+
+  if (!Number.isFinite(durationMinutes) || durationMinutes < 5) {
+    return { ok: false, code: 'VALIDATION', message: 'Duración inválida.' };
+  }
+  if (!Number.isFinite(priceCents) || priceCents < 0) {
+    return { ok: false, code: 'VALIDATION', message: 'Precio inválido.' };
+  }
+
+  if (!raw.name.trim()) {
+    return { ok: false, code: 'VALIDATION', message: 'El nombre no puede estar vacío.' };
+  }
+
+  // Fusión defensiva: conservamos las claves de los demás idiomas
+  // (en/de/ca) que el usuario pudiera tener traducidas, y sobreescribimos
+  // solo la del locale activo. Si BD devuelve un JSON degenerado, lo
+  // tratamos como objeto vacío para arrancar limpio.
+  const existingName = (existing.name as unknown as LocalizedText) ?? {};
+  const existingDescription = (existing.description as unknown as LocalizedText) ?? {};
+
+  const nextName = { ...existingName, [locale]: raw.name.trim() };
+  const trimmedDescription = raw.description.trim();
+  const nextDescription = trimmedDescription
+    ? { ...existingDescription, [locale]: trimmedDescription }
+    : existingDescription;
+
+  // Verificamos la categoría existe antes de tocar BD. Sin esto, un
+  // categoryId obsoleto/inventado generaría un FK error opaco.
+  const category = await prisma.category.findUnique({
+    where: { id: categoryId },
+    select: { id: true },
+  });
+  if (!category) {
+    return { ok: false, code: 'CATEGORY_NOT_FOUND' };
+  }
+
+  try {
+    await prisma.service.update({
+      where: { id: serviceId },
+      data: {
+        categoryId,
+        name: nextName as unknown as object,
+        description: nextDescription as unknown as object,
+        durationMinutes,
+        priceCents,
+      },
+    });
+  } catch (err) {
+    if (err instanceof ZodError) {
+      return { ok: false, code: 'VALIDATION', message: err.issues[0]?.message };
+    }
+    console.error('[panel/servicios/[id]/editar] updateServiceAction error:', err);
+    return { ok: false, code: 'INTERNAL' };
+  }
+
+  revalidatePath(`/${locale}/panel/servicios`);
+  redirect({ href: '/panel/servicios', locale });
+
   return { ok: true };
 }

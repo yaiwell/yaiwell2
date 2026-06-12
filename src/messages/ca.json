@@ -438,12 +438,18 @@
       },
       "submit": "Publicar servei",
       "submitting": "Publicant…",
+      "editTitle": "Editar servei",
+      "editSubtitle": "Actualitza les dades del servei. Els canvis s'apliquen a l'instant.",
+      "editSubmit": "Desar canvis",
+      "updating": "Desant…",
       "cancel": "Cancel·lar",
       "errors": {
         "VALIDATION": "Revisa els camps del formulari.",
         "CATEGORY_NOT_FOUND": "La categoria seleccionada ja no existeix. Torna-la a triar.",
         "PROVIDER_NOT_FOUND": "No hem pogut localitzar el teu negoci. Recarrega la pàgina.",
-        "INTERNAL": "No s'ha pogut publicar el servei. Torna-ho a provar en uns segons."
+        "SERVICE_NOT_FOUND": "Aquest servei ja no existeix.",
+        "FORBIDDEN": "No tens permís per editar aquest servei.",
+        "INTERNAL": "No s'ha pogut desar. Torna-ho a provar en uns segons."
       }
     },
     "settings": {

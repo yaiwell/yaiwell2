@@ -26,19 +26,8 @@ export interface CategoryRoot {
   types: CategoryType[];
 }
 
-/** Props del formulario de alta de servicio. */
-export interface AddServiceFormProps {
-  locale: SupportedLocale;
-  /**
-   * Árbol completo de categorías cargado server-side desde BD. El form
-   * lo recibe por prop y nunca consulta BD desde cliente — la lista es
-   * estable y de tamaño pequeño (~60 entradas).
-   */
-  categoriesTree: CategoryRoot[];
-}
-
 /**
- * Borrador del nuevo servicio que se va construyendo en el formulario.
+ * Borrador del servicio que se va construyendo en el formulario.
  * Mantener todos los campos opcionales mientras el usuario los completa
  * facilita la lógica de cascada (categoría → tipo → subtipo).
  */
@@ -50,4 +39,26 @@ export interface AddServiceDraft {
   description: string;
   durationMinutes: string;
   priceEuros: string;
+}
+
+/** Props del formulario de alta/edición de servicio. */
+export interface AddServiceFormProps {
+  locale: SupportedLocale;
+  /**
+   * Árbol completo de categorías cargado server-side desde BD. El form
+   * lo recibe por prop y nunca consulta BD desde cliente — la lista es
+   * estable y de tamaño pequeño (~60 entradas).
+   */
+  categoriesTree: CategoryRoot[];
+  /**
+   * Si está presente, el formulario opera en modo edición sobre ese
+   * servicio. Si no, modo creación.
+   */
+  serviceId?: string;
+  /**
+   * Valores iniciales del draft. Si `serviceId` está presente, deben
+   * coincidir con los del Service en BD (la página servidora los pre-
+   * computa). En modo creación, undefined y el form arranca vacío.
+   */
+  initialValues?: AddServiceDraft;
 }
