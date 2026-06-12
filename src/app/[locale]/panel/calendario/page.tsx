@@ -2,13 +2,20 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import {
+  PanelPreviewToggle,
+  PreviewBanner,
+} from '@/components/features/provider-panel/PanelPreviewToggle';
 import { WeeklyCalendar } from '@/components/features/provider-panel/WeeklyCalendar';
 import type {
   PanelBooking,
   PanelBookingStatus,
 } from '@/components/features/provider-panel/WeeklyCalendar/WeeklyCalendar.types';
+import type { AppLocale } from '@/i18n/routing';
 import { requireCurrentProvider } from '@/lib/auth/server';
+import { isPanelPreviewActive } from '@/lib/auth/panel-preview';
 import { prisma } from '@/lib/db/prisma';
+import { fakePanelBookings } from '@/lib/fake-data/panel-bookings';
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
 import type { LocalizedText } from '@/types/domain';
 
@@ -105,48 +112,65 @@ export default async function PanelCalendarPage({ params }: PanelCalendarPagePro
   setRequestLocale(locale);
 
   const t = await getTranslations('providerPanel.calendar');
-  const { id: providerId } = await requireCurrentProvider(locale);
-  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
+  const tPreview = await getTranslations('providerPanel.preview');
+  const panelLocale = locale as AppLocale;
+  const preview = await isPanelPreviewActive();
 
-  const { start, end } = getCurrentWeekRange(new Date());
+  let bookings: PanelBooking[];
+  if (preview) {
+    bookings = fakePanelBookings;
+  } else {
+    const { id: providerId } = await requireCurrentProvider(panelLocale);
+    const { start, end } = getCurrentWeekRange(new Date());
 
-  const records = await prisma.booking.findMany({
-    where: {
-      providerId,
-      startAt: { gte: start, lt: end },
-    },
-    select: {
-      id: true,
-      startAt: true,
-      endAt: true,
-      status: true,
-      priceCents: true,
-      client: { select: { fullName: true, email: true } },
-      service: { select: { name: true } },
-      professional: { select: { name: true } },
-    },
-    orderBy: { startAt: 'asc' },
-  });
+    const records = await prisma.booking.findMany({
+      where: {
+        providerId,
+        startAt: { gte: start, lt: end },
+      },
+      select: {
+        id: true,
+        startAt: true,
+        endAt: true,
+        status: true,
+        priceCents: true,
+        client: { select: { fullName: true, email: true } },
+        service: { select: { name: true } },
+        professional: { select: { name: true } },
+      },
+      orderBy: { startAt: 'asc' },
+    });
 
-  const bookings: PanelBooking[] = records.map((r) => ({
-    id: r.id,
-    weekday: weekdayInMadrid(r.startAt),
-    startTime: timeInMadrid(r.startAt),
-    endTime: timeInMadrid(r.endAt),
-    clientName: r.client.fullName ?? r.client.email,
-    serviceName: pickLocalized(r.service.name as unknown as LocalizedText, panelLocale),
-    professionalName: r.professional?.name ?? null,
-    status: mapStatus(r.status),
-    priceCents: r.priceCents,
-  }));
+    bookings = records.map((r) => ({
+      id: r.id,
+      weekday: weekdayInMadrid(r.startAt),
+      startTime: timeInMadrid(r.startAt),
+      endTime: timeInMadrid(r.endAt),
+      clientName: r.client.fullName ?? r.client.email,
+      serviceName: pickLocalized(r.service.name as unknown as LocalizedText, panelLocale),
+      professionalName: r.professional?.name ?? null,
+      status: mapStatus(r.status),
+      priceCents: r.priceCents,
+    }));
+  }
 
   return (
     <section data-component="panel-calendar-page" className="flex flex-col gap-6">
-      <header className="flex flex-col gap-1">
-        <h1 className="font-display text-foreground text-2xl">{t('title')}</h1>
-        <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <h1 className="font-display text-foreground text-2xl">{t('title')}</h1>
+          <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
+        </div>
+        <PanelPreviewToggle
+          locale={panelLocale}
+          active={preview}
+          showLabel={tPreview('show')}
+          hideLabel={tPreview('hide')}
+          pendingLabel={tPreview('pending')}
+        />
       </header>
 
+      {preview ? <PreviewBanner /> : null}
       <WeeklyCalendar bookings={bookings} />
     </section>
   );

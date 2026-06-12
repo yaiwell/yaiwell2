@@ -332,6 +332,13 @@
       "title": "Datos de ejemplo",
       "description": "Esta sección aún muestra una demostración. Tus datos reales aparecerán cuando conectemos esta función con el backend."
     },
+    "preview": {
+      "show": "Ver con datos de ejemplo",
+      "hide": "Volver a mis datos reales",
+      "pending": "Cambiando…",
+      "bannerTitle": "Vista previa",
+      "bannerDescription": "Esto es una simulación para que veas cómo se verá tu panel cuando tengas datos reales. Puedes volver a tu vista normal en cualquier momento."
+    },
     "dashboard": {
       "title": "Resumen semanal",
       "subtitle": "Cómo va tu semana de un vistazo.",

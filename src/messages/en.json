@@ -332,6 +332,13 @@
       "title": "Sample data",
       "description": "This section still shows a demo. Your real data will appear here once we wire this feature to the backend."
     },
+    "preview": {
+      "show": "Preview with sample data",
+      "hide": "Back to my real data",
+      "pending": "Switching…",
+      "bannerTitle": "Preview mode",
+      "bannerDescription": "This is a simulation so you can see how your panel will look once you have real data. You can switch back to your normal view any time."
+    },
     "dashboard": {
       "title": "Weekly overview",
       "subtitle": "Your week at a glance.",

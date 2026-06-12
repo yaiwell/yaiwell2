@@ -332,6 +332,13 @@
       "title": "Beispieldaten",
       "description": "Dieser Bereich zeigt noch eine Demo. Deine echten Daten erscheinen hier, sobald wir diese Funktion mit dem Backend verbinden."
     },
+    "preview": {
+      "show": "Mit Beispieldaten ansehen",
+      "hide": "Zurück zu meinen echten Daten",
+      "pending": "Wird gewechselt…",
+      "bannerTitle": "Vorschau-Modus",
+      "bannerDescription": "Dies ist eine Simulation, damit du siehst, wie dein Panel mit echten Daten aussehen wird. Du kannst jederzeit zur normalen Ansicht zurückkehren."
+    },
     "dashboard": {
       "title": "Wochenübersicht",
       "subtitle": "Deine Woche auf einen Blick.",

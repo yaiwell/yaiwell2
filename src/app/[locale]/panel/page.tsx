@@ -1,9 +1,16 @@
 import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { DashboardMetrics } from '@/components/features/provider-panel/DashboardMetrics';
+import {
+  PanelPreviewToggle,
+  PreviewBanner,
+} from '@/components/features/provider-panel/PanelPreviewToggle';
+import type { AppLocale } from '@/i18n/routing';
 import { requireCurrentProvider } from '@/lib/auth/server';
+import { isPanelPreviewActive } from '@/lib/auth/panel-preview';
+import { fakePanelWeeklyMetrics } from '@/lib/fake-data/panel-metrics';
 import { getWeeklyMetrics } from '@/lib/services/provider-panel';
 
 interface PanelDashboardPageProps {
@@ -13,12 +20,16 @@ interface PanelDashboardPageProps {
 /**
  * Dashboard del panel del proveedor (`/panel`).
  *
- * Server Component que computa el snapshot semanal real desde BD
- * (ingresos, reservas, ticket medio, deltas vs semana anterior,
- * agregado diario, top servicios) y lo pasa al componente
- * `DashboardMetrics` para renderizar.
+ * Lee la cookie `yaiwell.panelPreview`: si está activa, renderiza el
+ * snapshot fake (útil para que un provider sin reservas vea cómo se
+ * verá el panel cuando llegue tracción). Si no, computa el snapshot
+ * real desde BD.
  *
- * La ocupación se queda en 0 hasta que tengamos cálculo basado en
+ * El toggle vive en el header de la página y comparte estado con las
+ * otras 2 páginas que también soportan preview (`/calendario` y
+ * `/valoraciones`).
+ *
+ * La ocupación real queda en 0 hasta cálculo basado en
  * Professional.schedule (Fase 1).
  */
 export default async function PanelDashboardPage({ params }: PanelDashboardPageProps) {
@@ -29,10 +40,32 @@ export default async function PanelDashboardPage({ params }: PanelDashboardPageP
   }
   setRequestLocale(locale);
 
-  const { id: providerId } = await requireCurrentProvider(locale);
-  const metrics = await getWeeklyMetrics(providerId);
+  const panelLocale = locale as AppLocale;
+  const preview = await isPanelPreviewActive();
 
-  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
+  let metrics;
+  if (preview) {
+    metrics = fakePanelWeeklyMetrics;
+  } else {
+    const { id: providerId } = await requireCurrentProvider(panelLocale);
+    metrics = await getWeeklyMetrics(providerId);
+  }
 
-  return <DashboardMetrics metrics={metrics} locale={panelLocale} />;
+  const tPreview = await getTranslations('providerPanel.preview');
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex justify-end">
+        <PanelPreviewToggle
+          locale={panelLocale}
+          active={preview}
+          showLabel={tPreview('show')}
+          hideLabel={tPreview('hide')}
+          pendingLabel={tPreview('pending')}
+        />
+      </div>
+      {preview ? <PreviewBanner /> : null}
+      <DashboardMetrics metrics={metrics} locale={panelLocale} />
+    </div>
+  );
 }

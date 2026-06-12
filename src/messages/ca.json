@@ -332,6 +332,13 @@
       "title": "Dades d'exemple",
       "description": "Aquesta secció encara mostra una demostració. Les teves dades reals apareixeran quan connectem aquesta funció amb el backend."
     },
+    "preview": {
+      "show": "Veure amb dades d'exemple",
+      "hide": "Tornar a les meves dades reals",
+      "pending": "Canviant…",
+      "bannerTitle": "Vista prèvia",
+      "bannerDescription": "Aquesta és una simulació perquè vegis com es veurà el teu panell quan tinguis dades reals. Pots tornar a la vista normal quan vulguis."
+    },
     "dashboard": {
       "title": "Resum setmanal",
       "subtitle": "Com va la teva setmana d'un cop d'ull.",
