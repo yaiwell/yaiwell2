@@ -1,34 +1,23 @@
 /**
  * Servicios ficticios del proveedor activo para el listado del panel.
  *
- * Mock visual: en producción se construirá a partir de `Service` filtrado
- * por `providerId`, enriquecido con métricas de ranking (bookings totales,
- * estado activo/inactivo) y traducciones del catálogo.
- */
-
-import type { LocalizedText } from '@/types/domain';
-
-/** Estado visible del servicio en el panel: publicado o pausado. */
-export type PanelServiceStatus = 'active' | 'paused';
-
-/**
- * Servicio tal como se muestra en el listado del panel del proveedor.
+ * El listado real (`/panel/servicios`) ya consulta BD desde 2026-06-12.
+ * Este módulo se mantiene como **fixture de tests** y como respaldo
+ * visual rápido si alguna vez se renderiza `ServicesList` sin server.
  *
- * Se mantiene plano (sin relaciones expandidas) para que la UI no tenga
- * que hacer lookups al renderizar la tabla/lista.
+ * Los tipos `PanelService` / `PanelServiceStatus` viven ahora junto al
+ * componente que los consume (`ServicesList.types.ts`) y se reexportan
+ * aquí para no romper imports antiguos.
  */
-export interface PanelService {
-  id: string;
-  name: LocalizedText;
-  description: LocalizedText;
-  /** Categoría raíz ya traducida para chips visuales. */
-  categoryLabel: LocalizedText;
-  durationMinutes: number;
-  priceCents: number;
-  status: PanelServiceStatus;
-  /** Número de reservas en los últimos 30 días. */
-  bookingsLast30Days: number;
-}
+
+import type {
+  PanelService,
+  PanelServiceStatus,
+} from '@/components/features/provider-panel/ServicesList/ServicesList.types';
+
+// Re-export para no romper imports antiguos del tipo desde la ruta
+// fake-data; el lugar canónico es ahora `ServicesList.types.ts`.
+export type { PanelService, PanelServiceStatus };
 
 /**
  * Catálogo del proveedor activo (10 servicios).
