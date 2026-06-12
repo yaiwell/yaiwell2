@@ -22,9 +22,10 @@ interface PanelServicesPageProps {
  *    `confirmed` y `completed` cuentan — los `pending`/`cancelled` no
  *    se reflejan en el ranking).
  *
- * El estado `paused` aún no existe en BD (no hay columna), todos los
- * servicios reales llegan como `'active'`. Cuando se añada `Service.isActive`
- * (o equivalente), se mapea aquí.
+ * El estado activo/pausado proviene de `Service.isActive` (migración
+ * `6_service_is_active`, 2026-06-12) y se pinta como badge en el listado.
+ * El provider lo alterna desde el botón Pausar/Reactivar, cableado a
+ * la server action `toggleServiceActiveAction`.
  */
 export default async function PanelServicesPage({ params }: PanelServicesPageProps) {
   const { locale } = await params;
@@ -48,6 +49,7 @@ export default async function PanelServicesPage({ params }: PanelServicesPagePro
       description: true,
       durationMinutes: true,
       priceCents: true,
+      isActive: true,
       category: { select: { name: true } },
       _count: {
         select: {
@@ -72,7 +74,7 @@ export default async function PanelServicesPage({ params }: PanelServicesPagePro
     categoryLabel: r.category.name as unknown as LocalizedText,
     durationMinutes: r.durationMinutes,
     priceCents: r.priceCents,
-    status: 'active',
+    status: r.isActive ? 'active' : 'paused',
     bookingsLast30Days: r._count.bookings,
   }));
 

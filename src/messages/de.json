@@ -407,6 +407,7 @@
       "edit": "Bearbeiten",
       "pause": "Pausieren",
       "resume": "Reaktivieren",
+      "updating": "Wird aktualisiert…",
       "empty": "Du hast noch keinen Service veröffentlicht."
     },
     "addService": {

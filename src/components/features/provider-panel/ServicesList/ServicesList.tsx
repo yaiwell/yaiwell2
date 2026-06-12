@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
 
 import { formatCurrencyFromCents } from '../DashboardMetrics/DashboardMetrics.logic';
+import { ServiceToggleButton } from './ServiceToggleButton';
 import { servicesListStyles as s } from './ServicesList.styles';
 import type { ServicesListProps } from './ServicesList.types';
 
@@ -42,9 +43,8 @@ export function ServicesList({ services, locale }: ServicesListProps) {
       ) : (
         <ul className={s.list}>
           {services.map((service) => {
-            const statusClass =
-              service.status === 'active' ? s.cardStatusActive : s.cardStatusPaused;
-            const toggleLabel = service.status === 'active' ? t('pause') : t('resume');
+            const isActive = service.status === 'active';
+            const statusClass = isActive ? s.cardStatusActive : s.cardStatusPaused;
 
             return (
               <li
@@ -77,6 +77,9 @@ export function ServicesList({ services, locale }: ServicesListProps) {
                     {formatCurrencyFromCents(service.priceCents, locale)}
                   </span>
                   <div className={s.cardActions}>
+                    {/* TODO siguiente commit: convertir en `Link` a
+                        `/panel/servicios/[id]/editar` cuando exista
+                        esa ruta. */}
                     <Button
                       variant="outline"
                       size="sm"
@@ -84,13 +87,14 @@ export function ServicesList({ services, locale }: ServicesListProps) {
                     >
                       {t('edit')}
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      data-component={`services-list-toggle-${service.id}`}
-                    >
-                      {toggleLabel}
-                    </Button>
+                    <ServiceToggleButton
+                      locale={locale}
+                      serviceId={service.id}
+                      isActive={isActive}
+                      pauseLabel={t('pause')}
+                      resumeLabel={t('resume')}
+                      pendingLabel={t('updating')}
+                    />
                   </div>
                 </div>
               </li>

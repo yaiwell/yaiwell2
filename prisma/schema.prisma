@@ -301,6 +301,10 @@ model Service {
   description     Json
   durationMinutes Int
   priceCents      Int
+  /// `true` → publicado y reservable. `false` → pausado por el provider
+  /// (oculto en búsqueda y bookings, sigue contando en métricas históricas).
+  /// Default `true` para que servicios existentes y nuevos arranquen activos.
+  isActive        Boolean @default(true)
   /// Generated `tsvector` para FTS sobre servicio (name, description,
   /// category_label_cache). La columna se materializa via migración SQL
   /// (`migrations/2_fts_search/`); Prisma no la conoce, las queries de
