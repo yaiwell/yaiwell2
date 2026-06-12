@@ -483,7 +483,8 @@
         "title": "Fotos",
         "subtitle": "Las fotos aparecen en tu ficha pública. Recomendamos un mínimo de 3.",
         "addCta": "Subir nueva foto",
-        "altLabel": "Foto del centro {index}"
+        "altLabel": "Foto del centro {index}",
+        "error": "No se han podido guardar las fotos. Inténtalo de nuevo."
       },
       "multiBusiness": {
         "title": "Añadir otro negocio",

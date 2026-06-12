@@ -483,7 +483,8 @@
         "title": "Fotos",
         "subtitle": "Les fotos apareixen a la teva fitxa pública. Recomanem un mínim de 3.",
         "addCta": "Pujar nova foto",
-        "altLabel": "Foto del centre {index}"
+        "altLabel": "Foto del centre {index}",
+        "error": "No s'han pogut desar les fotos. Torna-ho a provar."
       },
       "multiBusiness": {
         "title": "Afegir un altre negoci",

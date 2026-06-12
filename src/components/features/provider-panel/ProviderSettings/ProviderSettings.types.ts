@@ -11,6 +11,8 @@ export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
  * JSON, vatNumber nullable, etc., que es lo que devuelve Prisma.
  */
 export interface SettingsProvider {
+  /** ID interno; se usa como `ownerId` del bucket de fotos. */
+  id: string;
   businessName: string;
   /** NIF/CIF — opcional, los autónomos pueden no tener uno asignado al alta. */
   vatNumber: string | null;

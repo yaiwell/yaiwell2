@@ -57,6 +57,7 @@ export default async function PanelSettingsPage({ params }: PanelSettingsPagePro
   // wizard que siempre escribimos `{ es, ca, en?, de? }` — casteo al
   // tipo de dominio que el componente espera.
   const provider: SettingsProvider = {
+    id,
     businessName: record.businessName,
     vatNumber: record.vatNumber,
     description: record.description as unknown as LocalizedText,

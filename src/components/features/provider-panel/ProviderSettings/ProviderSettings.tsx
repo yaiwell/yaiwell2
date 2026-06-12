@@ -1,10 +1,10 @@
 import { Building2, Plus } from 'lucide-react';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
+import { ProviderPhotosCard } from './ProviderPhotosCard';
 import { providerSettingsStyles as s } from './ProviderSettings.styles';
 import type { ProviderSettingsProps } from './ProviderSettings.types';
 
@@ -197,29 +197,17 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
         </div>
       </article>
 
-      <article className={s.card} data-component="provider-settings-photos">
-        <header>
-          <h2 className={s.cardTitle}>{t('photos.title')}</h2>
-          <p className={s.cardSubtitle}>{t('photos.subtitle')}</p>
-        </header>
-
-        <div className={s.photoGrid}>
-          {provider.photos.map((photo, index) => (
-            <div key={photo} className={s.photoTile}>
-              <Image
-                src={photo}
-                alt={t('photos.altLabel', { index: index + 1 })}
-                fill
-                sizes="(max-width: 640px) 50vw, 33vw"
-                className={s.photoImg}
-              />
-            </div>
-          ))}
-          <button type="button" className={s.photoAdd} aria-label={t('photos.addCta')}>
-            <Plus className="size-5" aria-hidden />
-          </button>
-        </div>
-      </article>
+      <ProviderPhotosCard
+        locale={locale}
+        providerId={provider.id}
+        initialUrls={provider.photos}
+        cardTitle={t('photos.title')}
+        cardSubtitle={t('photos.subtitle')}
+        errorMessage={t('photos.error')}
+        cardClass={s.card}
+        cardTitleClass={s.cardTitle}
+        cardSubtitleClass={s.cardSubtitle}
+      />
 
       {/* Card "Próximamente": añadir otro negocio. Visible siempre — el
           mensaje es neutro para autónomos y centros. La feature

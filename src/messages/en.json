@@ -483,7 +483,8 @@
         "title": "Photos",
         "subtitle": "Photos appear on your public profile. We recommend at least 3.",
         "addCta": "Upload new photo",
-        "altLabel": "Centre photo {index}"
+        "altLabel": "Centre photo {index}",
+        "error": "Couldn't save the photos. Please try again."
       },
       "multiBusiness": {
         "title": "Add another business",

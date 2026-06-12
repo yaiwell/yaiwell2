@@ -483,7 +483,8 @@
         "title": "Fotos",
         "subtitle": "Die Fotos erscheinen auf deinem öffentlichen Profil. Wir empfehlen mindestens 3.",
         "addCta": "Neues Foto hochladen",
-        "altLabel": "Foto des Studios {index}"
+        "altLabel": "Foto des Studios {index}",
+        "error": "Fotos konnten nicht gespeichert werden. Bitte erneut versuchen."
       },
       "multiBusiness": {
         "title": "Weiteres Geschäft hinzufügen",
