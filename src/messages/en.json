@@ -1206,5 +1206,54 @@
       "tabLabel": "Tab {index}",
       "tabContent": "Content of tab {index}"
     }
+  },
+  "resetPassword": {
+    "meta": {
+      "title": "Recover your password",
+      "description": "Get back into your Yaiwell account in two steps."
+    },
+    "illustration": {
+      "badge": "Yaiwell",
+      "title": "Back on track",
+      "subtitle": "We will help you regain access to your account in under a minute.",
+      "footer": "© Yaiwell"
+    },
+    "request": {
+      "eyebrow": "Recover access",
+      "title": "Forgot your password?",
+      "subtitle": "Enter your email and we will send you a code to create a new one.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@email.com",
+      "submit": "Send code",
+      "submitting": "Sending…",
+      "backToSignIn": "Remembered it? <link>Sign in again</link>."
+    },
+    "reset": {
+      "eyebrow": "New password",
+      "title": "Set a new password",
+      "subtitle": "If {email} has an account, we have just sent a 6-digit code. Enter it here together with your new password.",
+      "codeLabel": "6-digit code",
+      "newPasswordLabel": "New password",
+      "newPasswordRepeatLabel": "Repeat password",
+      "submit": "Update and sign in",
+      "submitting": "Updating…",
+      "back": "Request the code again",
+      "success": "Done! Taking you to your account…"
+    },
+    "errors": {
+      "emailRequired": "Enter your email.",
+      "emailInvalid": "Enter a valid email.",
+      "passwordRequired": "This field is required.",
+      "passwordTooShort": "Password must be at least 8 characters.",
+      "passwordMismatch": "Passwords do not match.",
+      "passwordCompromised": "This password appears in known leaks. Pick a different one.",
+      "invalidCredentials": "We could not complete the request. Please try again.",
+      "verificationCodeInvalid": "The code is not correct. Check it and try again.",
+      "verificationCodeExpired": "The code has expired. Go back to get a new one.",
+      "tooManyAttempts": "Too many attempts in a row. Wait a few minutes before trying again.",
+      "sessionExists": "There is already an active session in this browser.",
+      "networkError": "We could not connect. Check your connection and try again.",
+      "unknown": "Something went wrong. Please try again in a few seconds."
+    }
   }
 }

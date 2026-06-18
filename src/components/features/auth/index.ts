@@ -9,5 +9,6 @@
  * agentes (A1 entrar, A2 registro). Mantenerlo como un simple re-export
  * sin lógica para que sea trivialmente idempotente.
  */
+export { ResetPasswordForm } from './ResetPasswordForm';
 export { SignInForm } from './SignInForm';
 export { SignUpForm } from './SignUpForm';

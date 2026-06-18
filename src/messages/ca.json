@@ -1206,5 +1206,54 @@
       "tabLabel": "Pestanya {index}",
       "tabContent": "Contingut de la pestanya {index}"
     }
+  },
+  "resetPassword": {
+    "meta": {
+      "title": "Recupera la teva contrasenya",
+      "description": "Recupera l'accés al teu compte de Yaiwell en dos passos."
+    },
+    "illustration": {
+      "badge": "Yaiwell",
+      "title": "Torna al ritme",
+      "subtitle": "T'ajudem a tornar al teu compte en menys d'un minut.",
+      "footer": "© Yaiwell"
+    },
+    "request": {
+      "eyebrow": "Recuperar accés",
+      "title": "Has oblidat la contrasenya?",
+      "subtitle": "Posa el teu correu i t'enviarem un codi per crear-ne una de nova.",
+      "emailLabel": "Correu",
+      "emailPlaceholder": "tu@email.com",
+      "submit": "Enviar codi",
+      "submitting": "Enviant…",
+      "backToSignIn": "Te n'has recordat? <link>Torna a entrar</link>."
+    },
+    "reset": {
+      "eyebrow": "Nova contrasenya",
+      "title": "Crea una contrasenya nova",
+      "subtitle": "Si {email} té compte, t'hem enviat un codi de 6 dígits. Posa'l aquí amb la teva nova contrasenya.",
+      "codeLabel": "Codi de 6 dígits",
+      "newPasswordLabel": "Nova contrasenya",
+      "newPasswordRepeatLabel": "Repeteix la contrasenya",
+      "submit": "Actualitzar i entrar",
+      "submitting": "Actualitzant…",
+      "back": "Torna a demanar el codi",
+      "success": "Llest! Et portem al teu compte…"
+    },
+    "errors": {
+      "emailRequired": "Posa el teu correu.",
+      "emailInvalid": "Posa un correu vàlid.",
+      "passwordRequired": "Aquest camp és obligatori.",
+      "passwordTooShort": "La contrasenya ha de tenir almenys 8 caràcters.",
+      "passwordMismatch": "Les contrasenyes no coincideixen.",
+      "passwordCompromised": "Aquesta contrasenya apareix en filtracions conegudes. Tria'n una altra.",
+      "invalidCredentials": "No hem pogut completar la sol·licitud. Torna a provar-ho.",
+      "verificationCodeInvalid": "El codi no és correcte. Revisa'l i torna a provar-ho.",
+      "verificationCodeExpired": "El codi ha caducat. Torna enrere per rebre'n un de nou.",
+      "tooManyAttempts": "Massa intents seguits. Espera uns minuts abans de tornar a provar-ho.",
+      "sessionExists": "Ja hi ha una sessió activa en aquest navegador.",
+      "networkError": "No hem pogut connectar. Revisa la connexió i torna a provar-ho.",
+      "unknown": "Alguna cosa no ha anat bé. Torna a provar-ho en uns segons."
+    }
   }
 }

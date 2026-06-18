@@ -1206,5 +1206,54 @@
       "tabLabel": "Tab {index}",
       "tabContent": "Inhalt von Tab {index}"
     }
+  },
+  "resetPassword": {
+    "meta": {
+      "title": "Passwort wiederherstellen",
+      "description": "Stelle den Zugang zu deinem Yaiwell-Konto in zwei Schritten wieder her."
+    },
+    "illustration": {
+      "badge": "Yaiwell",
+      "title": "Zurück im Takt",
+      "subtitle": "In weniger als einer Minute hast du wieder Zugang zu deinem Konto.",
+      "footer": "© Yaiwell"
+    },
+    "request": {
+      "eyebrow": "Zugang wiederherstellen",
+      "title": "Passwort vergessen?",
+      "subtitle": "Gib deine E-Mail ein und wir senden dir einen Code, um ein neues zu erstellen.",
+      "emailLabel": "E-Mail",
+      "emailPlaceholder": "du@email.com",
+      "submit": "Code senden",
+      "submitting": "Sende…",
+      "backToSignIn": "Wieder eingefallen? <link>Erneut anmelden</link>."
+    },
+    "reset": {
+      "eyebrow": "Neues Passwort",
+      "title": "Lege ein neues Passwort fest",
+      "subtitle": "Falls {email} ein Konto hat, haben wir dir gerade einen 6-stelligen Code geschickt. Gib ihn hier zusammen mit deinem neuen Passwort ein.",
+      "codeLabel": "6-stelliger Code",
+      "newPasswordLabel": "Neues Passwort",
+      "newPasswordRepeatLabel": "Passwort wiederholen",
+      "submit": "Aktualisieren und anmelden",
+      "submitting": "Aktualisiere…",
+      "back": "Code erneut anfordern",
+      "success": "Fertig! Wir bringen dich zu deinem Konto…"
+    },
+    "errors": {
+      "emailRequired": "Bitte gib deine E-Mail ein.",
+      "emailInvalid": "Bitte gib eine gültige E-Mail ein.",
+      "passwordRequired": "Dieses Feld ist erforderlich.",
+      "passwordTooShort": "Das Passwort muss mindestens 8 Zeichen lang sein.",
+      "passwordMismatch": "Die Passwörter stimmen nicht überein.",
+      "passwordCompromised": "Dieses Passwort taucht in bekannten Datenlecks auf. Wähle ein anderes.",
+      "invalidCredentials": "Wir konnten die Anfrage nicht abschließen. Bitte erneut versuchen.",
+      "verificationCodeInvalid": "Der Code ist nicht korrekt. Bitte prüfen und erneut versuchen.",
+      "verificationCodeExpired": "Der Code ist abgelaufen. Gehe zurück, um einen neuen zu erhalten.",
+      "tooManyAttempts": "Zu viele Versuche hintereinander. Bitte warte einige Minuten.",
+      "sessionExists": "In diesem Browser ist bereits eine Sitzung aktiv.",
+      "networkError": "Verbindung fehlgeschlagen. Bitte prüfe deine Verbindung und versuche es erneut.",
+      "unknown": "Etwas ist schiefgelaufen. Bitte versuche es in ein paar Sekunden erneut."
+    }
   }
 }

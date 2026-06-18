@@ -1206,5 +1206,54 @@
       "tabLabel": "Pestaña {index}",
       "tabContent": "Contenido de la pestaña {index}"
     }
+  },
+  "resetPassword": {
+    "meta": {
+      "title": "Recupera tu contraseña",
+      "description": "Recupera el acceso a tu cuenta de Yaiwell en dos pasos."
+    },
+    "illustration": {
+      "badge": "Yaiwell",
+      "title": "Vuelve al ritmo",
+      "subtitle": "Te ayudamos a volver a tu cuenta en menos de un minuto.",
+      "footer": "© Yaiwell"
+    },
+    "request": {
+      "eyebrow": "Recuperar acceso",
+      "title": "¿Olvidaste tu contraseña?",
+      "subtitle": "Introduce tu email y te enviaremos un código para crear una nueva.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "tu@email.com",
+      "submit": "Enviar código",
+      "submitting": "Enviando…",
+      "backToSignIn": "¿Te has acordado? <link>Vuelve a entrar</link>."
+    },
+    "reset": {
+      "eyebrow": "Nueva contraseña",
+      "title": "Crea una contraseña nueva",
+      "subtitle": "Si {email} tiene una cuenta, te hemos enviado un código de 6 dígitos. Introdúcelo aquí junto con tu nueva contraseña.",
+      "codeLabel": "Código de 6 dígitos",
+      "newPasswordLabel": "Nueva contraseña",
+      "newPasswordRepeatLabel": "Repite la contraseña",
+      "submit": "Actualizar y entrar",
+      "submitting": "Actualizando…",
+      "back": "Volver a pedir el código",
+      "success": "¡Listo! Te llevamos a tu cuenta…"
+    },
+    "errors": {
+      "emailRequired": "Introduce tu email.",
+      "emailInvalid": "Introduce un email válido.",
+      "passwordRequired": "Este campo es obligatorio.",
+      "passwordTooShort": "La contraseña debe tener al menos 8 caracteres.",
+      "passwordMismatch": "Las contraseñas no coinciden.",
+      "passwordCompromised": "Esta contraseña aparece en filtraciones conocidas. Elige otra distinta.",
+      "invalidCredentials": "No hemos podido completar la solicitud. Inténtalo de nuevo.",
+      "verificationCodeInvalid": "El código no es correcto. Revísalo e inténtalo de nuevo.",
+      "verificationCodeExpired": "El código ha caducado. Vuelve atrás para recibir uno nuevo.",
+      "tooManyAttempts": "Demasiados intentos seguidos. Espera unos minutos antes de volver a probar.",
+      "sessionExists": "Ya hay una sesión activa en este navegador.",
+      "networkError": "No hemos podido conectar. Revisa tu conexión e inténtalo de nuevo.",
+      "unknown": "Algo no ha ido bien. Inténtalo de nuevo en unos segundos."
+    }
   }
 }

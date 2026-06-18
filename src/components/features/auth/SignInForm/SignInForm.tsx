@@ -184,14 +184,7 @@ export function SignInForm() {
                   />
                   {t('fields.remember')}
                 </label>
-                <Link
-                  href="/entrar"
-                  className={s.forgotLink}
-                  data-component="sign-in-forgot"
-                  aria-disabled="true"
-                  // El link real al flujo de recuperación llegará con
-                  // Clerk en Fase 1; por ahora apunta a la misma página.
-                >
+                <Link href="/recuperar" className={s.forgotLink} data-component="sign-in-forgot">
                   {t('fields.forgot')}
                 </Link>
               </div>
