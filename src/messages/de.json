@@ -415,7 +415,20 @@
       "pause": "Pausieren",
       "resume": "Reaktivieren",
       "updating": "Wird aktualisiert…",
-      "empty": "Du hast noch keinen Service veröffentlicht."
+      "empty": "Du hast noch keinen Service veröffentlicht.",
+      "delete": {
+        "button": "Löschen",
+        "confirmTitle": "Service löschen?",
+        "confirmDescription": "Diese Aktion kann nicht rückgängig gemacht werden. Der Service erscheint nicht mehr in deinem Dashboard und es können keine neuen Buchungen erstellt werden. Vergangene Buchungen und historische Kennzahlen bleiben erhalten.",
+        "confirmAction": "Löschen",
+        "cancel": "Abbrechen",
+        "deleting": "Wird gelöscht…",
+        "errors": {
+          "notFound": "Dieser Service existiert nicht mehr.",
+          "forbidden": "Du hast keine Berechtigung, diesen Service zu löschen.",
+          "internal": "Konnte nicht gelöscht werden. Versuche es in einigen Sekunden erneut."
+        }
+      }
     },
     "addService": {
       "title": "Service hinzufügen",

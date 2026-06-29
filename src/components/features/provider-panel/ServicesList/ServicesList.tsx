@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
 
 import { formatCurrencyFromCents } from '../DashboardMetrics/DashboardMetrics.logic';
+import { ServiceDeleteButton } from './ServiceDeleteButton';
 import { ServiceToggleButton } from './ServiceToggleButton';
 import { servicesListStyles as s } from './ServicesList.styles';
 import type { ServicesListProps } from './ServicesList.types';
@@ -93,6 +94,7 @@ export function ServicesList({ services, locale }: ServicesListProps) {
                       resumeLabel={t('resume')}
                       pendingLabel={t('updating')}
                     />
+                    <ServiceDeleteButton locale={locale} serviceId={service.id} />
                   </div>
                 </div>
               </li>

@@ -415,7 +415,20 @@
       "pause": "Pausar",
       "resume": "Reactivar",
       "updating": "Actualitzant…",
-      "empty": "Encara no has publicat cap servei."
+      "empty": "Encara no has publicat cap servei.",
+      "delete": {
+        "button": "Eliminar",
+        "confirmTitle": "Eliminar el servei?",
+        "confirmDescription": "Aquesta acció no es pot desfer. El servei deixarà d'aparèixer al teu panell i no es podran crear noves reserves. Les reserves passades i les seves mètriques històriques es mantenen.",
+        "confirmAction": "Eliminar",
+        "cancel": "Cancel·lar",
+        "deleting": "Eliminant…",
+        "errors": {
+          "notFound": "Aquest servei ja no existeix.",
+          "forbidden": "No tens permís per eliminar aquest servei.",
+          "internal": "No s'ha pogut eliminar. Torna-ho a provar en uns segons."
+        }
+      }
     },
     "addService": {
       "title": "Afegir servei",

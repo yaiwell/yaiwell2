@@ -1,8 +1,15 @@
 import { render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import { fakePanelServices } from '@/lib/fake-data/panel-services';
+
+// Stub de las server actions — los hijos cliente (toggle / delete) importan
+// el módulo de `actions` que arrastra `server-only` y romperían el render.
+vi.mock('@/app/[locale]/panel/servicios/actions', () => ({
+  toggleServiceActiveAction: vi.fn(async () => ({ ok: true as const })),
+  deleteServiceAction: vi.fn(async () => ({ ok: true as const })),
+}));
 
 import { ServicesList } from './ServicesList';
 
@@ -18,7 +25,21 @@ const messages = {
       edit: 'Editar',
       pause: 'Pausar',
       resume: 'Reactivar',
+      updating: 'Actualizando…',
       empty: 'Sin servicios.',
+      delete: {
+        button: 'Eliminar',
+        confirmTitle: '¿Eliminar servicio?',
+        confirmDescription: 'Esta acción no se puede deshacer.',
+        confirmAction: 'Eliminar',
+        cancel: 'Cancelar',
+        deleting: 'Eliminando…',
+        errors: {
+          notFound: 'Este servicio ya no existe.',
+          forbidden: 'No tienes permiso para eliminar este servicio.',
+          internal: 'No se ha podido eliminar.',
+        },
+      },
     },
   },
 };
@@ -62,5 +83,13 @@ describe('ServicesList', () => {
     const cta = screen.getByRole('link', { name: /Añadir servicio/i });
 
     expect(cta).toHaveAttribute('href', expect.stringContaining('/panel/servicios/nuevo'));
+  });
+
+  it('pinta un botón "Eliminar" por servicio (trigger del diálogo de confirmación)', () => {
+    const { container } = renderWithIntl(<ServicesList services={fakePanelServices} locale="es" />);
+
+    const deleteTriggers = container.querySelectorAll('[data-component^="services-list-delete-"]');
+
+    expect(deleteTriggers.length).toBe(fakePanelServices.length);
   });
 });

@@ -415,7 +415,20 @@
       "pause": "Pausar",
       "resume": "Reactivar",
       "updating": "Actualizando…",
-      "empty": "Aún no has publicado ningún servicio."
+      "empty": "Aún no has publicado ningún servicio.",
+      "delete": {
+        "button": "Eliminar",
+        "confirmTitle": "¿Eliminar servicio?",
+        "confirmDescription": "Esta acción no se puede deshacer. El servicio dejará de aparecer en tu panel y no se podrán crear nuevas reservas. Las reservas pasadas y sus métricas históricas se mantienen.",
+        "confirmAction": "Eliminar",
+        "cancel": "Cancelar",
+        "deleting": "Eliminando…",
+        "errors": {
+          "notFound": "Este servicio ya no existe.",
+          "forbidden": "No tienes permiso para eliminar este servicio.",
+          "internal": "No se ha podido eliminar. Inténtalo de nuevo en unos segundos."
+        }
+      }
     },
     "addService": {
       "title": "Añadir servicio",
