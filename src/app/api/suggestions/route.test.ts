@@ -14,17 +14,15 @@ import { NextRequest } from 'next/server';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SuggestionsValidationError } from '@/lib/services/suggestions';
-import type * as SuggestionsModule from '@/lib/services/suggestions';
 
-vi.mock('@/lib/services/suggestions', async () => {
-  const actual = await vi.importActual<typeof SuggestionsModule>('@/lib/services/suggestions');
-  return {
-    ...actual,
-    getSuggestions: vi.fn(),
-  };
-});
+// `getSuggestions` se importa directo del archivo del servicio porque
+// el barrel `@/lib/services/suggestions` es client-safe y no re-exporta
+// el server-only `getSuggestions` (ver `index.ts` para el motivo).
+vi.mock('@/lib/services/suggestions/suggestions.service', () => ({
+  getSuggestions: vi.fn(),
+}));
 
-import { getSuggestions } from '@/lib/services/suggestions';
+import { getSuggestions } from '@/lib/services/suggestions/suggestions.service';
 
 import { GET } from './route';
 

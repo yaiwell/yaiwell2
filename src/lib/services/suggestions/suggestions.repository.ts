@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { prisma } from '@/lib/db/prisma';
 
 import { normalizeForMatch } from './suggestions.utils';

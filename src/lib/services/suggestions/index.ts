@@ -1,12 +1,18 @@
 /**
  * API pública del módulo `suggestions`.
  *
- * Cualquier consumidor (API route, hook React, app móvil) debe importar
- * desde aquí. Importar archivos internos del módulo directamente está
- * prohibido por convención (§6.bis CLAUDE.md).
+ * Este barrel es **client-safe**: sólo exporta el cliente HTTP, tipos
+ * y errores. `getSuggestions` vive en `./suggestions.service` y debe
+ * importarse directo desde ahí (el servicio importa Prisma → `pg` →
+ * módulos nativos de Node, y bundlearlo a un Client Component arrastra
+ * `dns`/`fs`/`net`/`tls` rompiendo el build de Next/Turbopack).
+ *
+ * Excepción justificada a la convención §6.bis de "importar siempre
+ * desde el barrel": los callers server (route handlers, server actions)
+ * usan `import { getSuggestions } from '@/lib/services/suggestions/suggestions.service'`.
+ * El `'server-only'` marcado en el service garantiza que un Client
+ * import accidental falle con error claro en dev en vez de en build.
  */
-
-export { getSuggestions } from './suggestions.service';
 
 export { fetchSuggestions } from './suggestions.client';
 export type { FetchSuggestionsOptions, SuggestionsResponse } from './suggestions.client';

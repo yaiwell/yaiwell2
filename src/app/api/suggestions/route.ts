@@ -2,8 +2,11 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
-import { SuggestionsValidationError, getSuggestions } from '@/lib/services/suggestions';
+import { SuggestionsValidationError } from '@/lib/services/suggestions';
 import type { Suggestion } from '@/lib/services/suggestions';
+// `getSuggestions` se importa directo del archivo del servicio (no del
+// barrel) porque el barrel es client-safe y este símbolo es server-only.
+import { getSuggestions } from '@/lib/services/suggestions/suggestions.service';
 
 /**
  * Endpoint público de sugerencias para el autocomplete del buscador.

@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { pickLocalized } from '@/lib/i18n';
 import { SearchValidationError, searchProviders, searchServices } from '@/lib/services/search';
 
