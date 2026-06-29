@@ -530,6 +530,20 @@
         "alreadyResponded": "Respondida",
         "pending": "Pendent de respondre"
       },
+      "reply": {
+        "button": "Respondre",
+        "placeholder": "Escriu la teva resposta per a aquesta ressenya…",
+        "submit": "Enviar resposta",
+        "submitting": "Enviant…",
+        "cancel": "Cancel·lar",
+        "alreadyReplied": "La teva resposta",
+        "errors": {
+          "VALIDATION": "La resposta ha de tenir entre 5 i 1000 caràcters.",
+          "REVIEW_NOT_FOUND": "Aquesta valoració ja no existeix. Recarrega la pàgina.",
+          "FORBIDDEN": "No tens permís per respondre a aquesta valoració.",
+          "INTERNAL": "No s'ha pogut enviar la resposta. Torna-ho a provar en uns segons."
+        }
+      },
       "empty": "No hi ha valoracions que coincideixin amb els filtres."
     }
   },

@@ -530,6 +530,20 @@
         "alreadyResponded": "Replied",
         "pending": "Awaiting reply"
       },
+      "reply": {
+        "button": "Reply",
+        "placeholder": "Write your reply to this review…",
+        "submit": "Send reply",
+        "submitting": "Sending…",
+        "cancel": "Cancel",
+        "alreadyReplied": "Your reply",
+        "errors": {
+          "VALIDATION": "The reply must be between 5 and 1000 characters.",
+          "REVIEW_NOT_FOUND": "This review no longer exists. Please reload the page.",
+          "FORBIDDEN": "You are not allowed to reply to this review.",
+          "INTERNAL": "Could not send the reply. Please try again in a few seconds."
+        }
+      },
       "empty": "No reviews match these filters."
     }
   },

@@ -2,8 +2,9 @@
  * Estilos de la vista de valoraciones recibidas en el panel.
  *
  * Tres bloques: cabecera con resumen, barra de filtros, listado de
- * reseñas en formato tarjeta. Cada reseña destaca la nota con estrellas
- * y muestra opcionalmente la respuesta del centro.
+ * reseñas en formato tarjeta. La zona de respuesta (badge de pendiente,
+ * card de respuesta publicada, formulario) vive en `ReviewReplyForm`
+ * con sus propios estilos para no acoplar ambos componentes.
  */
 export const receivedReviewsStyles = {
   root: 'flex flex-col gap-6',
@@ -36,13 +37,4 @@ export const receivedReviewsStyles = {
   cardServiceTag:
     'inline-flex w-fit items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground/80',
   cardText: 'text-sm leading-relaxed text-foreground',
-
-  responseBox: 'rounded-2xl border border-border/40 bg-muted/30 p-3 text-sm text-foreground/90',
-  responseTitle: 'text-xs font-semibold uppercase tracking-wide text-muted-foreground',
-  responseText: 'mt-1 text-sm text-foreground/80',
-  pendingBadge:
-    'inline-flex w-fit items-center gap-1 rounded-full bg-brand-butter-soft px-2 py-0.5 text-xs font-medium text-brand-butter',
-  respondedBadge:
-    'inline-flex w-fit items-center gap-1 rounded-full bg-brand-sage-soft px-2 py-0.5 text-xs font-medium text-brand-sage',
-  cardActions: 'flex items-center justify-end',
 } as const;
