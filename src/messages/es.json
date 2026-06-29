@@ -498,8 +498,16 @@
         "description": "Pronto podrás gestionar varios locales o cuentas profesionales desde el mismo panel.",
         "cta": "Añadir negocio"
       },
-      "save": "Guardar cambios",
-      "savedNotice": "Los cambios se guardarán cuando conectemos el backend del panel."
+      "save": {
+        "button": "Guardar cambios",
+        "saving": "Guardando…",
+        "success": "Guardado correctamente.",
+        "errors": {
+          "notFound": "No hemos encontrado tu negocio. Recarga la página e inténtalo de nuevo.",
+          "validation": "Revisa los campos: hay algún dato que no cumple los mínimos.",
+          "internal": "No hemos podido guardar los cambios. Inténtalo de nuevo en unos segundos."
+        }
+      }
     },
     "reviews": {
       "title": "Valoraciones recibidas",

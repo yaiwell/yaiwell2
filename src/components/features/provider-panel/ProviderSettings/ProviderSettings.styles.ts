@@ -39,6 +39,13 @@ export const providerSettingsStyles = {
 
   notice:
     'rounded-2xl border border-dashed border-border bg-muted/40 p-3 text-xs text-muted-foreground',
+  // Notice de éxito tras el guardado real. Verde suave para que se lea
+  // como confirmación sin chillar; auto-oculta a los 3s desde la lógica.
+  noticeSuccess:
+    'rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs font-medium text-emerald-700 dark:text-emerald-300',
+  // Notice de error: el copy depende del code; estilo destructivo claro.
+  noticeError:
+    'rounded-2xl border border-destructive/30 bg-destructive/10 p-3 text-xs font-medium text-destructive',
   actions: 'flex justify-end',
 
   // Card "Próximamente" para añadir otro negocio. Visualmente más
