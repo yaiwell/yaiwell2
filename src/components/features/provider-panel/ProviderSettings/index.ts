@@ -1,2 +1,8 @@
 export { ProviderSettings } from './ProviderSettings';
-export type { ProviderSettingsProps, SupportedLocale } from './ProviderSettings.types';
+export type {
+  ProviderSettingsProps,
+  SupportedLocale,
+  ProviderSettingsDraft,
+  SaveErrorCode,
+  SaveNotice,
+} from './ProviderSettings.types';

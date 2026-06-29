@@ -1,34 +1,64 @@
+'use client';
+
 import { Building2, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import type { FormEvent } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
 import { ProviderPhotosCard } from './ProviderPhotosCard';
+import { useProviderSettingsForm } from './ProviderSettings.logic';
 import { providerSettingsStyles as s } from './ProviderSettings.styles';
-import type { ProviderSettingsProps } from './ProviderSettings.types';
+import type { ProviderSettingsProps, SaveErrorCode } from './ProviderSettings.types';
+
+/**
+ * Mapea el `code` de error de la action a la clave i18n completa dentro
+ * del namespace `providerPanel.settings`. Mantener las claves explícitas
+ * (no construirlas con template strings) permite que next-intl valide
+ * los tipos en tiempo de compilación.
+ */
+const ERROR_MESSAGE_KEY: Record<
+  SaveErrorCode,
+  'save.errors.notFound' | 'save.errors.validation' | 'save.errors.internal'
+> = {
+  PROVIDER_NOT_FOUND: 'save.errors.notFound',
+  VALIDATION: 'save.errors.validation',
+  INTERNAL: 'save.errors.internal',
+};
 
 /**
  * Pantalla de configuración del centro.
  *
- * Server Component puro: muestra los datos reales del proveedor activo
- * (los que el wizard de onboarding guarda en BD) y deja en blanco los
- * campos que aún no se piden al alta (phone, email de contacto, ciudad
- * y código postal por separado, horario). Los campos son `defaultValue`
- * para mantener el formulario sin estado; el botón "Guardar" es solo
- * visual mientras no exista persistencia. Cuando exista, este componente
- * pasará a Client con un hook dedicado, manteniendo la separación de
- * styles/logic.
+ * Client Component (form controlado + submit con `useTransition`). La
+ * lógica de estado/persistencia vive en `useProviderSettingsForm`; este
+ * componente solo compone UI a partir del hook. Los campos que el wizard
+ * de onboarding aún no recoge (phone, email contacto, ciudad/CP por
+ * separado, horario semanal) siguen siendo placeholders inertes — entrarán
+ * cuando el formulario los recoja de verdad.
  */
 export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
   const t = useTranslations('providerPanel.settings');
   const tCommon = useTranslations('common');
+
   // `pickLocalized` aplica fallback locale → es si el JSON no tiene
   // la lengua actual (los providers nuevos solo guardan ES/CA).
-  const description = pickLocalized(provider.description, locale);
+  const initialDescription = pickLocalized(provider.description, locale);
+
+  const { draft, notice, isPending, updateField, submit } = useProviderSettingsForm(locale, {
+    businessName: provider.businessName,
+    vatNumber: provider.vatNumber ?? '',
+    description: initialDescription,
+    address: provider.address,
+  });
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    submit();
+  }
 
   return (
-    <section className={s.root} data-component="provider-settings">
+    <form className={s.root} onSubmit={handleSubmit} data-component="provider-settings">
       <header className={s.header}>
         <h1 className={s.title}>{t('title')}</h1>
         <p className={s.subtitle}>{t('subtitle')}</p>
@@ -48,7 +78,10 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
               id="settings-name"
               type="text"
               className={s.input}
-              defaultValue={provider.businessName}
+              value={draft.businessName}
+              onChange={(e) => updateField('businessName', e.target.value)}
+              disabled={isPending}
+              data-component="settings-input-name"
             />
           </div>
           <div className={s.field}>
@@ -59,8 +92,11 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
               id="settings-vat"
               type="text"
               className={s.input}
-              defaultValue={provider.vatNumber ?? ''}
+              value={draft.vatNumber}
               placeholder="B12345678"
+              onChange={(e) => updateField('vatNumber', e.target.value)}
+              disabled={isPending}
+              data-component="settings-input-vat"
             />
           </div>
           {/* Teléfono y email de contacto del negocio no se piden en el
@@ -76,6 +112,7 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
               className={s.input}
               defaultValue=""
               placeholder="+34 600 000 000"
+              disabled
             />
           </div>
           <div className={s.field}>
@@ -88,6 +125,7 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
               className={s.input}
               defaultValue=""
               placeholder="contacto@ejemplo.com"
+              disabled
             />
           </div>
         </div>
@@ -96,7 +134,14 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
           <label className={s.label} htmlFor="settings-description">
             {t('general.descriptionLabel')}
           </label>
-          <textarea id="settings-description" className={s.textarea} defaultValue={description} />
+          <textarea
+            id="settings-description"
+            className={s.textarea}
+            value={draft.description}
+            onChange={(e) => updateField('description', e.target.value)}
+            disabled={isPending}
+            data-component="settings-input-description"
+          />
         </div>
       </article>
 
@@ -113,14 +158,17 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
             id="settings-street"
             type="text"
             className={s.input}
-            defaultValue={provider.address}
+            value={draft.address}
+            onChange={(e) => updateField('address', e.target.value)}
+            disabled={isPending}
+            data-component="settings-input-street"
           />
         </div>
 
         {/* Ciudad y código postal no se guardan por separado en BD
             (la dirección viene de Mapbox como string completo). Dejamos
-            los inputs vacíos con placeholder hasta que el flujo Fase 1
-            decida si descomponer o no la dirección. */}
+            los inputs deshabilitados con placeholder hasta que el flujo
+            Fase 1 decida si descomponer o no la dirección. */}
         <div className={s.fieldGrid}>
           <div className={s.field}>
             <label className={s.label} htmlFor="settings-city">
@@ -132,6 +180,7 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
               className={s.input}
               defaultValue=""
               placeholder="Barcelona"
+              disabled
             />
           </div>
           <div className={s.field}>
@@ -144,6 +193,7 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
               className={s.input}
               defaultValue=""
               placeholder="08008"
+              disabled
             />
           </div>
         </div>
@@ -163,12 +213,14 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
               defaultValue="10:00"
               className={s.scheduleTime}
               aria-label={t('schedule.openFrom')}
+              disabled
             />
             <input
               type="time"
               defaultValue="20:00"
               className={s.scheduleTime}
               aria-label={t('schedule.openTo')}
+              disabled
             />
           </div>
         </div>
@@ -181,12 +233,14 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
               defaultValue="10:00"
               className={s.scheduleTime}
               aria-label={t('schedule.openFrom')}
+              disabled
             />
             <input
               type="time"
               defaultValue="14:00"
               className={s.scheduleTime}
               aria-label={t('schedule.openTo')}
+              disabled
             />
           </div>
         </div>
@@ -238,13 +292,32 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
         </button>
       </aside>
 
-      <p className={s.notice}>{t('savedNotice')}</p>
+      {notice?.kind === 'success' ? (
+        <p
+          className={s.noticeSuccess}
+          role="status"
+          aria-live="polite"
+          data-component="provider-settings-notice-success"
+        >
+          {t('save.success')}
+        </p>
+      ) : null}
+      {notice?.kind === 'error' ? (
+        <p className={s.noticeError} role="alert" data-component="provider-settings-notice-error">
+          {t(ERROR_MESSAGE_KEY[notice.code])}
+        </p>
+      ) : null}
 
       <div className={s.actions}>
-        <Button size="lg" data-component="provider-settings-save">
-          {t('save')}
+        <Button
+          type="submit"
+          size="lg"
+          disabled={isPending}
+          data-component="provider-settings-save"
+        >
+          {isPending ? t('save.saving') : t('save.button')}
         </Button>
       </div>
-    </section>
+    </form>
   );
 }

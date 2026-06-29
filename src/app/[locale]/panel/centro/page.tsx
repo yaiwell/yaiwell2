@@ -16,9 +16,11 @@ interface PanelSettingsPageProps {
  * Configuración del centro (`/panel/centro`).
  *
  * Server Component que lee los datos del proveedor autenticado y los
- * pasa al formulario `ProviderSettings`. La persistencia del botón
- * "Guardar" llegará con Fase 1; los inputs siguen siendo `defaultValue`
- * mientras tanto.
+ * pasa al formulario `ProviderSettings` (Client). El botón "Guardar"
+ * persiste businessName, vatNumber, description y address via la server
+ * action `updateProviderSettingsAction`; el resto de campos del form
+ * (phone, email, ciudad/CP, horario) quedan inertes hasta que el wizard
+ * de onboarding y la UI los recojan.
  *
  * `requireCurrentProvider` ya garantiza que llegamos aquí con un
  * Provider creado (redirige a `/onboarding` si falta). Hacemos un

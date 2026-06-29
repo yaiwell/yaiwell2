@@ -1,0 +1,68 @@
+import 'server-only';
+
+/**
+ * Repositorio del dominio `provider` (operaciones del panel).
+ *
+ * Capa fina sobre Prisma: solo lectura/escritura, ninguna regla de
+ * negocio. Las reglas (ownership, fusión de `LocalizedText`) viven en
+ * `provider.service.ts`.
+ *
+ * Convivencia con otros módulos:
+ *  - `provider-onboarding.repository.ts` cubre el alta inicial.
+ *  - `providers.repository.ts` cubre la lectura pública (hoy fake).
+ *  - Este repo cubre los updates puntuales del panel.
+ */
+
+import type { Prisma } from '@prisma/client';
+
+import { prisma } from '@/lib/db/prisma';
+import type { LocalizedText } from '@/types/domain';
+
+/** Subset del Provider necesario para componer el update de settings. */
+export interface ProviderSettingsRow {
+  id: string;
+  description: LocalizedText;
+}
+
+export interface UpdateSettingsArgs {
+  businessName: string;
+  vatNumber: string | null;
+  description: LocalizedText;
+  address: string;
+}
+
+export const providerRepository = {
+  /**
+   * Lee los campos necesarios para componer un update de settings.
+   * El service lo usa para fusionar `description` antes de escribir.
+   */
+  async findSettings(providerId: string): Promise<ProviderSettingsRow | null> {
+    const row = await prisma.provider.findFirst({
+      where: { id: providerId, deletedAt: null },
+      select: { id: true, description: true },
+    });
+    if (!row) return null;
+    // `description` en Prisma viene como `JsonValue` opaco. Sabemos por
+    // el resto del dominio que es un `LocalizedText`; el cast lo aclara
+    // sin propagar la opacidad fuera del repo.
+    return {
+      id: row.id,
+      description: (row.description as unknown as LocalizedText) ?? {},
+    };
+  },
+
+  /** Persiste los campos editables del centro. Update atómico. */
+  async updateSettings(providerId: string, args: UpdateSettingsArgs): Promise<void> {
+    await prisma.provider.update({
+      where: { id: providerId },
+      data: {
+        businessName: args.businessName,
+        vatNumber: args.vatNumber,
+        // El cast preserva la forma literal y mantiene la firma jsonb
+        // que Prisma espera para columnas Json.
+        description: args.description as unknown as Prisma.InputJsonValue,
+        address: args.address,
+      },
+    });
+  },
+};

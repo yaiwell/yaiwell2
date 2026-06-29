@@ -29,3 +29,25 @@ export interface ProviderSettingsProps {
   provider: SettingsProvider;
   locale: SupportedLocale;
 }
+
+/**
+ * Draft local del formulario. `description` ya es el texto pickeado en
+ * el locale activo (string plano), no el `LocalizedText` completo — la
+ * action lo envuelve antes de mandarlo al backend.
+ */
+export interface ProviderSettingsDraft {
+  businessName: string;
+  vatNumber: string;
+  description: string;
+  address: string;
+}
+
+/**
+ * Códigos de error que la action puede devolver. Espejo del estado
+ * `UpdateProviderSettingsActionState` para que la UI no importe el
+ * type del módulo de `app/`.
+ */
+export type SaveErrorCode = 'PROVIDER_NOT_FOUND' | 'VALIDATION' | 'INTERNAL';
+
+/** Notice mostrado al usuario tras intentar guardar. */
+export type SaveNotice = { kind: 'success' } | { kind: 'error'; code: SaveErrorCode };
