@@ -70,3 +70,57 @@ export async function toggleServiceActiveAction(
   revalidatePath(`/${locale}/panel/servicios`);
   return { ok: true };
 }
+
+/**
+ * Elimina (soft-delete) un Service del proveedor autenticado.
+ *
+ * Reglas:
+ *  - Ownership: el service debe pertenecer al provider activo.
+ *  - Soft-delete: marca `deletedAt` con timestamp actual y desactiva
+ *    `isActive` por coherencia (un servicio borrado no debe figurar
+ *    como activo en ninguna lectura ni en posibles auditorías).
+ *  - Idempotente: si el service ya tiene `deletedAt`, devolvemos
+ *    `SERVICE_NOT_FOUND` — desde la perspectiva del listado, un servicio
+ *    ya borrado no existe.
+ *  - Las relaciones históricas (bookings pasadas con `serviceId`, métricas)
+ *    se preservan porque no hacemos hard-delete.
+ */
+export async function deleteServiceAction(
+  locale: AppLocale,
+  serviceId: string,
+): Promise<ServicesActionState> {
+  let providerId: string;
+  try {
+    const provider = await requireCurrentProvider(locale);
+    providerId = provider.id;
+  } catch {
+    return { ok: false, code: 'PROVIDER_NOT_FOUND' };
+  }
+
+  // Ownership + existencia: rechazamos los soft-deleted como si no existiesen.
+  const existing = await prisma.service.findUnique({
+    where: { id: serviceId },
+    select: { id: true, providerId: true, deletedAt: true },
+  });
+  if (!existing || existing.deletedAt) {
+    return { ok: false, code: 'SERVICE_NOT_FOUND' };
+  }
+  if (existing.providerId !== providerId) {
+    return { ok: false, code: 'FORBIDDEN' };
+  }
+
+  try {
+    await prisma.service.update({
+      where: { id: serviceId },
+      // Desactivamos también `isActive` por coherencia: ningún lector debería
+      // considerar como activo un servicio que ya está borrado.
+      data: { deletedAt: new Date(), isActive: false },
+    });
+  } catch (err) {
+    console.error('[panel/servicios] deleteServiceAction error:', err);
+    return { ok: false, code: 'INTERNAL' };
+  }
+
+  revalidatePath(`/${locale}/panel/servicios`);
+  return { ok: true };
+}

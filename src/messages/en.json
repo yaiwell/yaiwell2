@@ -415,7 +415,20 @@
       "pause": "Pause",
       "resume": "Reactivate",
       "updating": "Updating…",
-      "empty": "You haven't published any services yet."
+      "empty": "You haven't published any services yet.",
+      "delete": {
+        "button": "Delete",
+        "confirmTitle": "Delete service?",
+        "confirmDescription": "This action can't be undone. The service will no longer appear in your panel and no new bookings can be created. Past bookings and historical metrics are kept.",
+        "confirmAction": "Delete",
+        "cancel": "Cancel",
+        "deleting": "Deleting…",
+        "errors": {
+          "notFound": "This service no longer exists.",
+          "forbidden": "You don't have permission to delete this service.",
+          "internal": "Couldn't delete. Try again in a few seconds."
+        }
+      }
     },
     "addService": {
       "title": "Add service",
