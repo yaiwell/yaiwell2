@@ -522,6 +522,20 @@
         "alreadyResponded": "Respondida",
         "pending": "Pendiente de responder"
       },
+      "reply": {
+        "button": "Responder",
+        "placeholder": "Escribe tu respuesta para esta reseña…",
+        "submit": "Enviar respuesta",
+        "submitting": "Enviando…",
+        "cancel": "Cancelar",
+        "alreadyReplied": "Tu respuesta",
+        "errors": {
+          "VALIDATION": "La respuesta debe tener entre 5 y 1000 caracteres.",
+          "REVIEW_NOT_FOUND": "Esta valoración ya no existe. Recarga la página.",
+          "FORBIDDEN": "No tienes permiso para responder a esta valoración.",
+          "INTERNAL": "No se ha podido enviar la respuesta. Inténtalo en unos segundos."
+        }
+      },
       "empty": "No hay valoraciones que coincidan con los filtros."
     }
   },

@@ -3,7 +3,7 @@
 import { Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/components/ui/button';
+import { ReviewReplyForm } from '@/components/features/provider-panel/ReviewReplyForm';
 
 import { computeAverageRating, useReviewsFilters } from './ReceivedReviews.logic';
 import { receivedReviewsStyles as s } from './ReceivedReviews.styles';
@@ -35,6 +35,8 @@ export function ReceivedReviews({ reviews, locale }: ReceivedReviewsProps) {
   const t = useTranslations('providerPanel.reviews');
   const tFilters = useTranslations('providerPanel.reviews.filters');
   const tCard = useTranslations('providerPanel.reviews.card');
+  // `tCard` se mantiene para `serviceLabel`; la zona de respuesta usa
+  // su propio namespace `providerPanel.reviews.reply` desde `ReviewReplyForm`.
   const { filters, setFilters, filteredReviews } = useReviewsFilters(reviews);
 
   const averageRating = computeAverageRating(reviews);
@@ -141,28 +143,11 @@ export function ReceivedReviews({ reviews, locale }: ReceivedReviewsProps) {
 
               <p className={s.cardText}>{review.text}</p>
 
-              {review.providerResponse ? (
-                <div className={s.responseBox}>
-                  <span className={s.responseTitle}>{tCard('responseTitle')}</span>
-                  <p className={s.responseText}>{review.providerResponse.text}</p>
-                </div>
-              ) : (
-                <span className={s.pendingBadge}>{tCard('pending')}</span>
-              )}
-
-              <div className={s.cardActions}>
-                {review.providerResponse ? (
-                  <span className={s.respondedBadge}>{tCard('alreadyResponded')}</span>
-                ) : (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    data-component={`received-reviews-respond-${review.id}`}
-                  >
-                    {tCard('respond')}
-                  </Button>
-                )}
-              </div>
+              <ReviewReplyForm
+                reviewId={review.id}
+                locale={locale}
+                existingResponse={review.providerResponse}
+              />
             </li>
           ))}
         </ul>

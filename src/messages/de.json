@@ -522,6 +522,20 @@
         "alreadyResponded": "Beantwortet",
         "pending": "Antwort ausstehend"
       },
+      "reply": {
+        "button": "Antworten",
+        "placeholder": "Schreibe deine Antwort auf diese Bewertung…",
+        "submit": "Antwort senden",
+        "submitting": "Wird gesendet…",
+        "cancel": "Abbrechen",
+        "alreadyReplied": "Deine Antwort",
+        "errors": {
+          "VALIDATION": "Die Antwort muss zwischen 5 und 1000 Zeichen lang sein.",
+          "REVIEW_NOT_FOUND": "Diese Bewertung existiert nicht mehr. Bitte lade die Seite neu.",
+          "FORBIDDEN": "Du darfst auf diese Bewertung nicht antworten.",
+          "INTERNAL": "Die Antwort konnte nicht gesendet werden. Bitte versuche es in einigen Sekunden erneut."
+        }
+      },
       "empty": "Keine Bewertungen entsprechen den Filtern."
     }
   },
