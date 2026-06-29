@@ -23,6 +23,11 @@ import type { ProviderSearchResult, SearchLanguage, ServiceSearchResult } from '
  * El `regconfig` (`spanish` o `simple`) se interpola con `Prisma.raw`
  * porque no puede parametrizarse, pero está whitelisted (solo 2 valores
  * posibles vía Zod) — no hay vector de inyección.
+ *
+ * Solo devolvemos servicios con `isActive = true`: los pausados por
+ * el dueño desde `/panel/servicios` no deben aparecer al cliente en
+ * búsqueda pública (mismo criterio que se aplica en el flujo de
+ * reserva en `booking.service.createBooking`).
  */
 
 const REGCONFIG_BY_LANG: Record<SearchLanguage, 'spanish' | 'simple' | 'english' | 'german'> = {
@@ -80,6 +85,7 @@ export const searchRepository = {
         )::float8 AS score
       FROM services
       WHERE "deletedAt" IS NULL
+        AND "isActive" = true
         AND (
           search_vector @@ websearch_to_tsquery(${regconfig}, ${query})
           OR similarity(COALESCE(name->>'es', ''), ${query}) > ${TRIGRAM_THRESHOLD}

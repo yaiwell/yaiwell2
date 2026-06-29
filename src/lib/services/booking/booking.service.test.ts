@@ -37,6 +37,8 @@ import { prisma } from '@/lib/db/prisma';
 import {
   BookingNotConfirmedError,
   BookingTooLateToCancelError,
+  ServiceNotFoundError,
+  ServicePausedError,
   SlotUnavailableError,
   UnauthorizedCancellationError,
 } from './booking.errors';
@@ -64,12 +66,21 @@ const PROFESSIONAL_ID = 'b2c3d4e5-f6a7-4890-9bcd-ef0123456789';
 const BOOKING_ID = 'c3d4e5f6-a7b8-4901-aabc-de0123456789';
 const PROVIDER_ID = 'd4e5f6a7-b8c9-4012-8bcd-ef0123456789';
 
-function fakeService(overrides: Partial<{ durationMinutes: number; priceCents: number }> = {}) {
+function fakeService(
+  overrides: Partial<{
+    durationMinutes: number;
+    priceCents: number;
+    isActive: boolean;
+    deletedAt: Date | null;
+  }> = {},
+) {
   return {
     id: SERVICE_ID,
     providerId: PROVIDER_ID,
     durationMinutes: overrides.durationMinutes ?? 60,
     priceCents: overrides.priceCents ?? 5000,
+    isActive: overrides.isActive ?? true,
+    deletedAt: overrides.deletedAt ?? null,
     provider: {
       id: PROVIDER_ID,
       userId: 'user-provider',
@@ -151,6 +162,29 @@ describe('createBooking', () => {
       ZodError,
     );
     expect(mockPrisma.service.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('rechaza con ServicePausedError si el servicio está pausado', async () => {
+    const slotStart = new Date(Date.now() + 3 * 60 * 60 * 1000);
+
+    mockPrisma.service.findUnique.mockResolvedValue(fakeService({ isActive: false }));
+
+    await expect(createBooking({ ...baseInput, slotStart }, 'client-1')).rejects.toBeInstanceOf(
+      ServicePausedError,
+    );
+    expect(mockPrisma.booking.findMany).not.toHaveBeenCalled();
+    expect(mockPrisma.booking.create).not.toHaveBeenCalled();
+  });
+
+  it('rechaza con ServiceNotFoundError si el servicio está soft-deleted', async () => {
+    const slotStart = new Date(Date.now() + 3 * 60 * 60 * 1000);
+
+    mockPrisma.service.findUnique.mockResolvedValue(fakeService({ deletedAt: new Date() }));
+
+    await expect(createBooking({ ...baseInput, slotStart }, 'client-1')).rejects.toBeInstanceOf(
+      ServiceNotFoundError,
+    );
+    expect(mockPrisma.booking.create).not.toHaveBeenCalled();
   });
 });
 

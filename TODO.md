@@ -130,7 +130,7 @@
     - [x] **Crear nuevo** (`/panel/servicios/nuevo`): formulario cableado a server action `createServiceAction` reutilizando `createFirstServiceForProvider` del módulo de onboarding (validación Zod + ownership + creación en BD). Categorías cargadas server-side desde BD vía `getCategoriesTree` (jerarquía 3 niveles). `LocalizedText` se rellena solo en el locale activo; el resto de idiomas se completan más adelante con editor de traducciones (2026-06-12).
     - [x] **Editar** servicio existente en `/panel/servicios/[id]/editar`: reutiliza el `AddServiceForm` con `serviceId` + `initialValues`. Helper `findCategoryPath` traduce `Service.categoryId` plano al path completo del árbol para pre-seleccionar la cascada. `updateServiceAction` fusiona el `LocalizedText` para no perder los idiomas no editados (2026-06-12).
     - [x] **Pausar/reactivar** servicio: migración `6_service_is_active` añade `Service.isActive Boolean @default(true)` + partial index. Server action `toggleServiceActiveAction` con ownership check. UI: `ServiceToggleButton` cliente con `useTransition` (2026-06-12).
-    - [ ] **Aplicar filtro `isActive=true`** en búsqueda pública (`lib/services/search`) y en el flujo de booking para que los servicios pausados no aparezcan al cliente. El partial index `idx_services_provider_active` ya está listo.
+    - [x] **Aplicar filtro `isActive=true`** en búsqueda pública (`searchRepository.searchServices` con `AND "isActive" = true`) y en `booking.service.createBooking` (nuevo `ServicePausedError` tipado + chequeo `service.isActive` + chequeo `service.deletedAt` previo a `ServiceNotFoundError`). 2 tests nuevos en `booking.service.test.ts` (ServicePaused / ServiceNotFound soft-delete). El partial index `idx_services_provider_active` queda como soporte futuro al planner (2026-06-29).
     - [ ] **Eliminar** servicio (soft delete via `deletedAt`). Confirmación modal + server action.
     - [ ] **Refactor**: renombrar `createFirstServiceForProvider` a `createServiceForProvider` o similar — el "first" es histórico, la función ya se reutiliza fuera del onboarding.
   - [x] **Subir fotos del negocio** en `/panel/centro`: `ProviderPhotosCard` cablea el `PhotoUploader` compartido (bucket `provider-photos`) a server action `updateProviderPhotosAction` que reutiliza `updateProviderPhotos` del onboarding. Persiste `Provider.photos` con cada cambio (2026-06-12).
@@ -202,5 +202,5 @@
 
 ---
 
-*Última actualización: 2026-06-11 (Mapbox: cuenta creada + token público pegado en `.env.local` y validado con llamada real al endpoint de geocoding. Bloque B operativo solo pendiente de Sentry y E2E del wizard).*
+*Última actualización: 2026-06-29 (filtro `isActive=true` aplicado en búsqueda FTS pública y en `createBooking` con nuevo `ServicePausedError`; cierra el ciclo del toggle pausar/reactivar del panel).*
 

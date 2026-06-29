@@ -15,6 +15,7 @@ export {
   BookingNotFoundError,
   BookingTooLateToCancelError,
   ServiceNotFoundError,
+  ServicePausedError,
   SlotUnavailableError,
   UnauthorizedCancellationError,
 } from './booking.errors';

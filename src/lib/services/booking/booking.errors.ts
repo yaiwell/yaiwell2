@@ -49,6 +49,23 @@ export class ServiceNotFoundError extends Error {
   }
 }
 
+/**
+ * Error lanzado al intentar reservar un servicio pausado por el dueño
+ * (`Service.isActive = false`). Los servicios pausados desaparecen de
+ * búsqueda y de la ficha pública del proveedor, pero el caller podría
+ * llegar aquí con una URL stale, un deeplink antiguo o una carrera
+ * entre el render de la ficha y el toggle del proveedor. Lo cortamos
+ * en el borde del servicio para no crear reservas huérfanas.
+ */
+export class ServicePausedError extends Error {
+  readonly code = 'SERVICE_PAUSED';
+
+  constructor(message = 'El servicio está pausado y no admite reservas.') {
+    super(message);
+    this.name = 'ServicePausedError';
+  }
+}
+
 export class UnauthorizedCancellationError extends Error {
   readonly code = 'UNAUTHORIZED_CANCELLATION';
 

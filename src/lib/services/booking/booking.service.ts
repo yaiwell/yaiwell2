@@ -19,6 +19,7 @@ import {
   BookingNotFoundError,
   BookingTooLateToCancelError,
   ServiceNotFoundError,
+  ServicePausedError,
   SlotUnavailableError,
   UnauthorizedCancellationError,
 } from './booking.errors';
@@ -49,7 +50,8 @@ const CANCELLATION_LEAD_TIME_MS = 2 * 60 * 60 * 1000;
  *
  * @param input — datos crudos del cliente (validados con Zod).
  * @param clientId — id del usuario autenticado (`User.id`).
- * @throws ServiceNotFoundError — si el servicio no existe.
+ * @throws ServiceNotFoundError — si el servicio no existe o está soft-deleted.
+ * @throws ServicePausedError — si el servicio está pausado por el dueño.
  * @throws SlotUnavailableError — si el slot solapa con otra reserva activa.
  */
 export async function createBooking(input: unknown, clientId: string) {
@@ -61,8 +63,13 @@ export async function createBooking(input: unknown, clientId: string) {
     where: { id: data.serviceId },
     include: { provider: { include: { plan: true } } },
   });
-  if (!service) {
+  if (!service || service.deletedAt) {
     throw new ServiceNotFoundError();
+  }
+  // Bloqueamos reservas sobre servicios pausados aunque el caller llegue
+  // con un slug viejo o un deeplink en caché: la fuente de verdad es la BD.
+  if (!service.isActive) {
+    throw new ServicePausedError();
   }
 
   // Calculamos el cierre del slot a partir de la duración del servicio.
