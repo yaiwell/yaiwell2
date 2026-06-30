@@ -141,7 +141,7 @@
   - [ ] **Cálculo de ocupación** en `/panel` (dashboard) basado en `Professional.schedule` (horas trabajables / día) vs horas reservadas. Hoy queda en 0%.
   - [ ] **Cálculo timezone preciso** en panel/calendario y dashboard: hoy usamos límites semanales en UTC con desfase de 1-2h vs Madrid. Cuando llegue temporal-polyfill o equivalente, ajustar al lunes 00:00 Madrid exacto.
   - [~] Campos no recogidos en el wizard que el formulario de `/panel/centro` ya pinta vacíos con placeholder y necesitarán flujo: **horario semanal ya editable** (`ScheduleEditor` cablea a `Professional.schedule` del primer profesional via `updateProviderScheduleAction`, en paralelo con `updateProviderSettingsAction` desde el mismo botón Guardar — 2026-06-30); pendientes phone, email de contacto, city/postal separados. Decidir si city/postal se descomponen de `Provider.address` o se añaden como columnas extra. Para centros con N profesionales el editor edita el horario del **primer** professional (deuda multi-profesional explícita en la sección Multi-negocio).
-- [x] Motor de scheduling (slots de disponibilidad reales) — `availability.service` con tests vía Prisma mockeado (2026-06-03). Falta conectar a UI y al panel del proveedor.
+- [~] Motor de scheduling (slots de disponibilidad reales) — `availability.service` con tests vía Prisma mockeado (2026-06-03). **Conectado a la ficha de servicio** (2026-06-30): nuevo `getSlotsForService(serviceId, date)` + API `GET /api/availability/services/[serviceId]` + `SlotPicker` refactorizado a TanStack Query. Pendiente: conectar al listado público `/buscar` para que `availability.status` deje de ser placeholder `available_now`.
 - [ ] Búsqueda geoespacial con PostGIS (consulta `ST_DWithin` en `providers.repository.findAll` cuando crezca el catálogo; hoy filtramos en Node con Haversine, suficiente <500 providers).
 - [~] **`/buscar` sobre Postgres real (provisional)**: `providersRepository` y `providers.service` ahora leen `providers`/`services`/`reviews` reales vía raw SQL con `ST_X`/`ST_Y` para PostGIS + `array_agg` para categoryIds. Auto-approve `verificationStatus` en dev/preview (`VERCEL_ENV !== 'production'`), pending en prod. `getProviderDetail` paraleliza Provider + Services + Reviews + breakdown calculado en Node. `availability.status` queda en `'available_now'` placeholder hasta conectar motor real al listado público (sería N×M cascada). FTS de `lib/services/search` aún no se usa aquí — filter en Node hasta crecer catálogo. (2026-06-30)
 - [~] Búsqueda con PostgreSQL full-text search (tsvector + pg_trgm para fuzzy matching).
@@ -208,5 +208,5 @@
 
 ---
 
-*Última actualización: 2026-06-30 (onboarding del provider a Stripe Connect Express; falta aplicar migración 7 y pegar env vars).*
+*Última actualización: 2026-06-30 (SlotPicker sobre slots reales del motor `availability` — la ficha del servicio ya muestra horarios reales del Professional).*
 

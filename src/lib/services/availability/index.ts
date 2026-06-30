@@ -5,7 +5,7 @@
  * services) debe importar desde aquí. Importar archivos internos
  * directamente está prohibido por convención del proyecto.
  */
-export { getAvailableSlots, isSlotAvailable } from './availability.service';
+export { getAvailableSlots, getSlotsForService, isSlotAvailable } from './availability.service';
 export { availabilityRepository } from './availability.repository';
 export {
   computeAvailableSlots,
@@ -13,7 +13,11 @@ export {
   getWeekdayKey,
   isSlotFree,
 } from './availability.calc';
-export { InvalidScheduleError, ProfessionalNotFoundError } from './availability.errors';
+export {
+  InvalidScheduleError,
+  ProfessionalNotFoundError,
+  ServiceForAvailabilityNotFoundError,
+} from './availability.errors';
 export {
   getAvailableSlotsSchema,
   weeklyScheduleSchema,

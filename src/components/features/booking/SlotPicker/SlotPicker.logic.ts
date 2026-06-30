@@ -1,13 +1,9 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
-import {
-  buildUpcomingDays,
-  generateBookingSlots,
-  getDateKey,
-  type BookingSlot,
-} from '@/lib/fake-data/booking-slots';
+import { buildUpcomingDays, getDateKey, type BookingSlot } from '@/lib/fake-data/booking-slots';
 
 import type { DayTab } from './SlotPicker.types';
 
@@ -17,6 +13,21 @@ import type { DayTab } from './SlotPicker.types';
  * sin abrumar el scroll horizontal.
  */
 const VISIBLE_DAYS = 14;
+
+/**
+ * Forma de los slots tal y como los devuelve el endpoint
+ * `/api/availability/services/[serviceId]`. El motor sólo devuelve
+ * slots disponibles, así que `available: true` es siempre constante.
+ * Mantenemos el shape `BookingSlot` para no tocar el componente UI.
+ */
+interface SlotsApiResponse {
+  slots: BookingSlot[];
+  took: number;
+}
+
+interface SlotsApiError {
+  error: { code: string; message: string };
+}
 
 /**
  * Devuelve la abreviatura del día de la semana según el locale, con
@@ -75,15 +86,57 @@ export function formatSlotTime(slot: BookingSlot, locale: 'es' | 'ca' | 'en' | '
 }
 
 /**
+ * Construye la URL del endpoint público de availability. Centralizada
+ * en un helper para que el `queryKey` y la URL de fetch coincidan
+ * exactamente — TanStack Query usa la clave como cache key.
+ */
+function buildSlotsUrl(serviceId: string, dateKey: string): string {
+  return `/api/availability/services/${encodeURIComponent(serviceId)}?date=${dateKey}`;
+}
+
+/**
+ * Hace fetch del endpoint público y devuelve la lista de `BookingSlot`.
+ *
+ * El motor sólo devuelve disponibles, así que el array está vacío
+ * cuando no hay slots libres (la UI lo trata como "día sin huecos").
+ * Lanza si la respuesta no es OK para que TanStack lo capture y
+ * exponga `isError` al componente.
+ */
+async function fetchSlots(
+  serviceId: string,
+  dateKey: string,
+  signal?: AbortSignal,
+): Promise<BookingSlot[]> {
+  const res = await fetch(buildSlotsUrl(serviceId, dateKey), {
+    method: 'GET',
+    headers: { Accept: 'application/json' },
+    signal,
+  });
+  if (!res.ok) {
+    const payload = (await res.json().catch(() => null)) as SlotsApiError | null;
+    throw new Error(payload?.error?.message ?? `Slots API ${res.status}`);
+  }
+  const json = (await res.json()) as SlotsApiResponse;
+  return json.slots;
+}
+
+/**
  * Hook que gestiona el estado y los datos derivados del SlotPicker.
  *
  * Centraliza:
  *  - Día seleccionado (estado local controlado).
- *  - Generación determinista de slots para ese día.
+ *  - Carga de slots reales para ese día via TanStack Query
+ *    (`/api/availability/services/[serviceId]`). El motor `availability.service`
+ *    consulta `Professional.schedule` + bookings activas del día, así
+ *    que los huecos reflejan la realidad del centro.
  *  - Construcción de las pestañas de día con metadatos visuales.
  *
  * Mantenemos `now` como parámetro inyectable para los tests, igual que
  * `ProviderHeader.logic.ts`, evitando llamar `Date.now()` en render.
+ *
+ * `providerId` queda como prop por compat histórica del componente UI;
+ * el endpoint resuelve provider+professional internamente desde el
+ * `serviceId`, así que aquí no lo usamos para la query.
  */
 export function useSlotPicker(args: {
   providerId: string;
@@ -113,24 +166,34 @@ export function useSlotPicker(args: {
     [days, args.locale, selectedDay, now],
   );
 
-  const slots = useMemo<BookingSlot[]>(
-    () =>
-      generateBookingSlots(
-        args.providerId,
-        args.serviceId,
-        selectedDay,
-        args.serviceDurationMinutes,
-        now,
-      ),
-    [args.providerId, args.serviceId, args.serviceDurationMinutes, selectedDay, now],
-  );
+  const dateKey = getDateKey(selectedDay);
+  const query = useQuery<BookingSlot[]>({
+    // queryKey segmentado por serviceId + día: cache automático cuando
+    // el usuario vuelve a un día ya consultado.
+    queryKey: ['availability', args.serviceId, dateKey],
+    queryFn: ({ signal }) => fetchSlots(args.serviceId, dateKey, signal),
+    // Slots cambian poco en minutos: caché 60s para evitar refetch
+    // agresivo al hacer click rápido entre días.
+    staleTime: 60_000,
+    // Mantenemos los slots del día anterior visibles mientras carga
+    // el nuevo, así no hay parpadeo de "vacío" entre clics.
+    placeholderData: (prev) => prev,
+  });
+
+  // El componente espera `slots: BookingSlot[]` sin loading state;
+  // mientras carga devolvemos lista vacía. Si el componente quiere
+  // distinguir "cargando" de "sin huecos" puede leer `query.isPending`
+  // que también exponemos.
+  const slots: BookingSlot[] = query.data ?? [];
 
   return {
     now,
     dayTabs,
     selectedDay,
-    selectedDayKey: getDateKey(selectedDay),
+    selectedDayKey: dateKey,
     setSelectedDay,
     slots,
+    isLoading: query.isPending,
+    isError: query.isError,
   };
 }

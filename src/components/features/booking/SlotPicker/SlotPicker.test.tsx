@@ -1,21 +1,22 @@
-import { render, screen, within } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SlotPicker } from './SlotPicker';
 
 /**
  * Tests del componente SlotPicker.
  *
- * Verificamos el comportamiento observable más relevante para el flujo
- * de reserva:
- *  - El usuario ve la tira de días navegables.
- *  - Los slots libres pueden seleccionarse; los ocupados están deshabilitados.
- *  - Cambiar de día regenera los slots de forma determinista.
+ * Mockeamos `fetch` para devolver una lista determinista de slots desde
+ * el endpoint `/api/availability/services/[serviceId]`. El motor real
+ * sólo devuelve slots disponibles (los ocupados quedan fuera de la
+ * lista), así que no comprobamos el caso "disabled" — esa UX se quedó
+ * en el generador fake heredado y ya no aplica al nuevo flujo.
  *
- * Anclamos `now` lejos en el futuro para que la generación no excluya
- * slots por "hora ya pasada".
+ * Anclamos `now` lejos en el futuro para que el formateo no excluya
+ * slots por "hora ya pasada" del lado del cliente.
  */
 
 const messages = {
@@ -32,6 +33,31 @@ const messages = {
   },
 };
 
+/**
+ * Lista determinista de slots que el mock de fetch devuelve siempre.
+ * Mezclamos mañana (10:00, 11:00) y tarde (16:00, 17:00) para validar
+ * la partición `morning/afternoon` que hace `splitSlotsByDayPart`.
+ */
+const FAKE_SLOTS = [
+  { startAtIso: '2099-06-14T10:00:00.000Z', endAtIso: '2099-06-14T11:00:00.000Z', available: true },
+  { startAtIso: '2099-06-14T11:00:00.000Z', endAtIso: '2099-06-14T12:00:00.000Z', available: true },
+  { startAtIso: '2099-06-14T16:00:00.000Z', endAtIso: '2099-06-14T17:00:00.000Z', available: true },
+  { startAtIso: '2099-06-14T17:00:00.000Z', endAtIso: '2099-06-14T18:00:00.000Z', available: true },
+];
+
+beforeEach(() => {
+  // Mock global de fetch: el hook llama a `/api/availability/...` y
+  // aquí lo sustituimos por una respuesta JSON con la lista fija.
+  vi.spyOn(global, 'fetch').mockResolvedValue({
+    ok: true,
+    json: async () => ({ slots: FAKE_SLOTS, took: 0 }),
+  } as Response);
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
 function renderPicker(overrides?: {
   selectedStartIso?: string | null;
   onSelect?: (slot: { startAtIso: string }) => void;
@@ -39,18 +65,25 @@ function renderPicker(overrides?: {
   const now = new Date(2099, 5, 14, 8, 0, 0); // 14 junio 2099, 08:00
   const onSelect = overrides?.onSelect ?? vi.fn();
 
+  // Cliente nuevo por test para no compartir caché entre casos.
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false, gcTime: 0 } },
+  });
+
   const utils = render(
-    <NextIntlClientProvider locale="es" messages={messages}>
-      <SlotPicker
-        providerId="prov-01"
-        serviceId="svc-01"
-        serviceDurationMinutes={60}
-        locale="es"
-        selectedStartIso={overrides?.selectedStartIso ?? null}
-        onSelect={onSelect}
-        now={now}
-      />
-    </NextIntlClientProvider>,
+    <QueryClientProvider client={queryClient}>
+      <NextIntlClientProvider locale="es" messages={messages}>
+        <SlotPicker
+          providerId="prov-01"
+          serviceId="svc-01"
+          serviceDurationMinutes={60}
+          locale="es"
+          selectedStartIso={overrides?.selectedStartIso ?? null}
+          onSelect={onSelect}
+          now={now}
+        />
+      </NextIntlClientProvider>
+    </QueryClientProvider>,
   );
 
   return { ...utils, onSelect, now };
@@ -66,28 +99,29 @@ describe('SlotPicker', () => {
     expect(tabs).toHaveLength(14);
   });
 
-  it('muestra los encabezados de "Mañana" y "Tarde" cuando hay slots disponibles', () => {
+  it('muestra los encabezados de "Mañana" y "Tarde" cuando hay slots', async () => {
     renderPicker();
 
-    expect(screen.getByText('Mañana')).toBeInTheDocument();
-    expect(screen.getByText('Tarde')).toBeInTheDocument();
+    // Esperar a que el fetch resuelva y aparezcan los headers (que sólo
+    // se renderizan cuando hay al menos un slot).
+    await waitFor(() => {
+      expect(screen.getByText('Mañana')).toBeInTheDocument();
+      expect(screen.getByText('Tarde')).toBeInTheDocument();
+    });
   });
 
   it('invoca onSelect con el slot al hacer click en un hueco disponible', async () => {
     const onSelect = vi.fn();
     renderPicker({ onSelect });
 
-    // Tomamos cualquier botón habilitado de la cuadrícula de slots.
-    // No filtramos por hora exacta porque el contenido depende del
-    // hash determinista; nos basta con que el primer botón habilitado
-    // dispare el callback con un slot válido.
+    // Esperamos a que aparezcan los headers (señal de que el fetch resolvió),
+    // luego seleccionamos cualquier botón de la cuadrícula de slots por su
+    // data-component (estable y único por slot).
+    await screen.findByText('Mañana');
+
     const enabledSlot = screen
       .getAllByRole('button')
-      .find(
-        (btn) =>
-          btn.getAttribute('data-component')?.startsWith('booking-slot-picker-slot-') &&
-          !btn.hasAttribute('disabled'),
-      );
+      .find((btn) => btn.getAttribute('data-component')?.startsWith('booking-slot-picker-slot-'));
 
     expect(enabledSlot).toBeDefined();
     if (!enabledSlot) return;
@@ -104,44 +138,27 @@ describe('SlotPicker', () => {
     );
   });
 
-  it('mantiene los slots ocupados como botones deshabilitados', () => {
+  it('llama al endpoint correcto al seleccionar otro día', async () => {
     renderPicker();
 
-    const disabledSlots = screen
-      .getAllByRole('button')
-      .filter(
-        (btn) =>
-          btn.getAttribute('data-component')?.startsWith('booking-slot-picker-slot-') &&
-          btn.hasAttribute('disabled'),
-      );
+    // Esperar a la primera carga.
+    await screen.findByText('Mañana');
 
-    // Con el seed (`prov-01`, `svc-01`) esperamos al menos un slot
-    // ocupado en el día seleccionado; si en algún momento esto falla
-    // sería síntoma de que el generador determinista cambió y hay que
-    // actualizar también este test.
-    expect(disabledSlots.length).toBeGreaterThan(0);
-  });
-
-  it('cambia los slots mostrados al seleccionar otro día', async () => {
-    renderPicker();
+    const fetchSpy = vi.mocked(global.fetch);
+    const initialCalls = fetchSpy.mock.calls.length;
 
     const tabList = screen.getByRole('tablist', { name: 'Días disponibles' });
     const tabs = within(tabList).getAllByRole('tab');
 
-    // Saltamos a otro día (el tercero) para forzar la regeneración.
+    // Saltamos al tercer día y validamos que dispare un nuevo fetch
+    // con la fecha correspondiente en el querystring.
     await userEvent.click(tabs[2]);
 
-    const newSlotComponents = screen
-      .getAllByRole('button')
-      .filter((btn) => btn.getAttribute('data-component')?.startsWith('booking-slot-picker-slot-'))
-      .map((btn) => btn.getAttribute('data-component'));
-
-    // Aunque las horas teóricas coincidan, el patrón de ocupados cambia
-    // por el seed (que depende de la fecha); como mínimo, no esperamos
-    // exactamente la misma lista renderizada (estados distintos = render distinto).
-    // La forma robusta es comparar el atributo aria-pressed o disabled.
-    expect(newSlotComponents.length).toBeGreaterThan(0);
-    // Sanity check: la pestaña recién seleccionada está activa.
+    await waitFor(() => {
+      expect(fetchSpy.mock.calls.length).toBeGreaterThan(initialCalls);
+    });
+    const lastUrl = String(fetchSpy.mock.calls[fetchSpy.mock.calls.length - 1][0]);
+    expect(lastUrl).toMatch(/\/api\/availability\/services\/svc-01\?date=\d{4}-\d{2}-\d{2}/u);
     expect(tabs[2]).toHaveAttribute('aria-selected', 'true');
   });
 });

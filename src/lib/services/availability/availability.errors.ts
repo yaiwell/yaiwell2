@@ -15,6 +15,20 @@ export class ProfessionalNotFoundError extends Error {
   }
 }
 
+/**
+ * Lanzado por `getSlotsForService` cuando el `serviceId` no existe,
+ * está pausado o soft-deleted. El caller (API route público) lo mapea
+ * a 404 sin filtrar el detalle interno.
+ */
+export class ServiceForAvailabilityNotFoundError extends Error {
+  readonly code = 'SERVICE_NOT_FOUND';
+
+  constructor(message = 'El servicio no existe o no admite reservas.') {
+    super(message);
+    this.name = 'ServiceForAvailabilityNotFoundError';
+  }
+}
+
 export class InvalidScheduleError extends Error {
   readonly code = 'INVALID_SCHEDULE';
 

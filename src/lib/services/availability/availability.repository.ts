@@ -63,4 +63,43 @@ export const availabilityRepository = {
       orderBy: { startAt: 'asc' },
     });
   },
+
+  /**
+   * Resuelve los datos mínimos de un Service necesarios para calcular
+   * disponibilidad: providerId, professionalId (puede ser null en el
+   * catálogo histórico) y duración. Filtra `isActive` y `deletedAt`
+   * para que servicios pausados o borrados no ofrezcan slots.
+   */
+  async findServiceForAvailability(serviceId: string): Promise<{
+    id: string;
+    providerId: string;
+    professionalId: string | null;
+    durationMinutes: number;
+  } | null> {
+    return prisma.service.findFirst({
+      where: { id: serviceId, deletedAt: null, isActive: true },
+      select: {
+        id: true,
+        providerId: true,
+        professionalId: true,
+        durationMinutes: true,
+      },
+    });
+  },
+
+  /**
+   * Devuelve el `id` del primer Professional activo del provider,
+   * ordenado por `createdAt asc`. Usado como fallback cuando el
+   * `Service.professionalId` viene null (catálogo Fase 0 — todos los
+   * services del wizard se crean con `null` y la disponibilidad se
+   * deriva del único professional del autónomo).
+   */
+  async findFirstProfessionalIdForProvider(providerId: string): Promise<string | null> {
+    const row = await prisma.professional.findFirst({
+      where: { providerId, deletedAt: null },
+      orderBy: { createdAt: 'asc' },
+      select: { id: true },
+    });
+    return row?.id ?? null;
+  },
 };

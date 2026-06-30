@@ -1,5 +1,9 @@
 import { computeAvailableSlots, getUtcDayBounds, isSlotFree } from './availability.calc';
-import { InvalidScheduleError, ProfessionalNotFoundError } from './availability.errors';
+import {
+  InvalidScheduleError,
+  ProfessionalNotFoundError,
+  ServiceForAvailabilityNotFoundError,
+} from './availability.errors';
 import { availabilityRepository } from './availability.repository';
 import { getAvailableSlotsSchema, weeklyScheduleSchema } from './availability.validation';
 import type { Slot, WeeklySchedule } from './availability.types';
@@ -109,4 +113,46 @@ export async function isSlotAvailable(
   );
 
   return isSlotFree(slotStart, durationMinutes, bookings);
+}
+
+/**
+ * Devuelve los slots disponibles para un Service concreto en un día.
+ *
+ * Atajo público que la UI/API consumen para no tener que conocer el
+ * grafo Service → Professional → Schedule:
+ *  1. Resuelve el `Service` (excluyendo pausados/soft-deleted).
+ *  2. Determina el `professionalId` efectivo: si el service lo tiene
+ *     asignado, ese; si no (catálogo Fase 0 — todos los services del
+ *     wizard se crean con `professionalId=null`), fallback al primer
+ *     Professional del provider.
+ *  3. Llama `getAvailableSlots` con la duración real del servicio.
+ *
+ * @throws ServiceForAvailabilityNotFoundError — si el service no existe,
+ *   está pausado o el provider no tiene Professional al que ofrecer
+ *   slots todavía.
+ * @throws InvalidScheduleError, ProfessionalNotFoundError — propagados
+ *   desde `getAvailableSlots`.
+ */
+export async function getSlotsForService(serviceId: string, date: Date): Promise<Slot[]> {
+  const service = await availabilityRepository.findServiceForAvailability(serviceId);
+  if (!service) {
+    throw new ServiceForAvailabilityNotFoundError();
+  }
+
+  const professionalId =
+    service.professionalId ??
+    (await availabilityRepository.findFirstProfessionalIdForProvider(service.providerId));
+  if (!professionalId) {
+    // Provider sin Professional asociado (caso patológico que el wizard
+    // no debería permitir). La UI lo tratará como "sin disponibilidad".
+    throw new ServiceForAvailabilityNotFoundError(
+      'El proveedor no tiene profesionales activos para este servicio.',
+    );
+  }
+
+  return getAvailableSlots({
+    professionalId,
+    date,
+    serviceDurationMinutes: service.durationMinutes,
+  });
 }
