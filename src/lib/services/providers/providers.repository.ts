@@ -172,7 +172,7 @@ export const providersRepository = {
           WHERE pc."providerId" = p.id
         ) AS "categoryIds"
       FROM providers p
-      WHERE p.id = ${id}::uuid
+      WHERE p.id = ${id}
         AND p."verificationStatus" = 'approved'
         AND p."deletedAt" IS NULL
       LIMIT 1
