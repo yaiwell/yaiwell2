@@ -14,60 +14,65 @@ import {
  * cubrimos exhaustivamente: forma feliz, ids con slugs largos, segmentos
  * mal formados y ausencia de id.
  */
-describe('buildProviderSlugWithId', () => {
-  it('compone el segmento concatenando slug y id con guión', () => {
-    // Arrange
-    const provider = { slug: 'atelier-norte', id: 'prov-01' };
+// UUID v4 de muestra: 8-4-4-4-12 hex. Usamos varios distintos en los
+// tests para no quemar el mismo en todos los casos y para verificar la
+// normalización a minúsculas.
+const UUID_A = '70a8dc5a-2fed-4aa4-907c-ad93a49eb879';
+const UUID_B = '01234567-89ab-4cde-8f01-234567890abc';
+const UUID_C = 'abcdef01-2345-4678-9abc-def012345678';
 
-    // Act
+describe('buildProviderSlugWithId', () => {
+  it('compone el segmento concatenando slug y UUID con guión', () => {
+    const provider = { slug: 'atelier-norte', id: UUID_A };
+
     const segment = buildProviderSlugWithId(provider);
 
-    // Assert
-    expect(segment).toBe('atelier-norte-prov-01');
+    expect(segment).toBe(`atelier-norte-${UUID_A}`);
   });
 
   it('preserva los guiones del slug cuando el slug es compuesto', () => {
-    const provider = { slug: 'casa-mar-massatges', id: 'prov-02' };
+    const provider = { slug: 'casa-mar-massatges', id: UUID_B };
 
     const segment = buildProviderSlugWithId(provider);
 
-    expect(segment).toBe('casa-mar-massatges-prov-02');
+    expect(segment).toBe(`casa-mar-massatges-${UUID_B}`);
   });
 });
 
 describe('parseProviderIdFromSlugWithId', () => {
-  it('extrae el id `prov-NN` del final del segmento', () => {
-    const id = parseProviderIdFromSlugWithId('atelier-norte-prov-01');
+  it('extrae el UUID del final del segmento', () => {
+    const id = parseProviderIdFromSlugWithId(`atelier-norte-${UUID_A}`);
 
-    expect(id).toBe('prov-01');
+    expect(id).toBe(UUID_A);
   });
 
-  it('extrae correctamente el id cuando el slug tiene varios guiones', () => {
-    const id = parseProviderIdFromSlugWithId('casa-mar-massatges-prov-02');
+  it('extrae correctamente el UUID cuando el slug tiene varios guiones', () => {
+    const id = parseProviderIdFromSlugWithId(`casa-mar-massatges-${UUID_B}`);
 
-    expect(id).toBe('prov-02');
+    expect(id).toBe(UUID_B);
   });
 
-  it('acepta ids con múltiples dígitos', () => {
-    const id = parseProviderIdFromSlugWithId('mega-centro-prov-1234');
+  it('normaliza UUIDs en mayúsculas a minúsculas', () => {
+    const id = parseProviderIdFromSlugWithId(`studio-aura-${UUID_C.toUpperCase()}`);
 
-    expect(id).toBe('prov-1234');
+    expect(id).toBe(UUID_C);
   });
 
-  it('devuelve null cuando el segmento no termina con el patrón `prov-NN`', () => {
-    const id = parseProviderIdFromSlugWithId('atelier-norte');
-
-    expect(id).toBeNull();
+  it('devuelve null cuando el segmento no termina con un UUID válido', () => {
+    expect(parseProviderIdFromSlugWithId('atelier-norte')).toBeNull();
   });
 
-  it('devuelve null cuando el sufijo no es numérico', () => {
-    const id = parseProviderIdFromSlugWithId('atelier-norte-prov-abc');
+  it('devuelve null cuando el sufijo es un id antiguo tipo prov-NN', () => {
+    // Patrón heredado de Fase 0 (fake-data). Ya no aplica con BD real.
+    expect(parseProviderIdFromSlugWithId('atelier-norte-prov-01')).toBeNull();
+  });
 
-    expect(id).toBeNull();
+  it('devuelve null cuando el UUID está truncado', () => {
+    expect(parseProviderIdFromSlugWithId('atelier-norte-70a8dc5a-2fed-4aa4-907c')).toBeNull();
   });
 
   it('es round-trip con buildProviderSlugWithId', () => {
-    const provider = { slug: 'studio-zen', id: 'prov-99' };
+    const provider = { slug: 'studio-zen', id: UUID_C };
 
     const segment = buildProviderSlugWithId(provider);
     const parsedId = parseProviderIdFromSlugWithId(segment);

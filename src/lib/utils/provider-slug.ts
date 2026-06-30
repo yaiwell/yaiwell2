@@ -1,11 +1,19 @@
 import type { Provider } from '@/types/domain';
 
 /**
- * Expresión regular que captura el id `prov-NN` al final del segmento.
- * El slug del proveedor puede contener guiones (`atelier-norte`), por lo
- * que anclamos al final con `$` para que el id sea siempre el sufijo.
+ * Expresión regular que captura el UUID v4 del final del segmento
+ * `{slug}-{uuid}`.
+ *
+ * `Provider.id` es un UUID v4 generado por `gen_random_uuid()` (formato
+ * `8-4-4-4-12` hex). El slug puede contener guiones (`atelier-norte`,
+ * `casa-mar-massatges`), así que anclamos al final con `$` para que el
+ * id sea siempre el sufijo. Los guiones internos del UUID los aceptan
+ * los grupos `{N}` separados, no chocan con los guiones del slug.
+ *
+ * Case-insensitive porque algunos clientes mayúsculan el UUID al copiar.
  */
-const PROVIDER_ID_SUFFIX_REGEX = /-(prov-\d+)$/;
+const PROVIDER_ID_SUFFIX_REGEX =
+  /-([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$/;
 
 /**
  * Construye el segmento de URL `{slug}-{id}` para la ficha del proveedor.
@@ -21,18 +29,19 @@ export function buildProviderSlugWithId(provider: Pick<Provider, 'slug' | 'id'>)
 }
 
 /**
- * Parsea un segmento `{slug}-{id}` y devuelve el id `prov-NN` final.
+ * Parsea un segmento `{slug}-{uuid}` y devuelve el UUID final.
  *
- * Validamos la forma estricta del id (`prov-` seguido de uno o más
- * dígitos) para que rutas con formato inesperado devuelvan `null` y
- * la página pueda responder con 404 sin tocar BD.
+ * Validamos la forma estricta del UUID v4 para que rutas con formato
+ * inesperado devuelvan `null` y la página pueda responder con 404 sin
+ * tocar BD. El id se devuelve en minúsculas (la BD persiste UUIDs en
+ * lowercase, así normalizamos clientes que copiaron con mayúsculas).
  *
  * @param slugWithId — segmento tal cual viene de la URL.
  * @returns el id del proveedor o `null` si no encaja el formato.
  */
 export function parseProviderIdFromSlugWithId(slugWithId: string): string | null {
   const match = slugWithId.match(PROVIDER_ID_SUFFIX_REGEX);
-  return match ? match[1] : null;
+  return match ? match[1].toLowerCase() : null;
 }
 
 /**
