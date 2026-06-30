@@ -142,7 +142,8 @@
   - [ ] **Cálculo timezone preciso** en panel/calendario y dashboard: hoy usamos límites semanales en UTC con desfase de 1-2h vs Madrid. Cuando llegue temporal-polyfill o equivalente, ajustar al lunes 00:00 Madrid exacto.
   - [ ] Campos no recogidos en el wizard que el formulario de `/panel/centro` ya pinta vacíos con placeholder y necesitarán flujo: phone, email de contacto, city/postal separados, horario semanal. Decidir si city/postal se descomponen de `Provider.address` o se añaden como columnas extra.
 - [x] Motor de scheduling (slots de disponibilidad reales) — `availability.service` con tests vía Prisma mockeado (2026-06-03). Falta conectar a UI y al panel del proveedor.
-- [ ] Búsqueda geoespacial con PostGIS.
+- [ ] Búsqueda geoespacial con PostGIS (consulta `ST_DWithin` en `providers.repository.findAll` cuando crezca el catálogo; hoy filtramos en Node con Haversine, suficiente <500 providers).
+- [~] **`/buscar` sobre Postgres real (provisional)**: `providersRepository` y `providers.service` ahora leen `providers`/`services`/`reviews` reales vía raw SQL con `ST_X`/`ST_Y` para PostGIS + `array_agg` para categoryIds. Auto-approve `verificationStatus` en dev/preview (`VERCEL_ENV !== 'production'`), pending en prod. `getProviderDetail` paraleliza Provider + Services + Reviews + breakdown calculado en Node. `availability.status` queda en `'available_now'` placeholder hasta conectar motor real al listado público (sería N×M cascada). FTS de `lib/services/search` aún no se usa aquí — filter en Node hasta crecer catálogo. (2026-06-30)
 - [~] Búsqueda con PostgreSQL full-text search (tsvector + pg_trgm para fuzzy matching).
   - [x] Migración `2_fts_search`: `search_vector` GENERATED STORED en `services` y `providers`, 2 triggers + `category_label_cache` para cross-table, 6 índices (2 GIN tsvector + 4 GIN trigram), spanish+simple combinados para multi-lengua es/ca (2026-06-09).
   - [x] Módulo `src/lib/services/search/` con `searchServices` / `searchProviders` (ranking 70% FTS + 30% trigram, validación Zod, 12 tests verde, 2026-06-09).
@@ -202,5 +203,5 @@
 
 ---
 
-*Última actualización: 2026-06-29 (lote de 4 mejoras en paralelo: eliminar servicio, responder reseña, persistir Guardar de centro, suggestions sobre Postgres; ya cerrados filtro `isActive` en búsqueda+booking de la mañana).*
+*Última actualización: 2026-06-30 (`/buscar` y ficha del centro sobre Postgres real; providers reales aparecen en el marketplace; auto-approve en dev/preview).*
 
