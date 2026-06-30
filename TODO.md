@@ -118,7 +118,7 @@
     - [~] **Capa 3**: pulido i18n + E2E del flujo completo (Playwright).
       - [x] Pulido i18n 4 locales (2026-06-10): título y `addressLabel` neutralizados (servían sólo para "centro" cuando el wizard cubre autónomos también), `slugPrefix` unificado a `yaiwell.com/centro/` (era bug: la URL real es siempre `/centro/[slug]-[id]` pero el prefijo mostrado variaba por locale), "Salon" alemán → "Studio/Geschäft" (Salon es demasiado específico de peluquería), género neutralizado en ES/CA (`solo o sola` → `por mi cuenta`, `Soc autònom/a` → `Pel meu compte`).
       - [~] E2E con Playwright recorriendo los 5 pasos contra Supabase dev (2026-06-10): infra montada (`@clerk/testing` + `clerkSetup` + helpers `ensureTestProviderRole` / `cleanupTestProviderBD` + intercept Mapbox vía `page.route()`); spec `tests/e2e/onboarding-wizard.spec.ts` recorre tipo → datos → ubicación → categoría+servicio → publicar → redirect a `/panel`. **Pendiente del dev**: crear user provider de pruebas en dashboard de Clerk con email `<tu>+clerk_test@…` y password, pegar `CLERK_TEST_PROVIDER_EMAIL`/`PASSWORD` en `.env.local`. Instrucciones completas en `tests/e2e/README-onboarding.md`. Tras eso, `npm run test:e2e` debería pasar.
-- [ ] Panel admin con cola de verificación real.
+- [x] **Panel admin con cola de verificación real** (`/admin` + `/admin/verificaciones/[id]`): nuevo módulo `lib/services/verification/` (service+repository+validation+errors+types+index) lee `Provider.verificationStatus='pending'` con JOIN a `users` y primera categoría asociada. `approveProvider` y `rejectProvider` (notas obligatorias ≥5 chars) actualizan `Provider.verificationStatus` y registran decisión en `VerificationRequest` (UPSERT por providerId) dentro de una `$transaction`. Server actions `approveProviderAction`/`rejectProviderAction` con `requireRole(['admin'])` + `ensureUserFromClerk`. `VerificationDetail` ahora es Client real con `useTransition` + `AlertDialog` Radix para el motivo de rechazo. Nuevo `lib/services/admin-metrics/` calcula KPIs reales (bookings hoy, GMV semanal, providers pending, tasa cancelación semanal); `deltaPercent=0` por ahora (cálculo de delta semanal queda como pulido). 12 tests nuevos del service. **Operativa**: para usar el panel el dev debe asignarse rol `admin` en Clerk dashboard → User → Public metadata → `{"role":"admin"}`. (2026-06-30)
 - [ ] Sistema de servicios con jerarquía de categorías editable.
 - [~] Panel del proveedor (`/panel/*`) sobre datos reales — queries de lectura ya cableadas; persistencia y CRUD aún pendientes.
   - [x] `/panel/centro` lee Provider real desde BD (businessName, vatNumber, description, address, photos). Botón Guardar sigue siendo visual; persistencia en pendiente abajo (2026-06-11).
@@ -203,5 +203,5 @@
 
 ---
 
-*Última actualización: 2026-06-30 (`/buscar` y ficha del centro sobre Postgres real; providers reales aparecen en el marketplace; auto-approve en dev/preview).*
+*Última actualización: 2026-06-30 (panel admin con cola de verificación real sobre Postgres; aprobar/rechazar con motivo; KPIs globales sobre BD real).*
 

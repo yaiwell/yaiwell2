@@ -39,4 +39,25 @@ export const verificationDetailStyles = {
     'fixed inset-x-4 bottom-24 z-20 mx-auto flex max-w-md items-center justify-between gap-3 rounded-2xl border border-border bg-foreground px-4 py-3 text-sm text-background shadow-lg duration-200 animate-in fade-in slide-in-from-bottom-2 sm:bottom-8',
   toastClose:
     'rounded-full px-2 py-1 text-xs text-background/80 transition-colors duration-150 hover:text-background focus-visible:text-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-background/40',
+  // Banner inline cuando una action devuelve error (excepto NOTES_REQUIRED,
+  // que se pinta dentro del propio AlertDialog).
+  errorBanner:
+    'rounded-2xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive',
+  // AlertDialog para rechazar: overlay oscuro + panel centrado con
+  // backdrop blur, mismo lenguaje visual que el ServiceDeleteButton.
+  dialogOverlay:
+    'fixed inset-0 z-30 bg-foreground/40 backdrop-blur-sm duration-150 animate-in fade-in',
+  dialogContent:
+    'fixed left-1/2 top-1/2 z-40 flex w-[min(92vw,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-3xl border border-border bg-card p-6 shadow-xl duration-150 animate-in fade-in zoom-in-95',
+  dialogTitle: 'font-display text-lg text-foreground',
+  dialogDescription: 'text-sm leading-relaxed text-muted-foreground',
+  dialogLabel: 'text-xs font-medium uppercase tracking-wider text-muted-foreground',
+  dialogTextarea:
+    'w-full resize-y rounded-2xl border border-border/70 bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60',
+  dialogError: 'text-sm text-destructive',
+  dialogActions: 'flex flex-col-reverse gap-2 sm:flex-row sm:justify-end',
+  dialogCancel:
+    'inline-flex items-center justify-center rounded-full border border-border/70 bg-background px-5 py-2.5 text-sm font-medium text-foreground transition-colors duration-150 hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60',
+  dialogConfirm:
+    'inline-flex items-center justify-center rounded-full border border-destructive/30 bg-destructive/15 px-5 py-2.5 text-sm font-medium text-destructive transition-colors duration-150 hover:bg-destructive/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-60',
 } as const;

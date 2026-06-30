@@ -707,6 +707,8 @@
         "contactTitle": "Contact details",
         "descriptionTitle": "Provider description",
         "documentsTitle": "Documentation",
+        "noDescription": "The provider hasn’t filled in a description yet.",
+        "noDocuments": "The provider hasn’t uploaded any documentation yet.",
         "fields": {
           "email": "Email",
           "phone": "Phone",
@@ -721,12 +723,24 @@
         },
         "actions": {
           "approve": "Approve",
-          "reject": "Reject"
+          "approving": "Approving…",
+          "reject": "Reject",
+          "rejecting": "Rejecting…"
         },
-        "toast": {
-          "approved": "{name}'s request approved (demo).",
-          "rejected": "{name}'s request rejected (demo).",
-          "dismiss": "Close"
+        "rejectDialog": {
+          "title": "Reject verification?",
+          "description": "You’re about to reject {name}. Give a clear reason: we keep it on file and use it to reply to the provider.",
+          "notesLabel": "Reason for rejection",
+          "notesPlaceholder": "Incomplete paperwork, unverifiable details, mismatched address…",
+          "cancel": "Cancel",
+          "confirm": "Reject"
+        },
+        "errors": {
+          "PROVIDER_NOT_FOUND": "The provider is no longer in the queue.",
+          "VALIDATION": "The submitted data is invalid.",
+          "NOTES_REQUIRED": "The reason must be at least 5 characters.",
+          "FORBIDDEN": "You don’t have permission for this action.",
+          "INTERNAL": "Something went wrong. Please try again."
         }
       }
     }

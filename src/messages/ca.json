@@ -707,6 +707,8 @@
         "contactTitle": "Dades de contacte",
         "descriptionTitle": "Descripció del proveïdor",
         "documentsTitle": "Documentació",
+        "noDescription": "El proveïdor encara no ha emplenat cap descripció.",
+        "noDocuments": "El proveïdor encara no ha pujat documentació.",
         "fields": {
           "email": "Email",
           "phone": "Telèfon",
@@ -721,12 +723,24 @@
         },
         "actions": {
           "approve": "Aprovar",
-          "reject": "Rebutjar"
+          "approving": "Aprovant…",
+          "reject": "Rebutjar",
+          "rejecting": "Rebutjant…"
         },
-        "toast": {
-          "approved": "Sol·licitud de {name} aprovada (demo).",
-          "rejected": "Sol·licitud de {name} rebutjada (demo).",
-          "dismiss": "Tancar"
+        "rejectDialog": {
+          "title": "Rebutjar la verificació?",
+          "description": "Estàs a punt de rebutjar {name}. Indica un motiu clar: el desem al registre i servirà per respondre al proveïdor.",
+          "notesLabel": "Motiu del rebuig",
+          "notesPlaceholder": "Documentació incompleta, dades no verificables, adreça que no correspon…",
+          "cancel": "Cancel·lar",
+          "confirm": "Rebutjar"
+        },
+        "errors": {
+          "PROVIDER_NOT_FOUND": "El proveïdor ja no és a la cua.",
+          "VALIDATION": "Les dades enviades no són vàlides.",
+          "NOTES_REQUIRED": "El motiu ha de tenir com a mínim 5 caràcters.",
+          "FORBIDDEN": "No tens permís per a aquesta acció.",
+          "INTERNAL": "Alguna cosa ha fallat. Torna-ho a provar."
         }
       }
     }

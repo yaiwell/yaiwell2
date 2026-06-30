@@ -707,6 +707,8 @@
         "contactTitle": "Kontaktdaten",
         "descriptionTitle": "Beschreibung des Anbieters",
         "documentsTitle": "Dokumente",
+        "noDescription": "Der Anbieter hat noch keine Beschreibung hinterlegt.",
+        "noDocuments": "Der Anbieter hat noch keine Dokumente hochgeladen.",
         "fields": {
           "email": "E-Mail",
           "phone": "Telefon",
@@ -721,12 +723,24 @@
         },
         "actions": {
           "approve": "Genehmigen",
-          "reject": "Ablehnen"
+          "approving": "Genehmige…",
+          "reject": "Ablehnen",
+          "rejecting": "Lehne ab…"
         },
-        "toast": {
-          "approved": "Anfrage von {name} genehmigt (Demo).",
-          "rejected": "Anfrage von {name} abgelehnt (Demo).",
-          "dismiss": "Schließen"
+        "rejectDialog": {
+          "title": "Verifizierung ablehnen?",
+          "description": "Du bist dabei, {name} abzulehnen. Gib einen klaren Grund an: wir speichern ihn und nutzen ihn für die Antwort an den Anbieter.",
+          "notesLabel": "Ablehnungsgrund",
+          "notesPlaceholder": "Unvollständige Unterlagen, nicht überprüfbare Angaben, abweichende Adresse…",
+          "cancel": "Abbrechen",
+          "confirm": "Ablehnen"
+        },
+        "errors": {
+          "PROVIDER_NOT_FOUND": "Der Anbieter ist nicht mehr in der Warteschlange.",
+          "VALIDATION": "Die übermittelten Daten sind ungültig.",
+          "NOTES_REQUIRED": "Der Grund muss mindestens 5 Zeichen enthalten.",
+          "FORBIDDEN": "Du hast keine Berechtigung für diese Aktion.",
+          "INTERNAL": "Etwas ist schiefgegangen. Bitte erneut versuchen."
         }
       }
     }

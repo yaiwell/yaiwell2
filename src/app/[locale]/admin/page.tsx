@@ -3,9 +3,9 @@ import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { AdminMetricsGrid, VerificationsQueue } from '@/components/features/admin';
-import { routing } from '@/i18n/routing';
-import { fakeAdminMetrics } from '@/lib/fake-data/admin-metrics';
-import { getPendingVerifications } from '@/lib/fake-data/admin-verifications';
+import { routing, type AppLocale } from '@/i18n/routing';
+import { getAdminMetrics } from '@/lib/services/admin-metrics';
+import { listPendingVerifications } from '@/lib/services/verification';
 
 interface AdminDashboardPageProps {
   params: Promise<{ locale: string }>;
@@ -15,13 +15,14 @@ interface AdminDashboardPageProps {
  * Dashboard del panel admin (`/admin`).
  *
  * Renderiza:
- *  1. Grid de KPIs globales (reservas hoy, GMV semana, etc.).
- *  2. Cola de verificaciones pendientes con CTA por solicitud para
- *     abrir su ficha detallada.
+ *  1. Grid de KPIs globales sobre datos reales (bookings hoy, GMV
+ *     semanal, providers pendientes, tasa de cancelación).
+ *  2. Cola de verificaciones reales: lee Providers con
+ *     `verificationStatus = 'pending'` y los mapea al shape que ya
+ *     consume `VerificationsQueue`.
  *
- * Server Component: leemos los datos fake de forma síncrona en
- * tiempo de render. En Fase 1 esto se reemplazará por llamadas a
- * los repositorios y se mantendrá el mismo árbol de componentes.
+ * Server Component: ambas lecturas se paralelizan con `Promise.all`
+ * para minimizar la latencia inicial de la página.
  */
 export default async function AdminDashboardPage({ params }: AdminDashboardPageProps) {
   const { locale } = await params;
@@ -32,7 +33,11 @@ export default async function AdminDashboardPage({ params }: AdminDashboardPageP
   setRequestLocale(locale);
 
   const t = await getTranslations('adminArea');
-  const pending = getPendingVerifications();
+
+  const [metrics, pending] = await Promise.all([
+    getAdminMetrics(),
+    listPendingVerifications(locale as AppLocale),
+  ]);
 
   return (
     <div data-component="admin-dashboard-page" className="flex flex-col gap-10">
@@ -43,7 +48,7 @@ export default async function AdminDashboardPage({ params }: AdminDashboardPageP
         <p className="text-muted-foreground max-w-2xl text-sm">{t('dashboard.subtitle')}</p>
       </header>
 
-      <AdminMetricsGrid metrics={fakeAdminMetrics} />
+      <AdminMetricsGrid metrics={metrics} />
 
       <VerificationsQueue requests={pending} />
     </div>

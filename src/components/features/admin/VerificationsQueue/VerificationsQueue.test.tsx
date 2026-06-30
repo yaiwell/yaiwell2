@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it } from 'vitest';
 
-import type { AdminVerificationRequest } from '@/lib/fake-data/admin-verifications';
+import type { AdminVerificationRequest } from '@/lib/services/verification';
 
 import { VerificationsQueue } from './VerificationsQueue';
 

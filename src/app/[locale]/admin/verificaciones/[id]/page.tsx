@@ -3,8 +3,8 @@ import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 
 import { VerificationDetail } from '@/components/features/admin';
-import { routing } from '@/i18n/routing';
-import { getVerificationById } from '@/lib/fake-data/admin-verifications';
+import { routing, type AppLocale } from '@/i18n/routing';
+import { getVerificationDetail } from '@/lib/services/verification';
 
 interface VerificationDetailPageProps {
   // En Next.js 16 los `params` son Promises.
@@ -14,11 +14,14 @@ interface VerificationDetailPageProps {
 /**
  * Ficha de verificación individual (`/admin/verificaciones/[id]`).
  *
- * Server Component que:
- *  1. Valida el locale.
- *  2. Busca la solicitud por id; si no existe devuelve 404.
- *  3. Renderiza el componente cliente `VerificationDetail` que se
- *     encarga de la interacción aprobar/rechazar mock.
+ * El segmento `[id]` es ahora el `Provider.id` real (UUID v4); el
+ * routing no cambió porque el segmento acepta cualquier string. Si
+ * no existe el provider o ya fue soft-deleted, devolvemos 404.
+ *
+ * `VerificationDetail` ya es Client Component con server actions
+ * cableadas a `approve`/`reject`; aquí solo le pasamos `request` y
+ * `locale` (la action necesita el locale para construir la URL del
+ * `redirect` post-decisión).
  */
 export default async function VerificationDetailPage({ params }: VerificationDetailPageProps) {
   const { locale, id } = await params;
@@ -28,14 +31,14 @@ export default async function VerificationDetailPage({ params }: VerificationDet
   }
   setRequestLocale(locale);
 
-  const request = getVerificationById(id);
+  const request = await getVerificationDetail(id, locale as AppLocale);
   if (!request) {
     notFound();
   }
 
   return (
     <div data-component="admin-verification-detail-page" className="flex flex-col gap-6">
-      <VerificationDetail request={request} />
+      <VerificationDetail request={request} locale={locale as AppLocale} />
     </div>
   );
 }

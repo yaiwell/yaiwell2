@@ -707,6 +707,8 @@
         "contactTitle": "Datos de contacto",
         "descriptionTitle": "Descripción del proveedor",
         "documentsTitle": "Documentación",
+        "noDescription": "El proveedor todavía no ha rellenado una descripción.",
+        "noDocuments": "El proveedor aún no ha subido documentación.",
         "fields": {
           "email": "Email",
           "phone": "Teléfono",
@@ -721,12 +723,24 @@
         },
         "actions": {
           "approve": "Aprobar",
-          "reject": "Rechazar"
+          "approving": "Aprobando…",
+          "reject": "Rechazar",
+          "rejecting": "Rechazando…"
         },
-        "toast": {
-          "approved": "Solicitud de {name} aprobada (demo).",
-          "rejected": "Solicitud de {name} rechazada (demo).",
-          "dismiss": "Cerrar"
+        "rejectDialog": {
+          "title": "¿Rechazar verificación?",
+          "description": "Vas a rechazar a {name}. Indica un motivo claro: lo guardamos en el registro y servirá para responder al proveedor.",
+          "notesLabel": "Motivo del rechazo",
+          "notesPlaceholder": "Documentación incompleta, datos no verificables, dirección que no corresponde…",
+          "cancel": "Cancelar",
+          "confirm": "Rechazar"
+        },
+        "errors": {
+          "PROVIDER_NOT_FOUND": "El proveedor ya no está en la cola.",
+          "VALIDATION": "Los datos enviados no son válidos.",
+          "NOTES_REQUIRED": "El motivo debe tener al menos 5 caracteres.",
+          "FORBIDDEN": "No tienes permiso para esta acción.",
+          "INTERNAL": "Algo ha fallado. Inténtalo de nuevo."
         }
       }
     }
