@@ -7,13 +7,16 @@
  * `ProviderHeader` muestre el badge "disponible ahora" sin tener
  * que cruzar capas desde aquí.
  */
-import type { ProviderWithAvailability, Review, Service } from '@/types/domain';
+import type { WeeklySchedule } from '@/lib/services/availability';
 import type { RatingBreakdown } from '@/lib/services/providers';
+import type { ProviderWithAvailability, Review, Service } from '@/types/domain';
 
 export interface ProviderDetailProps {
   provider: ProviderWithAvailability;
   services: Service[];
   reviews: Review[];
   ratingBreakdown: RatingBreakdown;
+  /** Horario real del provider o `null` si no se pudo cargar. */
+  schedule: WeeklySchedule | null;
   locale: 'es' | 'ca' | 'en' | 'de';
 }

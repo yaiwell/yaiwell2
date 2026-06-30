@@ -303,10 +303,16 @@
       "title": "The place",
       "addressLabel": "Where to find us",
       "scheduleLabel": "When to find us",
-      "scheduleWeekdays": "Monday to Friday",
-      "scheduleSaturday": "Saturdays",
-      "scheduleSunday": "Sundays",
       "scheduleClosed": "Closed",
+      "days": {
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "sunday": "Sunday"
+      },
       "descriptionLabel": "The house"
     },
     "notFound": {

@@ -303,10 +303,16 @@
       "title": "El lloc",
       "addressLabel": "On som",
       "scheduleLabel": "Quan trobar-nos",
-      "scheduleWeekdays": "De dilluns a divendres",
-      "scheduleSaturday": "Dissabtes",
-      "scheduleSunday": "Diumenges",
       "scheduleClosed": "Tancat",
+      "days": {
+        "monday": "Dilluns",
+        "tuesday": "Dimarts",
+        "wednesday": "Dimecres",
+        "thursday": "Dijous",
+        "friday": "Divendres",
+        "saturday": "Dissabte",
+        "sunday": "Diumenge"
+      },
       "descriptionLabel": "La casa"
     },
     "notFound": {

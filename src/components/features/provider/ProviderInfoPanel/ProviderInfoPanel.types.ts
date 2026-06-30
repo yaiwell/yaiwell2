@@ -5,10 +5,18 @@
  * para resolver el campo `LocalizedText` de la descripción.
  */
 
+import type { WeeklySchedule } from '@/lib/services/availability';
 import type { Provider } from '@/types/domain';
 
 export interface ProviderInfoPanelProps {
   provider: Provider;
+  /**
+   * Horario semanal real del provider (del primer Professional). `null`
+   * si el provider no tiene Professional asociado (caso patológico
+   * que el page tolera devolviendo null) o si todos los días están
+   * cerrados — en ambos casos la UI esconde el bloque.
+   */
+  schedule: WeeklySchedule | null;
   locale: 'es' | 'ca' | 'en' | 'de';
 }
 

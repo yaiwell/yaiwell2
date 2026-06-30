@@ -32,6 +32,7 @@ export function ProviderDetail({
   services,
   reviews,
   ratingBreakdown,
+  schedule,
   locale,
 }: ProviderDetailProps) {
   // Construimos aquí el segmento `{slug}-{id}` para que los componentes
@@ -78,7 +79,7 @@ export function ProviderDetail({
           className={s.sectionAnchor}
           aria-labelledby="provider-info-heading"
         >
-          <ProviderInfoPanel provider={provider} locale={locale} />
+          <ProviderInfoPanel provider={provider} schedule={schedule} locale={locale} />
         </section>
       </div>
     </main>

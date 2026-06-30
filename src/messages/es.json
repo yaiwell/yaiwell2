@@ -303,10 +303,16 @@
       "title": "El lugar",
       "addressLabel": "Dónde estamos",
       "scheduleLabel": "Cuándo encontrarnos",
-      "scheduleWeekdays": "Lunes a viernes",
-      "scheduleSaturday": "Sábados",
-      "scheduleSunday": "Domingos",
       "scheduleClosed": "Cerrado",
+      "days": {
+        "monday": "Lunes",
+        "tuesday": "Martes",
+        "wednesday": "Miércoles",
+        "thursday": "Jueves",
+        "friday": "Viernes",
+        "saturday": "Sábado",
+        "sunday": "Domingo"
+      },
       "descriptionLabel": "La casa"
     },
     "notFound": {

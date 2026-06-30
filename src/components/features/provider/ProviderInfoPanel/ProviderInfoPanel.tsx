@@ -1,8 +1,43 @@
 import { getTranslations } from 'next-intl/server';
 
+import type { Weekday, WeekdayBlock, WeeklySchedule } from '@/lib/services/availability';
+
 import { ProviderInfoMapLoader } from './ProviderInfoMapLoader';
 import { providerInfoPanelStyles as s } from './ProviderInfoPanel.styles';
 import type { ProviderInfoPanelProps } from './ProviderInfoPanel.types';
+
+/**
+ * Orden visual de los días en el horario público. Lunes primero,
+ * domingo último — convención ES/CA/EN.
+ */
+const WEEKDAY_ORDER: readonly Weekday[] = [
+  'monday',
+  'tuesday',
+  'wednesday',
+  'thursday',
+  'friday',
+  'saturday',
+  'sunday',
+];
+
+/**
+ * Formatea los tramos de un día como `09:00 – 14:00, 16:00 – 20:00`.
+ * Si la lista es vacía, devuelve `null` y el caller pinta "Cerrado".
+ */
+function formatBlocks(blocks: WeekdayBlock[]): string | null {
+  if (blocks.length === 0) return null;
+  return blocks.map((b) => `${b.open} – ${b.close}`).join(', ');
+}
+
+/**
+ * `true` si el provider no tiene NINGÚN día abierto. Lo usamos para
+ * esconder el bloque de horario completo en lugar de mostrar 7 filas
+ * con "Cerrado" — caso típico de un provider recién dado de alta que
+ * todavía no configuró nada en `/panel/centro`.
+ */
+function isEntirelyClosed(schedule: WeeklySchedule): boolean {
+  return WEEKDAY_ORDER.every((day) => schedule[day].length === 0);
+}
 
 /**
  * Panel de información de la ficha del proveedor.
@@ -13,21 +48,15 @@ import type { ProviderInfoPanelProps } from './ProviderInfoPanel.types';
  *
  * Render:
  *  1. Mini-mapa con un pin en la ubicación del centro.
- *  2. Dirección y horario en grid 2 columnas (1 en mobile).
+ *  2. Dirección y horario (7 días reales con sus tramos) en grid 2
+ *     columnas (1 en mobile). Si el horario está vacío o no se pudo
+ *     cargar, esconde el bloque sin enseñar tabla con "Cerrado" en
+ *     los 7 días — patrón "no asumas que el silencio es ausencia".
  *  3. Descripción larga full width.
  */
-export async function ProviderInfoPanel({ provider, locale }: ProviderInfoPanelProps) {
+export async function ProviderInfoPanel({ provider, schedule, locale }: ProviderInfoPanelProps) {
   const t = await getTranslations('providerDetail.info');
-
-  // El horario es fake/realista de momento: la entidad `Provider`
-  // todavía no tiene un campo `schedule`. En Fase 1 vendrá del
-  // catálogo (ver VISION.md y TODO.md) y este bloque consumirá ese
-  // dato real en vez de strings hard-coded.
-  const schedule = [
-    { dayKey: 'scheduleWeekdays', value: '09:00 – 20:00' },
-    { dayKey: 'scheduleSaturday', value: '10:00 – 18:00' },
-    { dayKey: 'scheduleSunday', value: t('scheduleClosed') },
-  ] as const;
+  const showSchedule = schedule !== null && !isEntirelyClosed(schedule);
 
   return (
     <section className={s.section} data-component="provider-info-panel">
@@ -45,17 +74,23 @@ export async function ProviderInfoPanel({ provider, locale }: ProviderInfoPanelP
           <span className={s.blockContent}>{provider.address}</span>
         </div>
 
-        <div className={s.block} data-component="provider-info-panel-schedule">
-          <span className={s.blockLabel}>{t('scheduleLabel')}</span>
-          <ul className={s.scheduleList}>
-            {schedule.map((row) => (
-              <li key={row.dayKey} className={s.scheduleRow}>
-                <span className={s.scheduleDay}>{t(row.dayKey)}</span>
-                <span>{row.value}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        {showSchedule ? (
+          <div className={s.block} data-component="provider-info-panel-schedule">
+            <span className={s.blockLabel}>{t('scheduleLabel')}</span>
+            <ul className={s.scheduleList}>
+              {WEEKDAY_ORDER.map((day) => {
+                const blocks = schedule[day];
+                const formatted = formatBlocks(blocks);
+                return (
+                  <li key={day} className={s.scheduleRow}>
+                    <span className={s.scheduleDay}>{t(`days.${day}`)}</span>
+                    <span>{formatted ?? t('scheduleClosed')}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : null}
       </div>
 
       <div className={s.descriptionBlock} data-component="provider-info-panel-description">

@@ -7,6 +7,7 @@ import { ProviderDetail } from '@/components/features/provider/ProviderDetail';
 import { routing, type AppLocale } from '@/i18n/routing';
 import { getAvailabilityStatus, getNextSlot } from '@/lib/fake-data/availability';
 import { pickLocalized } from '@/lib/i18n';
+import { getProviderSchedule, ProviderHasNoProfessionalError } from '@/lib/services/provider';
 import { getProviderDetail } from '@/lib/services/providers';
 import { parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
 import type { ProviderWithAvailability } from '@/types/domain';
@@ -75,6 +76,15 @@ export default async function ProviderPage({ params }: ProviderPageProps) {
   const detail = await loadDetail(slugWithId);
   if (!detail) notFound();
 
+  // Cargamos el horario real del provider en paralelo a la composición
+  // del Provider enriquecido. Tolera `ProviderHasNoProfessionalError`
+  // (provider sin Professional asociado → schedule null y el panel
+  // esconde el bloque sin romper la página).
+  const schedule = await getProviderSchedule(detail.provider.id).catch((err) => {
+    if (err instanceof ProviderHasNoProfessionalError) return null;
+    throw err;
+  });
+
   const now = new Date();
   // Enrichment local: el detalle del proveedor no incluye `availability`
   // ni `distanceKm` porque dependen del momento y del usuario; aquí
@@ -95,6 +105,7 @@ export default async function ProviderPage({ params }: ProviderPageProps) {
       services={detail.services}
       reviews={detail.reviews}
       ratingBreakdown={detail.ratingBreakdown}
+      schedule={schedule}
       locale={locale as 'es' | 'ca' | 'en' | 'de'}
     />
   );

@@ -303,10 +303,16 @@
       "title": "Das Studio",
       "addressLabel": "Wo wir sind",
       "scheduleLabel": "Wann wir da sind",
-      "scheduleWeekdays": "Montag bis Freitag",
-      "scheduleSaturday": "Samstag",
-      "scheduleSunday": "Sonntag",
       "scheduleClosed": "Geschlossen",
+      "days": {
+        "monday": "Montag",
+        "tuesday": "Dienstag",
+        "wednesday": "Mittwoch",
+        "thursday": "Donnerstag",
+        "friday": "Freitag",
+        "saturday": "Samstag",
+        "sunday": "Sonntag"
+      },
       "descriptionLabel": "Über uns"
     },
     "notFound": {
