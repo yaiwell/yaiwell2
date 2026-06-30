@@ -50,11 +50,53 @@ function timeStringToMinutes(value: string): number {
 }
 
 /**
- * Construye un `Date` UTC sobre la base `dayUtc` a `minutesFromMidnight`.
- * Mantiene año/mes/día y resetea horas/minutos/segundos/ms.
+ * Devuelve el offset (en minutos) de una zona horaria IANA respecto a
+ * UTC para un instante dado. Útil para mapear hora local → UTC
+ * respetando DST (cambio horario verano/invierno).
+ *
+ * Usa `Intl.DateTimeFormat` con `timeZoneName: 'longOffset'` que
+ * devuelve algo como `"GMT+02:00"` — lo parseamos para sacar minutos.
  */
-function buildUtcDateAt(dayUtc: Date, minutesFromMidnight: number): Date {
-  return new Date(
+function getTimezoneOffsetMinutes(instant: Date, timezone: string): number {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: timezone,
+    timeZoneName: 'longOffset',
+  });
+  const parts = formatter.formatToParts(instant);
+  const offsetPart = parts.find((p) => p.type === 'timeZoneName')?.value ?? '';
+  // Formatos posibles: "GMT+02:00", "GMT-05:00", "GMT" (sin offset = +0).
+  const match = offsetPart.match(/GMT([+-])(\d{1,2}):(\d{2})/u);
+  if (!match) return 0;
+  const sign = match[1] === '-' ? -1 : 1;
+  const hours = Number(match[2]);
+  const minutes = Number(match[3]);
+  return sign * (hours * 60 + minutes);
+}
+
+/**
+ * Construye un `Date` (instante UTC) a partir del día `dayUtc` y la
+ * hora `minutesFromMidnight`.
+ *
+ * Si `timezone` se especifica, los `minutesFromMidnight` se interpretan
+ * como hora **local de esa zona** y se aplica el offset para devolver
+ * el instante UTC equivalente. Ejemplo: `dayUtc=2026-07-01T00:00:00Z`
+ * + `minutesFromMidnight=600` + `timezone='Europe/Madrid'` →
+ * `2026-07-01T08:00:00Z` (10:00 Madrid CEST = 08:00 UTC).
+ *
+ * Si `timezone` es `undefined`, los minutos se interpretan como UTC
+ * literal (comportamiento histórico que conservan los tests del motor).
+ *
+ * El cálculo del offset usa el propio instante "naive" como referencia:
+ * en los días de cambio horario el offset varía dentro del mismo día,
+ * pero como las horas del schedule (10:00, 18:00…) caen lejos de las
+ * 03:00 madrugada donde ocurre el cambio, no hay edge case relevante.
+ */
+function buildUtcDateAt(
+  dayUtc: Date,
+  minutesFromMidnight: number,
+  timezone: string | undefined,
+): Date {
+  const naive = new Date(
     Date.UTC(
       dayUtc.getUTCFullYear(),
       dayUtc.getUTCMonth(),
@@ -65,6 +107,9 @@ function buildUtcDateAt(dayUtc: Date, minutesFromMidnight: number): Date {
       0,
     ),
   );
+  if (!timezone) return naive;
+  const offsetMinutes = getTimezoneOffsetMinutes(naive, timezone);
+  return new Date(naive.getTime() - offsetMinutes * 60_000);
 }
 
 /**
@@ -104,6 +149,7 @@ function buildSlotsForBlock(
   serviceDurationMinutes: number,
   bufferMinutes: number,
   bookings: readonly { startAt: Date; endAt: Date }[],
+  timezone: string | undefined,
 ): Slot[] {
   const openMin = timeStringToMinutes(block.open);
   const closeMin = timeStringToMinutes(block.close);
@@ -116,7 +162,7 @@ function buildSlotsForBlock(
 
   const slots: Slot[] = [];
   for (let m = openMin; m + serviceDurationMinutes <= closeMin; m += stepMin) {
-    const startAt = buildUtcDateAt(dayUtc, m);
+    const startAt = buildUtcDateAt(dayUtc, m, timezone);
     const endAt = new Date(startAt.getTime() + serviceDurationMinutes * 60_000);
 
     // Descartamos el slot si solapa con alguna reserva activa. Las
@@ -144,8 +190,15 @@ export function computeAvailableSlots(params: {
   bufferMinutes: number;
   serviceDurationMinutes: number;
   bookings: readonly { startAt: Date; endAt: Date }[];
+  /**
+   * Zona horaria (IANA) en la que se interpretan los `HH:mm` del
+   * schedule. Si se omite, los minutos se tratan como UTC literal
+   * (comportamiento histórico que mantienen los tests del motor puro).
+   * Producción siempre pasa `'Europe/Madrid'`.
+   */
+  timezone?: string;
 }): Slot[] {
-  const { date, schedule, bufferMinutes, serviceDurationMinutes, bookings } = params;
+  const { date, schedule, bufferMinutes, serviceDurationMinutes, bookings, timezone } = params;
 
   const weekday = getWeekdayKey(date);
   const blocks = schedule[weekday];
@@ -159,6 +212,7 @@ export function computeAvailableSlots(params: {
       serviceDurationMinutes,
       bufferMinutes,
       bookings,
+      timezone,
     );
     result.push(...blockSlots);
   }

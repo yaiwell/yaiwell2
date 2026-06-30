@@ -1,4 +1,14 @@
 import { computeAvailableSlots, getUtcDayBounds, isSlotFree } from './availability.calc';
+
+/**
+ * Zona horaria del negocio. España peninsular tiene una sola zona
+ * (CET/CEST) y todos los providers actuales viven allí. Cuando el
+ * marketplace cruce fronteras, se persistirá en `Provider.timezone`
+ * y se pasará a `computeAvailableSlots` desde aquí. Mantenerla en
+ * el service (no en el motor puro) permite que los tests del motor
+ * sigan operando en UTC literal sin acoplarse a la decisión de país.
+ */
+const BUSINESS_TIMEZONE = 'Europe/Madrid';
 import {
   InvalidScheduleError,
   ProfessionalNotFoundError,
@@ -69,13 +79,15 @@ export async function getAvailableSlots(input: unknown): Promise<Slot[]> {
   );
 
   // 4. Delegamos el cálculo en la función pura para mantener el service
-  //    como simple orquestador.
+  //    como simple orquestador. Pasamos la zona horaria del negocio para
+  //    que los `HH:mm` del schedule se interpreten en Madrid (no UTC).
   return computeAvailableSlots({
     date: data.date,
     schedule,
     bufferMinutes,
     serviceDurationMinutes: data.serviceDurationMinutes,
     bookings,
+    timezone: BUSINESS_TIMEZONE,
   });
 }
 

@@ -52,8 +52,36 @@ const PROFESSIONAL_ID = '11111111-1111-4111-8111-111111111111';
 /**
  * Un lunes en UTC, lejos de cambios de hora y sin ambigüedad de TZ.
  * 2026-06-01 cae en lunes y todos los tests parten de ahí.
+ *
+ * Nota: el motor ahora interpreta los `HH:mm` del schedule como hora
+ * local de Madrid (CEST en junio → +02:00). Los asserts y bookings
+ * de los tests usan los helpers `toMadridHHmm` / `madridUtc` para
+ * trabajar siempre en hora Madrid, igual que el dueño percibe su
+ * propio horario.
  */
 const MONDAY_UTC = new Date(Date.UTC(2026, 5, 1, 0, 0, 0, 0));
+
+/**
+ * Formatea un `Date` (instante UTC) a `HH:mm` en Europe/Madrid.
+ * Para junio: aplica CEST (+02:00), así un slot que el motor sitúa a
+ * 08:00 UTC se lee aquí como '10:00' — coincide con el schedule.
+ */
+function toMadridHHmm(date: Date): string {
+  return new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Madrid',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(date);
+}
+
+/**
+ * Construye un `Date` UTC a partir de una hora local Madrid en junio
+ * (CEST +02:00). Atajo para los tests; todos viven en 2026-06-01.
+ */
+function madridUtcJune(year: number, month: number, day: number, hh: number, mm: number): Date {
+  return new Date(Date.UTC(year, month, day, hh - 2, mm, 0, 0));
+}
 
 /**
  * Resetea los mocks entre tests para evitar fugas de estado.
@@ -80,10 +108,10 @@ describe('getAvailableSlots', () => {
       serviceDurationMinutes: 60,
     });
 
-    // Bloque 10:00-20:00 = 600 minutos. Paso = 75 (60 servicio + 15 buffer).
+    // Bloque 10:00-20:00 Madrid = 600 minutos. Paso = 75 (60 servicio + 15 buffer).
     // Inicios válidos: 10:00, 11:15, 12:30, 13:45, 15:00, 16:15, 17:30, 18:45.
     // 18:45 + 60 = 19:45 ≤ 20:00 → cabe. Siguiente sería 20:00 → fuera.
-    const startsHHmm = slots.map((s) => s.startAt.toISOString().slice(11, 16));
+    const startsHHmm = slots.map((s) => toMadridHHmm(s.startAt));
     expect(startsHHmm).toEqual([
       '10:00',
       '11:15',
@@ -101,11 +129,11 @@ describe('getAvailableSlots', () => {
       schedule: weekdaySchedule,
       bufferMinutes: 15,
     } as unknown as Awaited<ReturnType<typeof prisma.professional.findFirst>>);
-    // Reserva ocupada de 14:00 a 15:00 UTC.
+    // Reserva ocupada de 14:00 a 15:00 hora local Madrid.
     mockedBookingFindMany.mockResolvedValueOnce([
       {
-        startAt: new Date(Date.UTC(2026, 5, 1, 14, 0, 0, 0)),
-        endAt: new Date(Date.UTC(2026, 5, 1, 15, 0, 0, 0)),
+        startAt: madridUtcJune(2026, 5, 1, 14, 0),
+        endAt: madridUtcJune(2026, 5, 1, 15, 0),
       },
     ] as unknown as Awaited<ReturnType<typeof prisma.booking.findMany>>);
 
@@ -115,7 +143,7 @@ describe('getAvailableSlots', () => {
       serviceDurationMinutes: 60,
     });
 
-    const startsHHmm = slots.map((s) => s.startAt.toISOString().slice(11, 16));
+    const startsHHmm = slots.map((s) => toMadridHHmm(s.startAt));
     // El slot candidato a 13:45 termina a 14:45 → solapa con [14:00, 15:00).
     // También 14:30 (si existiera por otro paso) quedaría fuera.
     expect(startsHHmm).not.toContain('13:45');
@@ -145,7 +173,7 @@ describe('getAvailableSlots', () => {
       serviceDurationMinutes: 60,
     });
 
-    const startsHHmm = slots.map((s) => s.startAt.toISOString().slice(11, 16));
+    const startsHHmm = slots.map((s) => toMadridHHmm(s.startAt));
     // Ningún slot debe empezar entre 14:00 (inclusive) y 17:00 (exclusivo).
     for (const hhmm of startsHHmm) {
       const [hh, mm] = hhmm.split(':').map(Number);

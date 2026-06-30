@@ -74,14 +74,23 @@ export function splitSlotsByDayPart(slots: BookingSlot[]): {
 }
 
 /**
- * Formatea un slot a `HH:MM` localizado. Usamos `Intl.DateTimeFormat`
- * para respetar el formato 24h del usuario europeo sin reimplementar.
+ * Formatea un slot a `HH:MM` en la zona horaria del centro
+ * (`Europe/Madrid`), no la del navegador del usuario.
+ *
+ * Esto es importante para UX honesta: un cliente alemán de visita en
+ * España consultando la ficha de un centro debe ver `10:00` (hora a la
+ * que el centro abre) y no `09:00` (mismo instante visto desde Berlín
+ * UTC+1). El motor `availability.calc` ya devuelve `startAt` como
+ * instante UTC interpretando los `HH:mm` del schedule como Madrid;
+ * aquí simplemente le pedimos a `Intl` que renderice esa hora en la
+ * misma zona donde está el negocio.
  */
 export function formatSlotTime(slot: BookingSlot, locale: 'es' | 'ca' | 'en' | 'de'): string {
   return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
+    timeZone: 'Europe/Madrid',
   }).format(new Date(slot.startAtIso));
 }
 
