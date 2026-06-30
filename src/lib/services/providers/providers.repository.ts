@@ -1,7 +1,5 @@
 import 'server-only';
 
-import { Prisma } from '@prisma/client';
-
 import { prisma } from '@/lib/db/prisma';
 import type { LocalizedText, Provider, Service } from '@/types/domain';
 
@@ -18,8 +16,8 @@ import type { LocalizedText, Provider, Service } from '@/types/domain';
  * `location` es PostGIS `geography(Point, 4326)` (Prisma la trata como
  * `Unsupported`), por lo que usamos raw SQL con `ST_X`/`ST_Y` para
  * extraer lng/lat al shape `GeoPoint` del dominio. Los categoryIds se
- * agregan en la misma query con `array_agg` sobre la tabla puente
- * `provider_categories` para evitar N+1.
+ * agregan en una subquery escalar sobre `provider_categories` para
+ * evitar N+1 y mantener la query plana (sin GROUP BY).
  */
 
 // ============================================================================
@@ -27,8 +25,9 @@ import type { LocalizedText, Provider, Service } from '@/types/domain';
 // ============================================================================
 
 /**
- * Forma cruda que devuelve la raw query desde Postgres. Coincide con el
- * SELECT compartido entre `findAll`/`findById`/`findBySlug`.
+ * Forma cruda que devuelve la raw query desde Postgres. Coincide con
+ * el SELECT replicado en `findAll` / `findById` / `findBySlug` —
+ * mantener los tres alineados al ampliar columnas.
  */
 interface ProviderRow {
   id: string;
@@ -47,34 +46,9 @@ interface ProviderRow {
 }
 
 /**
- * Lista de columnas + agregación de categoryIds usadas por las tres
- * funciones de lectura. Se compone con `Prisma.sql` para que sea
- * interpolable en `prisma.$queryRaw` (los fragmentos van con `sql`,
- * no como argumentos parametrizados).
- */
-const providerSelect = Prisma.sql`
-  p.id,
-  p.slug,
-  p."businessName",
-  p.type::text AS type,
-  p.description,
-  p.address,
-  ST_X(p.location::geometry)::float8 AS lng,
-  ST_Y(p.location::geometry)::float8 AS lat,
-  p.photos,
-  p."ratingAvg",
-  p."ratingCount",
-  p."priceRange"::text AS "priceRange",
-  COALESCE(
-    array_agg(pc."categoryId") FILTER (WHERE pc."categoryId" IS NOT NULL),
-    ARRAY[]::text[]
-  ) AS "categoryIds"
-`;
-
-/**
- * Convierte la fila cruda al `Provider` del dominio. Mantiene la
- * tolerancia ante description JSONB con sólo `es`/`ca` o vacío y
- * normaliza `photos` y `categoryIds` a arrays nunca nulos.
+ * Convierte la fila cruda al `Provider` del dominio. Tolera
+ * description JSONB con sólo `es`/`ca` o vacía y normaliza `photos`
+ * y `categoryIds` a arrays nunca nulos.
  */
 function mapProviderRow(row: ProviderRow): Provider {
   const desc = (row.description ?? {}) as Partial<LocalizedText>;
@@ -147,12 +121,27 @@ export const providersRepository = {
    */
   async findAll(): Promise<Provider[]> {
     const rows = await prisma.$queryRaw<ProviderRow[]>`
-      SELECT ${providerSelect}
+      SELECT
+        p.id,
+        p.slug,
+        p."businessName",
+        p.type::text AS type,
+        p.description,
+        p.address,
+        ST_X(p.location::geometry)::float8 AS lng,
+        ST_Y(p.location::geometry)::float8 AS lat,
+        p.photos,
+        p."ratingAvg",
+        p."ratingCount",
+        p."priceRange"::text AS "priceRange",
+        (
+          SELECT COALESCE(array_agg(pc."categoryId"), ARRAY[]::text[])
+          FROM provider_categories pc
+          WHERE pc."providerId" = p.id
+        ) AS "categoryIds"
       FROM providers p
-      LEFT JOIN provider_categories pc ON pc."providerId" = p.id
       WHERE p."verificationStatus" = 'approved'
         AND p."deletedAt" IS NULL
-      GROUP BY p.id
       ORDER BY p."ratingAvg" DESC, p."ratingCount" DESC
     `;
     return rows.map(mapProviderRow);
@@ -164,13 +153,28 @@ export const providersRepository = {
    */
   async findById(id: string): Promise<Provider | null> {
     const rows = await prisma.$queryRaw<ProviderRow[]>`
-      SELECT ${providerSelect}
+      SELECT
+        p.id,
+        p.slug,
+        p."businessName",
+        p.type::text AS type,
+        p.description,
+        p.address,
+        ST_X(p.location::geometry)::float8 AS lng,
+        ST_Y(p.location::geometry)::float8 AS lat,
+        p.photos,
+        p."ratingAvg",
+        p."ratingCount",
+        p."priceRange"::text AS "priceRange",
+        (
+          SELECT COALESCE(array_agg(pc."categoryId"), ARRAY[]::text[])
+          FROM provider_categories pc
+          WHERE pc."providerId" = p.id
+        ) AS "categoryIds"
       FROM providers p
-      LEFT JOIN provider_categories pc ON pc."providerId" = p.id
-      WHERE p.id = ${id}
+      WHERE p.id = ${id}::uuid
         AND p."verificationStatus" = 'approved'
         AND p."deletedAt" IS NULL
-      GROUP BY p.id
       LIMIT 1
     `;
     return rows[0] ? mapProviderRow(rows[0]) : null;
@@ -182,13 +186,28 @@ export const providersRepository = {
    */
   async findBySlug(slug: string): Promise<Provider | null> {
     const rows = await prisma.$queryRaw<ProviderRow[]>`
-      SELECT ${providerSelect}
+      SELECT
+        p.id,
+        p.slug,
+        p."businessName",
+        p.type::text AS type,
+        p.description,
+        p.address,
+        ST_X(p.location::geometry)::float8 AS lng,
+        ST_Y(p.location::geometry)::float8 AS lat,
+        p.photos,
+        p."ratingAvg",
+        p."ratingCount",
+        p."priceRange"::text AS "priceRange",
+        (
+          SELECT COALESCE(array_agg(pc."categoryId"), ARRAY[]::text[])
+          FROM provider_categories pc
+          WHERE pc."providerId" = p.id
+        ) AS "categoryIds"
       FROM providers p
-      LEFT JOIN provider_categories pc ON pc."providerId" = p.id
       WHERE p.slug = ${slug}
         AND p."verificationStatus" = 'approved'
         AND p."deletedAt" IS NULL
-      GROUP BY p.id
       LIMIT 1
     `;
     return rows[0] ? mapProviderRow(rows[0]) : null;
@@ -201,10 +220,6 @@ export const providersRepository = {
    *  - El servicio no existe.
    *  - El servicio pertenece a otro `providerId` (URL manipulada).
    *  - El servicio está soft-deleted o pausado (`isActive=false`).
-   *
-   * El filtro `isActive` evita exponer servicios que el dueño pausó
-   * desde `/panel/servicios`, coherente con el chequeo en
-   * `booking.service.createBooking` y `search.repository.searchServices`.
    */
   async findServiceByProvider(providerId: string, serviceId: string): Promise<Service | null> {
     const row = await prisma.service.findFirst({
@@ -261,7 +276,7 @@ export const providersRepository = {
    * un proveedor, o `null` si todavía no tiene catálogo publicado.
    *
    * Usado por las cards de búsqueda para mostrar el "desde X €". Una
-   * sola query agregada en BD evita traer el catálogo entero a Node.
+   * sola agregación en BD evita traer el catálogo entero a Node.
    */
   async findMinPriceCents(providerId: string): Promise<number | null> {
     const row = await prisma.service.aggregate({
