@@ -95,12 +95,13 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
     priceRange: priceRange.length > 0 ? priceRange : undefined,
   });
 
-  // Mapa providerId → precio "desde". Se calcula una vez aquí para
-  // evitar que cada card llame al servicio por su cuenta.
+  // Mapa providerId → precio "desde". Una sola fan-out paralela en
+  // lugar de N secuenciales: cada lookup es una agregación MIN en BD.
   const fromPriceMap: Record<string, number | null> = {};
-  for (const p of providers) {
-    fromPriceMap[p.id] = getFromPriceCents(p.id);
-  }
+  const fromPrices = await Promise.all(providers.map((p) => getFromPriceCents(p.id)));
+  providers.forEach((p, i) => {
+    fromPriceMap[p.id] = fromPrices[i];
+  });
 
   const initial: SearchViewInitialState = {
     providers,

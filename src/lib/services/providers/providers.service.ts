@@ -1,8 +1,7 @@
-import { getCategoryBySlug } from '@/lib/fake-data/categories';
-import { getAvailabilityStatus, getNextSlot } from '@/lib/fake-data/availability';
-import { getRatingBreakdown, getReviewsByProvider } from '@/lib/fake-data/reviews';
-import { getProviderFromPriceCents, getServicesByProvider } from '@/lib/fake-data/services';
-import type { GeoPoint, Provider, ProviderWithAvailability } from '@/types/domain';
+import 'server-only';
+
+import { prisma } from '@/lib/db/prisma';
+import type { GeoPoint, Provider, ProviderWithAvailability, Review } from '@/types/domain';
 
 import { InvalidSearchFiltersError } from './providers.errors';
 import { providersRepository } from './providers.repository';
@@ -37,21 +36,26 @@ function haversineKm(a: GeoPoint, b: GeoPoint): number {
 }
 
 /**
- * Aplica todos los filtros sobre un Provider crudo y devuelve `true`
- * si pasa el corte. Mantener la función pequeña hace que añadir filtros
- * nuevos (por ejemplo "tipo: solo centros") sea de una sola línea.
+ * Aplica los filtros sobre un Provider crudo y devuelve `true` si pasa
+ * el corte. El filtro por categoría usa el `categoryId` ya resuelto
+ * (ver `searchProviders`) para evitar lookups por iteración.
  */
-function matchesFilters(provider: Provider, filters: SearchProvidersFiltersParsed): boolean {
-  // Filtro por categoría (cualquier categoría asociada, incluida raíz).
+function matchesFilters(
+  provider: Provider,
+  filters: SearchProvidersFiltersParsed,
+  resolvedCategoryId: string | null,
+): boolean {
+  // Filtro por categoría: si el caller pidió un slug pero no existe en
+  // BD, `resolvedCategoryId` viene null y descartamos todo.
   if (filters.categorySlug) {
-    const category = getCategoryBySlug(filters.categorySlug);
-    if (!category) return false;
-    if (!provider.categoryIds.includes(category.id)) return false;
+    if (!resolvedCategoryId) return false;
+    if (!provider.categoryIds.includes(resolvedCategoryId)) return false;
   }
 
   // Filtro por texto libre: matching simple, case-insensitive, sobre
   // nombre, dirección y descripción es/ca. Es el placeholder hasta
-  // que tengamos `tsvector` en PostgreSQL.
+  // que conectemos `searchRepository.searchProviders` (FTS) cuando
+  // crezca el catálogo y este `filter()` en Node deje de escalar.
   if (filters.query && filters.query.length > 0) {
     const haystack = [
       provider.name,
@@ -82,20 +86,25 @@ function matchesFilters(provider: Provider, filters: SearchProvidersFiltersParse
 }
 
 /**
- * Enriquece un proveedor con su disponibilidad calculada y la distancia
- * opcional al usuario. Mantenemos esto en una función dedicada para que
- * `searchProviders` solo orqueste y sea más legible.
+ * Enriquece un proveedor con disponibilidad y distancia opcional.
+ *
+ * `availability` queda hoy como placeholder optimista (`available_now`,
+ * `nextSlot=null`) para providers reales: el motor de slots
+ * (`lib/services/availability`) opera por `professionalId` y todavía no
+ * está cableado al listado público — exigirlo aquí significaría una
+ * cascada de queries (N profesionales × M servicios × cálculo) que el
+ * `/buscar` no aguantaría sin paginar primero. Cuando llegue el
+ * motor conectado al panel, este valor pasará a calcularse de verdad.
  */
 function enrichProvider(
   provider: Provider,
   userLocation: GeoPoint | undefined,
-  now: Date,
 ): ProviderWithAvailability {
   return {
     ...provider,
     availability: {
-      status: getAvailabilityStatus(provider.id),
-      nextSlot: getNextSlot(provider.id, now),
+      status: 'available_now',
+      nextSlot: null,
     },
     distanceKm: userLocation
       ? Math.round(haversineKm(userLocation, provider.location) * 10) / 10
@@ -111,7 +120,8 @@ function enrichProvider(
  *  2. Si no: por rating descendente y, en empate, por número de reseñas.
  *
  * El filtro `availabilityOnly` se aplica DESPUÉS del enrichment para
- * basarse en la disponibilidad real calculada.
+ * basarse en la disponibilidad calculada. Hoy todos los providers se
+ * marcan disponibles, así que el toggle es no-op temporal.
  *
  * @throws InvalidSearchFiltersError si Zod rechaza la entrada.
  */
@@ -128,14 +138,25 @@ export async function searchProviders(
     );
   }
 
-  const now = new Date();
+  // Resolución previa de la categoría (un solo lookup en BD vs uno por
+  // provider). Si el slug no existe en BD, dejamos `null` y el filtro
+  // descartará todo — UX correcta para un slug equivocado/anticuado.
+  const resolvedCategoryId = parsed.data.categorySlug
+    ? ((
+        await prisma.category.findUnique({
+          where: { slug: parsed.data.categorySlug },
+          select: { id: true },
+        })
+      )?.id ?? null)
+    : null;
+
   const all = await providersRepository.findAll();
 
   // 1. Filtro previo basado en propiedades del proveedor.
-  const filtered = all.filter((p) => matchesFilters(p, parsed.data));
+  const filtered = all.filter((p) => matchesFilters(p, parsed.data, resolvedCategoryId));
 
   // 2. Enrichment con disponibilidad y distancia.
-  const enriched = filtered.map((p) => enrichProvider(p, parsed.data.userLocation, now));
+  const enriched = filtered.map((p) => enrichProvider(p, parsed.data.userLocation));
 
   // 3. Filtro post-enrichment: "solo disponibles ahora".
   const final = parsed.data.availabilityOnly
@@ -154,11 +175,11 @@ export async function searchProviders(
 
 /**
  * Devuelve el precio "desde" (céntimos) del proveedor dado, o `null`
- * si no tiene servicios. Es un atajo expuesto desde el service porque
- * lo consumen las cards de UI directamente al render.
+ * si todavía no tiene catálogo publicado. Atajo expuesto desde el
+ * service porque las cards de UI lo consumen al render.
  */
-export function getFromPriceCents(providerId: string): number | null {
-  return getProviderFromPriceCents(providerId);
+export async function getFromPriceCents(providerId: string): Promise<number | null> {
+  return providersRepository.findMinPriceCents(providerId);
 }
 
 /**
@@ -174,13 +195,17 @@ export async function getProviderDetail(providerId: string): Promise<ProviderDet
   const provider = await providersRepository.findById(providerId);
   if (!provider) return null;
 
-  // Los helpers de fake-data son síncronos, pero el contrato público es
-  // async para no romper la firma cuando saltemos a Prisma (donde sí lo serán).
+  // Paralelizamos las 3 lecturas que dependen sólo de providerId.
+  const [services, reviews] = await Promise.all([
+    providersRepository.findServicesByProvider(providerId),
+    findReviewsByProvider(providerId),
+  ]);
+
   return {
     provider,
-    services: getServicesByProvider(providerId),
-    reviews: getReviewsByProvider(providerId),
-    ratingBreakdown: getRatingBreakdown(providerId),
+    services,
+    reviews,
+    ratingBreakdown: computeRatingBreakdown(reviews),
   };
 }
 
@@ -192,9 +217,6 @@ export async function getProviderDetail(providerId: string): Promise<ProviderDet
  * Devuelve `null` si el proveedor o el servicio no existen, o si el
  * servicio pertenece a otro proveedor (caso de URL manipulada). La
  * página llamadora se encarga de responder con un 404 limpio.
- *
- * @param providerId — id del proveedor dueño del catálogo.
- * @param serviceId — id del servicio buscado dentro de ese catálogo.
  */
 export async function getProviderService(
   providerId: string,
@@ -207,4 +229,70 @@ export async function getProviderService(
   if (!service) return null;
 
   return { provider, service };
+}
+
+// ============================================================================
+// Helpers privados: reviews y rating breakdown
+// ============================================================================
+
+/**
+ * Lectura mínima de reviews de un provider para la ficha pública.
+ *
+ * Vive en este archivo (no en repository) porque el shape `Review` del
+ * dominio simplifica `createdAt` a "fecha relativa formateada" para la
+ * demo: aquí se mantiene como `Date` y el componente formatea con
+ * `next-intl`. Cuando crezcamos a paginación/filtros, mover al repo.
+ */
+async function findReviewsByProvider(providerId: string): Promise<Review[]> {
+  const rows = await prisma.review.findMany({
+    where: { providerId },
+    orderBy: { createdAt: 'desc' },
+    take: 20,
+    select: {
+      id: true,
+      rating: true,
+      text: true,
+      createdAt: true,
+      author: { select: { fullName: true } },
+    },
+  });
+  return rows.map((r) => ({
+    id: r.id,
+    providerId,
+    authorName: formatAuthorName(r.author?.fullName),
+    rating: r.rating,
+    text: r.text,
+    createdAt: r.createdAt,
+  }));
+}
+
+/**
+ * Compone "Nombre A." cuando hay apellido y "Anónimo" si el author
+ * está vacío. Evitamos exponer apellidos completos en la UI pública.
+ *
+ * `User.fullName` es nullable y libre — la mayoría llegan como
+ * "Nombre Apellido". Si no hay nada usable devolvemos "Anónimo".
+ */
+function formatAuthorName(fullName: string | null | undefined): string {
+  const trimmed = (fullName ?? '').trim();
+  if (!trimmed) return 'Anónimo';
+  const parts = trimmed.split(/\s+/);
+  if (parts.length === 1) return parts[0];
+  const [first, ...rest] = parts;
+  const lastInitial = rest[rest.length - 1].charAt(0).toUpperCase();
+  return `${first} ${lastInitial}.`;
+}
+
+/**
+ * Distribución de reviews por nota 1-5. Calculada en Node sobre el
+ * conjunto ya cargado para evitar otra query — el slice de 20 es
+ * suficiente para la ficha pública.
+ */
+function computeRatingBreakdown(reviews: Review[]): Record<1 | 2 | 3 | 4 | 5, number> {
+  const breakdown = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } as Record<1 | 2 | 3 | 4 | 5, number>;
+  for (const r of reviews) {
+    const key = Math.max(1, Math.min(5, Math.round(r.rating))) as 1 | 2 | 3 | 4 | 5;
+    breakdown[key] += 1;
+  }
+  return breakdown;
 }

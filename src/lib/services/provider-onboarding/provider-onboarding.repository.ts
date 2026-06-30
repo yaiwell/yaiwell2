@@ -46,6 +46,25 @@ const priceRangeMap: Record<PriceRangeChoice, '€' | '€€' | '€€€'> = 
 };
 
 /**
+ * Devuelve el `verificationStatus` con el que se persiste un Provider
+ * recién creado por el wizard.
+ *
+ * Hasta que tengamos panel admin real con cola de verificación
+ * (TODO Fase 1), auto-aprobamos en `dev`/`preview` para que el dueño
+ * vea su local en `/buscar` y en el autocomplete inmediatamente. En
+ * producción dejamos `pending` para que un alta no entre directa al
+ * marketplace sin revisión humana — incluso aunque no haya quien
+ * apruebe todavía, es preferible a publicar negocios sin filtro.
+ *
+ * Detección: usamos `VERCEL_ENV` (no `NODE_ENV`) porque Vercel pone
+ * `NODE_ENV='production'` también en preview deployments — sólo
+ * `VERCEL_ENV === 'production'` es el entorno público real.
+ */
+function getDefaultVerificationStatus(): 'pending' | 'approved' {
+  return process.env.VERCEL_ENV === 'production' ? 'pending' : 'approved';
+}
+
+/**
  * Plantilla de horario semanal por defecto que asignamos al
  * Professional inicial cuando el proveedor es autónomo. Coincide con
  * la convención del campo `Professional.schedule` (`{ monday: [...] }`).
@@ -119,7 +138,7 @@ export const providerOnboardingRepository = {
         gen_random_uuid(), $1, $2::"ProviderType", $3, $4, $5::jsonb, $6,
         ST_SetSRID(ST_MakePoint($7, $8), 4326)::geography,
         ARRAY[]::text[], $9::"PriceRange", 0, 0,
-        $10, 'pending'::"VerificationStatus", NOW(), NOW()
+        $10, $11::"VerificationStatus", NOW(), NOW()
       )
       ON CONFLICT (slug) DO NOTHING
       RETURNING id;
@@ -134,6 +153,7 @@ export const providerOnboardingRepository = {
       args.location.lat,
       priceRangeMap[args.priceRange],
       args.planId,
+      getDefaultVerificationStatus(),
     );
     return rows[0] ?? null;
   },
