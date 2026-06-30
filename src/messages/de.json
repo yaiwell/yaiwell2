@@ -580,6 +580,31 @@
         }
       },
       "empty": "Keine Bewertungen entsprechen den Filtern."
+    },
+    "payments": {
+      "title": "Zahlungen",
+      "subtitle": "Verbinde dein Stripe-Konto, um Buchungen mit Zahlung anzunehmen. Wir wickeln die Zahlung in deinem Namen ab und behalten die Provision deines aktiven Tarifs ein.",
+      "status": {
+        "enabled": "Zahlungen aktiviert",
+        "pending": "Onboarding ausstehend",
+        "disconnected": "Nicht verbunden"
+      },
+      "description": {
+        "enabled": "Dein Stripe-Konto ist aktiv. Du kannst Zahlungen empfangen und Auszahlungen gehen automatisch auf dein Bankkonto.",
+        "pending": "Stripe benötigt weitere Informationen, bevor deine Auszahlungen aktiviert werden. Setze das Onboarding fort, wenn du kannst.",
+        "disconnected": "Du brauchst ein verbundenes Stripe-Konto, um Buchungen mit Zahlung anzunehmen. Das Onboarding dauert ein paar Minuten."
+      },
+      "cta": {
+        "connect": "Mit Stripe verbinden",
+        "continue": "Onboarding fortsetzen",
+        "refresh": "Status aktualisieren"
+      },
+      "notices": {
+        "returnEnabled": "Fertig — Stripe hat bestätigt, dass dein Konto für Zahlungen aktiviert ist.",
+        "returnPending": "Du bist vom Onboarding zurück, aber Stripe muss deine Daten noch überprüfen. Komm in ein paar Minuten zurück und aktualisiere den Status.",
+        "refreshFailed": "Wir konnten den Stripe-Link nicht neu erzeugen. Versuche es erneut über die Schaltfläche \"Mit Stripe verbinden\".",
+        "fetchFailed": "Wir konnten den Status deines Stripe-Kontos nicht abfragen. Bitte in ein paar Sekunden erneut versuchen."
+      }
     }
   },
   "booking": {

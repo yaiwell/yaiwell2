@@ -580,6 +580,31 @@
         }
       },
       "empty": "No hi ha valoracions que coincideixin amb els filtres."
+    },
+    "payments": {
+      "title": "Pagaments",
+      "subtitle": "Connecta el teu compte de Stripe per començar a cobrar reserves. El cobrament es fa en el teu nom i nosaltres retenim la comissió del pla que tinguis actiu.",
+      "status": {
+        "enabled": "Pagaments habilitats",
+        "pending": "Onboarding pendent",
+        "disconnected": "Sense connectar"
+      },
+      "description": {
+        "enabled": "El teu compte Stripe està actiu. Pots rebre cobraments i els pagaments es transfereixen automàticament al teu compte bancari.",
+        "pending": "Stripe necessita més informació abans d'habilitar els teus cobraments. Continua l'onboarding quan puguis.",
+        "disconnected": "Necessites connectar un compte Stripe per acceptar reserves amb pagament. L'alta triga uns minuts."
+      },
+      "cta": {
+        "connect": "Connectar amb Stripe",
+        "continue": "Continuar onboarding",
+        "refresh": "Actualitzar estat"
+      },
+      "notices": {
+        "returnEnabled": "Llest! Stripe ens ha confirmat que el teu compte està habilitat per cobrar.",
+        "returnPending": "Has tornat de l'onboarding però Stripe encara ha d'acabar de verificar les dades. Torna en uns minuts a actualitzar l'estat.",
+        "refreshFailed": "No hem pogut regenerar l'enllaç de Stripe. Prova-ho des del botó \"Connectar amb Stripe\" un altre cop.",
+        "fetchFailed": "No hem pogut consultar l'estat del teu compte Stripe. Torna-ho a provar en uns segons."
+      }
     }
   },
   "booking": {

@@ -152,7 +152,12 @@
   - [x] API route `/api/suggestions` (`GET ?q&lang`) + módulo `src/lib/services/suggestions/` (service async, client HTTP, validation, errors). El service delega hoy en `searchSuggestions` fake; cuando llegue Postgres solo cambia esa función (2026-06-09, 7 tests).
   - [x] `SearchAutocomplete` cableado a `/api/suggestions` vía TanStack Query v5 (debounce 250ms en `debouncedValue`, `staleTime` 30s, `placeholderData` para evitar parpadeo, cancelación con `AbortSignal`) — `QueryProvider` montado en `[locale]/layout.tsx` entre NextIntl y Theme (2026-06-09).
   - [x] `getSuggestions` ahora consulta Postgres real: combina `searchServices` + `searchProviders` (FTS) + `suggestionsRepository.findCategoriesMatching` en paralelo con `Promise.all` (3 svc + 3 prov + 2 cat = top 8). Lookup batched O(1) de proveedores para enriquecer servicios. Query <2 chars devuelve `[]` sin tocar BD. `SearchValidationError` reempaquetado como `SuggestionsValidationError`. UI y endpoint intactos. 10 tests nuevos. El fake `searchSuggestions` queda sin uso productivo (sólo en su propio test) — limpieza posterior. (2026-06-29)
-- [ ] Flujo de reserva real con Stripe Connect.
+- [~] Flujo de reserva real con Stripe Connect.
+  - [x] **Onboarding del provider a Stripe Connect (Express)** (2026-06-30): nuevo módulo `lib/services/payments/` con `ensureConnectAccount` (idempotente — reusa stripeAccountId si existe), `createOnboardingLink` (AccountLink temporal de Stripe, 5 min TTL), `getConnectAccountStatus` (consulta directa a Stripe, no cacheamos), `getProviderPaymentsStatus` (composición que la UI usa). Migración 7 añade `Provider.stripeAccountId String? @unique`. Server actions `startStripeOnboardingAction` (redirect al onboarding de Stripe) y `refreshStripeStatusAction`. Pages `/panel/centro/stripe/return` y `/refresh` como callbacks de Stripe (return redirige al panel, refresh regenera AccountLink). UI nuevo `StripeConnectCard` en `/panel/centro` con 3 estados (no conectado / pending / habilitado) + banner de retorno + tolerancia a fallo de Stripe sin tumbar la página. i18n 4 locales. 11 tests del service.
+  - [ ] **Aplicar la migración 7 manualmente** en Supabase SQL Editor (la `DATABASE_URL` actual usa transaction pooler que no soporta DDL): pegar el contenido de `prisma/migrations/7_provider_stripe_account_id/migration.sql` y ejecutar.
+  - [ ] **Env vars Stripe** en `.env.local` y en Vercel: `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_CONNECT_CLIENT_ID` (este último necesario para Connect OAuth — ya configurado en el dashboard de Stripe Connect).
+  - [ ] **Configurar return/refresh URLs** en Stripe Connect dashboard: `https://www.yaiwell.app/{locale}/panel/centro/stripe/{return,refresh}` (todos los locales soportados).
+  - [ ] **Flujo de cobro real** (siguiente sesión): PaymentIntent + Stripe Elements al confirmar reserva, webhook `payment_intent.succeeded` → Booking a `confirmed`, comisión de plataforma via `application_fee_amount`.
 - [~] Cancelación y refunds (política de 2h).
   - [x] Regla 2h en `booking.service.cancelBookingByProvider` (validada en Zod + servicio, no solo en UI) y antelación mínima 2h también en `createBooking` para que no nazcan reservas "incancelables" (2026-06-03).
   - [ ] Cliente puede cancelar (política TBD): full-refund hasta -2h, no-show sin refund (probable).
@@ -203,5 +208,5 @@
 
 ---
 
-*Última actualización: 2026-06-30 (editor de horario semanal en /panel/centro persiste contra Professional.schedule del primer profesional).*
+*Última actualización: 2026-06-30 (onboarding del provider a Stripe Connect Express; falta aplicar migración 7 y pegar env vars).*
 

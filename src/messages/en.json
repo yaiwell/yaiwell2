@@ -580,6 +580,31 @@
         }
       },
       "empty": "No reviews match these filters."
+    },
+    "payments": {
+      "title": "Payments",
+      "subtitle": "Connect your Stripe account to start taking bookings with payment. We charge on your behalf and keep the commission of your active plan.",
+      "status": {
+        "enabled": "Payments enabled",
+        "pending": "Onboarding pending",
+        "disconnected": "Not connected"
+      },
+      "description": {
+        "enabled": "Your Stripe account is active. You can take payments and payouts go to your bank account automatically.",
+        "pending": "Stripe needs more information before enabling your payouts. Pick up onboarding when you can.",
+        "disconnected": "You need a connected Stripe account to take bookings with payment. Onboarding takes a few minutes."
+      },
+      "cta": {
+        "connect": "Connect with Stripe",
+        "continue": "Continue onboarding",
+        "refresh": "Refresh status"
+      },
+      "notices": {
+        "returnEnabled": "Done — Stripe has confirmed your account is enabled for payments.",
+        "returnPending": "You're back from onboarding but Stripe still needs to finish verifying your details. Come back in a few minutes and refresh the status.",
+        "refreshFailed": "We couldn't regenerate the Stripe link. Try again from the \"Connect with Stripe\" button.",
+        "fetchFailed": "We couldn't check the status of your Stripe account. Please try again in a few seconds."
+      }
     }
   },
   "booking": {

@@ -580,6 +580,31 @@
         }
       },
       "empty": "No hay valoraciones que coincidan con los filtros."
+    },
+    "payments": {
+      "title": "Pagos",
+      "subtitle": "Conecta tu cuenta de Stripe para empezar a cobrar reservas. El cobro se hace en tu nombre y nosotros retenemos la comisión del plan que tengas activo.",
+      "status": {
+        "enabled": "Pagos habilitados",
+        "pending": "Onboarding pendiente",
+        "disconnected": "Sin conectar"
+      },
+      "description": {
+        "enabled": "Tu cuenta Stripe está activa. Puedes recibir cobros y los pagos se transfieren a tu cuenta bancaria de forma automática.",
+        "pending": "Stripe necesita más información antes de habilitar tus cobros. Continúa el onboarding cuando puedas.",
+        "disconnected": "Necesitas conectar una cuenta Stripe para aceptar reservas con pago. El alta tarda unos minutos."
+      },
+      "cta": {
+        "connect": "Conectar con Stripe",
+        "continue": "Continuar onboarding",
+        "refresh": "Actualizar estado"
+      },
+      "notices": {
+        "returnEnabled": "¡Listo! Stripe nos ha confirmado que tu cuenta está habilitada para cobrar.",
+        "returnPending": "Has vuelto del onboarding pero Stripe todavía tiene que terminar de verificar los datos. Vuelve en unos minutos a actualizar el estado.",
+        "refreshFailed": "No hemos podido regenerar el enlace de Stripe. Inténtalo desde el botón \"Conectar con Stripe\" otra vez.",
+        "fetchFailed": "No hemos podido consultar el estado de tu cuenta Stripe. Inténtalo de nuevo en unos segundos."
+      }
     }
   },
   "booking": {

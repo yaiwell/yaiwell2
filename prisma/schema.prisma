@@ -202,6 +202,14 @@ model Provider {
   /// Verificación operativa: solo `approved` puede recibir reservas reales.
   verificationStatus VerificationStatus @default(pending)
 
+  /// ID de la cuenta conectada en Stripe (Express). Persistido al crear
+  /// la cuenta vía Stripe Connect; null hasta que el dueño completa el
+  /// onboarding desde `/panel/centro`. El detalle del estado de la cuenta
+  /// (charges_enabled, payouts_enabled) NO se cachea aquí — se consulta
+  /// a Stripe bajo demanda para no quedarnos desincronizados con la
+  /// realidad de la cuenta conectada.
+  stripeAccountId String? @unique
+
   /// Generated `tsvector` para FTS sobre proveedor (businessName, description,
   /// address). La columna se materializa via migración SQL (`migrations/2_fts_search/`);
   /// Prisma no la conoce, las queries de búsqueda usan raw SQL.

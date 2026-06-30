@@ -4,9 +4,15 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { ProviderSettings } from '@/components/features/provider-panel/ProviderSettings';
 import type { SettingsProvider } from '@/components/features/provider-panel/ProviderSettings/ProviderSettings.types';
+import { StripeConnectCard } from '@/components/features/provider-panel/StripeConnectCard';
 import { requireCurrentProvider } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
 import type { WeeklySchedule } from '@/lib/services/availability';
+import {
+  getProviderPaymentsStatus,
+  StripeOperationError,
+  type ConnectAccountStatus,
+} from '@/lib/services/payments';
 import { getProviderSchedule, ProviderHasNoProfessionalError } from '@/lib/services/provider';
 import type { LocalizedText } from '@/types/domain';
 
@@ -27,28 +33,39 @@ const EMPTY_SCHEDULE: WeeklySchedule = {
   sunday: [],
 };
 
+/**
+ * Estado de pagos por defecto cuando Stripe no responde. Permite que
+ * el bloque renderice como "desconectado" con un banner de error y un
+ * CTA "Reintentar" en lugar de tumbar toda la página por un fallo de
+ * la API externa.
+ */
+const FAILED_PAYMENTS_STATUS: ConnectAccountStatus = {
+  exists: false,
+  detailsSubmitted: false,
+  chargesEnabled: false,
+  payoutsEnabled: false,
+  hasPendingRequirements: false,
+};
+
 interface PanelSettingsPageProps {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 /**
  * Configuración del centro (`/panel/centro`).
  *
  * Server Component que lee los datos del proveedor autenticado y los
- * pasa al formulario `ProviderSettings` (Client). El botón "Guardar"
- * persiste businessName, vatNumber, description y address via la server
- * action `updateProviderSettingsAction`; el resto de campos del form
- * (phone, email, ciudad/CP, horario) quedan inertes hasta que el wizard
- * de onboarding y la UI los recojan.
+ * pasa a 3 bloques de UI: configuración del centro (datos + horario),
+ * estado de pagos (Stripe Connect) y card próximamente de multi-negocio.
  *
- * `requireCurrentProvider` ya garantiza que llegamos aquí con un
- * Provider creado (redirige a `/onboarding` si falta). Hacemos un
- * segundo query Prisma para traer los campos extra que el formulario
- * necesita (description JSON, address, photos, vatNumber) — el helper
- * intencionadamente devuelve un subset mínimo para el header del panel.
+ * Carga en paralelo provider + schedule + estado de pagos para no
+ * encadenar round-trips. Tolera fallos puntuales de cada fuente sin
+ * romper la página entera.
  */
-export default async function PanelSettingsPage({ params }: PanelSettingsPageProps) {
+export default async function PanelSettingsPage({ params, searchParams }: PanelSettingsPageProps) {
   const { locale } = await params;
+  const sp = await searchParams;
 
   if (!hasLocale(['es', 'ca', 'en', 'de'], locale)) {
     notFound();
@@ -57,9 +74,10 @@ export default async function PanelSettingsPage({ params }: PanelSettingsPagePro
 
   const { id } = await requireCurrentProvider(locale);
 
-  // Paralelizamos: la lectura del provider y la del schedule son
-  // independientes, ahorrar el round-trip secuencial reduce TTFB.
-  const [record, schedule] = await Promise.all([
+  // Paralelizamos: provider, schedule y pagos son independientes.
+  // Los catches devuelven sentinelas tipados ({ok:true, ...} / {ok:false})
+  // en lugar de mutar variables externas — más limpio en concurrente.
+  const [record, schedule, paymentsResult] = await Promise.all([
     prisma.provider.findUnique({
       where: { id },
       select: {
@@ -73,14 +91,28 @@ export default async function PanelSettingsPage({ params }: PanelSettingsPagePro
     getProviderSchedule(id).catch((err) => {
       // Caso patológico: provider sin Professional. Pintamos el editor
       // con horario vacío para que el dueño pueda al menos ver la UI.
-      // Al pulsar Guardar, la action devolverá NO_PROFESSIONAL y la
-      // notice de error guiará al usuario.
       if (err instanceof ProviderHasNoProfessionalError) {
         return EMPTY_SCHEDULE;
       }
       throw err;
     }),
+    getProviderPaymentsStatus(id)
+      .then((status) => ({ ok: true as const, status }))
+      .catch((err) => {
+        // Stripe puede fallar por outage, key mal configurada o cuenta
+        // suspendida. Pintamos el bloque como "desconectado" con banner
+        // de error en vez de tumbar la página entera.
+        if (err instanceof StripeOperationError) {
+          return { ok: false as const, status: FAILED_PAYMENTS_STATUS };
+        }
+        // Otros errores (provider no encontrado, etc.) sí los propagamos
+        // — son señal de inconsistencia y conviene verlos en Sentry.
+        throw err;
+      }),
   ]);
+
+  const paymentsStatus = paymentsResult.status;
+  const paymentsFetchFailed = !paymentsResult.ok;
 
   // `requireCurrentProvider` ya garantiza existencia; este check es
   // defensa contra una carrera muy improbable (borrado entre llamadas).
@@ -102,5 +134,25 @@ export default async function PanelSettingsPage({ params }: PanelSettingsPagePro
 
   const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
 
-  return <ProviderSettings provider={provider} schedule={schedule} locale={panelLocale} />;
+  // Notice de retorno del flujo de onboarding de Stripe — la URL del
+  // return page y del refresh page redirigen aquí con un querystring
+  // marcador. La card lo muestra como banner temporal.
+  const inlineNotice =
+    sp.stripe === 'return'
+      ? ('return' as const)
+      : sp.stripe === 'refresh-failed'
+        ? ('refresh-failed' as const)
+        : null;
+
+  return (
+    <div className="flex flex-col gap-6">
+      <ProviderSettings provider={provider} schedule={schedule} locale={panelLocale} />
+      <StripeConnectCard
+        locale={panelLocale}
+        status={paymentsStatus}
+        fetchFailed={paymentsFetchFailed}
+        inlineNotice={inlineNotice}
+      />
+    </div>
+  );
 }
