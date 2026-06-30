@@ -11,6 +11,7 @@ import { ProviderPhotosCard } from './ProviderPhotosCard';
 import { useProviderSettingsForm } from './ProviderSettings.logic';
 import { providerSettingsStyles as s } from './ProviderSettings.styles';
 import type { ProviderSettingsProps, SaveErrorCode } from './ProviderSettings.types';
+import { ScheduleEditor } from './ScheduleEditor';
 
 /**
  * Mapea el `code` de error de la action a la clave i18n completa dentro
@@ -20,10 +21,14 @@ import type { ProviderSettingsProps, SaveErrorCode } from './ProviderSettings.ty
  */
 const ERROR_MESSAGE_KEY: Record<
   SaveErrorCode,
-  'save.errors.notFound' | 'save.errors.validation' | 'save.errors.internal'
+  | 'save.errors.notFound'
+  | 'save.errors.validation'
+  | 'save.errors.noProfessional'
+  | 'save.errors.internal'
 > = {
   PROVIDER_NOT_FOUND: 'save.errors.notFound',
   VALIDATION: 'save.errors.validation',
+  NO_PROFESSIONAL: 'save.errors.noProfessional',
   INTERNAL: 'save.errors.internal',
 };
 
@@ -37,7 +42,11 @@ const ERROR_MESSAGE_KEY: Record<
  * separado, horario semanal) siguen siendo placeholders inertes — entrarán
  * cuando el formulario los recoja de verdad.
  */
-export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
+export function ProviderSettings({
+  provider,
+  schedule: initialSchedule,
+  locale,
+}: ProviderSettingsProps) {
   const t = useTranslations('providerPanel.settings');
   const tCommon = useTranslations('common');
 
@@ -45,12 +54,17 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
   // la lengua actual (los providers nuevos solo guardan ES/CA).
   const initialDescription = pickLocalized(provider.description, locale);
 
-  const { draft, notice, isPending, updateField, submit } = useProviderSettingsForm(locale, {
-    businessName: provider.businessName,
-    vatNumber: provider.vatNumber ?? '',
-    description: initialDescription,
-    address: provider.address,
-  });
+  const { draft, schedule, setSchedule, notice, isPending, updateField, submit } =
+    useProviderSettingsForm(
+      locale,
+      {
+        businessName: provider.businessName,
+        vatNumber: provider.vatNumber ?? '',
+        description: initialDescription,
+        address: provider.address,
+      },
+      initialSchedule,
+    );
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -205,50 +219,7 @@ export function ProviderSettings({ provider, locale }: ProviderSettingsProps) {
           <p className={s.cardSubtitle}>{t('schedule.subtitle')}</p>
         </header>
 
-        <div className={s.scheduleRow} data-component="settings-schedule-weekdays">
-          <span className={s.scheduleLabel}>{t('schedule.weekdaysLabel')}</span>
-          <div className={s.scheduleControls}>
-            <input
-              type="time"
-              defaultValue="10:00"
-              className={s.scheduleTime}
-              aria-label={t('schedule.openFrom')}
-              disabled
-            />
-            <input
-              type="time"
-              defaultValue="20:00"
-              className={s.scheduleTime}
-              aria-label={t('schedule.openTo')}
-              disabled
-            />
-          </div>
-        </div>
-
-        <div className={s.scheduleRow} data-component="settings-schedule-saturday">
-          <span className={s.scheduleLabel}>{t('schedule.saturdayLabel')}</span>
-          <div className={s.scheduleControls}>
-            <input
-              type="time"
-              defaultValue="10:00"
-              className={s.scheduleTime}
-              aria-label={t('schedule.openFrom')}
-              disabled
-            />
-            <input
-              type="time"
-              defaultValue="14:00"
-              className={s.scheduleTime}
-              aria-label={t('schedule.openTo')}
-              disabled
-            />
-          </div>
-        </div>
-
-        <div className={s.scheduleRow} data-component="settings-schedule-sunday">
-          <span className={s.scheduleLabel}>{t('schedule.sundayLabel')}</span>
-          <span className={s.scheduleClosed}>{t('schedule.closed')}</span>
-        </div>
+        <ScheduleEditor value={schedule} onChange={setSchedule} disabled={isPending} />
       </article>
 
       <ProviderPhotosCard

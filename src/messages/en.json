@@ -491,13 +491,28 @@
       },
       "schedule": {
         "title": "Opening hours",
-        "subtitle": "When the centre is open.",
+        "subtitle": "Set when you take bookings. You can add several slots per day for split shifts.",
         "weekdaysLabel": "Monday to Friday",
         "saturdayLabel": "Saturdays",
         "sundayLabel": "Sundays",
         "closed": "Closed",
         "openFrom": "Opens",
-        "openTo": "Closes"
+        "openTo": "Closes",
+        "openLabel": "Open",
+        "closedLabel": "Closed",
+        "closedHint": "Not available this day.",
+        "addBlock": "Add slot",
+        "toggleAria": "Toggle availability for {day}",
+        "removeBlockAria": "Remove slot for {day}",
+        "days": {
+          "monday": "Monday",
+          "tuesday": "Tuesday",
+          "wednesday": "Wednesday",
+          "thursday": "Thursday",
+          "friday": "Friday",
+          "saturday": "Saturday",
+          "sunday": "Sunday"
+        }
       },
       "photos": {
         "title": "Photos",
@@ -518,6 +533,7 @@
         "errors": {
           "notFound": "We couldn't find your business. Reload the page and try again.",
           "validation": "Please review the form: some fields don't meet the minimum requirements.",
+          "noProfessional": "Your account has no professional attached. Please contact support.",
           "internal": "We couldn't save the changes. Please try again in a few seconds."
         }
       }

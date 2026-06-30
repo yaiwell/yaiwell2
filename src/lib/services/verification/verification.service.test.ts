@@ -37,13 +37,17 @@ const mockRepo = vi.mocked(verificationRepository, true);
 const SAMPLE_PROVIDER_ID = '70a8dc5a-2fed-4aa4-907c-ad93a49eb879';
 const SAMPLE_REVIEWER_ID = '01234567-89ab-4cde-8f01-234567890abc';
 
-function buildPendingRow(
-  overrides: Partial<Parameters<typeof mockRepo.findPendingProviders>[0]> = {},
-) {
+/**
+ * Shape de las filas crudas que devuelve el repo. Lo derivamos del
+ * tipo del mock para que cualquier cambio en la query rompa los tests.
+ */
+type PendingRow = NonNullable<Awaited<ReturnType<typeof mockRepo.findProviderForVerification>>>;
+
+function buildPendingRow(overrides: Partial<PendingRow> = {}): PendingRow {
   return {
     id: SAMPLE_PROVIDER_ID,
     businessName: 'Studio Aura',
-    type: 'centro' as const,
+    type: 'centro',
     vatNumber: 'B-12345678',
     description: { es: 'Centro de bienestar', ca: 'Centre de benestar' },
     address: 'Carrer Major 10, Barcelona',

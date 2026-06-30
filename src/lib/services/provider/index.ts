@@ -6,11 +6,19 @@
  * módulo directamente está prohibido por convención.
  */
 
-export { updateProviderSettings } from './provider.service';
+export {
+  getProviderSchedule,
+  updateProviderSchedule,
+  updateProviderSettings,
+} from './provider.service';
 
 export { providerRepository } from './provider.repository';
 
-export { ProviderNotFoundError, ProviderValidationError } from './provider.errors';
+export {
+  ProviderHasNoProfessionalError,
+  ProviderNotFoundError,
+  ProviderValidationError,
+} from './provider.errors';
 
 export {
   updateProviderSettingsSchema,

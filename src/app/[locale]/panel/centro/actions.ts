@@ -6,7 +6,13 @@ import { auth } from '@clerk/nextjs/server';
 
 import type { AppLocale } from '@/i18n/routing';
 import { requireCurrentProvider } from '@/lib/auth/server';
-import { ProviderNotFoundError, updateProviderSettings } from '@/lib/services/provider';
+import type { WeeklySchedule } from '@/lib/services/availability';
+import {
+  ProviderHasNoProfessionalError,
+  ProviderNotFoundError,
+  updateProviderSchedule,
+  updateProviderSettings,
+} from '@/lib/services/provider';
 import {
   ProviderForOnboardingNotFoundError,
   updateProviderPhotos,
@@ -127,6 +133,60 @@ export async function updateProviderSettingsAction(
       return { ok: false, code: 'PROVIDER_NOT_FOUND' };
     }
     console.error('[panel/centro] updateProviderSettingsAction error:', err);
+    return { ok: false, code: 'INTERNAL' };
+  }
+
+  revalidatePath(`/${locale}/panel/centro`);
+  return { ok: true };
+}
+
+/**
+ * Estado serializable del resultado de `updateProviderScheduleAction`.
+ *
+ * `NO_PROFESSIONAL` cubre el caso patológico de un provider sin
+ * Professional asociado (no debería ocurrir si el wizard creó el alta;
+ * la UI lo trata como "contacta soporte").
+ */
+export type UpdateProviderScheduleActionState =
+  | { ok: true }
+  | {
+      ok: false;
+      code: 'PROVIDER_NOT_FOUND' | 'NO_PROFESSIONAL' | 'VALIDATION' | 'INTERNAL';
+      message?: string;
+    };
+
+/**
+ * Persiste el horario semanal del Provider autenticado.
+ *
+ * Recibe el `WeeklySchedule` ya en forma de objeto (no FormData) porque
+ * el editor de UI vive en un Client Component que tipo y serializa al
+ * llamar. La acción delega en `updateProviderSchedule` del módulo
+ * `provider`, que reutiliza la validación Zod del motor de availability
+ * para garantizar coherencia con el cálculo de slots reales.
+ *
+ * Se ejecuta en paralelo a `updateProviderSettingsAction` desde el form
+ * del panel; la idempotencia de ambas hace seguro reintentar si una
+ * falla y la otra no.
+ */
+export async function updateProviderScheduleAction(
+  locale: AppLocale,
+  schedule: WeeklySchedule,
+): Promise<UpdateProviderScheduleActionState> {
+  const { id: providerId } = await requireCurrentProvider(locale);
+
+  try {
+    await updateProviderSchedule(providerId, schedule);
+  } catch (err) {
+    if (err instanceof ZodError) {
+      return { ok: false, code: 'VALIDATION', message: err.issues[0]?.message };
+    }
+    if (err instanceof ProviderHasNoProfessionalError) {
+      return { ok: false, code: 'NO_PROFESSIONAL' };
+    }
+    if (err instanceof ProviderNotFoundError) {
+      return { ok: false, code: 'PROVIDER_NOT_FOUND' };
+    }
+    console.error('[panel/centro] updateProviderScheduleAction error:', err);
     return { ok: false, code: 'INTERNAL' };
   }
 

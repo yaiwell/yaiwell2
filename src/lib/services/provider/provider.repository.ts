@@ -65,4 +65,41 @@ export const providerRepository = {
       },
     });
   },
+
+  /**
+   * Devuelve el `id` y el `schedule` del **primer** Professional del
+   * provider (orden por `createdAt` ascendente).
+   *
+   * MVP: para autónomos hay 1 Professional y representa al dueño; para
+   * centros, el primer Professional creado actúa como "horario por
+   * defecto del local" hasta que llegue la gestión multi-profesional
+   * en el panel (deuda explícita en TODO). Si no hay ninguno (caso
+   * patológico — el wizard siempre crea uno), devolvemos null y el
+   * service lanza `ProviderHasNoProfessionalError`.
+   */
+  async findFirstProfessional(
+    providerId: string,
+  ): Promise<{ id: string; schedule: unknown } | null> {
+    const row = await prisma.professional.findFirst({
+      where: { providerId, deletedAt: null },
+      orderBy: { createdAt: 'asc' },
+      select: { id: true, schedule: true },
+    });
+    return row;
+  },
+
+  /**
+   * Actualiza el `schedule` JSON de un Professional concreto. La
+   * validación de la forma del JSON la hace el service con
+   * `weeklyScheduleSchema` antes de llegar aquí.
+   */
+  async updateProfessionalSchedule(
+    professionalId: string,
+    schedule: Prisma.InputJsonValue,
+  ): Promise<void> {
+    await prisma.professional.update({
+      where: { id: professionalId },
+      data: { schedule },
+    });
+  },
 };

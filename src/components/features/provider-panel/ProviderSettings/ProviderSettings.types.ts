@@ -1,3 +1,4 @@
+import type { WeeklySchedule } from '@/lib/services/availability';
 import type { LocalizedText } from '@/types/domain';
 
 /** Locales soportados en la UI del panel. */
@@ -27,6 +28,8 @@ export interface SettingsProvider {
 /** Props del componente de configuración del centro. */
 export interface ProviderSettingsProps {
   provider: SettingsProvider;
+  /** Horario semanal actual (del primer Professional del provider). */
+  schedule: WeeklySchedule;
   locale: SupportedLocale;
 }
 
@@ -43,11 +46,15 @@ export interface ProviderSettingsDraft {
 }
 
 /**
- * Códigos de error que la action puede devolver. Espejo del estado
- * `UpdateProviderSettingsActionState` para que la UI no importe el
- * type del módulo de `app/`.
+ * Códigos de error agregados que la UI muestra tras intentar guardar.
+ *
+ * Combina los códigos posibles de `updateProviderSettingsAction` y
+ * `updateProviderScheduleAction`. El form los lanza en paralelo y la
+ * UI muestra el primer error que encuentre; añadir `NO_PROFESSIONAL`
+ * permite copy específico ("contacta soporte") para el caso patológico
+ * de un provider sin Professional asociado.
  */
-export type SaveErrorCode = 'PROVIDER_NOT_FOUND' | 'VALIDATION' | 'INTERNAL';
+export type SaveErrorCode = 'PROVIDER_NOT_FOUND' | 'VALIDATION' | 'NO_PROFESSIONAL' | 'INTERNAL';
 
 /** Notice mostrado al usuario tras intentar guardar. */
 export type SaveNotice = { kind: 'success' } | { kind: 'error'; code: SaveErrorCode };

@@ -35,3 +35,20 @@ export class ProviderValidationError extends Error {
     this.name = 'ProviderValidationError';
   }
 }
+
+/**
+ * El Provider no tiene ningún Professional asociado.
+ *
+ * En el wizard de onboarding se crea siempre 1 Professional al alta
+ * (autónomo o centro), así que este error solo se da si alguien borró
+ * el Professional a mano. La UI debería tratarlo como "no se puede
+ * editar el horario hasta que haya al menos un profesional".
+ */
+export class ProviderHasNoProfessionalError extends Error {
+  readonly code = 'NO_PROFESSIONAL';
+
+  constructor(message = 'El proveedor no tiene profesionales asociados.') {
+    super(message);
+    this.name = 'ProviderHasNoProfessionalError';
+  }
+}

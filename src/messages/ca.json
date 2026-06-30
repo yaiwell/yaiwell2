@@ -491,13 +491,28 @@
       },
       "schedule": {
         "title": "Horari",
-        "subtitle": "Horari d'obertura del centre.",
+        "subtitle": "Defineix quan acceptes reserves. Pots afegir diversos trams per dia per a jornades partides.",
         "weekdaysLabel": "De dilluns a divendres",
         "saturdayLabel": "Dissabtes",
         "sundayLabel": "Diumenges",
         "closed": "Tancat",
         "openFrom": "Obre",
-        "openTo": "Tanca"
+        "openTo": "Tanca",
+        "openLabel": "Obert",
+        "closedLabel": "Tancat",
+        "closedHint": "Sense atenció aquest dia.",
+        "addBlock": "Afegir tram",
+        "toggleAria": "Canviar disponibilitat de {day}",
+        "removeBlockAria": "Treure tram de {day}",
+        "days": {
+          "monday": "Dilluns",
+          "tuesday": "Dimarts",
+          "wednesday": "Dimecres",
+          "thursday": "Dijous",
+          "friday": "Divendres",
+          "saturday": "Dissabte",
+          "sunday": "Diumenge"
+        }
       },
       "photos": {
         "title": "Fotos",
@@ -518,6 +533,7 @@
         "errors": {
           "notFound": "No hem trobat el teu negoci. Recarrega la pàgina i torna-ho a provar.",
           "validation": "Revisa els camps: hi ha alguna dada que no compleix els mínims.",
+          "noProfessional": "El teu compte no té cap professional associat. Contacta amb suport.",
           "internal": "No hem pogut desar els canvis. Torna-ho a provar d'aquí uns segons."
         }
       }

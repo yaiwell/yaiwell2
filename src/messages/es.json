@@ -491,13 +491,28 @@
       },
       "schedule": {
         "title": "Horario",
-        "subtitle": "Horario de apertura del centro.",
+        "subtitle": "Define cuándo aceptas reservas. Puedes añadir varios tramos por día para jornadas partidas.",
         "weekdaysLabel": "Lunes a viernes",
         "saturdayLabel": "Sábados",
         "sundayLabel": "Domingos",
         "closed": "Cerrado",
         "openFrom": "Abre",
-        "openTo": "Cierra"
+        "openTo": "Cierra",
+        "openLabel": "Abierto",
+        "closedLabel": "Cerrado",
+        "closedHint": "Sin atención este día.",
+        "addBlock": "Añadir tramo",
+        "toggleAria": "Cambiar disponibilidad de {day}",
+        "removeBlockAria": "Quitar tramo de {day}",
+        "days": {
+          "monday": "Lunes",
+          "tuesday": "Martes",
+          "wednesday": "Miércoles",
+          "thursday": "Jueves",
+          "friday": "Viernes",
+          "saturday": "Sábado",
+          "sunday": "Domingo"
+        }
       },
       "photos": {
         "title": "Fotos",
@@ -518,6 +533,7 @@
         "errors": {
           "notFound": "No hemos encontrado tu negocio. Recarga la página e inténtalo de nuevo.",
           "validation": "Revisa los campos: hay algún dato que no cumple los mínimos.",
+          "noProfessional": "Tu cuenta no tiene un profesional asociado. Contacta con soporte.",
           "internal": "No hemos podido guardar los cambios. Inténtalo de nuevo en unos segundos."
         }
       }

@@ -491,13 +491,28 @@
       },
       "schedule": {
         "title": "Öffnungszeiten",
-        "subtitle": "Öffnungszeiten des Studios.",
+        "subtitle": "Lege fest, wann du Buchungen annimmst. Du kannst mehrere Zeitfenster pro Tag hinzufügen.",
         "weekdaysLabel": "Montag bis Freitag",
         "saturdayLabel": "Samstag",
         "sundayLabel": "Sonntag",
         "closed": "Geschlossen",
         "openFrom": "Öffnet",
-        "openTo": "Schließt"
+        "openTo": "Schließt",
+        "openLabel": "Geöffnet",
+        "closedLabel": "Geschlossen",
+        "closedHint": "An diesem Tag kein Service.",
+        "addBlock": "Zeitfenster hinzufügen",
+        "toggleAria": "Verfügbarkeit für {day} ändern",
+        "removeBlockAria": "Zeitfenster für {day} entfernen",
+        "days": {
+          "monday": "Montag",
+          "tuesday": "Dienstag",
+          "wednesday": "Mittwoch",
+          "thursday": "Donnerstag",
+          "friday": "Freitag",
+          "saturday": "Samstag",
+          "sunday": "Sonntag"
+        }
       },
       "photos": {
         "title": "Fotos",
@@ -518,6 +533,7 @@
         "errors": {
           "notFound": "Wir konnten dein Geschäft nicht finden. Lade die Seite neu und versuche es erneut.",
           "validation": "Bitte prüfe die Felder: einige Daten erfüllen die Mindestanforderungen nicht.",
+          "noProfessional": "Dein Konto hat keinen Professional zugeordnet. Bitte kontaktiere den Support.",
           "internal": "Die Änderungen konnten nicht gespeichert werden. Bitte versuche es in ein paar Sekunden erneut."
         }
       }
