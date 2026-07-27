@@ -6,7 +6,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { SearchView } from '@/components/features/search';
 import type { SearchViewInitialState } from '@/components/features/search';
 import { routing } from '@/i18n/routing';
-import { getFromPriceCents, searchProviders } from '@/lib/services/providers';
+import { getFromPriceCentsBatch, searchProviders } from '@/lib/services/providers';
 import type { PriceRange } from '@/types/domain';
 
 interface SearchPageProps {
@@ -95,13 +95,14 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
     priceRange: priceRange.length > 0 ? priceRange : undefined,
   });
 
-  // Mapa providerId → precio "desde". Una sola fan-out paralela en
-  // lugar de N secuenciales: cada lookup es una agregación MIN en BD.
+  // Mapa providerId → precio "desde", en UNA sola agregación agrupada.
+  // Antes se lanzaba un MIN por proveedor (N consultas por request);
+  // en paralelo seguía siendo N viajes a BD, solo que simultáneos.
+  const fromPriceEntries = await getFromPriceCentsBatch(providers.map((p) => p.id));
   const fromPriceMap: Record<string, number | null> = {};
-  const fromPrices = await Promise.all(providers.map((p) => getFromPriceCents(p.id)));
-  providers.forEach((p, i) => {
-    fromPriceMap[p.id] = fromPrices[i];
-  });
+  for (const provider of providers) {
+    fromPriceMap[provider.id] = fromPriceEntries.get(provider.id) ?? null;
+  }
 
   const initial: SearchViewInitialState = {
     providers,

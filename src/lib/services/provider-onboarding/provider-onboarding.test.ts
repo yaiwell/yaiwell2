@@ -6,9 +6,10 @@
  * ejercen la lógica de negocio sin tocar Prisma ni BD.
  *
  * Cubrimos los caminos descritos en el prompt:
- *  - createProviderFromOnboarding: autónomo (Provider + Professional),
- *    centro (solo Provider), slug duplicado, usuario ya con Provider,
- *    plan free no sembrado, validación Zod (slug con espacios, lat>90).
+ *  - createProviderFromOnboarding: autónomo (Provider + Professional con
+ *    userId del dueño), centro (Provider + Professional placeholder con
+ *    userId null), slug duplicado, usuario ya con Provider, plan free no
+ *    sembrado, validación Zod (slug con espacios, lat>90).
  *  - updateProviderPhotos: ownership OK, ownership fail, validación 0-6.
  *  - createFirstServiceForProvider: happy, categoría inexistente,
  *    ownership fail.
@@ -107,10 +108,11 @@ describe('createProviderFromOnboarding', () => {
     });
   });
 
-  it('crea solo Provider cuando el tipo es centro', async () => {
+  it('crea Provider + Professional placeholder (userId null) cuando el tipo es centro', async () => {
     repoMock.findProviderByOwner.mockResolvedValue(null);
     repoMock.findPlanByTier.mockResolvedValue({ id: PLAN_ID });
     repoMock.insertProviderWithLocation.mockResolvedValue({ id: PROVIDER_ID });
+    repoMock.createProfessional.mockResolvedValue({ id: PROFESSIONAL_ID });
 
     await createProviderFromOnboarding(
       validCreateProviderInput({ type: 'centro', businessName: 'Estudio Sur' }),
@@ -118,7 +120,14 @@ describe('createProviderFromOnboarding', () => {
     );
 
     expect(repoMock.insertProviderWithLocation).toHaveBeenCalledOnce();
-    expect(repoMock.createProfessional).not.toHaveBeenCalled();
+    // Los centros también reciben profesional: sin horario no habría
+    // disponibilidad y el centro nacería invisible en `/buscar`.
+    expect(repoMock.createProfessional).toHaveBeenCalledOnce();
+    expect(repoMock.createProfessional.mock.calls[0][0]).toMatchObject({
+      providerId: PROVIDER_ID,
+      userId: null,
+      name: 'Estudio Sur',
+    });
   });
 
   it('rechaza con SlugAlreadyTakenError cuando el INSERT no devuelve fila', async () => {

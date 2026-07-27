@@ -285,4 +285,32 @@ export const providersRepository = {
     });
     return row._min.priceCents ?? null;
   },
+
+  /**
+   * Versión BATCH de `findMinPriceCents` para el listado.
+   *
+   * El listado pintaba el precio "desde" llamando a `findMinPriceCents`
+   * una vez por proveedor: con 500 proveedores eran 500 consultas por
+   * request. Un único `groupBy` devuelve lo mismo.
+   *
+   * Los proveedores sin catálogo activo no aparecen en el resultado del
+   * `groupBy`; el caller debe tratar su ausencia como `null`.
+   */
+  async findMinPriceCentsBatch(
+    providerIds: readonly string[],
+  ): Promise<Map<string, number | null>> {
+    if (providerIds.length === 0) return new Map();
+
+    const rows = await prisma.service.groupBy({
+      by: ['providerId'],
+      where: {
+        providerId: { in: providerIds as string[] },
+        deletedAt: null,
+        isActive: true,
+      },
+      _min: { priceCents: true },
+    });
+
+    return new Map(rows.map((row) => [row.providerId, row._min.priceCents ?? null]));
+  },
 };

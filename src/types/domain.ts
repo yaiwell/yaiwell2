@@ -74,7 +74,14 @@ export interface AvailabilitySlot {
  */
 export interface ProviderAvailability {
   status: AvailabilityStatus;
-  /** Próximo hueco si lo hay; `null` si está ocupado. */
+  /**
+   * Próximo hueco reservable, o `null` si no queda ninguno.
+   *
+   * OJO: se rellena también cuando `status === 'busy'`. Un hueco a más
+   * de una hora vista cae en `busy` (pin gris) pero sigue existiendo, y
+   * la UI lo aprovecha para decir "Libre a las 19:00" en vez del
+   * engañoso "Sin hueco hoy".
+   */
   nextSlot: AvailabilitySlot | null;
 }
 

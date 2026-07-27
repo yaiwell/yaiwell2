@@ -9,9 +9,12 @@ import 'server-only';
  *    updates idempotentes sobre el row existente.
  *  - El usuario solo puede tener un Provider vía este wizard. El alta de
  *    centros adicionales irá por otro flujo (multi-centro, Fase 1).
- *  - Si el proveedor es `autonomo`, creamos el primer Professional con
- *    `userId = ownerUserId` y horario por defecto. Si es `centro`, el
- *    Professional inicial lo añade luego desde el panel.
+ *  - Todo Provider nace con un Professional inicial y horario por
+ *    defecto. En `autonomo` es el propio dueño (`userId = ownerUserId`);
+ *    en `centro` es un placeholder sin cuenta (`userId = null`) que el
+ *    titular renombra o sustituye al dar de alta su equipo. Sin
+ *    Professional no hay horario y el negocio nace invisible en el
+ *    listado público (todo gris).
  *  - Ownership: todo update de los pasos 3-5 verifica que el Provider
  *    pertenece al usuario autenticado. Si no, lanzamos
  *    `ProviderForOnboardingNotFoundError` (sin distinguir not-found de
@@ -85,8 +88,8 @@ export async function isSlugAvailable(slug: string): Promise<boolean> {
  *  3. Resolver el `planId` del plan free.
  *  4. INSERT raw SQL con PostGIS. Si el slug está cogido (race),
  *     reportar `SlugAlreadyTakenError`.
- *  5. Si es `autonomo`, crear Professional inicial con `userId` del
- *     dueño y horario por defecto.
+ *  5. Crear el Professional inicial con horario por defecto (con
+ *     `userId` del dueño si es `autonomo`, `null` si es `centro`).
  *
  * @throws OnboardingAlreadyCompleteError
  * @throws FreePlanNotSeededError
@@ -129,17 +132,24 @@ export async function createProviderFromOnboarding(
     throw new SlugAlreadyTakenError();
   }
 
-  // Para autónomos, el dueño es también el único Professional inicial.
-  // El nombre lo derivamos del `businessName` cuando no hay perfil de
-  // usuario más rico — el wizard puede recoger el nombre real en una
-  // iteración futura.
-  if (data.type === 'autonomo') {
-    await providerOnboardingRepository.createProfessional({
-      providerId: inserted.id,
-      userId: ownerUserId,
-      name: data.businessName,
-    });
-  }
+  // Todo Provider nace con un Professional, sea autónomo o centro.
+  //
+  // Por qué también en centros: la disponibilidad se calcula desde
+  // `Professional.schedule`, así que un centro sin ningún profesional
+  // sale siempre en gris ("sin disponibilidad") en `/buscar` y es, a
+  // efectos prácticos, invisible el día que se da de alta. Creamos un
+  // registro placeholder con el nombre del negocio que el dueño puede
+  // renombrar o sustituir cuando dé de alta su equipo real.
+  //
+  // Diferencia entre ambos casos: en autónomo el Professional es el
+  // propio dueño (`userId = ownerUserId`); en centro es un recurso del
+  // local sin cuenta Clerk asociada (`userId = null`), porque el titular
+  // no tiene por qué atender él las citas.
+  await providerOnboardingRepository.createProfessional({
+    providerId: inserted.id,
+    userId: data.type === 'autonomo' ? ownerUserId : null,
+    name: data.businessName,
+  });
 
   return { providerId: inserted.id };
 }
@@ -174,9 +184,9 @@ export async function updateProviderPhotos(
  * Reglas:
  *  - Ownership obligatorio.
  *  - `categoryId` debe existir.
- *  - Si el Provider es `autonomo`, heredamos el `professionalId` del
- *    único Professional inicial para que el servicio quede atado al
- *    titular. En `centro` lo dejamos `null` (sin profesional concreto).
+ *  - Heredamos el `professionalId` del Professional inicial (existe
+ *    tanto en `autonomo` como en `centro`) para que el servicio quede
+ *    atado a un horario desde el primer día.
  *
  * @throws ProviderForOnboardingNotFoundError
  * @throws CategoryNotFoundError
@@ -194,9 +204,10 @@ export async function createFirstServiceForProvider(
     throw new CategoryNotFoundError();
   }
 
-  // Heredamos el `professionalId` cuando lo hay (autónomo). En centros
-  // el primer servicio queda sin profesional concreto: el motor de
-  // availability elegirá hueco cuando el centro dé de alta su staff.
+  // Heredamos el `professionalId` del profesional inicial. El `?? null`
+  // cubre providers heredados creados antes de que los centros tuvieran
+  // profesional por defecto: en esos el servicio queda sin atar y el
+  // motor de availability resuelve por provider.
   const initialProfessional = await providerOnboardingRepository.findFirstProfessional(providerId);
 
   const created = await providerOnboardingRepository.createService({

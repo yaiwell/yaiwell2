@@ -218,7 +218,8 @@
     "availability": {
       "now": "Disponible ahora",
       "soon": "En {minutes} min",
-      "busy": "Sin hueco hoy"
+      "busy": "Sin hueco hoy",
+      "busyWithLater": "Libre a las {time}"
     },
     "map": {
       "attribution": "© OpenStreetMap",

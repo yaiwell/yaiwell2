@@ -82,6 +82,7 @@ export function ProviderCard({
             <AvailabilityBadge
               status={provider.availability.status}
               minutesUntilNext={minutesUntilNext}
+              nextSlotAt={provider.availability.nextSlot?.startAt ?? null}
             />
           </span>
           <span className={s.priceTag} data-component="provider-card-price-range">

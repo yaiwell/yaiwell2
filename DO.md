@@ -6,6 +6,23 @@
 
 ---
 
+## 2026-07
+
+### 2026-07-27
+
+- **Disponibilidad real en `/buscar` y en la ficha de centro — muere el placeholder `available_now`.** Cierra el bloque #1 del roadmap MVP ("Búsqueda + disponibilidad inmediata") en la vista principal: hasta hoy el listado marcaba a TODO el catálogo como disponible (`providers.service.ts:106`) y la ficha de centro derivaba el estado de un hash del `providerId` (`lib/fake-data/availability.ts`). El pin verde no significaba nada.
+  - **Umbrales alineados con `VISION.md`** (nuevo `availability.constants.ts`): `available_now` = hueco en ≤15 min, `available_soon` = ≤60 min, resto `busy`. Deroga los valores del fake de Fase 0 (verde hasta 75 min, ámbar hasta 3 h), incompatibles con el copy "En {minutes} min" del badge.
+  - **Estrategia: query agregada única, NO cascada N×M.** Nuevo `getProvidersAvailability(providerIds, now)` resuelve el listado entero en **exactamente 2 consultas** (`findScheduleBundlesForProviders` en raw SQL + `findBookingsForProviders`), lanzadas en paralelo — la de reservas filtra por `providerId` precisamente para no depender de la de horarios. El troceado de slots es CPU pura reutilizando `computeAvailableSlots`, así que el fix de zona horaria sigue viviendo en un único sitio. Descartada la columna materializada (`nextAvailableAt` + cron): un badge stale que diga "disponible ahora" cuando ya no lo está es justo el fallo que esto viene a corregir.
+  - **Zona horaria aislada** en `availability.time.ts` (`getCivilDayUtc`, `getCivilDaysInWindow`, `floorToBucket`). El motor indexa el horario con `getUTCDay()`, así que hay que pasarle la medianoche UTC del día **civil de Madrid**: con `new Date()` a secas, entre las 00:00 y las 02:00 se aplicaba el horario del día anterior — el bug de 2bd098e reencarnado. La ventana también puede cruzar medianoche (consultar a las 23:45), y entonces se calculan dos días.
+  - **Degradación deliberada hacia `busy`**: horario corrupto (`InvalidScheduleError`), proveedor sin profesional o sin servicios activos → `busy` + log a Sentry, nunca excepción. Un proveedor roto no puede tumbar el listado. Un falso "disponible" cuesta un cliente ante una puerta cerrada; un falso "ocupado" solo cuesta una impresión.
+  - **Toggle "Disponible ahora" deja de ser no-op** y ahora acepta verde **y** ámbar: con la ventana estricta de 15 min, filtrar solo por verde vaciaría la lista, y "ahora o en la próxima hora" es literalmente la promesa del producto. La disponibilidad **no** reordena los resultados (seguimos por distancia → rating) para no romper la expectativa de "el más cercano primero".
+  - **Copy nuevo `busyWithLater`** ("Libre a las 19:00") en los 4 locales: `nextSlot` se rellena aunque el estado sea `busy`, así que un centro libre por la tarde deja de mentir con "Sin hueco hoy". Se evita la palabra "Hoy" a propósito porque la ventana puede cruzar medianoche. El formateo fija `timeZone` explícito para no desincronizar SSR e hidratación, y replica la constante en `AvailabilityBadge.logic.ts` en vez de importarla del barrel de `availability` (arrastraría Prisma al bundle del popup del mapa, que es cliente).
+  - **Bonus de rendimiento**: `buscar/page.tsx` hacía un `MIN` de precio por proveedor (N consultas por request, 500 con el catálogo lleno). Sustituido por `getFromPriceCentsBatch` con un único `groupBy`. El listado pasa de ~N+2 viajes a BD a 5.
+  - **Prerrequisito de datos, sin el cual la feature nacía invisible**: `seed-dev.ts` no creaba ni un `Professional` y el onboarding solo lo hacía para `autonomo`, dejando a los centros sin nadie — todo el catálogo habría salido gris. El seed ahora crea 1 profesional por proveedor con tres plantillas de horario (amplia/partida/limitada) y reservas sintéticas relativas a `Date.now()` para que en dev se vean los tres estados; los centros reciben un profesional placeholder; y `DEFAULT_PROFESSIONAL_SCHEDULE` incluye ya el sábado (10:00-14:00), que es el día fuerte del sector y estaba cerrado por defecto.
+  - **Troceado de `providers.service.ts`** (298 líneas, por encima del límite de §6.bis): la búsqueda se muda a `providers.search.ts`. La fachada `providers/index.ts` no cambia para los consumidores.
+  - **Borrado `src/lib/fake-data/availability.ts`** tras verificar que no le quedaban consumidores.
+  - 20 tests nuevos (umbrales y sus bordes exactos, medianoche de Madrid, DST de marzo y octubre, centro multi-profesional, degradaciones) incluido el anti-regresión que cuenta consultas: 6 profesionales → 2 queries. Total 540 verdes. Typecheck, lint y build limpios.
+
 ## 2026-06
 
 ### 2026-06-30

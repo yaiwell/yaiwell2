@@ -1,7 +1,8 @@
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
 
+import { formatSlotTime } from './AvailabilityBadge.logic';
 import { availabilityBadgeStyles as s } from './AvailabilityBadge.styles';
 import type { AvailabilityBadgeProps } from './AvailabilityBadge.types';
 
@@ -17,16 +18,26 @@ import type { AvailabilityBadgeProps } from './AvailabilityBadge.types';
 export function AvailabilityBadge({
   status,
   minutesUntilNext,
+  nextSlotAt,
   variant = 'subtle',
 }: AvailabilityBadgeProps) {
   const t = useTranslations('search.availability');
+  const locale = useLocale();
+
+  // Cuando está ocupado pero SÍ hay hueco más tarde, damos la hora en
+  // vez de "Sin hueco hoy": con el ámbar limitado a una hora, un centro
+  // libre a las 19:00 visto a las 10:00 caería en `busy` y el copy
+  // genérico sería directamente falso.
+  const busyLabel = nextSlotAt
+    ? t('busyWithLater', { time: formatSlotTime(nextSlotAt, locale) })
+    : t('busy');
 
   const label =
     status === 'available_now'
       ? t('now')
       : status === 'available_soon'
         ? t('soon', { minutes: minutesUntilNext ?? 0 })
-        : t('busy');
+        : busyLabel;
 
   const variantClasses = variant === 'solid' ? s.solid[status] : s.subtle[status];
 

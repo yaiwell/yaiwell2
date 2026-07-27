@@ -65,10 +65,17 @@ function getDefaultVerificationStatus(): 'pending' | 'approved' {
 }
 
 /**
- * Plantilla de horario semanal por defecto que asignamos al
- * Professional inicial cuando el proveedor es autónomo. Coincide con
- * la convención del campo `Professional.schedule` (`{ monday: [...] }`).
- * El proveedor lo ajusta más adelante desde el panel.
+ * Plantilla de horario semanal por defecto que asignamos al Professional
+ * inicial de cualquier proveedor. Coincide con la convención del campo
+ * `Professional.schedule` (`{ monday: [...] }`) y debe pasar
+ * `weeklyScheduleSchema` — las 7 claves son obligatorias. El proveedor
+ * lo ajusta más adelante desde el panel.
+ *
+ * Incluimos el sábado (media jornada 10:00-14:00, lo habitual en España
+ * en belleza y bienestar) porque es el día de mayor demanda del sector:
+ * dejarlo vacío por defecto haría que todo proveedor recién dado de alta
+ * apareciese sin disponibilidad justo el día más importante. El domingo
+ * sí queda cerrado, que es la norma del sector.
  */
 const DEFAULT_PROFESSIONAL_SCHEDULE = {
   monday: [{ open: '10:00', close: '20:00' }],
@@ -76,7 +83,7 @@ const DEFAULT_PROFESSIONAL_SCHEDULE = {
   wednesday: [{ open: '10:00', close: '20:00' }],
   thursday: [{ open: '10:00', close: '20:00' }],
   friday: [{ open: '10:00', close: '20:00' }],
-  saturday: [] as Array<{ open: string; close: string }>,
+  saturday: [{ open: '10:00', close: '14:00' }],
   sunday: [] as Array<{ open: string; close: string }>,
 } as const;
 
@@ -195,9 +202,10 @@ export const providerOnboardingRepository = {
    * Crea el Professional asociado a un Provider.
    *
    * Para proveedores `autonomo` el service llama con `userId === ownerUserId`
-   * para que el dueño aparezca como profesional. Para `centro` no se
-   * crea Professional inicial — el centro los da de alta luego desde
-   * el panel.
+   * para que el dueño aparezca como profesional. Para `centro` llama con
+   * `userId = null`: es un placeholder del local (sin cuenta Clerk) que
+   * garantiza que el centro tenga horario y por tanto disponibilidad
+   * desde el minuto uno.
    */
   async createProfessional(args: CreateProfessionalArgs): Promise<{ id: string }> {
     const row = await prisma.professional.create({
@@ -215,7 +223,7 @@ export const providerOnboardingRepository = {
   },
 
   /**
-   * Localiza el Professional inicial de un Provider tipo autónomo.
+   * Localiza el Professional inicial de un Provider (autónomo o centro).
    * El service lo usa para heredar `professionalId` al primer servicio.
    * Si por cualquier motivo hay varios (no debería en onboarding),
    * devolvemos el más antiguo para coger al titular.

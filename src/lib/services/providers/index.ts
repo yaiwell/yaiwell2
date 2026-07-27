@@ -6,11 +6,12 @@
  * está prohibido por convención del proyecto.
  */
 export {
-  searchProviders,
   getFromPriceCents,
+  getFromPriceCentsBatch,
   getProviderDetail,
   getProviderService,
 } from './providers.service';
+export { searchProviders } from './providers.search';
 export { providersRepository } from './providers.repository';
 export { InvalidSearchFiltersError, ProviderNotFoundError } from './providers.errors';
 export type {

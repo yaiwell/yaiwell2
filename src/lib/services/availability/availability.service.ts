@@ -1,14 +1,5 @@
 import { computeAvailableSlots, getUtcDayBounds, isSlotFree } from './availability.calc';
-
-/**
- * Zona horaria del negocio. España peninsular tiene una sola zona
- * (CET/CEST) y todos los providers actuales viven allí. Cuando el
- * marketplace cruce fronteras, se persistirá en `Provider.timezone`
- * y se pasará a `computeAvailableSlots` desde aquí. Mantenerla en
- * el service (no en el motor puro) permite que los tests del motor
- * sigan operando en UTC literal sin acoplarse a la decisión de país.
- */
-const BUSINESS_TIMEZONE = 'Europe/Madrid';
+import { BUSINESS_TIMEZONE } from './availability.constants';
 import {
   InvalidScheduleError,
   ProfessionalNotFoundError,

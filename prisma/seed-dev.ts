@@ -10,10 +10,20 @@
  * los mismos slugs/precios/coords. Permite probar el motor de búsqueda
  * contra Postgres real con datos coherentes.
  *
+ * Además siembra 1 `Professional` por provider (con horarios variados) y
+ * unas reservas sintéticas, para que el listado público pueda pintar
+ * disponibilidad real. Este archivo queda como orquestador; el detalle
+ * vive en `seed-dev.{professionals,services,bookings}.ts` para no pasar
+ * de ~250 líneas por archivo.
+ *
  * Idempotente:
  *  - User dueño (`clerkId = SEED_DEV_OWNER_CLERK_ID`) → upsert.
  *  - Providers → INSERT ... ON CONFLICT (slug) DO UPDATE (raw SQL porque
  *    `location` es PostGIS Unsupported).
+ *  - Professionals → update del profesional vivo más antiguo del provider,
+ *    o create si no hay ninguno (no hay clave natural).
+ *  - Bookings sintéticos → DELETE WHERE clientId = cliente de seed +
+ *    INSERT relativo a "ahora".
  *  - Services → DELETE WHERE providerId IN (gestionados) + INSERT. Más
  *    simple que upsert porque services no tienen slug natural y crear
  *    una clave compuesta solo para esto no aporta.
@@ -34,7 +44,14 @@ import { config as loadEnv } from 'dotenv';
 
 import { fakeCategories } from '../src/lib/fake-data/categories';
 import { fakeProviders } from '../src/lib/fake-data/providers';
-import { fakeServices } from '../src/lib/fake-data/services';
+
+import {
+  deleteSyntheticBookings,
+  seedSyntheticBookings,
+  upsertSyntheticClient,
+} from './seed-dev.bookings';
+import { upsertProfessionals } from './seed-dev.professionals';
+import { seedServices } from './seed-dev.services';
 
 loadEnv({ path: path.resolve(process.cwd(), '.env.local'), override: true });
 
@@ -176,62 +193,38 @@ async function buildProviderIdMap() {
   return map;
 }
 
-async function seedServices(
-  providerIdMap: Map<string, string>,
-  categoryIdMap: Map<string, string>,
-) {
-  console.log('→ Reset y seed services...');
-  const providerDbIds = Array.from(providerIdMap.values());
-  // Limpiamos los services de los providers gestionados (no toca el
-  // resto de la BD). Si hay bookings que referencian estos services
-  // la FK Restrict rebotará — en dev no debería pasar porque los
-  // bookings sintéticos viven en otra rama.
-  const deleted = await prisma.service.deleteMany({
-    where: { providerId: { in: providerDbIds } },
-  });
-  console.log(`  ✓ borrados ${deleted.count} services previos`);
-
-  let inserted = 0;
-  let skipped = 0;
-  for (const fs of fakeServices) {
-    const providerId = providerIdMap.get(fs.providerId);
-    const categoryId = categoryIdMap.get(fs.categoryId);
-    if (!providerId || !categoryId) {
-      console.warn(`  ⚠ skip ${fs.id}: providerId=${fs.providerId} categoryId=${fs.categoryId}`);
-      skipped++;
-      continue;
-    }
-    await prisma.service.create({
-      data: {
-        providerId,
-        categoryId,
-        professionalId: null,
-        // LocalizedText es { es, ca } pero el tipo no declara index
-        // signature; Prisma quiere JsonObject. Cast literal porque la
-        // forma es serializable.
-        name: fs.name as unknown as Record<string, string>,
-        description: fs.description as unknown as Record<string, string>,
-        durationMinutes: fs.durationMinutes,
-        priceCents: fs.priceCents,
-      },
-    });
-    inserted++;
-  }
-  console.log(`  ✓ insertados ${inserted} services (${skipped} skipped)`);
-}
-
 // ============================================================================
 // Main
 // ============================================================================
 
 async function main() {
-  console.log('=== seed-dev: providers + services para FTS smoke ===');
+  console.log('=== seed-dev: providers + services + disponibilidad ===');
   const owner = await upsertDevOwner();
   const plan = await getFreePlan();
   const categoryIdMap = await buildCategoryIdMap();
   await upsertProviders(owner.id, plan.id);
   const providerIdMap = await buildProviderIdMap();
-  await seedServices(providerIdMap, categoryIdMap);
+
+  // Orden obligatorio: primero fuera las reservas sintéticas previas
+  // (FK Restrict Booking→Service), luego profesionales, luego services
+  // (que ya pueden apuntar al profesional) y por último las reservas
+  // nuevas, que necesitan services vivos a los que referirse.
+  const client = await upsertSyntheticClient(prisma);
+  const removedBookings = await deleteSyntheticBookings(prisma, client.id);
+  console.log(`→ Borradas ${removedBookings} reservas sintéticas previas`);
+
+  const professionalIdMap = await upsertProfessionals(prisma, providerIdMap);
+  console.log(`→ ${professionalIdMap.size} profesionales con horario`);
+
+  await seedServices(prisma, providerIdMap, categoryIdMap, professionalIdMap);
+
+  const createdBookings = await seedSyntheticBookings(prisma, {
+    clientId: client.id,
+    providerIdMap,
+    professionalIdMap,
+  });
+  console.log(`→ ${createdBookings} reservas sintéticas confirmadas`);
+
   console.log('=== seed-dev done ===');
 }
 

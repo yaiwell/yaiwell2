@@ -218,7 +218,8 @@
     "availability": {
       "now": "Disponible ara",
       "soon": "En {minutes} min",
-      "busy": "Sense lloc avui"
+      "busy": "Sense lloc avui",
+      "busyWithLater": "Lliure a les {time}"
     },
     "map": {
       "attribution": "© OpenStreetMap",

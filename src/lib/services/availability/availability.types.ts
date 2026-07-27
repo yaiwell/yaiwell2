@@ -70,3 +70,26 @@ export interface GetAvailableSlotsInput {
   date: Date;
   serviceDurationMinutes: number;
 }
+
+/**
+ * Datos mínimos de un profesional necesarios para calcular la
+ * disponibilidad del proveedor al que pertenece, en la ruta batch que
+ * alimenta el listado público.
+ *
+ * `schedule` llega como `unknown` porque en BD es `Json`: solo se le da
+ * forma tras pasarlo por `weeklyScheduleSchema`.
+ *
+ * `minServiceDurationMinutes` es la duración del servicio más corto que
+ * este profesional puede prestar. Usamos la MÍNIMA a propósito: el badge
+ * responde a "¿tiene este centro algún hueco reservable?", y el hueco
+ * más fácil de encajar es el del servicio más corto. Es `null` cuando el
+ * proveedor no tiene ningún servicio activo, en cuyo caso no hay nada
+ * que reservar y el estado será `busy`.
+ */
+export interface ProfessionalScheduleBundle {
+  professionalId: string;
+  providerId: string;
+  schedule: unknown;
+  bufferMinutes: number;
+  minServiceDurationMinutes: number | null;
+}

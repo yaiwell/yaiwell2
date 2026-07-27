@@ -49,7 +49,11 @@ export function MapProviderPopup({
         )}
         <span className={s.photoOverlay} aria-hidden />
         <span className={s.badgeOverlay}>
-          <AvailabilityBadge status={provider.availability.status} variant="solid" />
+          <AvailabilityBadge
+            status={provider.availability.status}
+            nextSlotAt={provider.availability.nextSlot?.startAt ?? null}
+            variant="solid"
+          />
         </span>
         <span className={s.priceChip}>{provider.priceRange}</span>
       </div>

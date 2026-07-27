@@ -71,3 +71,21 @@ export const getAvailableSlotsSchema = z.object({
 });
 
 export type GetAvailableSlotsParsed = z.infer<typeof getAvailableSlotsSchema>;
+
+/**
+ * Input de `getProvidersAvailability` (ruta batch del listado público).
+ *
+ * A diferencia de `getAvailableSlotsSchema`, aquí NO exigimos formato
+ * uuid en los ids. Es deliberado: esta función alimenta el listado
+ * entero, y un id con forma inesperada (catálogo heredado, dato sucio)
+ * debe degradar ese proveedor a `busy`, nunca tumbar la página con una
+ * excepción de validación.
+ *
+ * El tope de 1000 es una red de seguridad frente a un caller que pase
+ * el catálogo completo sin filtrar; hoy `/buscar` no llega ni de lejos.
+ */
+export const getProvidersAvailabilitySchema = z.object({
+  providerIds: z.array(z.string().min(1)).max(1000),
+});
+
+export type GetProvidersAvailabilityParsed = z.infer<typeof getProvidersAvailabilitySchema>;

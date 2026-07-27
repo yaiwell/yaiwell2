@@ -5,8 +5,8 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { ProviderDetail } from '@/components/features/provider/ProviderDetail';
 import { routing, type AppLocale } from '@/i18n/routing';
-import { getAvailabilityStatus, getNextSlot } from '@/lib/fake-data/availability';
 import { pickLocalized } from '@/lib/i18n';
+import { getProvidersAvailability } from '@/lib/services/availability';
 import { getProviderSchedule, ProviderHasNoProfessionalError } from '@/lib/services/provider';
 import { getProviderDetail } from '@/lib/services/providers';
 import { parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
@@ -80,21 +80,26 @@ export default async function ProviderPage({ params }: ProviderPageProps) {
   // del Provider enriquecido. Tolera `ProviderHasNoProfessionalError`
   // (provider sin Professional asociado → schedule null y el panel
   // esconde el bloque sin romper la página).
-  const schedule = await getProviderSchedule(detail.provider.id).catch((err) => {
-    if (err instanceof ProviderHasNoProfessionalError) return null;
-    throw err;
-  });
+  // Ambas lecturas dependen sólo del providerId: van en paralelo para
+  // no encadenar dos viajes a BD.
+  const [schedule, availabilityByProvider] = await Promise.all([
+    getProviderSchedule(detail.provider.id).catch((err) => {
+      if (err instanceof ProviderHasNoProfessionalError) return null;
+      throw err;
+    }),
+    getProvidersAvailability([detail.provider.id]),
+  ]);
 
-  const now = new Date();
   // Enrichment local: el detalle del proveedor no incluye `availability`
   // ni `distanceKm` porque dependen del momento y del usuario; aquí
   // construimos un `ProviderWithAvailability` con disponibilidad real
-  // y `distanceKm = null` (sin geolocalización en la ficha pública).
+  // (mismo motor que el listado) y `distanceKm = null` (la ficha
+  // pública no pide geolocalización).
   const provider: ProviderWithAvailability = {
     ...detail.provider,
-    availability: {
-      status: getAvailabilityStatus(detail.provider.id),
-      nextSlot: getNextSlot(detail.provider.id, now),
+    availability: availabilityByProvider.get(detail.provider.id) ?? {
+      status: 'busy',
+      nextSlot: null,
     },
     distanceKm: null,
   };
