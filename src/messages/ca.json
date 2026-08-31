@@ -610,7 +610,8 @@
   },
   "booking": {
     "meta": {
-      "title": "Reservar · Yaiwell"
+      "title": "Reservar · Yaiwell",
+      "confirmationTitle": "Reserva confirmada · Yaiwell"
     },
     "flow": {
       "eyebrow": "Pas {current} de {total}",
@@ -653,22 +654,39 @@
       "compactNote": "Cancel·lació gratuïta fins a 2h abans del servei, tant per a tu com per al centre."
     },
     "payment": {
-      "cardLabel": "Pagament demo",
       "totalLabel": "Total a pagar",
-      "payCta": "Pagar (mock)",
+      "payCta": "Pagar {amount}",
       "processing": "Processant…",
-      "mockNote": "Aquesta passarel·la és una simulació visual. En producció es connectarà amb Stripe Connect i la passarel·la real processarà el pagament de forma segura."
+      "genericError": "No hem pogut completar el pagament. Revisa les dades de la targeta o prova amb una altra.",
+      "secureNote": "Pagament segur processat per Stripe. Yaiwell no desa les dades de la teva targeta.",
+      "unavailableTitle": "Pagaments no disponibles",
+      "unavailableBody": "La passarel·la de pagament no està configurada en aquest entorn. Torna-ho a provar més tard."
     },
     "confirmation": {
       "title": "Reserva confirmada!",
-      "subtitle": "Hem enviat els detalls al teu correu (simulat). T'esperem.",
+      "subtitle": "Hem enviat els detalls al teu correu. T’esperem.",
       "bookingIdLabel": "Núm. de reserva",
       "providerLabel": "Centre",
       "serviceLabel": "Servei",
       "whenLabel": "Quan",
       "totalLabel": "Total",
       "backToProvider": "Tornar al centre",
-      "keepBrowsing": "Seguir explorant"
+      "keepBrowsing": "Seguir explorant",
+      "pendingTitle": "Pagament en curs",
+      "pendingSubtitle": "Estem confirmant el cobrament amb el teu banc. Quan acabi, veuràs la reserva a «Les meves reserves»."
+    },
+    "checkout": {
+      "loadingTitle": "Preparant el pagament",
+      "loadingBody": "Estem guardant el teu forat. Només trigarà un moment.",
+      "errorTitle": "No hem pogut obrir el pagament",
+      "errorUnauthenticated": "Has d’iniciar sessió per completar la reserva.",
+      "errorServiceUnavailable": "Aquest servei ja no està disponible per reservar.",
+      "errorSlotUnavailable": "Algú acaba de reservar aquest forat. Tria una altra hora.",
+      "errorProviderNotChargeable": "Aquest centre encara no accepta pagaments en línia. Posa-t’hi en contacte directament.",
+      "errorPaymentFailed": "No hem pogut connectar amb la passarel·la de pagament. Torna-ho a provar d’aquí uns segons.",
+      "errorGeneric": "Alguna cosa ha anat malament. Torna-ho a provar d’aquí uns segons.",
+      "retry": "Torna-ho a provar",
+      "signIn": "Iniciar sessió"
     }
   },
   "customerArea": {

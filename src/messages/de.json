@@ -610,7 +610,8 @@
   },
   "booking": {
     "meta": {
-      "title": "Buchen · Yaiwell"
+      "title": "Buchen · Yaiwell",
+      "confirmationTitle": "Buchung bestätigt · Yaiwell"
     },
     "flow": {
       "eyebrow": "Schritt {current} von {total}",
@@ -653,22 +654,39 @@
       "compactNote": "Kostenlose Stornierung bis 2 Stunden vor dem Service, sowohl für dich als auch für das Studio."
     },
     "payment": {
-      "cardLabel": "Demo-Zahlung",
       "totalLabel": "Zu zahlender Gesamtbetrag",
-      "payCta": "Bezahlen (Demo)",
+      "payCta": "{amount} bezahlen",
       "processing": "Wird verarbeitet…",
-      "mockNote": "Diese Bezahlseite ist eine visuelle Simulation. In Produktion wird sie an Stripe Connect angebunden und die echte Zahlung wird sicher abgewickelt."
+      "genericError": "Die Zahlung konnte nicht abgeschlossen werden. Prüfe deine Kartendaten oder nutze eine andere Karte.",
+      "secureNote": "Sichere Zahlung über Stripe. Yaiwell speichert deine Kartendaten zu keinem Zeitpunkt.",
+      "unavailableTitle": "Zahlungen nicht verfügbar",
+      "unavailableBody": "Das Zahlungssystem ist in dieser Umgebung nicht konfiguriert. Bitte versuche es später erneut."
     },
     "confirmation": {
       "title": "Buchung bestätigt!",
-      "subtitle": "Wir haben die Details an deine E-Mail geschickt (simuliert). Wir freuen uns auf dich.",
+      "subtitle": "Wir haben dir die Details per E-Mail geschickt. Wir freuen uns auf dich.",
       "bookingIdLabel": "Buchungsnummer",
       "providerLabel": "Studio",
       "serviceLabel": "Service",
       "whenLabel": "Wann",
       "totalLabel": "Gesamt",
       "backToProvider": "Zurück zum Studio",
-      "keepBrowsing": "Weiter stöbern"
+      "keepBrowsing": "Weiter stöbern",
+      "pendingTitle": "Zahlung läuft",
+      "pendingSubtitle": "Wir bestätigen die Abbuchung mit deiner Bank. Sobald sie durch ist, siehst du die Buchung unter „Meine Buchungen“."
+    },
+    "checkout": {
+      "loadingTitle": "Zahlung wird vorbereitet",
+      "loadingBody": "Wir reservieren deinen Termin. Das dauert nur einen Moment.",
+      "errorTitle": "Die Zahlung konnte nicht geöffnet werden",
+      "errorUnauthenticated": "Du musst dich anmelden, um die Buchung abzuschließen.",
+      "errorServiceUnavailable": "Dieser Service ist nicht mehr buchbar.",
+      "errorSlotUnavailable": "Dieser Termin wurde gerade vergeben. Bitte wähle eine andere Uhrzeit.",
+      "errorProviderNotChargeable": "Dieses Studio akzeptiert noch keine Online-Zahlungen. Bitte nimm direkt Kontakt auf.",
+      "errorPaymentFailed": "Wir konnten das Zahlungssystem nicht erreichen. Bitte versuche es in ein paar Sekunden erneut.",
+      "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es in ein paar Sekunden erneut.",
+      "retry": "Erneut versuchen",
+      "signIn": "Anmelden"
     }
   },
   "customerArea": {

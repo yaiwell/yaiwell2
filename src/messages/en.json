@@ -610,7 +610,8 @@
   },
   "booking": {
     "meta": {
-      "title": "Book · Yaiwell"
+      "title": "Book · Yaiwell",
+      "confirmationTitle": "Booking confirmed · Yaiwell"
     },
     "flow": {
       "eyebrow": "Step {current} of {total}",
@@ -653,22 +654,39 @@
       "compactNote": "Free cancellation up to 2 hours before the service, both for you and the centre."
     },
     "payment": {
-      "cardLabel": "Demo payment",
       "totalLabel": "Total to pay",
-      "payCta": "Pay (mock)",
+      "payCta": "Pay {amount}",
       "processing": "Processing…",
-      "mockNote": "This checkout is a visual simulation. In production it will connect to Stripe Connect and the real gateway will process payment securely."
+      "genericError": "We couldn't complete the payment. Check your card details or try another one.",
+      "secureNote": "Secure payment processed by Stripe. Yaiwell never stores your card details.",
+      "unavailableTitle": "Payments unavailable",
+      "unavailableBody": "The payment gateway is not configured in this environment. Please try again later."
     },
     "confirmation": {
       "title": "Booking confirmed!",
-      "subtitle": "We've sent the details to your email (simulated). See you soon.",
+      "subtitle": "We've sent the details to your email. See you soon.",
       "bookingIdLabel": "Booking no.",
       "providerLabel": "Centre",
       "serviceLabel": "Service",
       "whenLabel": "When",
       "totalLabel": "Total",
       "backToProvider": "Back to centre",
-      "keepBrowsing": "Keep exploring"
+      "keepBrowsing": "Keep exploring",
+      "pendingTitle": "Payment in progress",
+      "pendingSubtitle": "We're confirming the charge with your bank. As soon as it clears you'll see the booking under “My bookings”."
+    },
+    "checkout": {
+      "loadingTitle": "Preparing your payment",
+      "loadingBody": "We're holding your slot. This will only take a moment.",
+      "errorTitle": "We couldn't open the payment",
+      "errorUnauthenticated": "You need to sign in to complete the booking.",
+      "errorServiceUnavailable": "This service is no longer available to book.",
+      "errorSlotUnavailable": "Someone just booked this slot. Please pick another time.",
+      "errorProviderNotChargeable": "This centre doesn't accept online payments yet. Please contact them directly.",
+      "errorPaymentFailed": "We couldn't reach the payment gateway. Please try again in a moment.",
+      "errorGeneric": "Something went wrong. Please try again in a moment.",
+      "retry": "Try again",
+      "signIn": "Sign in"
     }
   },
   "customerArea": {

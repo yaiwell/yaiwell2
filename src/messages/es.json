@@ -610,7 +610,8 @@
   },
   "booking": {
     "meta": {
-      "title": "Reservar · Yaiwell"
+      "title": "Reservar · Yaiwell",
+      "confirmationTitle": "Reserva confirmada · Yaiwell"
     },
     "flow": {
       "eyebrow": "Paso {current} de {total}",
@@ -653,22 +654,39 @@
       "compactNote": "Cancelación gratuita hasta 2h antes del servicio, tanto para ti como para el centro."
     },
     "payment": {
-      "cardLabel": "Pago demo",
       "totalLabel": "Total a pagar",
-      "payCta": "Pagar (mock)",
+      "payCta": "Pagar {amount}",
       "processing": "Procesando…",
-      "mockNote": "Esta pasarela es una simulación visual. En producción se conectará con Stripe Connect y la pasarela real procesará el pago de forma segura."
+      "genericError": "No hemos podido completar el pago. Revisa los datos de la tarjeta o prueba con otra.",
+      "secureNote": "Pago seguro procesado por Stripe. Yaiwell no guarda los datos de tu tarjeta.",
+      "unavailableTitle": "Pagos no disponibles",
+      "unavailableBody": "La pasarela de pago no está configurada en este entorno. Inténtalo de nuevo más tarde."
     },
     "confirmation": {
       "title": "¡Reserva confirmada!",
-      "subtitle": "Hemos enviado los detalles a tu email (simulado). Te esperamos.",
+      "subtitle": "Hemos enviado los detalles a tu email. Te esperamos.",
       "bookingIdLabel": "Nº de reserva",
       "providerLabel": "Centro",
       "serviceLabel": "Servicio",
       "whenLabel": "Cuándo",
       "totalLabel": "Total",
       "backToProvider": "Volver al centro",
-      "keepBrowsing": "Seguir explorando"
+      "keepBrowsing": "Seguir explorando",
+      "pendingTitle": "Pago en curso",
+      "pendingSubtitle": "Estamos confirmando el cobro con tu banco. En cuanto termine, verás la reserva en «Mis reservas»."
+    },
+    "checkout": {
+      "loadingTitle": "Preparando el pago",
+      "loadingBody": "Estamos guardando tu hueco. Solo tardará un momento.",
+      "errorTitle": "No hemos podido abrir el pago",
+      "errorUnauthenticated": "Necesitas iniciar sesión para completar la reserva.",
+      "errorServiceUnavailable": "Este servicio ya no está disponible para reservar.",
+      "errorSlotUnavailable": "Alguien acaba de reservar este hueco. Elige otra hora.",
+      "errorProviderNotChargeable": "Este centro todavía no acepta pagos online. Ponte en contacto con él directamente.",
+      "errorPaymentFailed": "No hemos podido conectar con la pasarela de pago. Vuelve a intentarlo en unos segundos.",
+      "errorGeneric": "Algo ha ido mal. Vuelve a intentarlo en unos segundos.",
+      "retry": "Reintentar",
+      "signIn": "Iniciar sesión"
     }
   },
   "customerArea": {

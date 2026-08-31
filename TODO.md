@@ -157,13 +157,17 @@
 - [~] Flujo de reserva real con Stripe Connect.
   - [x] **Onboarding del provider a Stripe Connect (Express)** (2026-06-30): nuevo módulo `lib/services/payments/` con `ensureConnectAccount` (idempotente — reusa stripeAccountId si existe), `createOnboardingLink` (AccountLink temporal de Stripe, 5 min TTL), `getConnectAccountStatus` (consulta directa a Stripe, no cacheamos), `getProviderPaymentsStatus` (composición que la UI usa). Migración 7 añade `Provider.stripeAccountId String? @unique`. Server actions `startStripeOnboardingAction` (redirect al onboarding de Stripe) y `refreshStripeStatusAction`. Pages `/panel/centro/stripe/return` y `/refresh` como callbacks de Stripe (return redirige al panel, refresh regenera AccountLink). UI nuevo `StripeConnectCard` en `/panel/centro` con 3 estados (no conectado / pending / habilitado) + banner de retorno + tolerancia a fallo de Stripe sin tumbar la página. i18n 4 locales. 11 tests del service.
   - [ ] **Aplicar la migración 7 manualmente** en Supabase SQL Editor (la `DATABASE_URL` actual usa transaction pooler que no soporta DDL): pegar el contenido de `prisma/migrations/7_provider_stripe_account_id/migration.sql` y ejecutar.
-  - [ ] **Env vars Stripe** en `.env.local` y en Vercel: `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`, `STRIPE_CONNECT_CLIENT_ID` (este último necesario para Connect OAuth — ya configurado en el dashboard de Stripe Connect).
+  - [~] **Env vars Stripe** en `.env.local` y en Vercel: `STRIPE_SECRET_KEY` ✅ y `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` ✅ ya pegadas. Pendientes: `STRIPE_CONNECT_CLIENT_ID` (Connect OAuth) y **`STRIPE_WEBHOOK_SECRET`** (sin él el webhook devuelve 501 y ninguna reserva pasa a `confirmed`). En local sale de `stripe listen --forward-to localhost:3000/api/webhooks/stripe`; en producción, del endpoint creado en el dashboard.
   - [ ] **Configurar return/refresh URLs** en Stripe Connect dashboard: `https://www.yaiwell.app/{locale}/panel/centro/stripe/{return,refresh}` (todos los locales soportados).
-  - [ ] **Flujo de cobro real** (siguiente sesión): PaymentIntent + Stripe Elements al confirmar reserva, webhook `payment_intent.succeeded` → Booking a `confirmed`, comisión de plataforma via `application_fee_amount`.
+  - [ ] **Dar de alta el endpoint de webhook** en el dashboard de Stripe (`https://www.yaiwell.app/api/webhooks/stripe`) suscrito a `payment_intent.succeeded`, `payment_intent.payment_failed` y `charge.refunded`. Sin esto el cobro funciona pero la reserva se queda en `pending` para siempre.
+  - [x] **Flujo de cobro real** (2026-08-31): módulo `lib/services/checkout/` con destination charges (`transfer_data.destination` + `application_fee_amount`), Stripe Elements en el paso de pago, webhook cableado a las 3 transiciones y página de confirmación real. Detalle en `DO.md`.
+  - [ ] **Sweeper de reservas `pending` abandonadas**: el checkout crea la reserva antes de cobrar para retener el slot. Si el usuario cierra la pestaña sin pagar y Stripe no llega a emitir `payment_intent.payment_failed`, ese `pending` bloquea la franja indefinidamente. Cron que cancele los `pending` con más de ~30 min y sin `payment_intent.succeeded`. **Prioridad alta antes de abrir a tráfico real.**
+  - [ ] **Notas congeladas al abrir el checkout**: si el usuario vuelve del paso de pago al resumen y edita las notas, el cambio no llega a BD (la reserva ya existe). O se deshabilita el textarea a partir de ese punto, o se añade un `updateBookingNotes` antes de confirmar.
+  - [ ] **Recibo por email tras `payment_intent.succeeded`** (engancha con la tarea de notificaciones Resend): hoy la confirmación dice "hemos enviado los detalles a tu email" y todavía no sale ningún correo.
 - [~] Cancelación y refunds (política de 2h).
   - [x] Regla 2h en `booking.service.cancelBookingByProvider` (validada en Zod + servicio, no solo en UI) y antelación mínima 2h también en `createBooking` para que no nazcan reservas "incancelables" (2026-06-03).
   - [ ] Cliente puede cancelar (política TBD): full-refund hasta -2h, no-show sin refund (probable).
-  - [ ] Refund automático íntegro al cliente vía Stripe Connect cuando la cancela el proveedor (pendiente `payments.service`).
+  - [ ] Refund automático íntegro al cliente vía Stripe Connect cuando la cancela el proveedor. La mitad receptora ya está: `charge.refunded` mueve la reserva a `refunded` en el webhook. Falta **emitir** el refund (`stripe.refunds.create` con `refund_application_fee: true` para devolver también nuestra comisión) desde `cancelBookingByProvider`.
   - [ ] UI: bloquear botón de cancelar a <2h en panel del proveedor.
 - [~] Sistema de valoraciones (cliente → proveedor).
   - [x] `review.service.createReview` aplica regla §4.bis: solo cliente del booking, solo si `status=completed`, ventana 30 días desde `completedAt`, unicidad por booking (2026-06-03).
@@ -210,5 +214,5 @@
 
 ---
 
-*Última actualización: 2026-07-27 (disponibilidad real en `/buscar` y en la ficha de centro — se retira el placeholder `available_now` y muere `lib/fake-data/availability.ts`).*
+*Última actualización: 2026-08-31 (flujo de cobro real con Stripe Connect — destination charges, Elements y webhook; muere `MockPaymentStep`).*
 

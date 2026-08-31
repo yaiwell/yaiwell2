@@ -27,6 +27,7 @@ export function BookingConfirmation({
   slotEndIso,
   bookingId,
   providerSlugWithId,
+  paymentPending = false,
 }: BookingConfirmationProps) {
   const t = useTranslations('booking.confirmation');
 
@@ -37,8 +38,8 @@ export function BookingConfirmation({
       </span>
 
       <div className={s.titleBlock}>
-        <h2 className={s.title}>{t('title')}</h2>
-        <p className={s.subtitle}>{t('subtitle')}</p>
+        <h2 className={s.title}>{paymentPending ? t('pendingTitle') : t('title')}</h2>
+        <p className={s.subtitle}>{paymentPending ? t('pendingSubtitle') : t('subtitle')}</p>
       </div>
 
       <dl className={s.detailsCard}>

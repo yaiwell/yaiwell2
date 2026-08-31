@@ -16,4 +16,10 @@ export interface BookingConfirmationProps {
   bookingId: string;
   /** Segmento `{slug}-{id}` del proveedor para el enlace de vuelta. */
   providerSlugWithId: string;
+  /**
+   * `true` cuando el cargo aún no ha terminado de liquidarse (la reserva
+   * sigue en `pending` porque el webhook de Stripe no ha llegado).
+   * Cambia el copy para no prometer una confirmación que todavía no es.
+   */
+  paymentPending?: boolean;
 }

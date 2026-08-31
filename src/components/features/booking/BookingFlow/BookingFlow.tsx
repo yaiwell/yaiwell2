@@ -2,25 +2,26 @@
 
 import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 
 import { Link } from '@/i18n/navigation';
 
 import { BookingConfirmation } from '../BookingConfirmation';
 import { BookingSummary } from '../BookingSummary';
-import { MockPaymentStep } from '../MockPaymentStep';
 import { SlotPicker } from '../SlotPicker';
 
+import { BookingCheckoutPanel } from './BookingCheckoutPanel';
 import { BOOKING_STEPS, useBookingFlow } from './BookingFlow.logic';
 import { bookingFlowStyles as s } from './BookingFlow.styles';
 import type { BookingFlowProps } from './BookingFlow.types';
 
 /**
- * Orquestador del flujo de reserva mock.
+ * Orquestador del flujo de reserva.
  *
  * Renderiza cada paso en función del estado del hook `useBookingFlow`:
  *  1. `slot`: el usuario elige día y hora.
  *  2. `summary`: revisa los datos y añade notas opcionales.
- *  3. `payment`: pasa por el pago simulado.
+ *  3. `payment`: se crea la reserva en `pending` y se cobra con Stripe.
  *  4. `confirmation`: ve el tick verde y los CTAs finales.
  *
  * El componente JSX se limita a componer; toda la lógica vive en
@@ -34,13 +35,27 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
     step,
     stepIndex,
     draft,
+    checkout,
     canAdvance,
     goNext,
     goBack,
     selectSlot,
     updateDraft,
-    completeMockPayment,
-  } = useBookingFlow();
+    completePayment,
+    retryCheckout,
+  } = useBookingFlow({ serviceId: service.id });
+
+  /**
+   * URL absoluta a la que Stripe devuelve al usuario si la tarjeta exige
+   * 3D Secure. Se construye en cliente porque necesita el `origin` real
+   * del navegador; con `localePrefix: 'always'` el locale forma parte
+   * del path.
+   */
+  const returnUrl = useMemo(() => {
+    if (typeof window === 'undefined' || !draft.bookingId) return '';
+    const base = `${window.location.origin}/${locale}/centro/${providerSlugWithId}/reservar/confirmacion`;
+    return `${base}?bookingId=${encodeURIComponent(draft.bookingId)}`;
+  }, [locale, providerSlugWithId, draft.bookingId]);
 
   // Si llegamos a la confirmación renderizamos solo esa pantalla con
   // su propio layout interno: no necesita stepper ni navegación.
@@ -122,10 +137,12 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
         )}
 
         {step === 'payment' && (
-          <MockPaymentStep
-            amountCents={service.priceCents}
+          <BookingCheckoutPanel
+            checkout={checkout}
             locale={locale}
-            onComplete={completeMockPayment}
+            returnUrl={returnUrl}
+            onSucceeded={completePayment}
+            onRetry={retryCheckout}
           />
         )}
       </div>
