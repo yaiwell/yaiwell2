@@ -100,7 +100,23 @@ export async function refundBookingPayment(
   if (booking.status === 'refunded') {
     return { bookingId: booking.id, changed: false, status: booking.status };
   }
-  if (booking.status !== 'confirmed' && booking.status !== 'completed') {
+  // `cancelled` entra en la lista porque es justo el estado en el que
+  // deja la reserva una cancelación del proveedor: primero cancelamos en
+  // BD y después emitimos el refund, así que el `charge.refunded` que
+  // dispara nuestro propio reembolso llega siempre sobre una reserva ya
+  // cancelada. Sin esto caería en el warn de abajo y la reserva nunca
+  // alcanzaría `refunded`.
+  //
+  // No viola el principio de no-resurrección (DO.md, 2026-08-31): ese
+  // principio impide volver a un estado *anterior* del flujo, como
+  // revivir a `confirmed` una reserva muerta. `refunded` no revive nada
+  // — es el estado terminal más informativo del mismo ramal que
+  // `cancelled`: dice que además de cancelada, el dinero volvió.
+  if (
+    booking.status !== 'confirmed' &&
+    booking.status !== 'completed' &&
+    booking.status !== 'cancelled'
+  ) {
     console.warn(
       `[checkout/webhook] refund sobre reserva en estado ${booking.status}, ignorado:`,
       booking.id,

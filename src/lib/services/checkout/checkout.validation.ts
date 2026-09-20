@@ -22,3 +22,18 @@ export const createBookingCheckoutSchema = z.object({
 });
 
 export type CreateBookingCheckoutParsed = z.infer<typeof createBookingCheckoutSchema>;
+
+/**
+ * Entrada de la cancelación con reembolso.
+ *
+ * Sólo viaja el id de la reserva: quién cancela sale de la sesión
+ * Clerk en el borde, nunca del payload. Duplicamos el schema en lugar
+ * de reutilizar el de `booking` porque este módulo es el borde que
+ * expone la server action del panel, y el dominio `booking` no debe
+ * quedar acoplado al transporte del checkout.
+ */
+export const cancelBookingWithRefundSchema = z.object({
+  bookingId: z.string().uuid(),
+});
+
+export type CancelBookingWithRefundParsed = z.infer<typeof cancelBookingWithRefundSchema>;

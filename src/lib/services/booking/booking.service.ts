@@ -15,6 +15,7 @@
 import { prisma } from '@/lib/db/prisma';
 
 import {
+  BookingNotCancellableError,
   BookingNotConfirmedError,
   BookingNotFoundError,
   BookingTooLateToCancelError,
@@ -115,6 +116,8 @@ export async function createBooking(input: unknown, clientId: string) {
  * @param providerUserId — `User.id` del proveedor autenticado.
  * @throws BookingNotFoundError — si la reserva no existe.
  * @throws UnauthorizedCancellationError — si el usuario no es dueño.
+ * @throws BookingNotCancellableError — si el estado actual no admite
+ *   cancelación (ya cancelada, reembolsada o completada).
  * @throws BookingTooLateToCancelError — si faltan menos de 2 h.
  */
 export async function cancelBookingByProvider(input: unknown, providerUserId: string) {
@@ -128,6 +131,14 @@ export async function cancelBookingByProvider(input: unknown, providerUserId: st
   // Solo el dueño del Provider asociado a la reserva puede cancelar.
   if (booking.provider.userId !== providerUserId) {
     throw new UnauthorizedCancellationError();
+  }
+
+  // El estado se comprueba antes que la ventana de 2 h a propósito:
+  // sobre una reserva ya cancelada el mensaje correcto es "ya no se
+  // puede cancelar", no "llegas tarde". Además corta aquí cualquier
+  // intento de emitir un segundo reembolso sobre el mismo cobro.
+  if (booking.status !== 'pending' && booking.status !== 'confirmed') {
+    throw new BookingNotCancellableError();
   }
 
   // Verificamos la ventana de 2 horas frente a `now`.

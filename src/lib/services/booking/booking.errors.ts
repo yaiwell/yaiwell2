@@ -89,3 +89,21 @@ export class BookingNotConfirmedError extends Error {
     this.name = 'BookingNotConfirmedError';
   }
 }
+
+/**
+ * Error lanzado al intentar cancelar una reserva cuyo estado actual no
+ * lo permite. Solo son cancelables `pending` y `confirmed`.
+ *
+ * Cancelar una reserva ya `cancelled` o `refunded` la resucitaría a un
+ * estado anterior y, peor, abriría la puerta a emitir un segundo
+ * reembolso sobre el mismo cobro. Una `completed` tampoco se cancela:
+ * el servicio ya se prestó, y deshacerlo es trabajo de soporte.
+ */
+export class BookingNotCancellableError extends Error {
+  readonly code = 'BOOKING_NOT_CANCELLABLE';
+
+  constructor(message = 'La reserva ya no se puede cancelar en su estado actual.') {
+    super(message);
+    this.name = 'BookingNotCancellableError';
+  }
+}

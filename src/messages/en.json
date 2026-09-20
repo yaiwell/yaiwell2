@@ -401,12 +401,51 @@
         "confirmed": "Confirmed",
         "pending": "Pending",
         "completed": "Completed",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "refunded": "Refunded"
       },
       "legend": "Legend",
       "emptyDay": "No bookings",
       "bookingAriaLabel": "{service} with {client} at {time}",
-      "summary": "{count, plural, one {# booking this week} other {# bookings this week}}"
+      "summary": "{count, plural, one {# booking this week} other {# bookings this week}}",
+      "actions": {
+        "title": "This week’s bookings",
+        "subtitle": "Mark every appointment you have delivered as finished: that is what lets your clients review you.",
+        "empty": "No bookings this week.",
+        "readOnlyHint": "You are viewing sample data: actions are disabled.",
+        "clientWithProfessional": "{client} · with {professional}",
+        "complete": {
+          "button": "Mark as finished",
+          "confirmTitle": "Mark this booking as finished?",
+          "confirmDescription": "Only confirm if you have delivered the service. Once marked, the client will be able to leave a public review. This cannot be undone.",
+          "confirmAction": "Yes, mark as finished",
+          "cancel": "Back",
+          "pending": "Saving…",
+          "errors": {
+            "notFound": "This booking no longer exists.",
+            "forbidden": "You do not have permission over this booking.",
+            "notConfirmed": "Only confirmed and paid bookings can be marked as finished.",
+            "internal": "We could not mark it as finished. Please try again in a few minutes."
+          }
+        },
+        "cancel": {
+          "button": "Cancel booking",
+          "confirmTitle": "Cancel this booking?",
+          "confirmDescription": "The full amount is refunded to the client, our commission included, and the slot becomes available again. This cannot be undone.",
+          "confirmAction": "Yes, cancel and refund",
+          "keep": "Keep booking",
+          "pending": "Cancelling…",
+          "blockedHint": "Less than 2 hours remain before the appointment: it can no longer be cancelled here. If this is an emergency, contact support.",
+          "errors": {
+            "notFound": "This booking no longer exists.",
+            "forbidden": "You do not have permission over this booking.",
+            "tooLate": "Less than 2 hours remain before the appointment. If this is an emergency, contact support.",
+            "notCancellable": "This booking can no longer be cancelled in its current state.",
+            "refundFailed": "The booking was cancelled, but the refund could not be issued. Support will look into it; there is no need to try again.",
+            "internal": "We could not cancel it. Please try again in a few minutes."
+          }
+        }
+      }
     },
     "services": {
       "title": "Services on offer",
@@ -720,7 +759,7 @@
       }
     },
     "status": {
-      "pending": "Pending",
+      "pending": "Awaiting payment",
       "confirmed": "Confirmed",
       "completed": "Completed",
       "cancelled": "Cancelled",
@@ -728,10 +767,7 @@
     },
     "actions": {
       "viewDetail": "View details",
-      "cancel": "Cancel",
-      "cancelling": "Cancelling…",
-      "cancelledHint": "Cancellation requested",
-      "cancelBlockedHint": "You can only cancel more than 2 hours in advance.",
+      "cancelSupportHint": "Need to cancel? Get in touch and we will sort it out with you.",
       "review": "Review"
     }
   },

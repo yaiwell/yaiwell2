@@ -13,10 +13,11 @@ import type { BookingsListProps } from './BookingsList.types';
  *     §4.bis: solo se puede valorar si el provider las marcó completed).
  *  3. Historial (pasadas / canceladas / refunded / completadas reseñadas).
  *
- * Server Component: solo lee i18n y compone cards. Las cards son las
- * que llevan `'use client'` por la interacción de cancelación.
+ * Server Component, igual que las cards que compone: desde que se
+ * retiró el botón de cancelación simulado no queda interactividad en
+ * este subárbol, así que no viaja JS al cliente.
  */
-export function BookingsList({ upcoming, past, pendingReview, now }: BookingsListProps) {
+export function BookingsList({ upcoming, past, pendingReview }: BookingsListProps) {
   const t = useTranslations('customerArea');
 
   return (
@@ -37,7 +38,7 @@ export function BookingsList({ upcoming, past, pendingReview, now }: BookingsLis
         ) : (
           <div className={s.grid}>
             {upcoming.map((booking) => (
-              <BookingCard key={booking.id} booking={booking} variant="upcoming" now={now} />
+              <BookingCard key={booking.id} booking={booking} variant="upcoming" />
             ))}
           </div>
         )}
@@ -61,7 +62,7 @@ export function BookingsList({ upcoming, past, pendingReview, now }: BookingsLis
         ) : (
           <div className={s.grid}>
             {pendingReview.map((booking) => (
-              <BookingCard key={booking.id} booking={booking} variant="pendingReview" now={now} />
+              <BookingCard key={booking.id} booking={booking} variant="pendingReview" />
             ))}
           </div>
         )}
@@ -83,7 +84,7 @@ export function BookingsList({ upcoming, past, pendingReview, now }: BookingsLis
         ) : (
           <div className={s.grid}>
             {past.map((booking) => (
-              <BookingCard key={booking.id} booking={booking} variant="past" now={now} />
+              <BookingCard key={booking.id} booking={booking} variant="past" />
             ))}
           </div>
         )}

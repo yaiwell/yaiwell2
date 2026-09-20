@@ -9,6 +9,8 @@
 
 export { createBookingCheckout } from './checkout.service';
 
+export { cancelBookingByProviderWithRefund } from './checkout.refund.service';
+
 export { getBookingForConfirmation } from './checkout.confirmation.service';
 export type { BookingConfirmationData } from './checkout.confirmation.service';
 
@@ -26,9 +28,19 @@ export {
   PaymentIntentCreationError,
   ProfessionalNotResolvedError,
   ProviderNotChargeableError,
+  RefundFailedError,
+  RefundNotApplicableError,
 } from './checkout.errors';
 
-export { createBookingCheckoutSchema } from './checkout.validation';
-export type { CreateBookingCheckoutParsed } from './checkout.validation';
+export { cancelBookingWithRefundSchema, createBookingCheckoutSchema } from './checkout.validation';
+export type {
+  CancelBookingWithRefundParsed,
+  CreateBookingCheckoutParsed,
+} from './checkout.validation';
 
-export type { BookingCheckoutSession, BookingTransitionResult } from './checkout.types';
+export type {
+  BookingCheckoutSession,
+  BookingTransitionResult,
+  ProviderCancellationResult,
+  RefundOutcome,
+} from './checkout.types';

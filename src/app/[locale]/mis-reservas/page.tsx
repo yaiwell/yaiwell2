@@ -1,10 +1,13 @@
+import { auth } from '@clerk/nextjs/server';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
 
 import { BookingsList, splitBookings } from '@/components/features/customer';
+import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
-import { fakeCustomerBookings, getBookingsReferenceNow } from '@/lib/fake-data/customer-bookings';
+import { getCustomerBookings } from '@/lib/services/customer-bookings';
+import { ensureUserFromClerk } from '@/lib/services/user';
 
 interface CustomerBookingsPageProps {
   // En Next.js 16 los `params` son Promises.
@@ -16,8 +19,13 @@ interface CustomerBookingsPageProps {
  *
  * Server Component que:
  *  1. Valida el locale.
- *  2. Lee la lista de reservas fake y las parte en tres grupos.
- *  3. Pasa los grupos al componente presentacional `BookingsList`.
+ *  2. Resuelve el `User.id` del cliente autenticado a partir de Clerk.
+ *  3. Pide sus reservas reales al service y las parte en tres grupos.
+ *  4. Pasa los grupos al componente presentacional `BookingsList`.
+ *
+ * El aislamiento entre clientes vive en `getCustomerBookings`, que
+ * filtra por `clientId` en la propia query: una reserva de otro usuario
+ * no llega nunca hasta aquí.
  *
  * La regla de §4.bis sobre "solo se puede valorar tras `completed`"
  * se aplica en `splitBookings`: la sección de "valoraciones pendientes"
@@ -31,9 +39,24 @@ export default async function CustomerBookingsPage({ params }: CustomerBookingsP
   }
   setRequestLocale(locale);
 
+  // El layout del área cliente ya exige sesión; repetimos el check aquí
+  // porque la página no puede asumir el guard del layout para construir
+  // una query filtrada por usuario.
+  const { userId: clerkUserId } = await auth();
+  if (!clerkUserId) {
+    redirect({ href: '/entrar', locale });
+    return null;
+  }
+
+  // Un cliente puede tener sesión Clerk sin fila en `users` todavía
+  // (alta reciente o webhook perdido). `ensureUserFromClerk` es
+  // idempotente: crea la fila si falta y devuelve la existente si no.
+  const user = await ensureUserFromClerk(clerkUserId);
+
   const t = await getTranslations('customerArea');
-  const now = getBookingsReferenceNow();
-  const { upcoming, past, pendingReview } = splitBookings(fakeCustomerBookings, now);
+  const now = new Date();
+  const bookings = await getCustomerBookings(user.id);
+  const { upcoming, past, pendingReview } = splitBookings(bookings, now);
 
   return (
     <div data-component="customer-bookings-page" className="flex flex-col gap-8">
@@ -44,7 +67,7 @@ export default async function CustomerBookingsPage({ params }: CustomerBookingsP
         <p className="text-muted-foreground max-w-xl text-sm">{t('page.subtitle')}</p>
       </header>
 
-      <BookingsList upcoming={upcoming} past={past} pendingReview={pendingReview} now={now} />
+      <BookingsList upcoming={upcoming} past={past} pendingReview={pendingReview} />
     </div>
   );
 }

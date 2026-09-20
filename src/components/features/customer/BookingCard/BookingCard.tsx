@@ -1,5 +1,3 @@
-'use client';
-
 import { CalendarClock, MapPin, Star, User } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 
@@ -8,9 +6,7 @@ import { Link } from '@/i18n/navigation';
 import type { AppLocale } from '@/i18n/routing';
 import { pickLocalized } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
-import { canCancelBooking } from '@/lib/utils/booking-cancellation';
 
-import { useBookingCardCancel } from './BookingCard.logic';
 import { bookingCardStyles as s } from './BookingCard.styles';
 import type { BookingCardProps } from './BookingCard.types';
 
@@ -38,21 +34,23 @@ function statusClassName(status: BookingCardProps['booking']['status']): string 
  *
  * Se renderiza en tres contextos (próximas, historial, valoraciones
  * pendientes) y cambia las acciones según la variante:
- *  - `upcoming`: botón "Cancelar" (bloqueado si <2h) + "Ver detalle".
+ *  - `upcoming`: aviso de cómo cancelar + "Ver detalle".
  *  - `past`: solo botón "Ver detalle".
  *  - `pendingReview`: CTA primario "Valorar" + "Ver detalle".
  *
- * La política de 2h se evalúa con `canCancelBooking`, función pura que
- * comparte el resto del sistema.
+ * Server Component: desde que el cobro es real no hay ninguna acción
+ * interactiva en la card. El botón "Cancelar" que existía aquí era una
+ * simulación sin backend — pintaba "Cancelación solicitada" sobre una
+ * reserva pagada que seguía en pie, así que se retiró. La política de
+ * cancelación por parte del cliente sigue pendiente de definir
+ * (§4.bis de CLAUDE.md); hasta entonces la cancelación se gestiona por
+ * soporte y aquí solo se informa de ello.
  */
-export function BookingCard({ booking, variant, now }: BookingCardProps) {
+export function BookingCard({ booking, variant }: BookingCardProps) {
   const t = useTranslations('customerArea');
   const locale = useLocale();
   const format = useFormatter();
-  const { state, requestCancel } = useBookingCardCancel();
 
-  const cancellable = canCancelBooking(booking, now);
-  const isCancelled = state === 'cancelled' || booking.status === 'cancelled';
   // El nombre del servicio viene del dominio (`LocalizedText`) y se
   // resuelve aquí según el locale activo para evitar lookups en JSX.
   const serviceName = pickLocalized(booking.serviceName, locale as AppLocale);
@@ -68,15 +66,20 @@ export function BookingCard({ booking, variant, now }: BookingCardProps) {
       data-status={booking.status}
     >
       <div className={s.imageWrapper}>
-        {/* Foto del proveedor (decorativa: el contexto lo da el texto). */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={booking.providerPhoto}
-          alt=""
-          aria-hidden="true"
-          className={s.image}
-          loading="lazy"
-        />
+        {/* Un proveedor puede no tener fotos todavía: en ese caso no
+            renderizamos `<img>` (un `src=""` dispara una segunda
+            petición a la propia página) y dejamos el fondo `bg-muted`
+            del contenedor como placeholder. */}
+        {booking.providerPhoto ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={booking.providerPhoto}
+            alt=""
+            aria-hidden="true"
+            className={s.image}
+            loading="lazy"
+          />
+        ) : null}
       </div>
 
       <div className={s.body}>
@@ -124,27 +127,17 @@ export function BookingCard({ booking, variant, now }: BookingCardProps) {
             ) : null}
 
             {variant === 'upcoming' ? (
-              <>
-                {isCancelled ? (
-                  <span className={s.blockedHint} role="status">
-                    {t('actions.cancelledHint')}
-                  </span>
-                ) : (
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    disabled={!cancellable || state === 'cancelling'}
-                    onClick={requestCancel}
-                    aria-label={t('actions.cancel')}
-                    data-component={`customer-booking-cancel-${booking.id}`}
-                  >
-                    {state === 'cancelling' ? t('actions.cancelling') : t('actions.cancel')}
-                  </Button>
-                )}
-                {!cancellable && !isCancelled ? (
-                  <span className={s.blockedHint}>{t('actions.cancelBlockedHint')}</span>
-                ) : null}
-              </>
+              // El botón de cancelar del cliente se retiró: no llamaba a
+              // ninguna API y con el cobro ya real le decía a quien reservó
+              // que había cancelado algo que seguía en pie. La política de
+              // cancelación por cliente sigue sin definirse (§4.bis), así
+              // que hasta entonces la vía es soporte.
+              <span
+                className={s.blockedHint}
+                data-component={`customer-booking-cancel-hint-${booking.id}`}
+              >
+                {t('actions.cancelSupportHint')}
+              </span>
             ) : null}
 
             <Button asChild variant="ghost" size="lg">

@@ -163,6 +163,33 @@ describe('refundBookingPayment', () => {
     expect(result).toEqual({ bookingId: 'bk-1', changed: true, status: 'refunded' });
   });
 
+  it('marca como refunded una reserva ya cancelada por el proveedor', async () => {
+    // Es el caso normal de nuestro propio refund: cancelamos en BD
+    // primero y emitimos el reembolso después, así que el evento llega
+    // siempre sobre una reserva `cancelled`.
+    bookingMock.bookingRepository.findById.mockResolvedValue(bookingRow('cancelled'));
+
+    const result = await refundBookingPayment(charge());
+
+    expect(bookingMock.bookingRepository.updateStatus).toHaveBeenCalledWith(
+      'bk-1',
+      'refunded',
+      expect.objectContaining({ cancelledAt: expect.any(Date) }),
+    );
+    expect(result).toEqual({ bookingId: 'bk-1', changed: true, status: 'refunded' });
+  });
+
+  it('sigue ignorando un refund sobre una reserva pending', async () => {
+    // `pending` nunca llegó a cobrarse: un refund ahí es un evento
+    // ajeno o un descuadre, no una transición nuestra.
+    bookingMock.bookingRepository.findById.mockResolvedValue(bookingRow('pending'));
+
+    const result = await refundBookingPayment(charge());
+
+    expect(bookingMock.bookingRepository.updateStatus).not.toHaveBeenCalled();
+    expect(result).toEqual({ bookingId: 'bk-1', changed: false, status: 'pending' });
+  });
+
   it('es idempotente ante un segundo charge.refunded', async () => {
     bookingMock.bookingRepository.findById.mockResolvedValue(bookingRow('refunded'));
 

@@ -11,6 +11,7 @@ export { cancelBookingByProvider, createBooking, markBookingCompleted } from './
 export { bookingRepository } from './booking.repository';
 
 export {
+  BookingNotCancellableError,
   BookingNotConfirmedError,
   BookingNotFoundError,
   BookingTooLateToCancelError,

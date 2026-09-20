@@ -401,12 +401,51 @@
         "confirmed": "Bestätigt",
         "pending": "Ausstehend",
         "completed": "Abgeschlossen",
-        "cancelled": "Storniert"
+        "cancelled": "Storniert",
+        "refunded": "Erstattet"
       },
       "legend": "Legende",
       "emptyDay": "Keine Buchungen",
       "bookingAriaLabel": "{service} mit {client} um {time}",
-      "summary": "{count, plural, one {# Buchung diese Woche} other {# Buchungen diese Woche}}"
+      "summary": "{count, plural, one {# Buchung diese Woche} other {# Buchungen diese Woche}}",
+      "actions": {
+        "title": "Buchungen dieser Woche",
+        "subtitle": "Markiere jeden erbrachten Termin als abgeschlossen: erst dann kann deine Kundschaft dich bewerten.",
+        "empty": "Diese Woche gibt es keine Buchungen.",
+        "readOnlyHint": "Du siehst Beispieldaten: die Aktionen sind deaktiviert.",
+        "clientWithProfessional": "{client} · mit {professional}",
+        "complete": {
+          "button": "Als abgeschlossen markieren",
+          "confirmTitle": "Buchung als abgeschlossen markieren?",
+          "confirmDescription": "Bestätige nur, wenn du die Leistung erbracht hast. Danach kann die buchende Person eine öffentliche Bewertung hinterlassen. Das lässt sich nicht rückgängig machen.",
+          "confirmAction": "Ja, als abgeschlossen markieren",
+          "cancel": "Zurück",
+          "pending": "Wird gespeichert…",
+          "errors": {
+            "notFound": "Diese Buchung existiert nicht mehr.",
+            "forbidden": "Du hast keine Berechtigung für diese Buchung.",
+            "notConfirmed": "Nur bestätigte und bezahlte Buchungen lassen sich abschließen.",
+            "internal": "Die Buchung konnte nicht abgeschlossen werden. Versuche es in ein paar Minuten erneut."
+          }
+        },
+        "cancel": {
+          "button": "Buchung stornieren",
+          "confirmTitle": "Diese Buchung stornieren?",
+          "confirmDescription": "Der volle Betrag wird der buchenden Person erstattet, inklusive unserer Provision, und der Termin wird wieder frei. Das lässt sich nicht rückgängig machen.",
+          "confirmAction": "Ja, stornieren und erstatten",
+          "keep": "Buchung behalten",
+          "pending": "Wird storniert…",
+          "blockedHint": "Bis zum Termin sind es weniger als 2 Stunden: hier lässt sich nicht mehr stornieren. In Notfällen wende dich an den Support.",
+          "errors": {
+            "notFound": "Diese Buchung existiert nicht mehr.",
+            "forbidden": "Du hast keine Berechtigung für diese Buchung.",
+            "tooLate": "Bis zum Termin sind es weniger als 2 Stunden. In Notfällen wende dich an den Support.",
+            "notCancellable": "Diese Buchung lässt sich in ihrem aktuellen Status nicht mehr stornieren.",
+            "refundFailed": "Die Buchung wurde storniert, aber die Erstattung konnte nicht ausgelöst werden. Der Support kümmert sich darum; du musst es nicht erneut versuchen.",
+            "internal": "Die Buchung konnte nicht storniert werden. Versuche es in ein paar Minuten erneut."
+          }
+        }
+      }
     },
     "services": {
       "title": "Angebotene Services",
@@ -720,7 +759,7 @@
       }
     },
     "status": {
-      "pending": "Ausstehend",
+      "pending": "Zahlung ausstehend",
       "confirmed": "Bestätigt",
       "completed": "Abgeschlossen",
       "cancelled": "Storniert",
@@ -728,10 +767,7 @@
     },
     "actions": {
       "viewDetail": "Details ansehen",
-      "cancel": "Stornieren",
-      "cancelling": "Wird storniert…",
-      "cancelledHint": "Stornierung angefragt",
-      "cancelBlockedHint": "Stornierung nur mit mehr als 2 Std. Vorlauf möglich.",
+      "cancelSupportHint": "Du musst absagen? Schreib uns und wir regeln es gemeinsam.",
       "review": "Bewerten"
     }
   },

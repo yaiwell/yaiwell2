@@ -401,12 +401,51 @@
         "confirmed": "Confirmada",
         "pending": "Pendent",
         "completed": "Completada",
-        "cancelled": "Cancel·lada"
+        "cancelled": "Cancel·lada",
+        "refunded": "Reemborsada"
       },
       "legend": "Llegenda",
       "emptyDay": "Sense reserves",
       "bookingAriaLabel": "{service} amb {client} a les {time}",
-      "summary": "{count, plural, one {# reserva aquesta setmana} other {# reserves aquesta setmana}}"
+      "summary": "{count, plural, one {# reserva aquesta setmana} other {# reserves aquesta setmana}}",
+      "actions": {
+        "title": "Reserves d’aquesta setmana",
+        "subtitle": "Marca com a finalitzada cada cita que hagis atès: és el que permet a la clientela valorar-te.",
+        "empty": "No hi ha reserves aquesta setmana.",
+        "readOnlyHint": "Estàs veient dades d’exemple: les accions estan desactivades.",
+        "clientWithProfessional": "{client} · amb {professional}",
+        "complete": {
+          "button": "Marcar finalitzada",
+          "confirmTitle": "Vols marcar la reserva com a finalitzada?",
+          "confirmDescription": "Confirma-ho només si has prestat el servei. En marcar-la, qui ha reservat podrà deixar-te una valoració pública. No es pot desfer.",
+          "confirmAction": "Sí, marca-la com a finalitzada",
+          "cancel": "Tornar",
+          "pending": "Desant…",
+          "errors": {
+            "notFound": "Aquesta reserva ja no existeix.",
+            "forbidden": "No tens permís sobre aquesta reserva.",
+            "notConfirmed": "Només es poden finalitzar reserves confirmades i pagades.",
+            "internal": "No s’ha pogut marcar com a finalitzada. Torna-ho a provar d’aquí a uns minuts."
+          }
+        },
+        "cancel": {
+          "button": "Cancel·lar reserva",
+          "confirmTitle": "Vols cancel·lar aquesta reserva?",
+          "confirmDescription": "Es retorna l’import íntegre a qui va reservar, inclosa la nostra comissió, i l’hora torna a quedar lliure. No es pot desfer.",
+          "confirmAction": "Sí, cancel·la i reemborsa",
+          "keep": "Mantenir reserva",
+          "pending": "Cancel·lant…",
+          "blockedHint": "Falten menys de 2 hores per a la cita: ja no es pot cancel·lar des d’aquí. Si és un cas de força major, escriu a suport.",
+          "errors": {
+            "notFound": "Aquesta reserva ja no existeix.",
+            "forbidden": "No tens permís sobre aquesta reserva.",
+            "tooLate": "Ja falten menys de 2 hores per a la cita. Si és força major, escriu a suport.",
+            "notCancellable": "Aquesta reserva ja no es pot cancel·lar en el seu estat actual.",
+            "refundFailed": "La reserva s’ha cancel·lat, però el reemborsament no s’ha pogut emetre. Suport ho revisarà; no cal que ho tornis a intentar.",
+            "internal": "No s’ha pogut cancel·lar. Torna-ho a provar d’aquí a uns minuts."
+          }
+        }
+      }
     },
     "services": {
       "title": "Serveis oferts",
@@ -720,7 +759,7 @@
       }
     },
     "status": {
-      "pending": "Pendent",
+      "pending": "Pendent de pagament",
       "confirmed": "Confirmada",
       "completed": "Completada",
       "cancelled": "Cancel·lada",
@@ -728,10 +767,7 @@
     },
     "actions": {
       "viewDetail": "Veure detall",
-      "cancel": "Cancel·lar",
-      "cancelling": "Cancel·lant…",
-      "cancelledHint": "Cancel·lació sol·licitada",
-      "cancelBlockedHint": "Només es pot cancel·lar amb més de 2 h d'antelació.",
+      "cancelSupportHint": "Necessites cancel·lar? Escriu-nos i ho gestionem amb tu.",
       "review": "Valorar"
     }
   },

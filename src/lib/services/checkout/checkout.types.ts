@@ -8,6 +8,8 @@
  * al cliente**: distintos actores, distintos errores, distinta UI.
  */
 
+import type { BookingStatus } from '@/lib/services/booking';
+
 /**
  * Resultado de abrir el checkout de una reserva.
  *
@@ -38,4 +40,35 @@ export interface BookingTransitionResult {
   changed: boolean;
   /** Estado en el que queda la reserva tras procesar el evento. */
   status: string;
+}
+
+/**
+ * Desenlace del reembolso asociado a una cancelación del proveedor.
+ *
+ *  - `issued`: Stripe aceptó el refund y el dinero vuelve al cliente.
+ *  - `already_refunded`: el cargo ya estaba reembolsado (refund manual
+ *    desde el dashboard, o reintento pasada la ventana de idempotencia).
+ *    Es un **éxito**: el objetivo de negocio está cumplido.
+ *  - `not_applicable`: no había nada que devolver (reserva `pending` o
+ *    sin cargo anclado).
+ *  - `failed`: Stripe falló. La cancelación sigue en pie; el dinero
+ *    queda pendiente y lo resuelve soporte.
+ */
+export type RefundOutcome = 'issued' | 'already_refunded' | 'not_applicable' | 'failed';
+
+/**
+ * Resultado de cancelar una reserva desde el panel del proveedor
+ * incluyendo el reembolso al cliente.
+ *
+ * `status` es siempre `cancelled`: el paso a `refunded` lo escribe el
+ * webhook `charge.refunded`, que es la única fuente de verdad del
+ * dinero. Devolver aquí `refunded` mentiría mientras Stripe no confirme.
+ */
+export interface ProviderCancellationResult {
+  bookingId: string;
+  /** Siempre 'cancelled': el paso a 'refunded' lo hace el webhook. */
+  status: BookingStatus;
+  refund: RefundOutcome;
+  /** Id del refund de Stripe cuando se emitió en esta llamada. */
+  stripeRefundId: string | null;
 }

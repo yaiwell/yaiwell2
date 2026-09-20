@@ -24,5 +24,13 @@ export default getRequestConfig(async ({ requestLocale }) => {
   return {
     locale,
     messages,
+    // Timezone fija del negocio. Sin ella, next-intl formatea fechas en
+    // la zona del entorno: UTC en el render de servidor (Vercel) y la
+    // del navegador en el cliente. Eso provoca (a) mismatch de
+    // hidratación y (b) que un usuario español vea sus reservas una o
+    // dos horas antes de la hora real. Yaiwell opera en España, así que
+    // fijamos `Europe/Madrid` como hacen ya el panel del proveedor
+    // (`PANEL_TZ`) y el motor de disponibilidad.
+    timeZone: 'Europe/Madrid',
   };
 });

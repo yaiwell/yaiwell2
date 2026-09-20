@@ -2,9 +2,10 @@ import { render, screen, within } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import { describe, expect, it } from 'vitest';
 
-import type { CustomerBooking } from '@/lib/fake-data/customer-bookings';
+import type { CustomerBookingView } from '@/lib/services/customer-bookings';
 
 import { BookingsList } from './BookingsList';
+import { splitBookings } from './BookingsList.logic';
 
 /**
  * Tests del listado de reservas del área cliente.
@@ -12,10 +13,14 @@ import { BookingsList } from './BookingsList';
  * Cubrimos:
  *  - Que cada sección renderiza el número correcto de cards.
  *  - Que cuando una sección está vacía aparece el mensaje empty
- *    correspondiente en lugar del grid.
- *  - Que las reservas próximas a menos de 2h muestran el hint de
- *    cancelación bloqueada y el botón "Cancelar" queda deshabilitado
- *    (regla §4.bis).
+ *    correspondiente en lugar del grid (incluido el caso "cliente
+ *    nuevo, cero reservas", que con datos fake nunca se ejecutaba).
+ *  - Que las próximas reservas muestran el aviso de cancelación por
+ *    soporte en lugar del antiguo botón simulado.
+ *  - Que un proveedor sin fotos no renderiza un `<img>` vacío.
+ *  - Que las horas se pintan en hora de Madrid, no en UTC.
+ *  - La partición §4.bis: `completed` sin review va a "valoraciones
+ *    pendientes", con review al historial, y `refunded` al historial.
  */
 
 const NOW = new Date('2026-05-27T10:00:00+02:00');
@@ -24,7 +29,7 @@ function inHours(h: number): Date {
   return new Date(NOW.getTime() + h * 60 * 60 * 1000);
 }
 
-function buildBooking(overrides: Partial<CustomerBooking> = {}): CustomerBooking {
+function buildBooking(overrides: Partial<CustomerBookingView> = {}): CustomerBookingView {
   return {
     id: overrides.id ?? 'bkg-test',
     status: overrides.status ?? 'confirmed',
@@ -38,7 +43,10 @@ function buildBooking(overrides: Partial<CustomerBooking> = {}): CustomerBooking
     providerName: overrides.providerName ?? 'Casa Mar',
     providerSlug: overrides.providerSlug ?? 'casa-mar',
     providerAddress: overrides.providerAddress ?? 'Carrer X 1, Gràcia',
-    providerPhoto: overrides.providerPhoto ?? 'https://example.com/photo.jpg',
+    providerPhoto:
+      overrides.providerPhoto === undefined
+        ? 'https://example.com/photo.jpg'
+        : overrides.providerPhoto,
     hasReview: overrides.hasReview ?? false,
     notes: overrides.notes,
   };
@@ -56,7 +64,7 @@ const messages = {
       past: { title: 'Historial', empty: 'Sin historial.' },
     },
     status: {
-      pending: 'Pendiente',
+      pending: 'Pendiente de pago',
       confirmed: 'Confirmada',
       completed: 'Completada',
       cancelled: 'Cancelada',
@@ -64,10 +72,7 @@ const messages = {
     },
     actions: {
       viewDetail: 'Ver detalle',
-      cancel: 'Cancelar',
-      cancelling: 'Cancelando…',
-      cancelledHint: 'Cancelación solicitada',
-      cancelBlockedHint: 'Solo se puede cancelar con más de 2 h de antelación.',
+      cancelSupportHint: '¿Necesitas cancelar? Escríbenos y lo gestionamos contigo.',
       review: 'Valorar',
     },
   },
@@ -95,9 +100,7 @@ describe('BookingsList', () => {
       buildBooking({ id: 'bkg-past-2', status: 'refunded', startAt: inHours(-96) }),
     ];
 
-    renderWithIntl(
-      <BookingsList upcoming={upcoming} pendingReview={pendingReview} past={past} now={NOW} />,
-    );
+    renderWithIntl(<BookingsList upcoming={upcoming} pendingReview={pendingReview} past={past} />);
 
     const upcomingSection = screen.getByRole('region', { name: 'Próximas reservas' });
     const reviewSection = screen.getByRole('region', { name: 'Valoraciones pendientes' });
@@ -114,7 +117,6 @@ describe('BookingsList', () => {
         upcoming={[buildBooking({ id: 'bkg-up-only' })]}
         pendingReview={[]}
         past={[]}
-        now={NOW}
       />,
     );
 
@@ -122,26 +124,55 @@ describe('BookingsList', () => {
     expect(screen.getByText('Sin historial.')).toBeInTheDocument();
   });
 
-  it('bloquea el botón cancelar cuando faltan menos de 2 horas', () => {
-    // 1h 30min al inicio: por debajo del umbral §4.bis, no cancelable.
-    const tooClose = buildBooking({ id: 'bkg-close', startAt: inHours(1.5) });
+  it('renderiza las tres secciones vacías para un cliente sin reservas', () => {
+    // Camino real de un usuario recién registrado: con `fakeCustomerBookings`
+    // este render nunca llegaba a ejecutarse porque la lista nunca estaba vacía.
+    const { upcoming, past, pendingReview } = splitBookings([], NOW);
 
-    renderWithIntl(<BookingsList upcoming={[tooClose]} pendingReview={[]} past={[]} now={NOW} />);
+    renderWithIntl(<BookingsList upcoming={upcoming} pendingReview={pendingReview} past={past} />);
 
-    const cancelButton = screen.getByRole('button', { name: 'Cancelar' });
-    expect(cancelButton).toBeDisabled();
-    expect(
-      screen.getByText('Solo se puede cancelar con más de 2 h de antelación.'),
-    ).toBeInTheDocument();
+    expect(screen.getByText('Sin próximas reservas.')).toBeInTheDocument();
+    expect(screen.getByText('No tienes nada por valorar.')).toBeInTheDocument();
+    expect(screen.getByText('Sin historial.')).toBeInTheDocument();
+    expect(screen.queryAllByRole('article')).toHaveLength(0);
   });
 
-  it('permite cancelar cuando faltan más de 2 horas', () => {
-    const farEnough = buildBooking({ id: 'bkg-far', startAt: inHours(5) });
+  it('avisa de que la cancelación se gestiona por soporte en las próximas reservas', () => {
+    const upcoming = buildBooking({ id: 'bkg-up', startAt: inHours(5) });
 
-    renderWithIntl(<BookingsList upcoming={[farEnough]} pendingReview={[]} past={[]} now={NOW} />);
+    renderWithIntl(<BookingsList upcoming={[upcoming]} pendingReview={[]} past={[]} />);
 
-    const cancelButton = screen.getByRole('button', { name: 'Cancelar' });
-    expect(cancelButton).toBeEnabled();
+    expect(
+      screen.getByText('¿Necesitas cancelar? Escríbenos y lo gestionamos contigo.'),
+    ).toBeInTheDocument();
+    // El botón simulado ya no existe: cobrado el pago, no podemos decirle
+    // al cliente que ha cancelado algo que sigue en pie.
+    expect(screen.queryByRole('button', { name: 'Cancelar' })).not.toBeInTheDocument();
+  });
+
+  it('no renderiza imagen cuando el proveedor no tiene fotos', () => {
+    const noPhoto = buildBooking({ id: 'bkg-nophoto', providerPhoto: null });
+
+    const { container } = renderWithIntl(
+      <BookingsList upcoming={[noPhoto]} pendingReview={[]} past={[]} />,
+    );
+
+    expect(container.querySelector('img')).toBeNull();
+  });
+
+  it('formatea la hora en Europe/Madrid, no en UTC', () => {
+    // 08:00 UTC en julio = 10:00 en Madrid (CEST, UTC+2).
+    const summer = buildBooking({
+      id: 'bkg-tz',
+      startAt: new Date('2026-07-15T08:00:00.000Z'),
+      endAt: new Date('2026-07-15T09:00:00.000Z'),
+    });
+
+    renderWithIntl(<BookingsList upcoming={[summer]} pendingReview={[]} past={[]} />);
+
+    const card = screen.getByRole('article');
+    expect(card.textContent).toContain('10:00');
+    expect(card.textContent).not.toContain('08:00');
   });
 
   it('muestra el CTA Valorar en la sección de valoraciones pendientes', () => {
@@ -151,8 +182,50 @@ describe('BookingsList', () => {
       startAt: inHours(-24),
     });
 
-    renderWithIntl(<BookingsList upcoming={[]} pendingReview={[reviewable]} past={[]} now={NOW} />);
+    renderWithIntl(<BookingsList upcoming={[]} pendingReview={[reviewable]} past={[]} />);
 
     expect(screen.getByRole('button', { name: /Valorar/ })).toBeInTheDocument();
+  });
+
+  it('muestra el badge "Reembolsada" y lo deja en el historial', () => {
+    const refunded = buildBooking({
+      id: 'bkg-refunded',
+      status: 'refunded',
+      startAt: inHours(-96),
+    });
+    const { past, upcoming, pendingReview } = splitBookings([refunded], NOW);
+
+    renderWithIntl(<BookingsList upcoming={upcoming} pendingReview={pendingReview} past={past} />);
+
+    const pastSection = screen.getByRole('region', { name: 'Historial' });
+    expect(within(pastSection).getAllByRole('article')).toHaveLength(1);
+    expect(within(pastSection).getByText('Reembolsada')).toBeInTheDocument();
+  });
+});
+
+describe('splitBookings', () => {
+  it('manda las completadas sin review a valoraciones pendientes y las reseñadas al historial', () => {
+    const sinReview = buildBooking({
+      id: 'bkg-sin',
+      status: 'completed',
+      hasReview: false,
+      startAt: inHours(-24),
+    });
+    const conReview = buildBooking({
+      id: 'bkg-con',
+      status: 'completed',
+      hasReview: true,
+      startAt: inHours(-48),
+    });
+
+    const { upcoming, past, pendingReview } = splitBookings([sinReview, conReview], NOW);
+
+    expect(upcoming).toHaveLength(0);
+    expect(pendingReview.map((b) => b.id)).toEqual(['bkg-sin']);
+    expect(past.map((b) => b.id)).toEqual(['bkg-con']);
+  });
+
+  it('devuelve los tres grupos vacíos si no hay reservas', () => {
+    expect(splitBookings([], NOW)).toEqual({ upcoming: [], past: [], pendingReview: [] });
   });
 });

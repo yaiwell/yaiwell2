@@ -401,12 +401,51 @@
         "confirmed": "Confirmada",
         "pending": "Pendiente",
         "completed": "Completada",
-        "cancelled": "Cancelada"
+        "cancelled": "Cancelada",
+        "refunded": "Reembolsada"
       },
       "legend": "Leyenda",
       "emptyDay": "Sin reservas",
       "bookingAriaLabel": "{service} con {client} a las {time}",
-      "summary": "{count, plural, one {# reserva esta semana} other {# reservas esta semana}}"
+      "summary": "{count, plural, one {# reserva esta semana} other {# reservas esta semana}}",
+      "actions": {
+        "title": "Reservas de esta semana",
+        "subtitle": "Marca como finalizada cada cita que hayas atendido: es lo que permite a la clientela valorarte.",
+        "empty": "No hay reservas esta semana.",
+        "readOnlyHint": "Estás viendo datos de ejemplo: las acciones están desactivadas.",
+        "clientWithProfessional": "{client} · con {professional}",
+        "complete": {
+          "button": "Marcar finalizada",
+          "confirmTitle": "¿Marcar la reserva como finalizada?",
+          "confirmDescription": "Confirma solo si has prestado el servicio. Al marcarla, quien ha reservado podrá dejarte una valoración pública. No se puede deshacer.",
+          "confirmAction": "Sí, marcar como finalizada",
+          "cancel": "Volver",
+          "pending": "Guardando…",
+          "errors": {
+            "notFound": "Esta reserva ya no existe.",
+            "forbidden": "No tienes permiso sobre esta reserva.",
+            "notConfirmed": "Solo se pueden finalizar reservas confirmadas y pagadas.",
+            "internal": "No se ha podido marcar como finalizada. Inténtalo de nuevo en unos minutos."
+          }
+        },
+        "cancel": {
+          "button": "Cancelar reserva",
+          "confirmTitle": "¿Cancelar esta reserva?",
+          "confirmDescription": "Se devuelve el importe íntegro a quien reservó, incluida nuestra comisión, y el hueco vuelve a quedar libre. No se puede deshacer.",
+          "confirmAction": "Sí, cancelar y reembolsar",
+          "keep": "Mantener reserva",
+          "pending": "Cancelando…",
+          "blockedHint": "Faltan menos de 2 horas para la cita: ya no se puede cancelar desde aquí. Si es un caso de fuerza mayor, escribe a soporte.",
+          "errors": {
+            "notFound": "Esta reserva ya no existe.",
+            "forbidden": "No tienes permiso sobre esta reserva.",
+            "tooLate": "Ya faltan menos de 2 horas para la cita. Si es fuerza mayor, escribe a soporte.",
+            "notCancellable": "Esta reserva ya no se puede cancelar en su estado actual.",
+            "refundFailed": "La reserva se ha cancelado, pero el reembolso no ha podido emitirse. Soporte lo revisará; no hace falta que lo intentes de nuevo.",
+            "internal": "No se ha podido cancelar. Inténtalo de nuevo en unos minutos."
+          }
+        }
+      }
     },
     "services": {
       "title": "Servicios ofrecidos",
@@ -720,7 +759,7 @@
       }
     },
     "status": {
-      "pending": "Pendiente",
+      "pending": "Pendiente de pago",
       "confirmed": "Confirmada",
       "completed": "Completada",
       "cancelled": "Cancelada",
@@ -728,10 +767,7 @@
     },
     "actions": {
       "viewDetail": "Ver detalle",
-      "cancel": "Cancelar",
-      "cancelling": "Cancelando…",
-      "cancelledHint": "Cancelación solicitada",
-      "cancelBlockedHint": "Solo se puede cancelar con más de 2 h de antelación.",
+      "cancelSupportHint": "¿Necesitas cancelar? Escríbenos y lo gestionamos contigo.",
       "review": "Valorar"
     }
   },

@@ -58,6 +58,47 @@ export class PaymentIntentCreationError extends Error {
 }
 
 /**
+ * Stripe rechazó la emisión del reembolso tras una cancelación del
+ * proveedor.
+ *
+ * A diferencia de `PaymentIntentCreationError`, este error **no** se
+ * propaga al caller: la cancelación ya está comprometida en BD y no se
+ * revierte (el hueco está liberado y otro cliente puede haberlo cogido).
+ * Se usa como payload hacia Sentry y como vocabulario estable para que
+ * la UI explique que el dinero sigue pendiente de devolver, con el
+ * reintento en manos de soporte.
+ */
+export class RefundFailedError extends Error {
+  readonly code = 'REFUND_FAILED';
+
+  constructor(message = 'No se pudo emitir el reembolso de la reserva.', cause?: unknown) {
+    super(message);
+    this.name = 'RefundFailedError';
+    if (cause !== undefined) {
+      (this as Error & { cause?: unknown }).cause = cause;
+    }
+  }
+}
+
+/**
+ * No hay nada que reembolsar en esta reserva: estaba en `pending` (el
+ * PaymentIntent nunca llegó a confirmarse) o no tiene cargo anclado.
+ *
+ * Es un desenlace legítimo, no un fallo: cancelar una reserva sin pagar
+ * simplemente libera el hueco. Existe como código tipado para que la UI
+ * pueda distinguirlo de un reembolso emitido y no prometa al cliente un
+ * abono que nunca va a llegar.
+ */
+export class RefundNotApplicableError extends Error {
+  readonly code = 'REFUND_NOT_APPLICABLE';
+
+  constructor(message = 'La reserva no tiene ningún cobro que reembolsar.') {
+    super(message);
+    this.name = 'RefundNotApplicableError';
+  }
+}
+
+/**
  * Un evento de Stripe llegó con un `bookingId` en metadata que no
  * existe en BD. Ocurre si se reprocesan eventos de un entorno contra
  * la base de otro. El webhook lo trata como no-op con 200 para que

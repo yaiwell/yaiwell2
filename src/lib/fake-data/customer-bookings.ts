@@ -1,48 +1,25 @@
+import type { BookingStatus, CustomerBookingView } from '@/lib/services/customer-bookings';
 import type { Service } from '@/types/domain';
 
 import { fakeProviders } from './providers';
 import { fakeServices } from './services';
 
 /**
- * Estados posibles de una reserva del cliente.
+ * Fixtures de reservas del cliente.
  *
- * El estado `completed` solo se asigna cuando el profesional ha marcado
- * el servicio como finalizado desde su panel (regla §4.bis). Es el
- * único estado en el que el cliente puede dejar una reseña.
+ * `/mis-reservas` consulta BD desde 2026-09-20. Este módulo se mantiene
+ * solo como fixture para tests y demos, y por eso **no** define ya sus
+ * propios tipos: reexporta los del service real para que cualquier
+ * cambio de forma en `CustomerBookingView` rompa aquí en typecheck en
+ * lugar de dejar los fixtures mintiendo sobre el shape real.
  */
-export type CustomerBookingStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'completed'
-  | 'cancelled'
-  | 'refunded';
+export type { CustomerBookingView };
 
-/**
- * Reserva del cliente con metadatos enriquecidos para la UI mock.
- *
- * Incluye los datos de servicio, proveedor y profesional ya resueltos
- * para evitar lookups en la vista. En producción esto vendrá hidratado
- * desde el repositorio Prisma con `include`s explícitos.
- */
-export interface CustomerBooking {
-  id: string;
-  status: CustomerBookingStatus;
-  startAt: Date;
-  endAt: Date;
-  priceCents: number;
-  serviceId: string;
-  serviceName: { es: string; ca: string };
-  professionalName: string;
-  providerId: string;
-  providerName: string;
-  providerSlug: string;
-  providerAddress: string;
-  providerPhoto: string;
-  /** Indica si ya existe reseña asociada (solo aplicable a `completed`). */
-  hasReview: boolean;
-  /** Notas del cliente al reservar. Opcional. */
-  notes?: string;
-}
+/** Alias histórico del tipo de vista. Preferir `CustomerBookingView`. */
+export type CustomerBooking = CustomerBookingView;
+
+/** Alias histórico del estado. La fuente de verdad es el enum Prisma. */
+export type CustomerBookingStatus = BookingStatus;
 
 /**
  * Punto temporal fijo usado como "ahora" para generar bookings
@@ -93,7 +70,7 @@ function buildBooking(args: {
     providerName: provider.name,
     providerSlug: provider.slug,
     providerAddress: provider.address,
-    providerPhoto: provider.photos[0] ?? '',
+    providerPhoto: provider.photos[0] ?? null,
     hasReview: args.hasReview ?? false,
     notes: args.notes,
   };

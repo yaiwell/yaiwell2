@@ -7,7 +7,8 @@
  *
  * Cubrimos:
  *  - createBooking: happy path, solapamiento, slot demasiado pronto.
- *  - cancelBookingByProvider: happy path, ventana < 2 h, no titular.
+ *  - cancelBookingByProvider: happy path, ventana < 2 h, no titular,
+ *    estados no cancelables.
  *  - markBookingCompleted: happy path, estado distinto de confirmed.
  */
 
@@ -35,6 +36,7 @@ vi.mock('@/lib/db/prisma', () => {
 import { prisma } from '@/lib/db/prisma';
 
 import {
+  BookingNotCancellableError,
   BookingNotConfirmedError,
   BookingTooLateToCancelError,
   ServiceNotFoundError,
@@ -214,6 +216,39 @@ describe('cancelBookingByProvider', () => {
       BookingTooLateToCancelError,
     );
     expect(mockPrisma.booking.update).not.toHaveBeenCalled();
+  });
+
+  it('rechaza con BookingNotCancellableError si la reserva ya está reembolsada', async () => {
+    // Margen de sobra: lo que bloquea aquí es el estado, no el reloj.
+    // Sin esta guardia se emitiría un segundo refund sobre el mismo cobro.
+    const startAt = new Date(Date.now() + 5 * 60 * 60 * 1000);
+    mockPrisma.booking.findUnique.mockResolvedValue(fakeBooking({ startAt, status: 'refunded' }));
+
+    await expect(cancelBookingByProvider({ bookingId }, 'user-provider')).rejects.toBeInstanceOf(
+      BookingNotCancellableError,
+    );
+    expect(mockPrisma.booking.update).not.toHaveBeenCalled();
+  });
+
+  it('rechaza con BookingNotCancellableError si el servicio ya se prestó', async () => {
+    const startAt = new Date(Date.now() + 5 * 60 * 60 * 1000);
+    mockPrisma.booking.findUnique.mockResolvedValue(fakeBooking({ startAt, status: 'completed' }));
+
+    await expect(cancelBookingByProvider({ bookingId }, 'user-provider')).rejects.toBeInstanceOf(
+      BookingNotCancellableError,
+    );
+    expect(mockPrisma.booking.update).not.toHaveBeenCalled();
+  });
+
+  it('prioriza el estado sobre la ventana de 2 h en el mensaje de error', async () => {
+    // Una reserva cancelada y además a 1 h del inicio debe decir "ya no
+    // se puede cancelar", no "llegas tarde": el motivo real es el estado.
+    const startAt = new Date(Date.now() + 60 * 60_000);
+    mockPrisma.booking.findUnique.mockResolvedValue(fakeBooking({ startAt, status: 'cancelled' }));
+
+    await expect(cancelBookingByProvider({ bookingId }, 'user-provider')).rejects.toBeInstanceOf(
+      BookingNotCancellableError,
+    );
   });
 
   it('rechaza con UnauthorizedCancellationError si el userId no es el dueño', async () => {

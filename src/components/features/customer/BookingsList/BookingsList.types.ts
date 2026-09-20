@@ -1,4 +1,4 @@
-import type { CustomerBooking } from '@/lib/fake-data/customer-bookings';
+import type { CustomerBookingView } from '@/lib/services/customer-bookings';
 
 /**
  * Props del listado de reservas del área cliente.
@@ -7,9 +7,7 @@ import type { CustomerBooking } from '@/lib/fake-data/customer-bookings';
  * 100% presentacional. La partición se hace en `BookingsList.logic.ts`.
  */
 export interface BookingsListProps {
-  upcoming: CustomerBooking[];
-  past: CustomerBooking[];
-  pendingReview: CustomerBooking[];
-  /** "Ahora" determinista usado por las cards para decidir si cancelar es posible. */
-  now: Date;
+  upcoming: CustomerBookingView[];
+  past: CustomerBookingView[];
+  pendingReview: CustomerBookingView[];
 }

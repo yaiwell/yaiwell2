@@ -1,4 +1,4 @@
-import type { CustomerBooking } from '@/lib/fake-data/customer-bookings';
+import type { CustomerBookingView } from '@/lib/services/customer-bookings';
 
 /**
  * Particiona la lista cruda de reservas en los tres grupos que el
@@ -15,10 +15,10 @@ import type { CustomerBooking } from '@/lib/fake-data/customer-bookings';
  * Devolver los tres arrays ya ordenados deja al render del componente
  * limpio y sin lógica.
  */
-export function splitBookings(bookings: CustomerBooking[], now: Date) {
-  const upcoming: CustomerBooking[] = [];
-  const past: CustomerBooking[] = [];
-  const pendingReview: CustomerBooking[] = [];
+export function splitBookings(bookings: CustomerBookingView[], now: Date) {
+  const upcoming: CustomerBookingView[] = [];
+  const past: CustomerBookingView[] = [];
+  const pendingReview: CustomerBookingView[] = [];
 
   for (const booking of bookings) {
     const isActiveStatus = booking.status === 'pending' || booking.status === 'confirmed';
