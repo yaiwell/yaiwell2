@@ -4,6 +4,7 @@ import { ArrowRight, MapPin, Star } from 'lucide-react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { PhotoPlaceholder } from '@/components/shared/PhotoPlaceholder';
 import { Link } from '@/i18n/navigation';
 import { formatDistance } from '@/lib/services/location';
 import { cn } from '@/lib/utils';
@@ -33,6 +34,12 @@ export function ProviderCard({
   const t = useTranslations('search.card');
 
   const minutesUntilNext = getMinutesUntilNextSlot(provider);
+
+  // `photos` llega vacío en todo centro recién dado de alta (el wizard
+  // de onboarding aún no tiene paso de fotos), así que la portada es
+  // opcional: sin esta guarda `next/image` recibiría `src={undefined}`
+  // y lanzaría, tumbando la lista de resultados completa.
+  const coverPhoto: string | undefined = provider.photos[0];
 
   // Preferimos la distancia calculada en cliente (`distanceMeters`) porque
   // refleja la ubicación REAL del usuario. Si no se ha pasado, caemos al
@@ -71,13 +78,21 @@ export function ProviderCard({
               `fill` + `sizes` permite que el navegador descargue la variante
               óptima por viewport. Lazy por defecto: la mayoría de las cards
               están fuera del primer pliegue en la lista de resultados. */}
-          <Image
-            src={provider.photos[0]}
-            alt={provider.name}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className={s.image}
-          />
+          {coverPhoto ? (
+            <Image
+              src={coverPhoto}
+              alt={provider.name}
+              fill
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              className={s.image}
+            />
+          ) : (
+            <PhotoPlaceholder
+              label={t('noPhoto')}
+              size="md"
+              dataComponent="provider-card-photo-placeholder"
+            />
+          )}
           <span className={s.badgeOverlay} data-component="provider-card-availability">
             <AvailabilityBadge
               status={provider.availability.status}

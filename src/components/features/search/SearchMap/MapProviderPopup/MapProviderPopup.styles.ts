@@ -16,7 +16,6 @@ export const mapProviderPopupStyles = {
   // Cabecera fotográfica.
   photoWrapper: 'relative aspect-[16/9] w-full overflow-hidden rounded-2xl bg-muted',
   photo: 'h-full w-full object-cover',
-  photoFallback: 'h-full w-full bg-gradient-to-br from-muted to-secondary',
   // Overlay sutil para mejorar legibilidad de los chips flotantes. Mantenemos
   // negro/transparente puro por ser un gradiente de oscurecimiento foto-agnóstico
   // (no es color de tema, sino una sombra para garantizar contraste sobre cualquier

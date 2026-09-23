@@ -3,6 +3,7 @@
 import 'leaflet/dist/leaflet.css';
 
 import L from 'leaflet';
+import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
 
@@ -50,8 +51,18 @@ function MapResizeHandler() {
  * usuario pueda hacer scroll vertical de la página sin "atascarse"
  * al pasar por encima del mapa. El drag y el doble click sí se
  * permiten para que se pueda explorar el entorno.
+ *
+ * Atribución: apagamos el `attributionControl` nativo de Leaflet
+ * (rompe la estética stone) y pintamos la nuestra, igual que hace
+ * `SearchMap`. El crédito a OpenStreetMap **no es opcional**: lo exige
+ * su licencia, así que el `TileLayer` va con `attribution=""` para no
+ * duplicar la fuente de verdad y el texto se renderiza siempre aquí.
  */
 export function ProviderInfoMap({ lat, lng }: ProviderInfoMapProps) {
+  // Reutilizamos la clave del mapa de búsqueda: es el mismo crédito
+  // legal a la misma fuente de tiles, idéntico en los 4 locales.
+  const t = useTranslations('search.map');
+
   // Pin con el mismo divIcon que el mapa de búsqueda para mantener
   // coherencia visual. Forzamos status `available_now` porque en
   // este contexto el pin solo marca ubicación, no estado real.
@@ -63,24 +74,29 @@ export function ProviderInfoMap({ lat, lng }: ProviderInfoMapProps) {
   });
 
   return (
-    <MapContainer
-      center={[lat, lng]}
-      zoom={15}
-      scrollWheelZoom={false}
-      dragging
-      doubleClickZoom
-      zoomControl={false}
-      attributionControl={false}
-      className={s.container}
-    >
-      <MapResizeHandler />
-      <TileLayer
-        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-        maxZoom={19}
-        attribution="© OpenStreetMap"
-      />
-      <Marker position={[lat, lng]} icon={icon} />
-    </MapContainer>
+    <div className={s.wrapper}>
+      <MapContainer
+        center={[lat, lng]}
+        zoom={15}
+        scrollWheelZoom={false}
+        dragging
+        doubleClickZoom
+        zoomControl={false}
+        attributionControl={false}
+        className={s.container}
+      >
+        <MapResizeHandler />
+        <TileLayer
+          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          maxZoom={19}
+          attribution=""
+        />
+        <Marker position={[lat, lng]} icon={icon} />
+      </MapContainer>
+      <span className={s.attribution} data-component="provider-info-map-attribution">
+        {t('attribution')}
+      </span>
+    </div>
   );
 }
 

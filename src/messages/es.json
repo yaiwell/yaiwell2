@@ -45,7 +45,8 @@
     "prev": "Foto anterior",
     "next": "Foto siguiente",
     "goToPhoto": "Ir a la foto {index}",
-    "viewPhoto": "Ver foto {index}"
+    "viewPhoto": "Ver foto {index}",
+    "noPhotos": "Este centro aún no ha subido fotos"
   },
   "photoUploader": {
     "title": "Sube fotos",
@@ -210,7 +211,8 @@
       "distanceFromFallbackHint": "Distancia estimada desde el centro de Barcelona (sin tu ubicación real).",
       "viewDetail": "Ver detalle",
       "typeAutonomous": "Autónomo",
-      "typeCenter": "Centro"
+      "typeCenter": "Centro",
+      "noPhoto": "Sin fotos"
     },
     "availability": {
       "now": "Disponible ahora",
@@ -265,14 +267,13 @@
     "tabs": {
       "services": "Servicios",
       "reviews": "Opiniones",
-      "info": "El lugar"
+      "info": "El lugar",
+      "navLabel": "Secciones de la ficha"
     },
     "services": {
       "title": "Carta de servicios",
       "subtitle": "Elige el servicio que más se ajuste a lo que buscas.",
       "duration": "{minutes} min",
-      "reserve": "Reservar",
-      "reserveComingSoon": "Próximamente",
       "empty": "Este centro aún no tiene servicios publicados.",
       "groupHeader": "{category}",
       "cardHint": "Pulsa para ver detalles",
@@ -285,9 +286,9 @@
         "professionalLabel": "Profesional",
         "anyProfessional": "Cualquier profesional disponible",
         "descriptionLabel": "Descripción",
-        "reserveCta": "Reservar (próximamente)",
-        "comingSoonNote": "La reserva online estará disponible muy pronto. Mientras tanto puedes contactar directamente con el centro."
-      }
+        "reserveCta": "Reservar"
+      },
+      "groupHeaderFallback": "Otros servicios"
     },
     "reviews": {
       "title": "Opiniones",

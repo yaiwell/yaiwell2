@@ -95,7 +95,7 @@
 - [x] SEO básico (meta tags, OG image, sitemap).
 - [x] Verificar que todo el texto está en es/ca (audit + 🔴 hardcoded labels arreglados).
 - [ ] Aplicar 🟠 y 🟡 restantes del audit (`docs/audit-2026-05-27.md`).
-- [~] **Aplicar los hallazgos de `docs/pantallas-2026-09-23.md`** (auditoría de las 25 pantallas, 7 P0). Se van cerrando pantalla a pantalla: ✅ `/` (landing) y ✅ `/profesionales`, ambas el 2026-09-23. Siguiente por prioridad: el CTA "Reservar (próximamente)" de la ficha de centro y la caída con 500 cuando un centro no tiene fotos.
+- [~] **Aplicar los hallazgos de `docs/pantallas-2026-09-23.md`** (auditoría de las 25 pantallas, 7 P0). Se van cerrando pantalla a pantalla: ✅ `/` (landing), ✅ `/profesionales` y ✅ ficha de centro (con `/buscar` de rebote en el arreglo de fotos), las tres el 2026-09-23. **Quedan 2 de los 7 P0**: los nombres de servicio en blanco en `/en` y `/de` fuera de la ficha (ficha de servicio, reservar, confirmación) y los dos del panel del proveedor (geocoding de la dirección, servicio creado sin clave `es`). Siguiente pantalla por prioridad: el flujo de reserva.
 - [ ] Verificar Lighthouse: Performance > 90, Accessibility > 95.
 - [ ] Deploy final en Vercel con dominio definitivo.
 - [ ] Captura de pantallas para la presentación a la cliente.
@@ -185,6 +185,8 @@
 - [ ] **El plan elegido en `/profesionales` no sobrevive al alta** (detectado 2026-09-23): desde hoy viaja a Clerk en `unsafeMetadata.selectedPlan`, pero **nadie lo lee** — el webhook `user.created` solo promociona el rol, y `OnboardingWizard.logic.ts:284` asigna `'free'` a fuego. Quien pulse "Empezar con Premium" acaba en `free`. Cerrarlo exige un paso de selección de plan en el wizard (hidratado desde ese metadato) **y** Stripe Billing para los tres tiers de pago, que es tarea aparte.
 - [ ] **Verificar que la tabla `Plan` está sembrada en la BD remota**, no solo en `prisma/seed.ts`. Desde el 2026-09-23 `/profesionales` lee las tarifas de BD: si la tabla está vacía, la sección de precios no se renderiza (deliberado — mejor nada que una cifra falsa) y se reporta a Sentry vía `PlansNotSeededError`.
 - [ ] **Cachear la lectura de planes** en `/profesionales` si la página recibe tráfico real: hoy consulta Postgres en cada visita. Un `unstable_cache` de unos minutos basta; las tarifas cambian como mucho un par de veces al año.
+- [ ] **Trocear `providers.repository.ts`** (344 líneas, el límite de §6.bis son 250): el mismo `SELECT` está replicado en `findAll` / `findById` / `findBySlug`. Extraer un fragmento compartido resuelve tamaño y deriva a la vez. Detectado 2026-09-23.
+- [ ] **Revisar la z de la atribución del mapa en `/buscar`**: el mini-mapa de la ficha lleva `z-[1000]` explícito porque los panes de Leaflet llegan a 700; `SearchMap` no lo lleva y su atribución podría estar tapada. Comprobación visual, detectado 2026-09-23.
 - [ ] Notificaciones por email (Resend).
 - [ ] 4 planes de suscripción con Stripe Billing.
 - [ ] Onboarding de proveedor con formulario manual (jerarquía categoría → tipo → subtipo).

@@ -22,16 +22,19 @@ import { ServiceDetailSheet } from './ServiceDetailSheet';
  * Lista de servicios de un proveedor agrupada por categoría raíz.
  *
  * Client Component porque cada tarjeta es interactiva: al hacer click
- * abre un sheet con los detalles del servicio. Aunque el flujo de
- * reserva real aún no existe, esto permite al usuario "seleccionar"
- * cada servicio y revisar sus detalles antes de continuar.
+ * abre un sheet con los detalles del servicio desde el que se entra al
+ * flujo de reserva.
+ *
+ * La agrupación por categoría raíz se apoya en `service.rootCategory`,
+ * que el repositorio resuelve contra BD: aquí no se toca la jerarquía
+ * de categorías.
  *
  * Renderiza su propio `<h2>` con `id="provider-services-heading"` para
  * que el compositor `ProviderDetail` lo referencie vía `aria-labelledby`
  * sin duplicar el título en pantalla.
  *
  * @param services — servicios a renderizar.
- * @param locale — locale activo (`es` o `ca`).
+ * @param locale — locale activo (es | ca | en | de).
  */
 export function ProviderServicesList({
   services,
@@ -42,8 +45,10 @@ export function ProviderServicesList({
   const { selectedService, isOpen, openWith, setOpen } = useServiceSheet();
 
   const groups = groupServicesByRootCategory(services);
-  // Fallback localizado para servicios sin categoría raíz resuelta.
-  const fallbackCategoryName = locale === 'ca' ? 'Altres' : 'Otros';
+  // Epígrafe de los servicios cuya categoría raíz no resuelve (cadena de
+  // ancestros rota). Vía i18n y no con un ternario por locale: el ternario
+  // servía castellano a los usuarios de EN y DE.
+  const fallbackCategoryName = t('groupHeaderFallback');
 
   return (
     <section className={s.root} data-component="provider-services-list">
@@ -85,8 +90,13 @@ export function ProviderServicesList({
                     data-component={`provider-services-list-item-${service.id}`}
                   >
                     <div className={s.itemInfo}>
-                      <h4 className={s.itemName}>{service.name[locale]}</h4>
-                      <p className={s.itemDescription}>{service.description[locale]}</p>
+                      {/* `pickLocalized` y no `name[locale]`: en/de son opcionales
+                          en LocalizedText, así que indexar a pelo deja el nombre
+                          del servicio EN BLANCO en esos dos idiomas. */}
+                      <h4 className={s.itemName}>{pickLocalized(service.name, locale)}</h4>
+                      <p className={s.itemDescription}>
+                        {pickLocalized(service.description, locale)}
+                      </p>
                       <p className={s.itemMeta}>
                         <Clock className={s.itemMetaIcon} aria-hidden />
                         {t('duration', { minutes: service.durationMinutes })}

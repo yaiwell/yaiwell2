@@ -6,6 +6,7 @@ import type {
   ProviderWithAvailability,
   Review,
   Service,
+  ServiceWithRootCategory,
 } from '@/types/domain';
 
 /**
@@ -57,7 +58,12 @@ export interface RatingBreakdown {
  */
 export interface ProviderDetail {
   provider: Provider;
-  services: Service[];
+  /**
+   * Catálogo con la categoría raíz ya resuelta: la ficha agrupa por
+   * ella y necesita el dato resuelto en servidor (ver
+   * `ServiceWithRootCategory`).
+   */
+  services: ServiceWithRootCategory[];
   reviews: Review[];
   ratingBreakdown: RatingBreakdown;
 }

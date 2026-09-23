@@ -17,6 +17,15 @@
 export const providerGalleryStyles = {
   root: 'w-full',
 
+  // -------- Estado vacío (proveedor sin fotos) --------
+  // Un único bloque responsive en lugar de duplicar los dos layouts:
+  // sin fotos no hay carousel ni miniaturas que mostrar, solo el hueco
+  // con su placeholder. La relación de aspecto imita la del layout real
+  // en cada breakpoint (4/3 en móvil, 3/2 en desktop) para que la ficha
+  // no dé un salto vertical cuando el centro suba sus primeras fotos.
+  emptyWrapper:
+    'relative aspect-[4/3] w-full overflow-hidden rounded-3xl bg-muted shadow-sm lg:aspect-[3/2]',
+
   // -------- Mobile container --------
   // Wrapper aislado del carousel + sus controles absolutos. `relative`
   // aquí garantiza que los botones prev/next y los dots se posicionen

@@ -5,7 +5,11 @@ import { useTranslations } from 'next-intl';
 
 import type { Review } from '@/types/domain';
 
-import { formatRelativeDate, useReviewsCollapse } from './ProviderReviewsSection.logic';
+import {
+  formatRelativeDate,
+  getBreakdownTotal,
+  useReviewsCollapse,
+} from './ProviderReviewsSection.logic';
 import { providerReviewsSectionStyles as s } from './ProviderReviewsSection.styles';
 import type { ProviderReviewsSectionProps, RatingBreakdown } from './ProviderReviewsSection.types';
 
@@ -100,9 +104,10 @@ function SummaryBlock({
   summaryLabel: string;
   breakdownLabel: (stars: number) => string;
 }) {
-  // Total para calcular porcentajes; nunca dividimos por cero porque
-  // el caller garantiza que reviewsCount > 0 antes de renderizar.
-  const total = reviewsCount > 0 ? reviewsCount : 1;
+  // Denominador de las barras: la suma del desglose (que ya viene
+  // calculado en BD sobre TODAS las reseñas), con `reviewsCount` como
+  // respaldo. Ver `getBreakdownTotal`.
+  const total = getBreakdownTotal(breakdown, reviewsCount);
 
   return (
     <div className={s.summary} data-component="provider-reviews-summary">

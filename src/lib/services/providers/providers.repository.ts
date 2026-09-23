@@ -1,7 +1,9 @@
 import 'server-only';
 
 import { prisma } from '@/lib/db/prisma';
-import type { LocalizedText, Provider, Service } from '@/types/domain';
+import type { LocalizedText, Provider, Service, ServiceWithRootCategory } from '@/types/domain';
+
+import { resolveRootCategory } from './providers.categories';
 
 /**
  * Repositorio de proveedores: única frontera entre la lógica de
@@ -244,12 +246,18 @@ export const providersRepository = {
   },
 
   /**
-   * Devuelve el catálogo de servicios activos de un proveedor.
+   * Devuelve el catálogo de servicios activos de un proveedor, con la
+   * categoría raíz de cada uno ya resuelta.
    *
    * Aplica los mismos filtros que `findServiceByProvider` para que la
    * ficha pública del centro y los lookups individuales sean coherentes.
+   *
+   * La cadena de ancestros de la categoría viaja en el **mismo** SELECT
+   * (join anidado hasta los 3 niveles que admite la jerarquía). Así la
+   * ficha agrupa por categoría raíz sin una consulta por servicio y sin
+   * cargar el catálogo de categorías en el bundle del cliente.
    */
-  async findServicesByProvider(providerId: string): Promise<Service[]> {
+  async findServicesByProvider(providerId: string): Promise<ServiceWithRootCategory[]> {
     const rows = await prisma.service.findMany({
       where: {
         providerId,
@@ -265,10 +273,30 @@ export const providersRepository = {
         description: true,
         durationMinutes: true,
         priceCents: true,
+        category: {
+          select: {
+            id: true,
+            slug: true,
+            name: true,
+            parentId: true,
+            parent: {
+              select: {
+                id: true,
+                slug: true,
+                name: true,
+                parentId: true,
+                parent: { select: { id: true, slug: true, name: true, parentId: true } },
+              },
+            },
+          },
+        },
       },
       orderBy: { createdAt: 'asc' },
     });
-    return rows.map(mapPrismaService);
+    return rows.map((row) => ({
+      ...mapPrismaService(row),
+      rootCategory: resolveRootCategory(row.category),
+    }));
   },
 
   /**

@@ -45,7 +45,8 @@
     "prev": "Previous photo",
     "next": "Next photo",
     "goToPhoto": "Go to photo {index}",
-    "viewPhoto": "View photo {index}"
+    "viewPhoto": "View photo {index}",
+    "noPhotos": "This venue has not uploaded photos yet"
   },
   "photoUploader": {
     "title": "Upload photos",
@@ -210,7 +211,8 @@
       "distanceFromFallbackHint": "Estimated distance from central Barcelona (your actual location isn't being used).",
       "viewDetail": "View details",
       "typeAutonomous": "Freelancer",
-      "typeCenter": "Centre"
+      "typeCenter": "Centre",
+      "noPhoto": "No photos"
     },
     "availability": {
       "now": "Available now",
@@ -265,14 +267,13 @@
     "tabs": {
       "services": "Services",
       "reviews": "Reviews",
-      "info": "The place"
+      "info": "The place",
+      "navLabel": "Page sections"
     },
     "services": {
       "title": "Service menu",
       "subtitle": "Pick the service that best fits what you're after.",
       "duration": "{minutes} min",
-      "reserve": "Book",
-      "reserveComingSoon": "Coming soon",
       "empty": "This centre hasn't published any services yet.",
       "groupHeader": "{category}",
       "cardHint": "Tap to see details",
@@ -285,9 +286,9 @@
         "professionalLabel": "Professional",
         "anyProfessional": "Any available professional",
         "descriptionLabel": "Description",
-        "reserveCta": "Book (coming soon)",
-        "comingSoonNote": "Online booking will be available very soon. In the meantime, feel free to contact the centre directly."
-      }
+        "reserveCta": "Book now"
+      },
+      "groupHeaderFallback": "Other services"
     },
     "reviews": {
       "title": "Reviews",

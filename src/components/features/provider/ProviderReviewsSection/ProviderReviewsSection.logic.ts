@@ -2,6 +2,29 @@
 
 import { useCallback, useState } from 'react';
 
+import type { RatingBreakdown } from './ProviderReviewsSection.types';
+
+/**
+ * Denominador con el que se calculan los porcentajes de las barras del
+ * desglose por estrellas.
+ *
+ * Preferimos la suma del propio desglose antes que `reviewsCount`:
+ * ambos deberían coincidir (el desglose se agrega en BD sobre todas las
+ * reseñas), pero `reviewsCount` es el contador denormalizado del
+ * proveedor y puede ir por detrás. Usando la suma, las barras siempre
+ * suman 100% entre ellas y nunca vuelve a aparecer el caso "40 reseñas
+ * de 5★ con la barra al 50%".
+ *
+ * @param breakdown — recuento por nota 1-5.
+ * @param reviewsCount — total denormalizado, usado sólo como respaldo.
+ * @returns divisor siempre ≥ 1 (nunca dividimos entre cero).
+ */
+export function getBreakdownTotal(breakdown: RatingBreakdown, reviewsCount: number): number {
+  const sum = breakdown[1] + breakdown[2] + breakdown[3] + breakdown[4] + breakdown[5];
+  if (sum > 0) return sum;
+  return reviewsCount > 0 ? reviewsCount : 1;
+}
+
 /**
  * Hook que gestiona el estado colapsado/expandido de la lista de
  * reseñas. Lo extraemos del componente para mantener el JSX puro.

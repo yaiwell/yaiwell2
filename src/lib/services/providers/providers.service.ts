@@ -3,8 +3,9 @@ import 'server-only';
 import { prisma } from '@/lib/db/prisma';
 import type { Review } from '@/types/domain';
 
+import { toRatingBreakdown } from './providers.rating';
 import { providersRepository } from './providers.repository';
-import type { ProviderDetail, ProviderServiceDetail } from './providers.types';
+import type { ProviderDetail, ProviderServiceDetail, RatingBreakdown } from './providers.types';
 
 /**
  * Devuelve el precio "desde" (céntimos) del proveedor dado, o `null`
@@ -43,17 +44,21 @@ export async function getProviderDetail(providerId: string): Promise<ProviderDet
   const provider = await providersRepository.findById(providerId);
   if (!provider) return null;
 
-  // Paralelizamos las 3 lecturas que dependen sólo de providerId.
-  const [services, reviews] = await Promise.all([
+  // Paralelizamos las lecturas que dependen sólo de providerId.
+  // El desglose de notas va aparte (agregación en BD) en vez de
+  // derivarse de `reviews`: esa lista es una muestra de las 20 últimas
+  // y las barras se pintan sobre el total real de valoraciones.
+  const [services, reviews, ratingBreakdown] = await Promise.all([
     providersRepository.findServicesByProvider(providerId),
     findReviewsByProvider(providerId),
+    countReviewsByRating(providerId),
   ]);
 
   return {
     provider,
     services,
     reviews,
-    ratingBreakdown: computeRatingBreakdown(reviews),
+    ratingBreakdown,
   };
 }
 
@@ -132,15 +137,26 @@ function formatAuthorName(fullName: string | null | undefined): string {
 }
 
 /**
- * Distribución de reviews por nota 1-5. Calculada en Node sobre el
- * conjunto ya cargado para evitar otra query — el slice de 20 es
- * suficiente para la ficha pública.
+ * Distribución de reviews por nota 1-5 sobre **todas** las reseñas del
+ * proveedor.
+ *
+ * Antes se calculaba en Node sobre las 20 reseñas que trae
+ * `findReviewsByProvider`, pero la UI divide cada barra entre el total
+ * real (`provider.reviewsCount`): un centro con 40 reseñas de 5★
+ * pintaba la barra al 50%. La agregación cuesta una única consulta
+ * extra —un `groupBy` sobre el índice `reviews(rating)`— y se lanza en
+ * paralelo con el resto de lecturas de la ficha, así que no añade
+ * latencia observable.
+ *
+ * Vive aquí, junto a `findReviewsByProvider`, por el mismo criterio:
+ * las lecturas de reseñas de la ficha pública todavía no justifican su
+ * propio repositorio.
  */
-function computeRatingBreakdown(reviews: Review[]): Record<1 | 2 | 3 | 4 | 5, number> {
-  const breakdown = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } as Record<1 | 2 | 3 | 4 | 5, number>;
-  for (const r of reviews) {
-    const key = Math.max(1, Math.min(5, Math.round(r.rating))) as 1 | 2 | 3 | 4 | 5;
-    breakdown[key] += 1;
-  }
-  return breakdown;
+async function countReviewsByRating(providerId: string): Promise<RatingBreakdown> {
+  const rows = await prisma.review.groupBy({
+    by: ['rating'],
+    where: { providerId },
+    _count: { _all: true },
+  });
+  return toRatingBreakdown(rows.map((row) => ({ rating: row.rating, count: row._count._all })));
 }

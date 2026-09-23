@@ -9,11 +9,12 @@
  */
 import type { WeeklySchedule } from '@/lib/services/availability';
 import type { RatingBreakdown } from '@/lib/services/providers';
-import type { ProviderWithAvailability, Review, Service } from '@/types/domain';
+import type { ProviderWithAvailability, Review, ServiceWithRootCategory } from '@/types/domain';
 
 export interface ProviderDetailProps {
   provider: ProviderWithAvailability;
-  services: Service[];
+  /** Catálogo con la categoría raíz ya resuelta en servidor. */
+  services: ServiceWithRootCategory[];
   reviews: Review[];
   ratingBreakdown: RatingBreakdown;
   /** Horario real del provider o `null` si no se pudo cargar. */

@@ -153,6 +153,37 @@ export interface Service {
 }
 
 /**
+ * Referencia mínima a la categoría **raíz** (la que no tiene padre) de
+ * un servicio.
+ *
+ * Solo lleva lo que la UI necesita para agrupar y etiquetar el catálogo
+ * (`slug` para claves estables, `name` para el epígrafe). Deliberadamente
+ * no reutilizamos `Category`: el `icon` y el `parentId` no aportan nada
+ * aquí y obligarían al repositorio a traer columnas de más.
+ */
+export interface RootCategoryRef {
+  id: string;
+  slug: string;
+  name: LocalizedText;
+}
+
+/**
+ * Servicio acompañado de su categoría raíz ya resuelta en servidor.
+ *
+ * La ficha pública agrupa el catálogo por categoría raíz. Resolver la
+ * jerarquía en el cliente obligaría a cargar el catálogo entero de
+ * categorías en el bundle (y fue la causa del bug de agrupación: se
+ * resolvía contra los ids del fake-data mientras BD usa UUIDs). Por eso
+ * la raíz viaja ya calculada junto a cada servicio.
+ *
+ * `rootCategory` es `null` solo en el caso patológico de una categoría
+ * huérfana (cadena `parentId` rota); la UI lo agrupa bajo "Otros".
+ */
+export interface ServiceWithRootCategory extends Service {
+  rootCategory: RootCategoryRef | null;
+}
+
+/**
  * Reseña de un cliente sobre un proveedor. Los textos NO se traducen
  * en demo (vienen escritos por usuarios reales); los mantenemos en
  * el idioma original aunque la UI esté en otra lengua.

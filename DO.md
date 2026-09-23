@@ -8,6 +8,21 @@
 
 ## 2026-09
 
+### 2026-09-23 (3) — Ficha de centro
+
+Tres de los siete P0 de la auditoría, más la accesibilidad y el crédito del mapa. Dos agentes en paralelo con ficheros disjuntos; el i18n lo aplicó el orquestador al integrar, que es lo que evitó la colisión del Hero de esta misma mañana.
+
+- **El botón de reservar decía "Reservar (próximamente)"** y debajo remitía a llamar al centro por teléfono, en los cuatro idiomas, sobre un checkout que cobra de verdad desde el 2026-08-31. Era el copy de Fase 0 que nadie retiró al cerrar el cobro real: le estábamos diciendo al cliente que no comprara. Fuera la nota entera; el CTA pasa a "Reservar" / "Book now" / "Jetzt buchen". Retiradas 3 claves sin consumidor.
+- **La página reventaba con un centro sin fotos.** `ProviderCard.tsx:75` y `ProviderGallery.tsx:140` pasaban `photos[0]` a `next/image` sin guarda: con `photos = []` el `src` es `undefined`, `next/image` lanza y se caen **`/buscar` entera** y la ficha. Y no es un caso raro — el wizard de onboarding no tiene paso de fotos, así que ése es el estado normal de todo centro nuevo. Nuevo `PhotoPlaceholder` compartido (degradado con tokens semánticos + icono, sin `dark:` manuales) en los dos sitios y también en el popup del mapa, cuyo respaldo era un rectángulo gris. Con 0 fotos la galería deja además de pintar flechas, puntos y miniaturas que no llevaban a ninguna parte.
+- **Todos los servicios aparecían bajo "Otros"** desde la migración del 2026-06-30. `ProviderServicesList.logic.ts` indexaba `fakeCategories` **por id fake** (`cat-beauty`) buscando un `categoryId` que en BD es un **UUID** — el propio `seed.ts:124` avisa de que los ids del fake-data se descartan. `getRootCategory` devolvía `null` siempre. Resuelto con un join anidado en la misma query del repositorio (`category → parent → parent`, que cubre los 3 niveles de la jerarquía): **cero consultas extra**, la página no cambia, y el Client Component deja de cargarse el catálogo de categorías en el bundle. Test de regresión con `categoryId` en forma de UUID, que es lo que habría detectado esto.
+- **El desglose de estrellas no cuadraba con el total**: se calculaba sobre las 20 reseñas que traía la query y se dividía entre el total real, así que un centro con 40 reseñas de 5★ pintaba la barra al 50%. Ahora sale de un `groupBy` sobre todas las reseñas, dentro del `Promise.all` que ya existía. Bonus del agente: el denominador es **la suma del propio desglose**, no `reviewsCount` — ese sale de `Provider.ratingCount`, un contador denormalizado que puede quedarse atrás, y así las barras suman 100% aunque derive.
+- **Accesibilidad e i18n**: el `aria-label` de la navegación estaba hardcodeado en castellano (era la única cadena de usuario sin i18n de las 8 pantallas públicas). Y el epígrafe de servicios sin categoría se resolvía con `locale === 'ca' ? 'Altres' : 'Otros'`, o sea castellano para quien navegara en inglés o alemán. Ambos a clave i18n en los 4 idiomas.
+- **Nombres de servicio en blanco en `/en` y `/de`** (P0 transversal): arreglados los dos sitios de esta pantalla (`ProviderServicesList.tsx:93-94` indexaba `LocalizedText` a pelo, donde `en` y `de` son opcionales). Los otros sitios caen en la ficha de servicio, el flujo de reserva y la confirmación, y se arreglarán al cerrar esas pantallas.
+- **Crédito de OpenStreetMap**: el mini-mapa desactivaba el control de atribución y a la vez le pasaba el `attribution` al TileLayer, así que **no se pintaba nunca**. No es cosmético: la licencia de OSM lo exige. Resuelto con el mismo criterio que ya usa `/buscar`.
+- 44 tests nuevos (688 en total). `typecheck`, `lint`, `build` y paridad i18n (970 claves × 4) limpios.
+
+---
+
 ### 2026-09-23 (2) — `/profesionales`
 
 - **Publicábamos una comisión y cobrábamos otra.** La sección de precios anunciaba **12 / 9 / 6 / 4 %** desde un array hardcodeado, mientras la tabla `Plan` tenía **12 / 10 / 8 / 6 %** — y desde el 2026-08-31 ese valor va directo al `application_fee_amount` de Stripe. Tres de los cuatro planes cobraban más de lo prometido, siempre en nuestro favor. El componente lo admitía en un comentario (*"es puro mock comercial"*, *"cambiar precios aquí NO toca la BD"*): era cierto en Fase 0 y dejó de serlo al hacerse real el cobro, sin que nadie revisara la frase.

@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils';
 import { useProviderGallery } from './ProviderGallery.logic';
 import { providerGalleryStyles as s } from './ProviderGallery.styles';
 import type { ProviderGalleryProps } from './ProviderGallery.types';
+import { ProviderGalleryEmpty } from './ProviderGalleryEmpty';
 
 /**
  * Galería de fotos del proveedor.
@@ -47,10 +48,21 @@ export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
     track.scrollTo({ left: slide.offsetLeft, behavior: 'smooth' });
   }, [activeIndex]);
 
+  // Sin fotos delegamos en el estado vacío: nada de carousel ni de
+  // controles. El return va DESPUÉS de los hooks para no romper el
+  // orden entre renders (reglas de hooks de React).
+  if (photos.length === 0) {
+    return <ProviderGalleryEmpty />;
+  }
+
   const showControls = photos.length > 1;
   // Lista de miniaturas desktop: hasta 4 para que el grid 2x2 quede
   // siempre completo visualmente.
   const desktopThumbs = photos.slice(0, 4);
+  // Defensivo: si `activeIndex` se saliera de rango (cambio de array en
+  // caliente), caemos a la primera foto en vez de pasar `undefined`
+  // a `next/image`, que lanzaría.
+  const mainPhoto = photos[activeIndex] ?? photos[0];
 
   return (
     <section
@@ -136,8 +148,8 @@ export function ProviderGallery({ photos, alt }: ProviderGalleryProps) {
                 re-mount para que el navegador anime la transición de
                 opacidad sin acumular imágenes invisibles. */}
             <Image
-              key={photos[activeIndex]}
-              src={photos[activeIndex]}
+              key={mainPhoto}
+              src={mainPhoto}
               alt={alt}
               fill
               priority

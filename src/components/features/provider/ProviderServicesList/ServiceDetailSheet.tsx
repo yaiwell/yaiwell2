@@ -17,9 +17,11 @@ import type { ServiceDetailSheetProps } from './ProviderServicesList.types';
  * de shadcn). En móvil se presenta como bottom-sheet (slide-up) y
  * en desktop como panel lateral derecho (slide-from-right).
  *
- * Permite al usuario "seleccionar" un servicio aunque el flujo real
- * de reserva aún no exista: muestra todos los detalles relevantes y
- * un CTA "Reservar" deshabilitado pero estéticamente cuidado.
+ * Muestra los detalles del servicio y remata con el CTA que lleva al
+ * flujo de reserva real (`/centro/{slug}-{id}/reservar`), que cobra vía
+ * Stripe Connect desde 2026-08-31. El CTA solo queda deshabilitado en
+ * el estado transitorio sin servicio seleccionado (el sheet cerrándose
+ * con animación).
  */
 export function ServiceDetailSheet({
   service,
@@ -92,8 +94,6 @@ export function ServiceDetailSheet({
                 <span className={s.descriptionLabel}>{t('descriptionLabel')}</span>
                 <p className={s.descriptionText}>{service.description[locale]}</p>
               </div>
-
-              <p className={s.comingSoonNote}>{t('comingSoonNote')}</p>
             </div>
           )}
 

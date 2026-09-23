@@ -3,6 +3,8 @@
 import { Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { PhotoPlaceholder } from '@/components/shared/PhotoPlaceholder';
+
 import { AvailabilityBadge } from '../../AvailabilityBadge';
 
 import { mapProviderPopupStyles as s } from './MapProviderPopup.styles';
@@ -45,7 +47,10 @@ export function MapProviderPopup({
             data-component="map-provider-popup-photo"
           />
         ) : (
-          <div className={s.photoFallback} aria-hidden />
+          // Mismo placeholder que la card del listado: el popup es
+          // estrecho, así que va sin texto (el nombre del centro se lee
+          // justo debajo) y con el icono en tamaño reducido.
+          <PhotoPlaceholder size="sm" dataComponent="map-provider-popup-photo-placeholder" />
         )}
         <span className={s.photoOverlay} aria-hidden />
         <span className={s.badgeOverlay}>

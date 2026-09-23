@@ -1,4 +1,4 @@
-import type { Category, Service } from '@/types/domain';
+import type { RootCategoryRef, Service, ServiceWithRootCategory } from '@/types/domain';
 
 /**
  * Tipos específicos del componente ProviderServicesList.
@@ -15,13 +15,13 @@ export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
  * el grupo bajo el header "Otros".
  */
 export interface ServiceGroup {
-  rootCategory: Category | null;
-  services: Service[];
+  rootCategory: RootCategoryRef | null;
+  services: ServiceWithRootCategory[];
 }
 
 /** Props públicas del componente. */
 export interface ProviderServicesListProps {
-  services: Service[];
+  services: ServiceWithRootCategory[];
   /** Locale activo para resolver el texto de categorías y servicios. */
   locale: SupportedLocale;
   /**

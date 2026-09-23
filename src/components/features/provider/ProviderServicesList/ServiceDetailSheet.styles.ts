@@ -38,11 +38,7 @@ export const serviceDetailSheetStyles = {
   descriptionLabel: 'text-xs font-medium uppercase tracking-wide text-muted-foreground',
   descriptionText: 'text-sm leading-relaxed text-foreground/90 whitespace-pre-line',
 
-  // Nota "próximamente".
-  comingSoonNote:
-    'rounded-2xl border border-dashed border-border bg-muted/40 p-4 text-sm leading-relaxed text-muted-foreground',
-
-  // Footer pegado abajo con CTA deshabilitado pero estéticamente premium.
+  // Footer pegado abajo con el CTA de reserva.
   footer: 'mt-auto flex flex-col gap-2 border-t border-border/60 px-6 py-4 md:px-8 md:py-5',
   reserveCta:
     'inline-flex h-12 w-full items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground shadow-sm transition-opacity disabled:cursor-not-allowed disabled:opacity-50',

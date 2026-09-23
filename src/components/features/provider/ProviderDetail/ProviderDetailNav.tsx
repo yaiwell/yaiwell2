@@ -63,7 +63,7 @@ export function ProviderDetailNav() {
   };
 
   return (
-    <nav className={s.root} aria-label="Secciones de la ficha" data-component="provider-tabs">
+    <nav className={s.root} aria-label={t('navLabel')} data-component="provider-tabs">
       {SECTIONS.map((id) => (
         <button
           key={id}

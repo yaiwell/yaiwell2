@@ -45,7 +45,8 @@
     "prev": "Vorheriges Foto",
     "next": "Nächstes Foto",
     "goToPhoto": "Zu Foto {index} springen",
-    "viewPhoto": "Foto {index} ansehen"
+    "viewPhoto": "Foto {index} ansehen",
+    "noPhotos": "Dieses Studio hat noch keine Fotos hochgeladen"
   },
   "photoUploader": {
     "title": "Fotos hochladen",
@@ -210,7 +211,8 @@
       "distanceFromFallbackHint": "Geschätzte Entfernung vom Zentrum Barcelonas (ohne deinen echten Standort).",
       "viewDetail": "Details ansehen",
       "typeAutonomous": "Selbstständig",
-      "typeCenter": "Studio"
+      "typeCenter": "Studio",
+      "noPhoto": "Keine Fotos"
     },
     "availability": {
       "now": "Sofort verfügbar",
@@ -265,14 +267,13 @@
     "tabs": {
       "services": "Services",
       "reviews": "Bewertungen",
-      "info": "Das Studio"
+      "info": "Das Studio",
+      "navLabel": "Abschnitte der Seite"
     },
     "services": {
       "title": "Service-Karte",
       "subtitle": "Wähle den Service, der am besten zu dir passt.",
       "duration": "{minutes} Min.",
-      "reserve": "Buchen",
-      "reserveComingSoon": "Demnächst verfügbar",
       "empty": "Dieses Studio hat noch keine Services veröffentlicht.",
       "groupHeader": "{category}",
       "cardHint": "Tippen für Details",
@@ -285,9 +286,9 @@
         "professionalLabel": "Fachperson",
         "anyProfessional": "Egal welche Fachperson",
         "descriptionLabel": "Beschreibung",
-        "reserveCta": "Buchen (demnächst)",
-        "comingSoonNote": "Online-Buchung ist sehr bald verfügbar. Bis dahin kannst du das Studio direkt kontaktieren."
-      }
+        "reserveCta": "Jetzt buchen"
+      },
+      "groupHeaderFallback": "Weitere Leistungen"
     },
     "reviews": {
       "title": "Bewertungen",
