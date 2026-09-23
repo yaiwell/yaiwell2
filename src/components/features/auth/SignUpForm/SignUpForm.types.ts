@@ -17,6 +17,35 @@ import type { AuthErrorCode } from '@/lib/auth';
 export type SignUpRole = 'client' | 'provider';
 
 /**
+ * Tier de plan preseleccionado desde `/profesionales?plan=…`.
+ *
+ * Duplicamos el union en lugar de importarlo de `@/lib/services/plans`
+ * porque ese barrel arrastra Prisma y este archivo lo consume un
+ * Client Component. La sincronización está garantizada por tipos: el
+ * page de `/registro` pasa un `PlanTierId` a esta prop, así que si los
+ * dos unions divergen, `npm run typecheck` falla.
+ */
+export type SignUpPlanTier = 'free' | 'basic' | 'pro' | 'premium';
+
+/**
+ * Props del formulario de alta.
+ *
+ * Ambas nacen de los searchParams con los que la landing de
+ * proveedores empuja al alta, ya validados con Zod en la page.
+ */
+export interface SignUpFormProps {
+  /** Pestaña activa al montar. Por defecto, `client`. */
+  initialRole?: SignUpRole;
+  /**
+   * Plan que el usuario eligió en la landing. Viaja a Clerk en
+   * `unsafeMetadata.selectedPlan` para no perder la intención, pero
+   * hoy NO determina el plan del Provider: el wizard de onboarding
+   * asigna `free` a fuego y no tiene paso de selección de plan.
+   */
+  initialPlan?: SignUpPlanTier;
+}
+
+/**
  * Fases del wizard de registro.
  *
  * - `form`: el usuario rellena email + contraseña + datos personales.

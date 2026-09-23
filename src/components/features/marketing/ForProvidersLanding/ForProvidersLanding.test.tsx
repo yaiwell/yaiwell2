@@ -19,7 +19,21 @@ vi.mock('@/i18n/navigation', () => ({
   ),
 }));
 
+import type { PublicPlan } from '@/lib/services/plans';
+
 import { ForProvidersLanding } from './ForProvidersLanding';
+
+/**
+ * Planes de prueba. En producción llegan de la tabla `Plan` vía la
+ * page; aquí basta con que tengan los cuatro tiers para comprobar que
+ * el orquestador los propaga a la sección de precios.
+ */
+const plans: PublicPlan[] = [
+  { tier: 'free', monthlyPriceCents: 0, commissionRateBps: 1200, maxServices: 1 },
+  { tier: 'basic', monthlyPriceCents: 1900, commissionRateBps: 1000, maxServices: 10 },
+  { tier: 'pro', monthlyPriceCents: 4900, commissionRateBps: 800, maxServices: 50 },
+  { tier: 'premium', monthlyPriceCents: 9900, commissionRateBps: 600, maxServices: 999 },
+];
 
 /**
  * Mensajes mínimos necesarios para que el árbol completo renderice.
@@ -133,7 +147,7 @@ function renderWithIntl(ui: React.ReactNode) {
 
 describe('ForProvidersLanding', () => {
   it('renderiza el h1 del hero con título y acento', () => {
-    renderWithIntl(<ForProvidersLanding />);
+    renderWithIntl(<ForProvidersLanding plans={plans} />);
 
     const heading = screen.getByRole('heading', { level: 1 });
     expect(heading).toBeInTheDocument();
@@ -144,7 +158,7 @@ describe('ForProvidersLanding', () => {
   });
 
   it('renderiza los 4 planes con su nombre como heading nivel 3', () => {
-    renderWithIntl(<ForProvidersLanding />);
+    renderWithIntl(<ForProvidersLanding plans={plans} />);
 
     // Cada card de plan expone su nombre como h3. Comprobamos los 4.
     const planNames = ['Gratis', 'Básico', 'Pro', 'Premium'];
@@ -156,15 +170,25 @@ describe('ForProvidersLanding', () => {
     expect(screen.getByText('Más elegido')).toBeInTheDocument();
   });
 
+  it('omite la sección de precios cuando no hay planes en BD', () => {
+    // Sin catálogo no publicamos tarifas: antes que inventar una
+    // comisión, la sección desaparece y el resto del embudo sigue.
+    renderWithIntl(<ForProvidersLanding plans={null} />);
+
+    expect(screen.queryByRole('heading', { level: 3, name: 'Pro' })).not.toBeInTheDocument();
+    // El resto de la landing sigue en pie.
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
+  });
+
   it('expone el CTA primario del hero como enlace a /registro?as=provider', () => {
-    renderWithIntl(<ForProvidersLanding />);
+    renderWithIntl(<ForProvidersLanding plans={plans} />);
 
     const cta = screen.getByRole('link', { name: /Empezar gratis/i });
     expect(cta).toHaveAttribute('href', '/registro?as=provider');
   });
 
   it('renderiza el CTA secundario final con mailto al equipo de ventas', () => {
-    renderWithIntl(<ForProvidersLanding />);
+    renderWithIntl(<ForProvidersLanding plans={plans} />);
 
     const sales = screen.getByRole('link', { name: 'Hablar con ventas' });
     expect(sales).toHaveAttribute('href', 'mailto:hola@yaiwell.es');

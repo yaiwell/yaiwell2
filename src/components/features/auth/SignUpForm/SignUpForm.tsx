@@ -9,7 +9,7 @@ import type { AuthErrorCode } from '@/lib/auth';
 
 import { useSignUpForm } from './SignUpForm.logic';
 import { signUpFormStyles as s } from './SignUpForm.styles';
-import { SIGN_UP_FIELD_IDS, type SignUpRole } from './SignUpForm.types';
+import { SIGN_UP_FIELD_IDS, type SignUpFormProps, type SignUpRole } from './SignUpForm.types';
 import { SignUpVerificationPanel } from './SignUpVerificationPanel';
 
 /**
@@ -18,8 +18,12 @@ import { SignUpVerificationPanel } from './SignUpVerificationPanel';
  *
  * La lógica completa vive en `useSignUpForm`; este componente solo
  * compone UI y traduce los `AuthErrorCode` a copy con next-intl.
+ *
+ * `initialRole` e `initialPlan` vienen de la URL (`?as=provider&plan=pro`)
+ * para que quien llega desde un CTA de `/profesionales` no aterrice en
+ * la pestaña equivocada.
  */
-export function SignUpForm() {
+export function SignUpForm({ initialRole, initialPlan }: SignUpFormProps) {
   const t = useTranslations('signUp');
 
   const {
@@ -36,7 +40,7 @@ export function SignUpForm() {
     submitVerification,
     switchRole,
     resetToForm,
-  } = useSignUpForm();
+  } = useSignUpForm({ initialRole, initialPlan });
 
   // Mapeo exhaustivo código → mensaje. Si se añade un código nuevo al
   // union `AuthErrorCode`, TypeScript marca este Record como incompleto.

@@ -16,6 +16,7 @@ import {
 import type {
   SignUpDraft,
   SignUpFieldErrors,
+  SignUpFormProps,
   SignUpPhase,
   SignUpRole,
   SignUpRootError,
@@ -106,14 +107,21 @@ const providerSchema = withPasswordMatch(
  * El rol elegido en la pestaña se persiste en `unsafeMetadata.role`
  * porque `publicMetadata` solo es escribible desde backend. El webhook
  * `user.created` (capa 2) copiará el rol a `publicMetadata`.
+ *
+ * `initialRole` / `initialPlan` llegan de los searchParams de
+ * `/registro` (ya validados con Zod en la page) para conservar la
+ * intención de quien pulsa un CTA en `/profesionales`.
  */
-export function useSignUpForm() {
+export function useSignUpForm({ initialRole, initialPlan }: SignUpFormProps = {}) {
   const router = useRouter();
   const { signUp, setActive, isLoaded } = useSignUp();
   const { user } = useUser();
 
   const [phase, setPhase] = useState<SignUpPhase>('form');
-  const [role, setRole] = useState<SignUpRole>('client');
+  // La pestaña arranca en el rol con el que el usuario llegó desde
+  // `/profesionales?as=provider`. Sin preselección, `client`: es el
+  // caso mayoritario en el resto de entradas a `/registro`.
+  const [role, setRole] = useState<SignUpRole>(initialRole ?? 'client');
   const [draft, setDraft] = useState<SignUpDraft>(EMPTY_DRAFT);
   const [errors, setErrors] = useState<SignUpFieldErrors>({});
   const [rootError, setRootError] = useState<SignUpRootError>(null);
@@ -200,6 +208,12 @@ export function useSignUpForm() {
             role,
             fullName: draft.fullName.trim(),
             ...(role === 'provider' && { businessName: draft.businessName.trim() }),
+            // Guardamos el plan elegido en la landing para no perder la
+            // intención comercial. Hoy nadie lo lee: el wizard de
+            // onboarding asigna `free` a fuego y no tiene paso de
+            // selección de plan. Queda aquí como dato, no como
+            // promesa: el alta NO contrata ningún plan.
+            ...(role === 'provider' && initialPlan && { selectedPlan: initialPlan }),
           },
         });
 
@@ -211,7 +225,7 @@ export function useSignUpForm() {
         setIsSubmitting(false);
       }
     },
-    [applyClerkError, draft, isLoaded, isSubmitting, role, signUp, validate],
+    [applyClerkError, draft, initialPlan, isLoaded, isSubmitting, role, signUp, validate],
   );
 
   const submitVerification = useCallback(

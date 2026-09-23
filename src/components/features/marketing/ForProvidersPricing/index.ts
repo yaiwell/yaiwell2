@@ -1,2 +1,2 @@
 export { ForProvidersPricing } from './ForProvidersPricing';
-export type { PricingPlanId } from './ForProvidersPricing.types';
+export type { ForProvidersPricingProps, PricingPlanId } from './ForProvidersPricing.types';

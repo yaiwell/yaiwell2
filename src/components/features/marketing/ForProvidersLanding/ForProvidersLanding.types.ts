@@ -1,15 +1,16 @@
 /**
  * Props del orquestador de la landing /profesionales.
- *
- * El componente es presentacional: no recibe datos de servidor en
- * MVP. Mantenemos la interfaz abierta por si en el futuro queremos
- * variantes (ej. preselección de plan vía URL).
  */
+
+import type { PublicPlan } from '@/lib/services/plans';
+
 export interface ForProvidersLandingProps {
   /**
-   * Plan preseleccionado opcional, para resaltar visualmente uno
-   * concreto cuando la URL lo indica. Si no se pasa, se aplica el
-   * destacado por defecto ("Pro" como popular).
+   * Planes reales leídos de BD por la page. `null` significa que no se
+   * han podido cargar (tabla sin sembrar): en ese caso la sección de
+   * precios no se renderiza. Nunca caemos a tarifas hardcodeadas —
+   * publicar una comisión distinta de la que Stripe cobra es el bug
+   * que esta prop existe para impedir.
    */
-  highlightedPlan?: 'free' | 'basic' | 'pro' | 'premium';
+  plans: PublicPlan[] | null;
 }

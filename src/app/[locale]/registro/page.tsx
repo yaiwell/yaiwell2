@@ -8,10 +8,14 @@ import { SignUpForm } from '@/components/features/auth/SignUpForm';
 import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { getRoleFromUser, resolvePostAuthDestination } from '@/lib/auth';
+import { parseSignUpIntent } from '@/lib/validation';
 
 interface SignUpPageProps {
   // En Next.js 16 los `params` de los segmentos dinámicos son asíncronos.
   params: Promise<{ locale: string }>;
+  // `searchParams` también es una Promise en Next 16, y sus valores
+  // pueden ser `string[]` si el parámetro llega repetido en la URL.
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 /**
@@ -38,14 +42,24 @@ export async function generateMetadata({ params }: SignUpPageProps): Promise<Met
  * Server Component: valida el locale, redirige si ya hay sesión activa
  * (un usuario logueado no debe ver el formulario de alta) y delega el
  * render en el `SignUpForm` Client Component.
+ *
+ * Lee además la intención con la que el usuario llegó desde
+ * `/profesionales` (`?as=provider&plan=pro`) y la traslada al
+ * formulario. Sin esto, quien pulsaba "Empezar con Pro" aterrizaba en
+ * la pestaña de cliente con el plan olvidado, y las cuatro tarjetas de
+ * precio eran funcionalmente el mismo botón.
  */
-export default async function SignUpPage({ params }: SignUpPageProps) {
+export default async function SignUpPage({ params, searchParams }: SignUpPageProps) {
   const { locale } = await params;
 
   if (!hasLocale(routing.locales, locale)) {
     notFound();
   }
   setRequestLocale(locale);
+
+  // Saneado con Zod: los valores vienen de la URL (`?as=admin` no puede
+  // colarse como rol) — ver `lib/validation/sign-up-params.ts`.
+  const intent = parseSignUpIntent(await searchParams);
 
   // Guard: si ya hay sesión, mandamos al usuario directamente a su
   // destino post-auth para no mostrarle el alta otra vez.
@@ -58,7 +72,7 @@ export default async function SignUpPage({ params }: SignUpPageProps) {
 
   return (
     <div data-component="sign-up-page" className="contents">
-      <SignUpForm />
+      <SignUpForm initialRole={intent.role} initialPlan={intent.plan} />
     </div>
   );
 }

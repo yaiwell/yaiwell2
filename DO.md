@@ -8,6 +8,21 @@
 
 ## 2026-09
 
+### 2026-09-23 (2) — `/profesionales`
+
+- **Publicábamos una comisión y cobrábamos otra.** La sección de precios anunciaba **12 / 9 / 6 / 4 %** desde un array hardcodeado, mientras la tabla `Plan` tenía **12 / 10 / 8 / 6 %** — y desde el 2026-08-31 ese valor va directo al `application_fee_amount` de Stripe. Tres de los cuatro planes cobraban más de lo prometido, siempre en nuestro favor. El componente lo admitía en un comentario (*"es puro mock comercial"*, *"cambiar precios aquí NO toca la BD"*): era cierto en Fase 0 y dejó de serlo al hacerse real el cobro, sin que nadie revisara la frase.
+  - **Decisión de negocio (Jorge): mandan las cifras de BD.** Ningún proveedor ha firmado todavía —producción va en modo test—, así que no se rompe ningún acuerdo. La web pasa a anunciar 12/10/8/6.
+  - **El arreglo no es ajustar números, es eliminar la posibilidad de divergencia.** Nuevo módulo `lib/services/plans/` (service + repository + types + errors + index) y la página, que es Server Component, lee de ahí. Comisión y precio mensual salen de `commissionRateBps` y `monthlyPriceCents`; en el código no queda ni una cifra. Nombres y listas de features siguen en i18n, que es donde deben estar.
+  - **Formato con `Intl` y `style: 'percent'`** en lugar de concatenar "%": da "12 %" en es/ca/de y "12%" en en, y soporta medios puntos (950 bps → "9,5 %") el día que existan.
+  - **Tabla `Plan` vacía → no se renderiza la sección de precios**, y se reporta a Sentry. El resto de la landing sigue viva: hero, beneficios, FAQ y CTAs captan altas perfectamente sin tarifas, y un 500 los tumbaría todos. Cero fallback a números hardcodeados: eso reintroduciría exactamente el bug. Un fallo de conexión sí se relanza — no debe disfrazarse de "no hay planes".
+  - **La red que impide la recaída**: test de paridad que cruza lo publicado contra el seed. Verificado el caso negativo — al reintroducir el array de 12/9/6/4 falla con `expected 'Comisión9%' to be 'Comisión10%'`.
+- **Los seis CTAs perdían la intención del usuario.** Todos apuntaban a `/registro?as=provider&plan=X` y **ni la página ni el formulario leían los searchParams**: quien pulsaba "Empezar con Pro" aterrizaba en un formulario con la pestaña **cliente** marcada. Las cuatro tarjetas de precio eran, funcionalmente, el mismo botón.
+  - `registro/page.tsx` lee ahora `as` y `plan` (con la forma de `searchParams` de Next 16, que es una promesa) y los valida con Zod en `lib/validation/sign-up-params.ts`: vienen de la URL, o sea de fuera. Un `as=admin` no se cuela; un valor inválido cae a `undefined` sin romper la página.
+  - **El rol queda arreglado del todo; el plan no, y no se finge.** El plan viaja a Clerk en `unsafeMetadata.selectedPlan`, pero hoy nadie lo lee y el wizard asigna `free` a fuego. Queda anotado en `TODO.md` con lo que hace falta para cerrarlo (paso de plan en el onboarding + Stripe Billing).
+- 23 tests nuevos (656 en total). `typecheck`, `lint` y `build` limpios. La página ya era dinámica antes del cambio, así que no hay regresión de renderizado; lo nuevo es que consulta Postgres en cada visita, y cachearlo queda anotado por si llega tráfico.
+
+---
+
 ### 2026-09-23
 
 - **Auditoría por pantallas + primera pantalla cerrada (`/`).** Tres auditorías en paralelo sobre las 25 pantallas del producto (públicas / panel del proveedor / cliente-auth-admin-chrome), consolidadas en `docs/pantallas-2026-09-23.md` con los dos ejes separados —diseño y funcionalidad— y pasos accionables por pantalla. Salieron **7 P0**, cuatro de ellos verificados a mano: comisiones publicadas (12/9/6/4 %) distintas de las cobradas (12/10/8/6 %), CTA "Reservar (próximamente)" sobre un checkout que cobra de verdad, caída con 500 en `/buscar` y ficha de centro cuando un centro no tiene fotos, y servicios creados desde el panel en ca/en/de que nacen sin nombre público. Tres de los siete son la misma enfermedad: ids y claves de Fase 0 que sobrevivieron a la migración a Postgres.

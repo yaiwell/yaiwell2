@@ -95,7 +95,7 @@
 - [x] SEO básico (meta tags, OG image, sitemap).
 - [x] Verificar que todo el texto está en es/ca (audit + 🔴 hardcoded labels arreglados).
 - [ ] Aplicar 🟠 y 🟡 restantes del audit (`docs/audit-2026-05-27.md`).
-- [~] **Aplicar los hallazgos de `docs/pantallas-2026-09-23.md`** (auditoría de las 25 pantallas, 7 P0). Se van cerrando pantalla a pantalla: ✅ `/` (landing, 2026-09-23). Siguiente por prioridad: comisiones de `/profesionales` y el CTA "(próximamente)" de la ficha de centro.
+- [~] **Aplicar los hallazgos de `docs/pantallas-2026-09-23.md`** (auditoría de las 25 pantallas, 7 P0). Se van cerrando pantalla a pantalla: ✅ `/` (landing) y ✅ `/profesionales`, ambas el 2026-09-23. Siguiente por prioridad: el CTA "Reservar (próximamente)" de la ficha de centro y la caída con 500 cuando un centro no tiene fotos.
 - [ ] Verificar Lighthouse: Performance > 90, Accessibility > 95.
 - [ ] Deploy final en Vercel con dominio definitivo.
 - [ ] Captura de pantallas para la presentación a la cliente.
@@ -182,6 +182,9 @@
 - [ ] **Limpieza**: `fakeCustomerBookings` y `getBookingsReferenceNow` (`src/lib/fake-data/customer-bookings.ts`) se quedaron sin ningún consumidor productivo tras migrar `/mis-reservas`. Igual que el `searchSuggestions` fake.
 - [ ] **Filtro temporal por rango de días** en `/buscar` (`when=today|tomorrow|this-week`): el selector del Hero ofrecía esas tres opciones escribiendo un parámetro que nadie leía, y se retiraron el 2026-09-23. Reponerlas exige una función nueva en el motor de disponibilidad — "¿tiene hueco en este rango de días?" — distinta de la actual `getProvidersAvailability` ("¿tiene hueco en los próximos 60 min?"). Al reponerlas hay que devolver también las claves i18n `home.hero.searchBar.whenOptions.{today,tomorrow,thisWeek}` en los 4 locales.
 - [ ] **Taxonomía paralela incompatible**: `src/lib/fake-data/categories-hierarchy.ts` usa slugs que NO coinciden con los sembrados (`manicura` vs `manicura-pedicura`, `corte` vs `peluqueria-corte`, `gimnasios` vs `gimnasio`, `tratamientos-faciales` vs `facial`, `relajante` vs `masaje-relajante`). Hoy solo la consume `AddServiceForm.test.tsx`, así que no rompe runtime, pero es la misma bomba que estalló en la landing esperando a que alguien construya enlaces con ella. Detectado 2026-09-23.
+- [ ] **El plan elegido en `/profesionales` no sobrevive al alta** (detectado 2026-09-23): desde hoy viaja a Clerk en `unsafeMetadata.selectedPlan`, pero **nadie lo lee** — el webhook `user.created` solo promociona el rol, y `OnboardingWizard.logic.ts:284` asigna `'free'` a fuego. Quien pulse "Empezar con Premium" acaba en `free`. Cerrarlo exige un paso de selección de plan en el wizard (hidratado desde ese metadato) **y** Stripe Billing para los tres tiers de pago, que es tarea aparte.
+- [ ] **Verificar que la tabla `Plan` está sembrada en la BD remota**, no solo en `prisma/seed.ts`. Desde el 2026-09-23 `/profesionales` lee las tarifas de BD: si la tabla está vacía, la sección de precios no se renderiza (deliberado — mejor nada que una cifra falsa) y se reporta a Sentry vía `PlansNotSeededError`.
+- [ ] **Cachear la lectura de planes** en `/profesionales` si la página recibe tráfico real: hoy consulta Postgres en cada visita. Un `unstable_cache` de unos minutos basta; las tarifas cambian como mucho un par de veces al año.
 - [ ] Notificaciones por email (Resend).
 - [ ] 4 planes de suscripción con Stripe Billing.
 - [ ] Onboarding de proveedor con formulario manual (jerarquía categoría → tipo → subtipo).

@@ -1,59 +1,37 @@
 import { Check } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
 
+import {
+  formatCommissionRate,
+  formatMonthlyPrice,
+  PLAN_PRESENTATION,
+} from './ForProvidersPricing.logic';
 import { forProvidersPricingStyles as s } from './ForProvidersPricing.styles';
-import type { PricingPlan } from './ForProvidersPricing.types';
-
-/**
- * Catálogo de planes. Mantener sincronizado con CLAUDE.md §4 (entidad
- * `Plan`) y con futuros productos en Stripe Billing. Cambiar precios o
- * comisiones aquí NO toca la BD: este componente es marketing puro.
- *
- * El plan "Pro" se marca como popular porque es el sweet spot para
- * centros con varios profesionales (target principal Yaiwell).
- */
-const plans: PricingPlan[] = [
-  {
-    id: 'free',
-    priceEur: 0,
-    commission: '12%',
-    popular: false,
-    featureKeys: ['feature1', 'feature2', 'feature3', 'feature4'],
-  },
-  {
-    id: 'basic',
-    priceEur: 19,
-    commission: '9%',
-    popular: false,
-    featureKeys: ['feature1', 'feature2', 'feature3', 'feature4'],
-  },
-  {
-    id: 'pro',
-    priceEur: 49,
-    commission: '6%',
-    popular: true,
-    featureKeys: ['feature1', 'feature2', 'feature3', 'feature4'],
-  },
-  {
-    id: 'premium',
-    priceEur: 99,
-    commission: '4%',
-    popular: false,
-    featureKeys: ['feature1', 'feature2', 'feature3', 'feature4'],
-  },
-];
+import type { ForProvidersPricingProps } from './ForProvidersPricing.types';
 
 /**
  * Sección de precios para proveedores.
  *
- * Server Component. Cada card tiene su propio CTA que pasa el `plan`
- * por query string para preseleccionarlo en el alta. No conecta con
- * Stripe en MVP visual; es puro mock comercial.
+ * Server Component puramente presentacional: recibe los planes ya
+ * leídos de la tabla `Plan` (ver `plans.service.ts`) y solo los
+ * formatea. Las cifras dejaron de estar hardcodeadas el 2026-09-23:
+ * publicábamos 12/9/6/4 % mientras el seed —y por tanto el
+ * `application_fee_amount` de Stripe— cobraba 12/10/8/6 %.
+ *
+ * Nombres, taglines y features siguen en i18n: son copy, no dato.
+ * Cada card lleva su propio CTA que pasa el tier por query string
+ * para preseleccionarlo en `/registro`.
  */
-export function ForProvidersPricing() {
+export function ForProvidersPricing({ plans }: ForProvidersPricingProps) {
   const t = useTranslations('forProviders.pricing');
+  const locale = useLocale();
+
+  // Defensa: sin planes no hay sección. La page ya filtra este caso,
+  // pero preferimos que el componente nunca pueda pintar una tarjeta
+  // sin tarifa real.
+  if (plans.length === 0) return null;
 
   return (
     <section
@@ -73,42 +51,52 @@ export function ForProvidersPricing() {
 
         <div className={s.grid}>
           {plans.map((plan) => {
-            const cardClass = plan.popular ? s.cardPopular : s.card;
+            const presentation = PLAN_PRESENTATION[plan.tier];
+            const cardClass = presentation.popular ? s.cardPopular : s.card;
+
             return (
               <article
-                key={plan.id}
+                key={plan.tier}
                 className={cardClass}
-                data-component={`for-providers-plan-${plan.id}`}
+                data-component={`for-providers-plan-${plan.tier}`}
               >
-                {plan.popular && <span className={s.popularBadge}>{t('popularBadge')}</span>}
+                {presentation.popular && (
+                  <span className={s.popularBadge}>{t('popularBadge')}</span>
+                )}
 
                 <header className="flex flex-col gap-1.5">
-                  <h3 className={s.planName}>{t(`plans.${plan.id}.name`)}</h3>
-                  <p className={s.planTagline}>{t(`plans.${plan.id}.tagline`)}</p>
+                  <h3 className={s.planName}>{t(`plans.${plan.tier}.name`)}</h3>
+                  <p className={s.planTagline}>{t(`plans.${plan.tier}.tagline`)}</p>
                 </header>
 
                 <div className="flex flex-col gap-2">
                   <div className={s.priceRow}>
                     <span className={s.priceCurrency}>€</span>
-                    <span className={s.priceValue}>{plan.priceEur}</span>
+                    <span className={s.priceValue} data-component="for-providers-plan-price">
+                      {formatMonthlyPrice(plan.monthlyPriceCents, locale)}
+                    </span>
                     <span className={s.priceSuffix}>{t('perMonth')}</span>
                   </div>
-                  <span className={s.commission}>{t('commission', { rate: plan.commission })}</span>
+                  <span className={s.commission} data-component="for-providers-plan-commission">
+                    {t('commission', {
+                      rate: formatCommissionRate(plan.commissionRateBps, locale),
+                    })}
+                  </span>
                 </div>
 
                 <ul className={s.features}>
-                  {plan.featureKeys.map((key) => (
+                  {presentation.featureKeys.map((key) => (
                     <li key={key} className={s.feature}>
                       <Check className={s.checkIcon} aria-hidden="true" />
-                      <span>{t(`plans.${plan.id}.${key}`)}</span>
+                      <span>{t(`plans.${plan.tier}.${key}`)}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Link
-                  href={`/registro?as=provider&plan=${plan.id}`}
-                  className={plan.popular ? s.cta : s.ctaGhost}
-                  data-component={`for-providers-plan-cta-${plan.id}`}
+                  href={`/registro?as=provider&plan=${plan.tier}`}
+                  className={presentation.popular ? s.cta : s.ctaGhost}
+                  data-component={`for-providers-plan-cta-${plan.tier}`}
                 >
                   {t('ctaStart')}
                 </Link>
