@@ -111,9 +111,6 @@
         },
         "whenOptions": {
           "now": "Ahora",
-          "today": "Hoy",
-          "tomorrow": "Mañana",
-          "thisWeek": "Esta semana",
           "any": "Cualquier día"
         }
       }

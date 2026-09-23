@@ -4,7 +4,6 @@ import { useCallback, useState, type FormEvent } from 'react';
 
 import { useUserLocation } from '@/components/shared/UserLocationProvider';
 import { useRouter } from '@/i18n/navigation';
-import type { Suggestion } from '@/lib/fake-data/search-suggestions';
 import { readLocationCookie } from '@/lib/services/location';
 
 import type {
@@ -85,8 +84,8 @@ export function useHeroSearch() {
    *
    *  - `near=me`: filtra por proximidad usando la ubicación del provider.
    *  - `q=...`: texto a buscar (nombre de zona predefinida).
-   *  - `now=1`: alias legacy de `when=now`.
-   *  - `when=...`: cualquier otra ventana temporal.
+   *  - `now=1`: disponibilidad inmediata. Es el único parámetro temporal
+   *    que `/buscar` sabe interpretar, así que es el único que emitimos.
    */
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -100,42 +99,16 @@ export function useHeroSearch() {
         params.set('q', LOCATION_QUERY[draft.location]);
       }
 
+      // `now=1` es el único parámetro temporal que /buscar interpreta.
+      // `any` no filtra, así que no emite nada.
       if (draft.when === 'now') {
         params.set('now', '1');
-      } else if (draft.when !== 'any') {
-        params.set('when', draft.when);
       }
 
       const qs = params.toString();
       router.push(qs ? `/buscar?${qs}` : '/buscar');
     },
     [draft, router],
-  );
-
-  /**
-   * Navega directamente al seleccionar una sugerencia del autocomplete.
-   *  - categoría → `/buscar?cat=slug`.
-   *  - servicio/proveedor → ficha del proveedor `/centro/[slug]-[id]`.
-   *
-   * Conservamos la zona y la ventana temporal en la URL para no perder
-   * el contexto del Hero al saltar a `/buscar`.
-   */
-  const handleSelectSuggestion = useCallback(
-    (suggestion: Suggestion) => {
-      if (suggestion.type === 'category') {
-        const params = new URLSearchParams();
-        params.set('cat', suggestion.slug);
-        if (draft.location === 'near-me') params.set('near', 'me');
-        else if (draft.location !== 'any') params.set('q', LOCATION_QUERY[draft.location]);
-        if (draft.when === 'now') params.set('now', '1');
-        else if (draft.when !== 'any') params.set('when', draft.when);
-        router.push(`/buscar?${params.toString()}`);
-        return;
-      }
-      const segment = `${suggestion.providerSlug}-${suggestion.providerId}`;
-      router.push(`/centro/${segment}`);
-    },
-    [draft.location, draft.when, router],
   );
 
   return {
@@ -146,6 +119,5 @@ export function useHeroSearch() {
     setLocation,
     setWhen,
     handleSubmit,
-    handleSelectSuggestion,
   };
 }

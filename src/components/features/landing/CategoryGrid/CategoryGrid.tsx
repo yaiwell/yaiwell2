@@ -1,70 +1,25 @@
-import {
-  ArrowUpRight,
-  Dumbbell,
-  Flower2,
-  HandHelping,
-  Heart,
-  Scissors,
-  Sparkles,
-} from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
 
+import { landingCategoryLabelKey } from '../categories';
+
+import { categoryItems } from './CategoryGrid.data';
 import { categoryGridStyles as s, categoryToneStyles } from './CategoryGrid.styles';
-import type { CategoryItem } from './CategoryGrid.types';
 
 /**
- * Catálogo de categorías destacadas en la landing.
+ * Anchos que ocupa cada card según viewport, para que el navegador elija
+ * la variante correcta del `srcset`.
  *
- * Cada categoría combina foto Unsplash (verificada 200) + tono pastel.
- * El orden alterna tonos cálidos y fríos para evitar bloques de un solo
- * color. Las URLs sólo cargan tamaño 800w para no saturar la red.
+ *  - <768px: grid de 2 columnas → ~50vw.
+ *  - <1280px: grid de 4 columnas → ~25vw.
+ *  - A partir de ahí el contenedor tope en `max-w-7xl`, así que la card
+ *    se queda fija en ~290px y darle un valor absoluto evita descargar
+ *    imágenes enormes en monitores anchos.
  */
-const categories: CategoryItem[] = [
-  {
-    slug: 'peluqueria',
-    icon: Scissors,
-    tone: 'rose',
-    imageUrl:
-      'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800&q=80&auto=format&fit=crop',
-  },
-  {
-    slug: 'masajes',
-    icon: HandHelping,
-    tone: 'sky',
-    imageUrl:
-      'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&q=80&auto=format&fit=crop',
-  },
-  {
-    slug: 'manicura',
-    icon: Sparkles,
-    tone: 'peach',
-    imageUrl:
-      'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=800&q=80&auto=format&fit=crop',
-  },
-  {
-    slug: 'gimnasio',
-    icon: Dumbbell,
-    tone: 'lilac',
-    imageUrl:
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=80&auto=format&fit=crop',
-  },
-  {
-    slug: 'estetica',
-    icon: Heart,
-    tone: 'sage',
-    imageUrl:
-      'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80&auto=format&fit=crop',
-  },
-  {
-    slug: 'yoga',
-    icon: Flower2,
-    tone: 'butter',
-    imageUrl:
-      'https://images.unsplash.com/photo-1545389336-cf090694435e?w=800&q=80&auto=format&fit=crop',
-  },
-];
+const CARD_IMAGE_SIZES = '(max-width: 767px) 50vw, (max-width: 1279px) 25vw, 290px';
 
 /**
  * Grid de categorías populares de la landing.
@@ -86,19 +41,38 @@ export function CategoryGrid() {
         </header>
 
         <div className={s.grid}>
-          {categories.map((cat) => {
+          {categoryItems.map((cat) => {
             const Icon = cat.icon;
             const tone = categoryToneStyles[cat.tone];
+            const label = t(landingCategoryLabelKey[cat.slug]);
             return (
               <Link
                 key={cat.slug}
                 href={`/buscar?cat=${cat.slug}`}
                 className={s.card}
-                aria-label={t(cat.slug)}
+                aria-label={label}
                 data-component={`category-card-${cat.slug}`}
               >
                 <span className={s.imageWrap} aria-hidden="true">
-                  <span className={s.image} style={{ backgroundImage: `url(${cat.imageUrl})` }} />
+                  {/* `alt=""` deliberado: la foto es puramente decorativa.
+                      El nombre de la categoría ya se anuncia dos veces —
+                      en el `aria-label` del enlace y en el texto visible
+                      del bloque pastel— así que describirla otra vez sólo
+                      añadiría ruido al lector de pantalla. Por eso el
+                      wrapper se mantiene además `aria-hidden`.
+
+                      `next/image` con `fill` + `sizes` para que la foto
+                      pase por la pipeline de optimización (AVIF/WebP y
+                      srcset) en lugar de servir el JPG original como
+                      `background-image`. Sin `priority`: va por debajo
+                      del LCP y debe cargar en diferido. */}
+                  <Image
+                    src={cat.imageUrl}
+                    alt=""
+                    fill
+                    sizes={CARD_IMAGE_SIZES}
+                    className={s.image}
+                  />
                   {/* Tinte pastel sobre la foto para coordinar con el bloque
                       inferior y dar identidad cromática a la categoría. */}
                   <span className={`${s.imageTint} ${tone.tint}`} />
@@ -110,7 +84,7 @@ export function CategoryGrid() {
                   <span className={s.iconWrap} aria-hidden="true">
                     <Icon className={`size-5 ${tone.icon}`} />
                   </span>
-                  <span className={`${s.title2} ${tone.title}`}>{t(cat.slug)}</span>
+                  <span className={`${s.title2} ${tone.title}`}>{label}</span>
                 </span>
               </Link>
             );

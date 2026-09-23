@@ -111,9 +111,6 @@
         },
         "whenOptions": {
           "now": "Ara",
-          "today": "Avui",
-          "tomorrow": "Demà",
-          "thisWeek": "Aquesta setmana",
           "any": "Qualsevol dia"
         }
       }

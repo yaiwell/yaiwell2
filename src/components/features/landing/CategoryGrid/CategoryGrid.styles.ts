@@ -21,8 +21,10 @@ export const categoryGridStyles = {
   // El ring base usa `foreground` (semantic) para adaptarse al tema.
   card: 'group relative flex aspect-[4/5] flex-col overflow-hidden rounded-3xl shadow-sm ring-1 ring-foreground/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98]',
   imageWrap: 'relative h-3/5 overflow-hidden',
-  image:
-    'absolute inset-0 h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-[1.06]',
+  // Clases del `next/image` con `fill`: el propio componente ya aplica
+  // position/inset/tamaño, así que aquí sólo queda el encuadre
+  // (`object-cover`, antes `bg-cover bg-center`) y el zoom en hover.
+  image: 'object-cover transition-transform duration-500 group-hover:scale-[1.06]',
   imageTint: 'absolute inset-0 mix-blend-multiply opacity-30',
   // Píldora translúcida sobre la foto. En light usamos `bg-card/90`
   // (card=blanco al 90%); en dark el card es L0.22 plum y la cápsula

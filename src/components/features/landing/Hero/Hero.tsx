@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+import { landingCategoryLabelKey, landingCategorySlugs } from '../categories';
+
 import { useHeroSearch } from './Hero.logic';
 import { heroStyles as s } from './Hero.styles';
 import type { HeroCategorySlug, HeroLocationOption, HeroWhenOption } from './Hero.types';
@@ -29,15 +31,12 @@ const HERO_BACKGROUND_URL =
 
 /**
  * Opciones del dropdown de categoría.
+ *
+ * Se leen de `../categories` para que Hero y CategoryGrid no puedan
+ * divergir: ambos enlazan a `/buscar?cat=<slug>` y el slug tiene que
+ * existir en BD.
  */
-const categoryOptions: HeroCategorySlug[] = [
-  'peluqueria',
-  'masajes',
-  'manicura',
-  'gimnasio',
-  'estetica',
-  'yoga',
-];
+const categoryOptions = landingCategorySlugs;
 
 /**
  * Opciones del dropdown "¿Dónde?". El orden busca poner primero la
@@ -68,18 +67,17 @@ const locationLabelKey: Record<HeroLocationOption, LocationLabelKey> = {
 
 /**
  * Opciones del dropdown "¿Cuándo?".
+ *
+ * Solo las dos que `/buscar` sabe aplicar de verdad. El porqué de que
+ * no haya "hoy" / "mañana" / "esta semana" está en `HeroWhenOption`:
+ * escribían un `?when=` que nadie leía. Volverán cuando el motor de
+ * disponibilidad sepa filtrar por rango de días; hasta entonces, no
+ * reponerlas.
+ *
+ * Se exporta para que `Hero.logic.test.ts` pueda comprobar el contenido
+ * exacto del desplegable sin montar el `Select` de Radix.
  */
-const whenOptions: HeroWhenOption[] = ['now', 'today', 'tomorrow', 'this-week', 'any'];
-
-type WhenLabelKey = 'now' | 'today' | 'tomorrow' | 'thisWeek' | 'any';
-
-const whenLabelKey: Record<HeroWhenOption, WhenLabelKey> = {
-  now: 'now',
-  today: 'today',
-  tomorrow: 'tomorrow',
-  'this-week': 'thisWeek',
-  any: 'any',
-};
+export const heroWhenOptions: HeroWhenOption[] = ['now', 'any'];
 
 /**
  * Hero principal de la landing.
@@ -156,7 +154,7 @@ export function Hero() {
                   <SelectContent>
                     {categoryOptions.map((slug) => (
                       <SelectItem key={slug} value={slug}>
-                        {tCats(slug)}
+                        {tCats(landingCategoryLabelKey[slug])}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -194,9 +192,7 @@ export function Hero() {
                   <SelectContent>
                     {locationOptions.map((option) => (
                       <SelectItem key={option} value={option}>
-                        {option === 'near-me'
-                          ? nearMeLabel
-                          : tLoc(locationLabelKey[option])}
+                        {option === 'near-me' ? nearMeLabel : tLoc(locationLabelKey[option])}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -226,9 +222,12 @@ export function Hero() {
                     <SelectValue placeholder={tWhen('now')} />
                   </SelectTrigger>
                   <SelectContent>
-                    {whenOptions.map((option) => (
+                    {/* A diferencia de zona y categoría, aquí el valor de
+                        la opción coincide con su clave i18n dentro de
+                        `whenOptions`, así que no hace falta mapa. */}
+                    {heroWhenOptions.map((option) => (
                       <SelectItem key={option} value={option}>
-                        {tWhen(whenLabelKey[option])}
+                        {tWhen(option)}
                       </SelectItem>
                     ))}
                   </SelectContent>

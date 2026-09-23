@@ -95,6 +95,7 @@
 - [x] SEO básico (meta tags, OG image, sitemap).
 - [x] Verificar que todo el texto está en es/ca (audit + 🔴 hardcoded labels arreglados).
 - [ ] Aplicar 🟠 y 🟡 restantes del audit (`docs/audit-2026-05-27.md`).
+- [~] **Aplicar los hallazgos de `docs/pantallas-2026-09-23.md`** (auditoría de las 25 pantallas, 7 P0). Se van cerrando pantalla a pantalla: ✅ `/` (landing, 2026-09-23). Siguiente por prioridad: comisiones de `/profesionales` y el CTA "(próximamente)" de la ficha de centro.
 - [ ] Verificar Lighthouse: Performance > 90, Accessibility > 95.
 - [ ] Deploy final en Vercel con dominio definitivo.
 - [ ] Captura de pantallas para la presentación a la cliente.
@@ -179,6 +180,8 @@
 - [ ] **Grupo "Canceladas" en `/mis-reservas`** (detectado 2026-09-20): una reserva cancelada para el martes que viene cae hoy en "Historial" ordenado por más-reciente-primero, mezclada con citas de hace un mes. Toca `splitBookings`, props, componente, test y 4 claves × 4 locales.
 - [ ] **Cola de reembolsos fallidos** (detectado 2026-09-20): cuando `stripe.refunds.create` falla, el desenlace `refund: 'failed'` solo deja rastro en Sentry — no hay columna en BD. Con dinero de clientes de por medio, soporte necesita una cola consultable. Migración futura `8_booking_refund_audit` (`stripeRefundId String? @unique` + `refundedAt DateTime?`), a pegar a mano en el SQL Editor como la 7.
 - [ ] **Limpieza**: `fakeCustomerBookings` y `getBookingsReferenceNow` (`src/lib/fake-data/customer-bookings.ts`) se quedaron sin ningún consumidor productivo tras migrar `/mis-reservas`. Igual que el `searchSuggestions` fake.
+- [ ] **Filtro temporal por rango de días** en `/buscar` (`when=today|tomorrow|this-week`): el selector del Hero ofrecía esas tres opciones escribiendo un parámetro que nadie leía, y se retiraron el 2026-09-23. Reponerlas exige una función nueva en el motor de disponibilidad — "¿tiene hueco en este rango de días?" — distinta de la actual `getProvidersAvailability` ("¿tiene hueco en los próximos 60 min?"). Al reponerlas hay que devolver también las claves i18n `home.hero.searchBar.whenOptions.{today,tomorrow,thisWeek}` en los 4 locales.
+- [ ] **Taxonomía paralela incompatible**: `src/lib/fake-data/categories-hierarchy.ts` usa slugs que NO coinciden con los sembrados (`manicura` vs `manicura-pedicura`, `corte` vs `peluqueria-corte`, `gimnasios` vs `gimnasio`, `tratamientos-faciales` vs `facial`, `relajante` vs `masaje-relajante`). Hoy solo la consume `AddServiceForm.test.tsx`, así que no rompe runtime, pero es la misma bomba que estalló en la landing esperando a que alguien construya enlaces con ella. Detectado 2026-09-23.
 - [ ] Notificaciones por email (Resend).
 - [ ] 4 planes de suscripción con Stripe Billing.
 - [ ] Onboarding de proveedor con formulario manual (jerarquía categoría → tipo → subtipo).

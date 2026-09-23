@@ -1,14 +1,16 @@
 /**
  * Tipos del componente Hero de la landing.
  *
- * Los slugs de categoría se replicarán en el otro agente (fake-data); por
- * ahora los modelamos como una unión literal para el dropdown de la barra
- * de búsqueda y validamos en build si alguien añade uno fuera del set.
+ * Los slugs de categoría deben coincidir **literalmente** con los de la
+ * tabla `Category` (sembrada desde `@/lib/fake-data/categories`), porque
+ * viajan a `/buscar?cat=` y allí se resuelven contra BD. La unión
+ * literal sólo protege de typos dentro del repo; la correspondencia con
+ * el catálogo real la verifica `landing/categories.test.ts`.
  */
 export type HeroCategorySlug =
   | 'peluqueria'
   | 'masajes'
-  | 'manicura'
+  | 'manicura-pedicura'
   | 'gimnasio'
   | 'estetica'
   | 'yoga';
@@ -31,12 +33,18 @@ export type HeroLocationOption = 'any' | 'near-me' | 'barcelona' | 'castellar' |
 /**
  * Opciones del selector "¿Cuándo?" del Hero.
  *
- * `now` mantiene compatibilidad con el filtro existente del SearchView
- * (`availabilityOnly` vía `now=1`). El resto se propagan en la URL
- * como `when=...` para que la página de búsqueda pueda filtrar por
- * franja temporal cuando dispongamos de slots reales (Fase 1).
+ * Solo dos opciones, y es deliberado. `now` se traduce a `now=1`, el
+ * filtro de disponibilidad que `/buscar` ya entiende; `any` no filtra.
+ *
+ * Hubo tres más (`today`, `tomorrow`, `this-week`) que escribían un
+ * `when=...` que **nadie leía**: el usuario filtraba "mañana" y recibía
+ * el catálogo entero. Volverán cuando el motor de disponibilidad sepa
+ * responder "¿tiene hueco en este rango de días?", que es una pregunta
+ * distinta de la que responde hoy ("¿tiene hueco en los próximos 60
+ * minutos?"). Hasta entonces no se reponen: un filtro que no filtra es
+ * peor que un filtro que no está.
  */
-export type HeroWhenOption = 'now' | 'today' | 'tomorrow' | 'this-week' | 'any';
+export type HeroWhenOption = 'now' | 'any';
 
 export interface HeroSearchDraft {
   category: HeroCategorySlug | '';

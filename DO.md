@@ -8,6 +8,21 @@
 
 ## 2026-09
 
+### 2026-09-23
+
+- **Auditoría por pantallas + primera pantalla cerrada (`/`).** Tres auditorías en paralelo sobre las 25 pantallas del producto (públicas / panel del proveedor / cliente-auth-admin-chrome), consolidadas en `docs/pantallas-2026-09-23.md` con los dos ejes separados —diseño y funcionalidad— y pasos accionables por pantalla. Salieron **7 P0**, cuatro de ellos verificados a mano: comisiones publicadas (12/9/6/4 %) distintas de las cobradas (12/10/8/6 %), CTA "Reservar (próximamente)" sobre un checkout que cobra de verdad, caída con 500 en `/buscar` y ficha de centro cuando un centro no tiene fotos, y servicios creados desde el panel en ca/en/de que nacen sin nombre público. Tres de los siete son la misma enfermedad: ids y claves de Fase 0 que sobrevivieron a la migración a Postgres.
+- **Landing (`/`) cerrada** — los cuatro arreglos de su ficha:
+  - **El slug `manicura` no existía en BD** (el real es `manicura-pedicura`), así que una de las seis tarjetas de categoría llevaba a una página vacía: `providers.search.ts` no resolvía la categoría, `resolvedCategoryId` quedaba `null` y el filtro descartaba **todos** los proveedores, sin ningún error visible. La causa de fondo era que Hero y `CategoryGrid` mantenían **dos listas independientes de los mismos seis slugs**; ahora hay una sola fuente de verdad (`landing/categories.ts`) y **14 tests de regresión** que cruzan cada slug contra el catálogo sembrado y verifican que ambas listas coinciden. Verificado el caso negativo: revertir el slug pone 3 tests en rojo.
+  - **El selector "¿Cuándo?" mentía en tres de sus cinco opciones.** `today`, `tomorrow` y `this-week` escribían `?when=…` y **nadie lo leía** — `/buscar` parsea `q`, `cat`, `now`, `near`, `rating` y `price`, y nada más: el usuario filtraba "mañana" y recibía el catálogo entero. Se queda con "Ahora" y "Cualquier momento", las dos que sí aplican. El filtro real por rango de días entra en `TODO.md` porque exige preguntar al motor algo distinto de lo que sabe responder hoy. 5 tests nuevos fijan que ninguna opción pueda volver a emitir el parámetro fantasma.
+  - **`CategoryGrid` fuera de la pipeline de imágenes**: las 6 fotos se pintaban como `backgroundImage`, o sea 6 JPEG a 800w sin AVIF/WebP ni `srcset` justo debajo del LCP. Migradas a `next/image` con `fill` + `sizes`, sin `priority` (deben cargar en diferido) y con `alt=""` porque el nombre de la categoría ya se anuncia dos veces por tarjeta.
+  - Borrado `handleSelectSuggestion`, huérfano desde que el dropdown quedó estático.
+  - **Decisión**: se retiran también las 3 claves i18n huérfanas de los 4 locales. next-intl no tree-shakea los mensajes, así que una clave sin consumidor viaja al cliente. Paridad verificada: **969 claves exactas en los 4 idiomas**.
+  - 19 tests nuevos (633 en total). `typecheck`, `lint` y `build` limpios.
+  - **Nota de proceso**: el orquestador y el subagente editaron los mismos ficheros del Hero a la vez, porque el encargo del selector llegó por mensaje a un agente ya reanudado. Se reconcilió sin pérdidas y el resultado del agente era mejor (exportar `heroWhenOptions` lo hace testeable sin montar el Radix Select), pero es exactamente la colisión contra la que avisa §2.3 de `AGENTS.md`: si hay que ampliar el encargo de un agente en vuelo, se le manda a él y el orquestador no toca esos ficheros.
+
+---
+
+
 ### 2026-09-20
 
 - **El ciclo de vida de la reserva deja de estar roto por los dos extremos.** Desde que el cobro es real (2026-08-31) se creaban reservas de verdad, pero nadie podía tocarlas después: `markBookingCompleted` y `cancelBookingByProvider` llevaban desde junio con tests verdes y **cero consumidores en `src/app/`**, y `/mis-reservas` seguía leyendo `fake-data`. El cliente pagaba y no veía su reserva en ninguna parte; el proveedor no podía marcarla como atendida, así que ninguna llegaba nunca a `completed` y las valoraciones eran inalcanzables por diseño (§4.bis).
