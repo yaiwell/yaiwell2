@@ -28,7 +28,7 @@ import type { AddressAutocompleteProps } from './AddressAutocomplete.types';
 // y vuelva a tipar correctamente en cuanto el JSON se actualice. Es la
 // única `any`-like de este archivo y está justificada por el orden de
 // operaciones del playbook.
-const T_NAMESPACE = 'addressAutocomplete' as never;
+const T_NAMESPACE = 'addressAutocomplete';
 
 /**
  * Input de dirección con autocompletado contra `/api/geocoding/forward`.
@@ -44,13 +44,7 @@ const T_NAMESPACE = 'addressAutocomplete' as never;
  * y en desktop respeta el contenedor del formulario.
  */
 export function AddressAutocomplete(props: AddressAutocompleteProps) {
-  // `tRaw` viene tipado contra `messages/es.json`. Como el namespace y
-  // las claves aún no existen en el JSON (las añade el orquestador en
-  // un commit posterior), nos apoyamos en una firma laxa `(key: string)
-  // => string` para no pelearnos con `NamespacedMessageKeys`. En cuanto
-  // las claves estén en el JSON, esta indirección sigue funcionando.
-  const tRaw = useTranslations(T_NAMESPACE);
-  const t = tRaw as unknown as (key: string) => string;
+  const t = useTranslations(T_NAMESPACE);
   const {
     value,
     inputId,

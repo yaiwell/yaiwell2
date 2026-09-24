@@ -10,6 +10,9 @@
  *  - updateProviderSettings: happy path, validación falla (businessName
  *    corto y address vacío), provider no encontrado, fusión defensiva
  *    de description con claves preexistentes.
+ *  - la regla P0: guardar una dirección nueva arrastra coordenadas
+ *    nuevas, y un payload sin coordenadas no escribe NADA (ni siquiera
+ *    el nombre del negocio) en lugar de dejar el estado a medias.
  */
 
 import { ZodError } from 'zod';
@@ -26,7 +29,11 @@ vi.mock('./provider.repository', () => ({
   providerRepository: repoMock,
 }));
 
-import { ProviderHasNoProfessionalError, ProviderNotFoundError } from './provider.errors';
+import {
+  ProviderHasNoProfessionalError,
+  ProviderLocationRequiredError,
+  ProviderNotFoundError,
+} from './provider.errors';
 import {
   getProviderSchedule,
   updateProviderSchedule,
@@ -36,8 +43,14 @@ import type { WeeklySchedule } from '@/lib/services/availability';
 
 const PROVIDER_ID = 'a1b2c3d4-e5f6-4789-8abc-def012345678';
 
+/** Coordenadas de referencia (centro de Palma) para los payloads válidos. */
+const PALMA = { lat: 39.5696, lng: 2.6502 };
+
 beforeEach(() => {
   vi.clearAllMocks();
+  // El repositorio devuelve el número de filas actualizadas; por defecto
+  // simulamos que el UPDATE encontró su provider.
+  repoMock.updateSettings.mockResolvedValue(1);
 });
 
 describe('updateProviderSettings', () => {
@@ -52,6 +65,7 @@ describe('updateProviderSettings', () => {
       vatNumber: 'B12345678',
       description: { es: 'Nueva descripción' },
       address: 'Carrer Major 12, Palma',
+      ...PALMA,
     });
 
     expect(repoMock.updateSettings).toHaveBeenCalledOnce();
@@ -59,10 +73,28 @@ describe('updateProviderSettings', () => {
     expect(args).toMatchObject({
       businessName: 'Atelier Nuevo',
       vatNumber: 'B12345678',
-      address: 'Carrer Major 12, Palma',
     });
     // Fusión: la nueva clave `es` sobreescribe, la `ca` original se mantiene.
     expect(args.description).toEqual({ es: 'Nueva descripción', ca: 'Original CA' });
+  });
+
+  it('propaga al repositorio las coordenadas nuevas junto a la dirección nueva', async () => {
+    repoMock.findSettings.mockResolvedValue({ id: PROVIDER_ID, description: { es: 'x' } });
+
+    // El centro se muda: calle nueva y punto nuevo en la misma llamada.
+    await updateProviderSettings(PROVIDER_ID, {
+      businessName: 'Atelier Mudado',
+      address: 'Carrer Nou 3, Palma',
+      lat: 39.5712,
+      lng: 2.6488,
+    });
+
+    const args = repoMock.updateSettings.mock.calls[0][1];
+    expect(args.address).toEqual({
+      address: 'Carrer Nou 3, Palma',
+      lat: 39.5712,
+      lng: 2.6488,
+    });
   });
 
   it('normaliza vatNumber vacío a null', async () => {
@@ -75,6 +107,7 @@ describe('updateProviderSettings', () => {
       businessName: 'Sin NIF',
       vatNumber: '',
       address: 'Calle Real 1',
+      ...PALMA,
     });
 
     const args = repoMock.updateSettings.mock.calls[0][1];
@@ -90,6 +123,7 @@ describe('updateProviderSettings', () => {
     await updateProviderSettings(PROVIDER_ID, {
       businessName: 'Sin cambios de copy',
       address: 'Calle Real 1',
+      ...PALMA,
     });
 
     const args = repoMock.updateSettings.mock.calls[0][1];
@@ -105,6 +139,7 @@ describe('updateProviderSettings', () => {
       updateProviderSettings(PROVIDER_ID, {
         businessName: 'A',
         address: 'Calle Real 1',
+        ...PALMA,
       }),
     ).rejects.toBeInstanceOf(ZodError);
     expect(repoMock.findSettings).not.toHaveBeenCalled();
@@ -116,6 +151,7 @@ describe('updateProviderSettings', () => {
       updateProviderSettings(PROVIDER_ID, {
         businessName: 'Nombre OK',
         address: '',
+        ...PALMA,
       }),
     ).rejects.toBeInstanceOf(ZodError);
     expect(repoMock.updateSettings).not.toHaveBeenCalled();
@@ -128,9 +164,57 @@ describe('updateProviderSettings', () => {
       updateProviderSettings(PROVIDER_ID, {
         businessName: 'Nombre OK',
         address: 'Carrer Major 12',
+        ...PALMA,
       }),
     ).rejects.toBeInstanceOf(ProviderNotFoundError);
     expect(repoMock.updateSettings).not.toHaveBeenCalled();
+  });
+
+  it('rechaza con ProviderNotFoundError si el UPDATE no afecta a ninguna fila', async () => {
+    repoMock.findSettings.mockResolvedValue({ id: PROVIDER_ID, description: {} });
+    repoMock.updateSettings.mockResolvedValue(0);
+
+    await expect(
+      updateProviderSettings(PROVIDER_ID, {
+        businessName: 'Borrado entre llamadas',
+        address: 'Carrer Major 12',
+        ...PALMA,
+      }),
+    ).rejects.toBeInstanceOf(ProviderNotFoundError);
+  });
+});
+
+describe('updateProviderSettings — la dirección no se guarda sin coordenadas', () => {
+  it('rechaza con ProviderLocationRequiredError si faltan lat/lng', async () => {
+    repoMock.findSettings.mockResolvedValue({ id: PROVIDER_ID, description: { es: 'x' } });
+
+    await expect(
+      updateProviderSettings(PROVIDER_ID, {
+        businessName: 'Atelier Mudado',
+        address: 'Carrer Nou 3, Palma',
+      }),
+    ).rejects.toBeInstanceOf(ProviderLocationRequiredError);
+  });
+
+  it('no escribe NADA cuando el geocoding no resolvió coordenadas', async () => {
+    repoMock.findSettings.mockResolvedValue({ id: PROVIDER_ID, description: { es: 'x' } });
+
+    // Escenario real: Mapbox caído, el usuario teclea la calle nueva y
+    // le da a guardar. Si el nombre del negocio se guardara y la
+    // dirección no, tendríamos justo el estado a medias que queremos
+    // eliminar. Se aborta la operación entera antes de tocar BD.
+    await expect(
+      updateProviderSettings(PROVIDER_ID, {
+        businessName: 'Nombre Nuevo',
+        description: { es: 'Descripción nueva' },
+        address: 'Carrer Nou 3, Palma',
+        lat: null,
+        lng: null,
+      }),
+    ).rejects.toBeInstanceOf(ProviderLocationRequiredError);
+
+    expect(repoMock.updateSettings).not.toHaveBeenCalled();
+    expect(repoMock.findSettings).not.toHaveBeenCalled();
   });
 });
 

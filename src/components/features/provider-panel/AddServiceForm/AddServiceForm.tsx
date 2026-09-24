@@ -10,6 +10,7 @@ import {
 } from '@/app/[locale]/panel/servicios/nuevo/actions';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
+import { pickLocalized } from '@/lib/i18n';
 import type { AppLocale } from '@/i18n/routing';
 
 import { useAddServiceForm } from './AddServiceForm.logic';
@@ -118,7 +119,7 @@ export function AddServiceForm({
               <option value="">{t('categoryStep.rootPlaceholder')}</option>
               {rootOptions.map((root) => (
                 <option key={root.id} value={root.id}>
-                  {root.name[locale]}
+                  {pickLocalized(root.name, locale)}
                 </option>
               ))}
             </select>
@@ -139,7 +140,7 @@ export function AddServiceForm({
               <option value="">{t('categoryStep.typePlaceholder')}</option>
               {typeOptions.map((type) => (
                 <option key={type.id} value={type.id}>
-                  {type.name[locale]}
+                  {pickLocalized(type.name, locale)}
                 </option>
               ))}
             </select>
@@ -163,7 +164,7 @@ export function AddServiceForm({
               <option value="">{t('categoryStep.subtypePlaceholder')}</option>
               {subtypeOptions.map((subtype) => (
                 <option key={subtype.id} value={subtype.id}>
-                  {subtype.name[locale]}
+                  {pickLocalized(subtype.name, locale)}
                 </option>
               ))}
             </select>

@@ -531,7 +531,8 @@
         "title": "Adresse",
         "streetLabel": "Straße und Hausnummer",
         "cityLabel": "Stadt",
-        "postalLabel": "Postleitzahl"
+        "postalLabel": "Postleitzahl",
+        "streetHelp": "Gib die Adresse ein und wähle einen der Vorschläge: So aktualisieren wir auch deinen Standort auf der Karte und in der Umkreissuche."
       },
       "schedule": {
         "title": "Öffnungszeiten",
@@ -578,7 +579,8 @@
           "notFound": "Wir konnten dein Geschäft nicht finden. Lade die Seite neu und versuche es erneut.",
           "validation": "Bitte prüfe die Felder: einige Daten erfüllen die Mindestanforderungen nicht.",
           "noProfessional": "Dein Konto hat keinen Professional zugeordnet. Bitte kontaktiere den Support.",
-          "internal": "Die Änderungen konnten nicht gespeichert werden. Bitte versuche es in ein paar Sekunden erneut."
+          "internal": "Die Änderungen konnten nicht gespeichert werden. Bitte versuche es in ein paar Sekunden erneut.",
+          "locationRequired": "Wir konnten diese Adresse nicht auf der Karte verorten. Wähle einen der Vorschläge aus der Liste und speichere erneut."
         }
       }
     },

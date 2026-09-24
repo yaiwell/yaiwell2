@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { ServiceDetail } from '@/components/features/service/ServiceDetail';
 import { routing } from '@/i18n/routing';
+import { pickLocalized } from '@/lib/i18n';
 import { getProviderService } from '@/lib/services/providers';
 import { buildProviderSlugWithId, parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
 
@@ -36,9 +37,12 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
   }
 
   const { provider, service } = detail;
-  const typedLocale = locale as 'es' | 'ca' | 'en' | 'de';
-  const serviceName = service.name[typedLocale] ?? service.name.es;
-  const description = service.description[typedLocale] ?? service.description.es;
+  // `hasLocale` ya estrechó `locale` a un `AppLocale`, así que
+  // `pickLocalized` recibe el locale real y aplica la cadena de
+  // fallback completa: el `?? .es` previo dejaba el `<title>` y la OG
+  // en blanco para cualquier servicio sin castellano.
+  const serviceName = pickLocalized(service.name, locale);
+  const description = pickLocalized(service.description, locale);
 
   return {
     title: `${serviceName} · ${provider.name} · Yaiwell`,

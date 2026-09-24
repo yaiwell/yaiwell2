@@ -10,6 +10,9 @@
 export { parseSignUpIntent, signUpSearchParamsSchema } from './sign-up-params';
 export type { SignUpIntent } from './sign-up-params';
 
+export { localizedTextPatchSchema, storableLocalizedTextSchema } from './localized-text';
+export type { LocalizedTextPatchParsed, StorableLocalizedTextParsed } from './localized-text';
+
 export {
   REDIRECT_URL_PARAM,
   parseInternalRedirectUrl,

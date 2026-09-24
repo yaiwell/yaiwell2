@@ -8,6 +8,7 @@
  */
 
 import type { AppLocale } from '@/i18n/routing';
+import type { LocalizedText } from '@/types/domain';
 
 /** Pasos del wizard. */
 export type OnboardingStep = 1 | 2 | 3 | 4 | 5;
@@ -86,7 +87,7 @@ export type OnboardingApiResult<T> = { data: T } | { error: OnboardingApiError }
 export interface RootCategory {
   id: string;
   slug: string;
-  name: { es: string; ca: string; en?: string; de?: string };
+  name: LocalizedText;
   icon: string;
 }
 

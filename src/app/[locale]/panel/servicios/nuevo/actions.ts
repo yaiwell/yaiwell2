@@ -10,6 +10,12 @@ import { auth } from '@clerk/nextjs/server';
 import { requireCurrentProvider } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
 import {
+  buildLocalizedText,
+  EmptyLocalizedTextError,
+  ensureSpanishIfAny,
+  mergeLocalizedText,
+} from '@/lib/i18n';
+import {
   CategoryNotFoundError,
   createFirstServiceForProvider,
   ProviderForOnboardingNotFoundError,
@@ -61,10 +67,10 @@ interface RawInput {
  * cualquier alta de servicio (validación, ownership, categoría, herencia
  * de profesional autónomo). Refactor de nombre queda como TODO.
  *
- * El locale activo se usa para envolver `name`/`description` como
- * `LocalizedText` con solo esa clave rellena — más adelante, si añadimos
- * un editor de traducciones, el resto de idiomas se completarán al
- * vuelo o por traducción asistida.
+ * El locale activo etiqueta `name`/`description`, pero **nunca es la
+ * única clave**: `buildLocalizedText` duplica el texto en `es` si el
+ * proveedor escribe en ca/en/de. Sin eso el servicio nacía sin nombre
+ * público (P0 nº 4 de `docs/pantallas-2026-09-23.md`).
  *
  * @param locale  locale activo (para el redirect y para etiquetar el
  *   `LocalizedText`). Se valida client-side al construir el form.
@@ -112,11 +118,21 @@ export async function createServiceAction(
     return { ok: false, code: 'VALIDATION', message: 'Precio inválido.' };
   }
 
-  // `LocalizedText` con solo la clave del locale activo. Cumple el
-  // schema (refine: al menos un idioma) y se completa más adelante con
-  // un editor de traducciones.
-  const name = { [locale]: raw.name.trim() };
-  const description = raw.description.trim() ? { [locale]: raw.description.trim() } : undefined;
+  // `LocalizedText` con el castellano garantizado: si el panel está en
+  // ca/en/de el texto se duplica en `es` para que la ficha pública, el
+  // buscador y el flujo de reserva tengan siempre algo que pintar.
+  // La decisión de producto está razonada en `@/lib/i18n/localizedText`.
+  let name;
+  let description;
+  try {
+    name = buildLocalizedText(locale, raw.name);
+    description = raw.description.trim() ? buildLocalizedText(locale, raw.description) : undefined;
+  } catch (err) {
+    if (err instanceof EmptyLocalizedTextError) {
+      return { ok: false, code: 'VALIDATION', message: err.message };
+    }
+    throw err;
+  }
 
   try {
     await createFirstServiceForProvider(
@@ -225,14 +241,31 @@ export async function updateServiceAction(
   // (en/de/ca) que el usuario pudiera tener traducidas, y sobreescribimos
   // solo la del locale activo. Si BD devuelve un JSON degenerado, lo
   // tratamos como objeto vacío para arrancar limpio.
+  //
+  // `mergeLocalizedText` añade dos garantías sobre el spread a mano que
+  // había aquí: rellena `es` si el registro venía sin castellano (dato
+  // anterior al guardián) y arrastra el castellano cuando era un
+  // duplicado espejo del idioma que se está editando.
   const existingName = (existing.name as unknown as LocalizedText) ?? {};
   const existingDescription = (existing.description as unknown as LocalizedText) ?? {};
 
-  const nextName = { ...existingName, [locale]: raw.name.trim() };
-  const trimmedDescription = raw.description.trim();
-  const nextDescription = trimmedDescription
-    ? { ...existingDescription, [locale]: trimmedDescription }
-    : existingDescription;
+  let nextName;
+  let nextDescription;
+  try {
+    nextName = mergeLocalizedText(existingName, locale, raw.name);
+    const trimmedDescription = raw.description.trim();
+    // Descripción no tocada: la conservamos, pero curamos el castellano
+    // si el registro es anterior al guardián y tenía texto solo en otro
+    // idioma. Una descripción vacía sigue siendo válida.
+    nextDescription = trimmedDescription
+      ? mergeLocalizedText(existingDescription, locale, trimmedDescription)
+      : ensureSpanishIfAny(existingDescription);
+  } catch (err) {
+    if (err instanceof EmptyLocalizedTextError) {
+      return { ok: false, code: 'VALIDATION', message: err.message };
+    }
+    throw err;
+  }
 
   // Verificamos la categoría existe antes de tocar BD. Sin esto, un
   // categoryId obsoleto/inventado generaría un FK error opaco.

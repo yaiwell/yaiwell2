@@ -18,7 +18,7 @@ import type { ProviderSettingsDraft, SaveErrorCode, SaveNotice } from './Provide
  *
  * Centraliza:
  *  - el `draft` controlado de los cuatro campos editables (businessName,
- *    vatNumber, description, address);
+ *    vatNumber, description y la dirección geolocalizada);
  *  - el `schedule` semanal editable por `ScheduleEditor`;
  *  - el envío en paralelo de `updateProviderSettingsAction` y
  *    `updateProviderScheduleAction` dentro de `useTransition`. Si una
@@ -62,7 +62,12 @@ export function useProviderSettingsForm(
           businessName: draft.businessName,
           vatNumber: draft.vatNumber,
           description: draft.description,
-          address: draft.address,
+          // Texto y coordenadas salen del mismo objeto del draft: o se
+          // renuevan los tres (sugerencia confirmada) o se reenvían los
+          // tres tal como vinieron de BD.
+          address: draft.address.text,
+          lat: draft.address.lat,
+          lng: draft.address.lng,
         }),
         updateProviderScheduleAction(locale, schedule),
       ]);

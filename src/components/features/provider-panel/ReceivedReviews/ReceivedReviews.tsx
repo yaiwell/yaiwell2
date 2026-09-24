@@ -40,6 +40,7 @@ export function ReceivedReviews({ reviews, locale }: ReceivedReviewsProps) {
   const { filters, setFilters, filteredReviews } = useReviewsFilters(reviews);
 
   const averageRating = computeAverageRating(reviews);
+  // eslint-disable-next-line no-restricted-syntax -- DATE_FORMATTERS es un `Record<AppLocale, Intl.DateTimeFormat>` construido en el propio módulo con los cuatro idiomas: no hay clave ausente posible.
   const dateFormatter = DATE_FORMATTERS[locale];
 
   return (

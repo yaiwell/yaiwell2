@@ -113,7 +113,9 @@ export default async function OnboardingPage({ params }: OnboardingPageProps) {
   const categoriesPreloaded: RootCategory[] = rawCategories.map((c) => ({
     id: c.id,
     slug: c.slug,
-    name: c.name as RootCategory['name'],
+    // `name` es `Json` en Prisma; el shape real es `LocalizedText`
+    // (solo `es` garantizado, ver `@/types/domain`).
+    name: c.name as unknown as RootCategory['name'],
     icon: c.icon,
   }));
 

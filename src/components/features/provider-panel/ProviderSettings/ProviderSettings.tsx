@@ -4,6 +4,7 @@ import { Building2, Plus } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { FormEvent } from 'react';
 
+import { AddressAutocomplete } from '@/components/shared/AddressAutocomplete';
 import { Button } from '@/components/ui/button';
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
@@ -19,18 +20,16 @@ import { ScheduleEditor } from './ScheduleEditor';
  * (no construirlas con template strings) permite que next-intl valide
  * los tipos en tiempo de compilación.
  */
-const ERROR_MESSAGE_KEY: Record<
-  SaveErrorCode,
-  | 'save.errors.notFound'
-  | 'save.errors.validation'
-  | 'save.errors.noProfessional'
-  | 'save.errors.internal'
-> = {
+// `as const` y no `Record<SaveErrorCode, string>`: con `string` genérico
+// next-intl no puede comprobar que las claves existan, y el error se
+// descubre en pantalla en vez de en compilación.
+const ERROR_MESSAGE_KEY = {
   PROVIDER_NOT_FOUND: 'save.errors.notFound',
+  LOCATION_REQUIRED: 'save.errors.locationRequired',
   VALIDATION: 'save.errors.validation',
   NO_PROFESSIONAL: 'save.errors.noProfessional',
   INTERNAL: 'save.errors.internal',
-};
+} as const satisfies Record<SaveErrorCode, string>;
 
 /**
  * Pantalla de configuración del centro.
@@ -49,6 +48,13 @@ export function ProviderSettings({
 }: ProviderSettingsProps) {
   const t = useTranslations('providerPanel.settings');
   const tCommon = useTranslations('common');
+
+  // `useTranslations` está tipado contra `messages/es.json`. Dos claves
+  // nuevas de esta pantalla (`address.streetHelp` y
+  // `save.errors.locationRequired`) todavía no están en los JSON porque
+  // esos ficheros los está tocando otra pieza en paralelo; se añaden en
+  // los cuatro locales en el mismo PR. Hasta entonces las pedimos con
+  // una firma laxa, mismo apaño puntual que ya usa `AddressAutocomplete`.
 
   // `pickLocalized` aplica fallback locale → es si el JSON no tiene
   // la lengua actual (los providers nuevos solo guardan ES/CA).
@@ -164,23 +170,36 @@ export function ProviderSettings({
           <h2 className={s.cardTitle}>{t('address.title')}</h2>
         </header>
 
+        {/* Autocomplete de Mapbox en lugar de un input libre: la
+            dirección solo cambia cuando el usuario confirma una
+            sugerencia, y entonces llegan texto y coordenadas juntos.
+            Así el punto del mapa nunca se queda desfasado respecto a la
+            calle que se muestra en la ficha. */}
         <div className={s.field}>
-          <label className={s.label} htmlFor="settings-street">
-            {t('address.streetLabel')}
-          </label>
-          <input
+          <AddressAutocomplete
             id="settings-street"
-            type="text"
-            className={s.input}
-            value={draft.address}
-            onChange={(e) => updateField('address', e.target.value)}
+            label={t('address.streetLabel')}
+            locale={locale}
+            country="es"
+            initialValue={draft.address.text}
             disabled={isPending}
-            data-component="settings-input-street"
+            ariaDescribedBy="settings-street-help"
+            onSelect={(selection) =>
+              updateField('address', {
+                text: selection.fullAddress,
+                lat: selection.lat,
+                lng: selection.lng,
+              })
+            }
           />
+          <p id="settings-street-help" className={s.fieldHelp}>
+            {t('address.streetHelp')}
+          </p>
         </div>
 
         {/* Ciudad y código postal no se guardan por separado en BD
-            (la dirección viene de Mapbox como string completo). Dejamos
+            (la dirección viene de Mapbox como string completo, y su
+            punto geográfico en la columna PostGIS `location`). Dejamos
             los inputs deshabilitados con placeholder hasta que el flujo
             Fase 1 decida si descomponer o no la dirección. */}
         <div className={s.fieldGrid}>

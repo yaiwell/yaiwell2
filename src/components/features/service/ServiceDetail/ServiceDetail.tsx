@@ -2,6 +2,7 @@ import { CalendarClock, Clock, ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
+import { pickLocalized } from '@/lib/i18n';
 
 import { formatPriceCents } from './ServiceDetail.logic';
 import { serviceDetailStyles as s } from './ServiceDetail.styles';
@@ -68,7 +69,7 @@ export function ServiceDetail({
             </span>
           </li>
           <li className={`${s.breadcrumbItem} ${s.breadcrumbCurrent}`} aria-current="page">
-            {service.name[locale]}
+            {pickLocalized(service.name, locale)}
           </li>
         </ol>
       </nav>
@@ -76,7 +77,7 @@ export function ServiceDetail({
       <header className={s.header} data-component="service-detail-header">
         <span className={s.eyebrow}>{t('header.eyebrow')}</span>
         <h1 className={s.title} data-component="service-detail-title">
-          {service.name[locale]}
+          {pickLocalized(service.name, locale)}
         </h1>
         <p className={s.providerLine}>
           <Link
@@ -125,7 +126,7 @@ export function ServiceDetail({
 
           <section className={s.section} data-component="service-detail-description">
             <h2 className={s.sectionTitle}>{t('description.title')}</h2>
-            <p className={s.descriptionText}>{service.description[locale]}</p>
+            <p className={s.descriptionText}>{pickLocalized(service.description, locale)}</p>
           </section>
 
           <section className={s.section} data-component="service-detail-policy">

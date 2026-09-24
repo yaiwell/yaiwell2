@@ -18,6 +18,8 @@ export const providerSettingsStyles = {
   fieldGrid: 'grid grid-cols-1 gap-4 sm:grid-cols-2',
   field: 'flex flex-col gap-1.5',
   label: 'text-sm font-medium text-foreground',
+  // Texto de ayuda bajo un campo (se referencia con `aria-describedby`).
+  fieldHelp: 'text-xs text-muted-foreground',
   input:
     'h-10 w-full rounded-xl border border-border bg-background px-3 text-sm text-foreground transition-colors focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
   textarea:

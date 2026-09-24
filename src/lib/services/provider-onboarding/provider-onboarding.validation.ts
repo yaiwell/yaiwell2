@@ -6,9 +6,14 @@
  * UI puede usar estos mismos schemas para validación inline.
  *
  * Convenciones:
- *  - `LocalizedText` exige al menos uno de los cuatro locales (es/ca/en/de).
- *    Es la regla de §6.bis de CLAUDE.md: la UI fija la lengua principal
- *    según el locale activo del wizard y el backend no asume cuál es.
+ *  - `LocalizedText` exige **castellano**. El schema compartido
+ *    `storableLocalizedTextSchema` vive en `@/lib/validation` y es la
+ *    única fuente de verdad. Aquí había una copia local que se
+ *    conformaba con "al menos un idioma": por ahí se colaban los
+ *    centros y servicios dados de alta en ca/en/de, que nacían sin
+ *    nombre ni descripción públicos (P0 nº 4 y nº 7 de
+ *    `docs/pantallas-2026-09-23.md`). El cliente rellena `es`
+ *    duplicando el idioma activo vía `buildLocalizedText`.
  *  - El slug se valida con regex estricto (`a-z0-9-`) y longitud 3-60
  *    aunque el helper `slugifyBusinessName` ya devuelva algo conforme:
  *    nunca confiar en el cliente.
@@ -17,21 +22,7 @@
 
 import { z } from 'zod';
 
-/**
- * Schema de un texto localizado: las cuatro claves son opcionales en
- * estructura, pero al menos una debe traer contenido. Es el patrón que
- * usa el resto del dominio (`Provider.description`, `Service.name`).
- */
-const localizedTextSchema = z
-  .object({
-    es: z.string().min(1).max(2000).optional(),
-    ca: z.string().min(1).max(2000).optional(),
-    en: z.string().min(1).max(2000).optional(),
-    de: z.string().min(1).max(2000).optional(),
-  })
-  .refine((d) => Boolean(d.es || d.ca || d.en || d.de), {
-    message: 'Debe incluir texto en al menos un idioma.',
-  });
+import { storableLocalizedTextSchema } from '@/lib/validation';
 
 /** Regex del slug: minúsculas, dígitos y guiones — sin guiones laterales. */
 const SLUG_REGEX = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -50,7 +41,7 @@ export const createProviderSchema = z.object({
   slug: z.string().min(3).max(60).regex(SLUG_REGEX, {
     message: 'El slug solo puede contener minúsculas, números y guiones.',
   }),
-  description: localizedTextSchema,
+  description: storableLocalizedTextSchema,
   address: z.string().min(5).max(300),
   location: z.object({
     lat: z.number().min(-90).max(90),
@@ -88,8 +79,8 @@ export type UpdatePhotosParsed = z.infer<typeof updatePhotosSchema>;
  */
 export const createFirstServiceSchema = z.object({
   categoryId: z.string().uuid(),
-  name: localizedTextSchema,
-  description: localizedTextSchema.optional(),
+  name: storableLocalizedTextSchema,
+  description: storableLocalizedTextSchema.optional(),
   durationMinutes: z.number().int().min(5).max(480),
   priceCents: z.number().int().min(0).max(1_000_000),
 });

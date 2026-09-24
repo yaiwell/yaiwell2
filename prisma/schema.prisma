@@ -15,9 +15,14 @@
 //   trigger en una migración SQL aparte. No exponemos el tipo a Prisma; el
 //   ranking se hace por raw query.
 // - **Textos localizados**: campos como `Category.name`, `Provider.description`
-//   o `Service.name` viven como `Json` con forma `{ es, ca }`. Es la forma
-//   más sencilla de modelar 2 locales sin explosión de columnas; cuando
-//   añadamos un tercer idioma migramos a una tabla auxiliar.
+//   o `Service.name` viven como `Json` con forma `LocalizedText`:
+//   `{ es: string; ca?: string; en?: string; de?: string }`. **Solo `es` está
+//   garantizado**, y lo garantiza el código, no la BD: todo borde de escritura
+//   pasa por `buildLocalizedText()` / `storableLocalizedTextSchema`, que
+//   duplican en `es` el idioma en que escribió el proveedor. Las filas
+//   anteriores a ese guardián se curan con `prisma/backfill-localized-es.ts`.
+//   Es la forma más sencilla de modelar 4 locales sin explosión de columnas;
+//   si el volumen de traducción crece, migramos a una tabla auxiliar.
 // - **Soft delete**: `deletedAt` nullable en las entidades editables por el
 //   proveedor (Provider, Professional, Service). El resto se borra duro
 //   porque pertenece a logs (Booking, Review, VerificationRequest).
@@ -143,7 +148,7 @@ model User {
 model Category {
   id       String  @id @default(uuid())
   slug     String  @unique
-  /// `{ es: "Peluquería", ca: "Perruqueria" }`.
+  /// `LocalizedText`: `{ es: "Peluquería", ca: "Perruqueria", … }`. `es` obligatorio.
   name     Json
   parentId String?
   /// Nombre del componente lucide-react. Validado en seed.
@@ -183,7 +188,7 @@ model Provider {
   businessName String
   slug         String                                @unique
   vatNumber    String?
-  /// `{ es, ca }`.
+  /// `LocalizedText`: `es` obligatorio, `ca`/`en`/`de` opcionales.
   description  Json
   address      String
   /// `geography(Point, 4326)` en PostGIS. Lng primero, Lat segundo.
@@ -303,9 +308,9 @@ model Service {
   providerId      String
   professionalId  String?
   categoryId      String
-  /// `{ es, ca }`.
+  /// `LocalizedText`: `es` obligatorio, `ca`/`en`/`de` opcionales.
   name            Json
-  /// `{ es, ca }`.
+  /// `LocalizedText`: `es` obligatorio, `ca`/`en`/`de` opcionales.
   description     Json
   durationMinutes Int
   priceCents      Int

@@ -47,6 +47,7 @@ export function ReviewReplyForm({ reviewId, locale, existingResponse }: ReviewRe
   // Si ya hay respuesta publicada, mostramos la card y nada más. v1 no
   // permite editar respuestas existentes (decisión documentada en TODO).
   if (existingResponse) {
+    // eslint-disable-next-line no-restricted-syntax -- mismo `Record<AppLocale, Intl.DateTimeFormat>` completo que usa ReceivedReviews; no es un LocalizedText de dominio.
     const dateFormatter = DATE_FORMATTERS[locale];
     return (
       <div className={s.responseBox} data-component={`review-reply-existing-${reviewId}`}>

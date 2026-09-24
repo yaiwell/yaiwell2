@@ -5,6 +5,23 @@ import type { LocalizedText } from '@/types/domain';
 export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
 
 /**
+ * Dirección del centro tal como la maneja el formulario: texto legible
+ * y coordenadas WGS84, siempre juntos.
+ *
+ * Es un objeto —y no tres campos sueltos— para que la UI no pueda
+ * cambiar la calle sin cambiar el punto: el `AddressAutocomplete`
+ * devuelve los tres valores de una sugerencia confirmada y reemplazamos
+ * el objeto entero. Si el usuario no toca la dirección, se reenvía tal
+ * cual llegó de BD.
+ */
+export interface SettingsAddress {
+  /** Dirección postal completa, formateada por el geocoder. */
+  text: string;
+  lat: number;
+  lng: number;
+}
+
+/**
  * Subset del modelo `Provider` de BD que necesita el formulario de
  * configuración del centro. Mantener este tipo aquí (y no en
  * `/types/domain.ts`) evita acoplar la UI a la forma del dominio de
@@ -19,8 +36,8 @@ export interface SettingsProvider {
   vatNumber: string | null;
   /** `{ es, ca, en?, de? }`. */
   description: LocalizedText;
-  /** Dirección postal completa (formato libre, viene de Mapbox). */
-  address: string;
+  /** Dirección postal + punto PostGIS actual del Provider. */
+  address: SettingsAddress;
   /** URLs absolutas. La primera es la portada. Vacío al alta. */
   photos: string[];
 }
@@ -42,7 +59,7 @@ export interface ProviderSettingsDraft {
   businessName: string;
   vatNumber: string;
   description: string;
-  address: string;
+  address: SettingsAddress;
 }
 
 /**
@@ -53,8 +70,17 @@ export interface ProviderSettingsDraft {
  * UI muestra el primer error que encuentre; añadir `NO_PROFESSIONAL`
  * permite copy específico ("contacta soporte") para el caso patológico
  * de un provider sin Professional asociado.
+ *
+ * `LOCATION_REQUIRED` cubre el único camino por el que la dirección
+ * puede llegar sin coordenadas (payload manipulado o geocoder caído):
+ * no se guarda nada y pedimos elegir una sugerencia.
  */
-export type SaveErrorCode = 'PROVIDER_NOT_FOUND' | 'VALIDATION' | 'NO_PROFESSIONAL' | 'INTERNAL';
+export type SaveErrorCode =
+  | 'PROVIDER_NOT_FOUND'
+  | 'LOCATION_REQUIRED'
+  | 'VALIDATION'
+  | 'NO_PROFESSIONAL'
+  | 'INTERNAL';
 
 /** Notice mostrado al usuario tras intentar guardar. */
 export type SaveNotice = { kind: 'success' } | { kind: 'error'; code: SaveErrorCode };

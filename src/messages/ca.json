@@ -531,7 +531,8 @@
         "title": "Adreça",
         "streetLabel": "Carrer i número",
         "cityLabel": "Ciutat",
-        "postalLabel": "Codi postal"
+        "postalLabel": "Codi postal",
+        "streetHelp": "Escriu l’adreça i tria una de les suggerències: així actualitzem també la teva ubicació al mapa i a les cerques per proximitat."
       },
       "schedule": {
         "title": "Horari",
@@ -578,7 +579,8 @@
           "notFound": "No hem trobat el teu negoci. Recarrega la pàgina i torna-ho a provar.",
           "validation": "Revisa els camps: hi ha alguna dada que no compleix els mínims.",
           "noProfessional": "El teu compte no té cap professional associat. Contacta amb suport.",
-          "internal": "No hem pogut desar els canvis. Torna-ho a provar d'aquí uns segons."
+          "internal": "No hem pogut desar els canvis. Torna-ho a provar d'aquí uns segons.",
+          "locationRequired": "No hem pogut situar aquesta adreça al mapa. Tria una de les suggerències del desplegable i torna a desar."
         }
       }
     },

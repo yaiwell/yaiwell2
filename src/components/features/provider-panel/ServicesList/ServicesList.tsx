@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
+import { pickLocalized } from '@/lib/i18n';
 
 import { formatCurrencyFromCents } from '../DashboardMetrics/DashboardMetrics.logic';
 import { ServiceDeleteButton } from './ServiceDeleteButton';
@@ -56,11 +57,13 @@ export function ServicesList({ services, locale }: ServicesListProps) {
               >
                 <div className={s.cardMain}>
                   <div className={s.cardHeader}>
-                    <h2 className={s.cardName}>{service.name[locale]}</h2>
-                    <span className={s.cardCategoryChip}>{service.categoryLabel[locale]}</span>
+                    <h2 className={s.cardName}>{pickLocalized(service.name, locale)}</h2>
+                    <span className={s.cardCategoryChip}>
+                      {pickLocalized(service.categoryLabel, locale)}
+                    </span>
                     <span className={statusClass}>{t(`status.${service.status}`)}</span>
                   </div>
-                  <p className={s.cardDescription}>{service.description[locale]}</p>
+                  <p className={s.cardDescription}>{pickLocalized(service.description, locale)}</p>
                   <div className={s.cardMeta}>
                     <span className="inline-flex items-center gap-1">
                       <Clock className={s.cardMetaIcon} aria-hidden />

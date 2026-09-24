@@ -531,7 +531,8 @@
         "title": "Dirección",
         "streetLabel": "Calle y número",
         "cityLabel": "Ciudad",
-        "postalLabel": "Código postal"
+        "postalLabel": "Código postal",
+        "streetHelp": "Escribe la dirección y elige una de las sugerencias: así actualizamos también tu ubicación en el mapa y en las búsquedas por cercanía."
       },
       "schedule": {
         "title": "Horario",
@@ -578,7 +579,8 @@
           "notFound": "No hemos encontrado tu negocio. Recarga la página e inténtalo de nuevo.",
           "validation": "Revisa los campos: hay algún dato que no cumple los mínimos.",
           "noProfessional": "Tu cuenta no tiene un profesional asociado. Contacta con soporte.",
-          "internal": "No hemos podido guardar los cambios. Inténtalo de nuevo en unos segundos."
+          "internal": "No hemos podido guardar los cambios. Inténtalo de nuevo en unos segundos.",
+          "locationRequired": "No hemos podido situar esa dirección en el mapa. Elige una de las sugerencias del desplegable y vuelve a guardar."
         }
       }
     },

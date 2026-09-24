@@ -9,6 +9,7 @@ import { requireCurrentProvider } from '@/lib/auth/server';
 import type { WeeklySchedule } from '@/lib/services/availability';
 import {
   ProviderHasNoProfessionalError,
+  ProviderLocationRequiredError,
   ProviderNotFoundError,
   updateProviderSchedule,
   updateProviderSettings,
@@ -70,12 +71,20 @@ export async function updateProviderPhotosAction(
  * Input bruto del formulario de settings tal como lo envía el cliente.
  * `description` viene como string del locale activo; la action la
  * envuelve en `LocalizedText` parcial antes de pasar al service.
+ *
+ * `address`, `lat` y `lng` son obligatorios y van siempre los tres:
+ * el panel los toma del `AddressAutocomplete` cuando el usuario elige
+ * una sugerencia, y del propio Provider en BD mientras no la toque.
+ * Al ser `number` (no opcionales) ningún caller puede mandar una calle
+ * nueva dejando las coordenadas fuera: no compila.
  */
 export interface ProviderSettingsRawInput {
   businessName: string;
   vatNumber: string;
   description: string;
   address: string;
+  lat: number;
+  lng: number;
 }
 
 /**
@@ -87,7 +96,7 @@ export type UpdateProviderSettingsActionState =
   | { ok: true }
   | {
       ok: false;
-      code: 'PROVIDER_NOT_FOUND' | 'VALIDATION' | 'INTERNAL';
+      code: 'PROVIDER_NOT_FOUND' | 'LOCATION_REQUIRED' | 'VALIDATION' | 'INTERNAL';
       message?: string;
     };
 
@@ -103,6 +112,13 @@ export type UpdateProviderSettingsActionState =
  * para no perder las claves de los demás idiomas (mismo patrón que
  * `updateServiceAction`). Si el textarea llega vacío, no enviamos la
  * clave del locale activo: preservamos lo que hubiera en BD.
+ *
+ * La dirección viaja con sus coordenadas y el service las escribe en la
+ * misma sentencia que la columna PostGIS `location`. Si faltan (el
+ * geocoder falló o el usuario tecleó sin confirmar sugerencia) no se
+ * guarda NADA y devolvemos `LOCATION_REQUIRED`: preferimos que el
+ * proveedor reintente a dejarlo con la calle nueva y el mapa apuntando
+ * a la antigua.
  */
 export async function updateProviderSettingsAction(
   locale: AppLocale,
@@ -124,10 +140,15 @@ export async function updateProviderSettingsAction(
       vatNumber: raw.vatNumber,
       description: descriptionPatch,
       address: raw.address,
+      lat: raw.lat,
+      lng: raw.lng,
     });
   } catch (err) {
     if (err instanceof ZodError) {
       return { ok: false, code: 'VALIDATION', message: err.issues[0]?.message };
+    }
+    if (err instanceof ProviderLocationRequiredError) {
+      return { ok: false, code: 'LOCATION_REQUIRED' };
     }
     if (err instanceof ProviderNotFoundError) {
       return { ok: false, code: 'PROVIDER_NOT_FOUND' };

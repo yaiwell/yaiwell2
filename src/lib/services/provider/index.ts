@@ -13,9 +13,14 @@ export {
 } from './provider.service';
 
 export { providerRepository } from './provider.repository';
+export type { ProviderAddressRow } from './provider.repository';
+
+export { parseGeolocatedAddress } from './provider.address';
+export type { GeolocatedAddress } from './provider.address';
 
 export {
   ProviderHasNoProfessionalError,
+  ProviderLocationRequiredError,
   ProviderNotFoundError,
   ProviderValidationError,
 } from './provider.errors';

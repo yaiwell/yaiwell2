@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 
+import { pickLocalized } from '@/lib/i18n';
 import type { Weekday, WeekdayBlock, WeeklySchedule } from '@/lib/services/availability';
 
 import { ProviderInfoMapLoader } from './ProviderInfoMapLoader';
@@ -95,7 +96,7 @@ export async function ProviderInfoPanel({ provider, schedule, locale }: Provider
 
       <div className={s.descriptionBlock} data-component="provider-info-panel-description">
         <span className={s.blockLabel}>{t('descriptionLabel')}</span>
-        <p className={s.descriptionText}>{provider.description[locale]}</p>
+        <p className={s.descriptionText}>{pickLocalized(provider.description, locale)}</p>
       </div>
     </section>
   );

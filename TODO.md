@@ -95,7 +95,7 @@
 - [x] SEO básico (meta tags, OG image, sitemap).
 - [x] Verificar que todo el texto está en es/ca (audit + 🔴 hardcoded labels arreglados).
 - [ ] Aplicar 🟠 y 🟡 restantes del audit (`docs/audit-2026-05-27.md`).
-- [~] **Aplicar los hallazgos de `docs/pantallas-2026-09-23.md`** (auditoría de las 25 pantallas, 7 P0). Cerradas: ✅ `/` (landing), ✅ `/profesionales`, ✅ ficha de centro (con `/buscar` de rebote) el 2026-09-23, y ✅ flujo de reserva + confirmación el 2026-09-24. **Quedan 2 de los 7 P0**, los dos del panel del proveedor: la dirección que no re-geocodifica y el servicio creado en ca/en/de sin clave `es`. Del P0 de los nombres en blanco solo falta la ficha de servicio (que además está huérfana: nada enlaza a ella). Siguiente por prioridad: el panel del proveedor.
+- [~] **Aplicar los hallazgos de `docs/pantallas-2026-09-23.md`** (auditoría de las 25 pantallas). **Los 7 P0 están cerrados** (2026-09-24). Pantallas cerradas del todo: `/` (landing), `/profesionales`, ficha de centro, flujo de reserva y confirmación, más `/buscar` de rebote. Quedan los P1/P2 repartidos: panel del proveedor (navegación de semana en el calendario, estado vacío del dashboard, campos que no persisten), chrome global (`error.tsx` por locale, hreflang/sitemap, footer legal), `/mis-reservas` (botón "Valorar" muerto), `/entrar` (controles inertes) y la ficha de servicio, que sigue huérfana.
 - [ ] Verificar Lighthouse: Performance > 90, Accessibility > 95.
 - [ ] Deploy final en Vercel con dominio definitivo.
 - [ ] Captura de pantallas para la presentación a la cliente.
@@ -189,6 +189,9 @@
 - [ ] **Revisar la z de la atribución del mapa en `/buscar`**: el mini-mapa de la ficha lleva `z-[1000]` explícito porque los panes de Leaflet llegan a 700; `SearchMap` no lo lleva y su atribución podría estar tapada. Comprobación visual, detectado 2026-09-23.
 - [ ] **Limpieza de `src/lib/fake-data/booking-slots.ts`**: tras mover `buildUpcomingDays` / `getDateKey` / `BookingSlot` a sus módulos reales (2026-09-24), lo que queda (`generateBookingSlots`, `toAvailabilitySlot`, `SCHEDULE`, `hashSeed`) solo lo consume su propio test. Mismo caso que `fakeCustomerBookings` y los dos de admin.
 - [ ] **Trocear `SignInForm` (265 líneas) y `SignUpForm`**, ambos por encima del límite de 250 de §6.bis. Ya lo estaban antes de cablearles el `redirect_url`; el cambio del 2026-09-24 les sumó 5-8 líneas.
+- [ ] **Ejecutar el backfill de castellano** contra la BD: `npm run db:backfill:localized-es -- --dry-run` primero para ver el alcance, luego sin el flag. Cura los `Service.name`, `Service.description`, `Provider.description` y `Category.name` guardados sin clave `es` antes del guardián del 2026-09-24. Es idempotente y no toca el schema. **Pendiente del dev**: el agente lo dejó escrito y testeado, sin ejecutar.
+- [ ] **Quitar `result.message ??` de `AddServiceForm.tsx:84`**: prioriza el mensaje de error crudo del servidor (en castellano) sobre la clave i18n, así que un proveedor alemán siempre ve español. Arregla de golpe los 4 mensajes hardcodeados ya anotados más el del guardián de textos.
+- [ ] **Decidir sobre la ficha de servicio** (`/centro/[slug]-[id]/servicio/[id]`): sigue huérfana — nada en el repo enlaza a ella, pero tiene `generateMetadata` y OG propias. O se enlaza desde el sheet de la ficha y desde las sugerencias de tipo servicio, o se borra. Mantenerla con SEO propio sin que nadie llegue es lo peor de las dos opciones.
 - [ ] Notificaciones por email (Resend).
 - [ ] 4 planes de suscripción con Stripe Billing.
 - [ ] Onboarding de proveedor con formulario manual (jerarquía categoría → tipo → subtipo).

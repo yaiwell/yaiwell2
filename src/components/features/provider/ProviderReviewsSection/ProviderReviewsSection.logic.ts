@@ -110,6 +110,7 @@ export function formatRelativeDate(
   locale: 'es' | 'ca' | 'en' | 'de',
   now: Date = new Date(),
 ): string {
+  // eslint-disable-next-line no-restricted-syntax -- RELATIVE_DICT es un objeto literal de constantes con las cuatro claves escritas a mano en este mismo archivo, no un LocalizedText de dominio: el compilador ya garantiza que la clave existe.
   const dict = RELATIVE_DICT[locale];
   const diffMs = now.getTime() - date.getTime();
   // Si la fecha es futura o muy reciente, tratamos como "ahora".

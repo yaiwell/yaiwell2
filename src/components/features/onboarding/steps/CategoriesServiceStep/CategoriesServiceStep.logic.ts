@@ -3,6 +3,7 @@
 import { useCallback } from 'react';
 
 import type { AppLocale } from '@/i18n/routing';
+import { pickLocalized } from '@/lib/i18n';
 
 import type { RootCategory } from '../../shared';
 
@@ -10,16 +11,15 @@ import type { RootCategory } from '../../shared';
 export const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120] as const;
 
 /**
- * Resuelve el nombre localizado de una categoría con fallback es → ca
- * → en → de. Mantiene la coherencia con `pickLocalized` del proyecto.
+ * Resuelve el nombre localizado de una categoría, con el `slug` como
+ * último recurso para no pintar nunca una opción de select en blanco.
+ *
+ * La cadena de fallback la pone `pickLocalized` (locale → es → ca → en
+ * → de): antes se reimplementaba aquí a mano y era una segunda copia
+ * de la misma regla, condenada a desincronizarse.
  */
 export function localizedCategoryName(category: RootCategory, locale: AppLocale): string {
-  const tryOrder: AppLocale[] = [locale, 'es', 'ca', 'en', 'de'];
-  for (const loc of tryOrder) {
-    const value = category.name[loc];
-    if (typeof value === 'string' && value.length > 0) return value;
-  }
-  return category.slug;
+  return pickLocalized(category.name, locale) || category.slug;
 }
 
 /**

@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Dialog } from 'radix-ui';
 
 import { Link } from '@/i18n/navigation';
+import { pickLocalized } from '@/lib/i18n';
 
 import { formatPriceCents } from './ProviderServicesList.logic';
 import { serviceDetailSheetStyles as s } from './ServiceDetailSheet.styles';
@@ -57,7 +58,7 @@ export function ServiceDetailSheet({
 
           {service && (
             <div className={s.body}>
-              <h3 className={s.serviceName}>{service.name[locale]}</h3>
+              <h3 className={s.serviceName}>{pickLocalized(service.name, locale)}</h3>
 
               <div className={s.metaGrid}>
                 <div className={s.metaItem}>
@@ -92,7 +93,7 @@ export function ServiceDetailSheet({
 
               <div className={s.descriptionBlock}>
                 <span className={s.descriptionLabel}>{t('descriptionLabel')}</span>
-                <p className={s.descriptionText}>{service.description[locale]}</p>
+                <p className={s.descriptionText}>{pickLocalized(service.description, locale)}</p>
               </div>
             </div>
           )}

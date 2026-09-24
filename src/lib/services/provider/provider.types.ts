@@ -17,10 +17,20 @@ import type { LocalizedText } from '@/types/domain';
  * `description` viaja como `Partial<LocalizedText>` con solo la clave
  * del locale activo — el service fusiona con las claves existentes para
  * no perder traducciones ya guardadas en otros idiomas.
+ *
+ * `address`, `lat` y `lng` son obligatorios y van juntos: el panel los
+ * obtiene del `AddressAutocomplete` (o los arrastra desde BD si el
+ * usuario no tocó la dirección). Un payload con calle nueva y sin
+ * coordenadas no compila, y si llegase por la API se rechaza con
+ * `ProviderLocationRequiredError`.
  */
 export interface UpdateProviderSettingsInput {
   businessName: string;
   vatNumber?: string | null;
   description?: Partial<LocalizedText>;
   address: string;
+  /** Latitud WGS84 de la dirección. */
+  lat: number;
+  /** Longitud WGS84 de la dirección. */
+  lng: number;
 }

@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { prisma } from '@/lib/db/prisma';
+import { pickLocalized } from '@/lib/i18n';
 
 import { normalizeForMatch } from './suggestions.utils';
 
@@ -49,11 +50,14 @@ export const suggestionsRepository = {
     const matched: Array<{ id: string; slug: string; name: LocalizedText }> = [];
     for (const cat of all) {
       // `name` viene como `Prisma.JsonValue`; el shape real es `LocalizedText`
-      // (es/ca obligatorios, en/de opcionales). El cast cruzado es el patrón
-      // ya usado en `categories.service.ts` y otros consumidores del JSONB.
+      // (solo `es` garantizado). El cast cruzado es el patrón ya usado en
+      // `categories.service.ts` y otros consumidores del JSONB.
       const localized = cat.name as unknown as LocalizedText;
-      const text = localized[locale] ?? localized.es;
-      if (typeof text !== 'string' || text.length === 0) continue;
+      // `pickLocalized` y no `localized[locale] ?? localized.es`: una
+      // categoría sin castellano dejaba de ser buscable en cualquier
+      // idioma en lugar de caer al primer idioma disponible.
+      const text = pickLocalized(localized, locale);
+      if (text.length === 0) continue;
       if (normalizeForMatch(text).includes(normalizedQuery)) {
         matched.push({ id: cat.id, slug: cat.slug, name: localized });
         if (matched.length >= limit) break;

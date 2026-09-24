@@ -531,7 +531,8 @@
         "title": "Address",
         "streetLabel": "Street and number",
         "cityLabel": "City",
-        "postalLabel": "Postcode"
+        "postalLabel": "Postcode",
+        "streetHelp": "Type the address and pick one of the suggestions: that way we also update your location on the map and in nearby searches."
       },
       "schedule": {
         "title": "Opening hours",
@@ -578,7 +579,8 @@
           "notFound": "We couldn't find your business. Reload the page and try again.",
           "validation": "Please review the form: some fields don't meet the minimum requirements.",
           "noProfessional": "Your account has no professional attached. Please contact support.",
-          "internal": "We couldn't save the changes. Please try again in a few seconds."
+          "internal": "We couldn't save the changes. Please try again in a few seconds.",
+          "locationRequired": "We could not place that address on the map. Pick one of the suggestions from the dropdown and save again."
         }
       }
     },

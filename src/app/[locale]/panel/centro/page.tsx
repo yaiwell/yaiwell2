@@ -13,7 +13,11 @@ import {
   StripeOperationError,
   type ConnectAccountStatus,
 } from '@/lib/services/payments';
-import { getProviderSchedule, ProviderHasNoProfessionalError } from '@/lib/services/provider';
+import {
+  getProviderSchedule,
+  ProviderHasNoProfessionalError,
+  providerRepository,
+} from '@/lib/services/provider';
 import type { LocalizedText } from '@/types/domain';
 
 /**
@@ -77,17 +81,20 @@ export default async function PanelSettingsPage({ params, searchParams }: PanelS
   // Paralelizamos: provider, schedule y pagos son independientes.
   // Los catches devuelven sentinelas tipados ({ok:true, ...} / {ok:false})
   // en lugar de mutar variables externas — más limpio en concurrente.
-  const [record, schedule, paymentsResult] = await Promise.all([
+  const [record, addressRow, schedule, paymentsResult] = await Promise.all([
     prisma.provider.findUnique({
       where: { id },
       select: {
         businessName: true,
         vatNumber: true,
         description: true,
-        address: true,
         photos: true,
       },
     }),
+    // `address` y `location` van por raw SQL: la columna PostGIS no la
+    // modela Prisma y el formulario necesita las coordenadas actuales
+    // para reenviarlas intactas si el dueño no toca la dirección.
+    providerRepository.findAddress(id),
     getProviderSchedule(id).catch((err) => {
       // Caso patológico: provider sin Professional. Pintamos el editor
       // con horario vacío para que el dueño pueda al menos ver la UI.
@@ -116,7 +123,7 @@ export default async function PanelSettingsPage({ params, searchParams }: PanelS
 
   // `requireCurrentProvider` ya garantiza existencia; este check es
   // defensa contra una carrera muy improbable (borrado entre llamadas).
-  if (!record) {
+  if (!record || !addressRow) {
     notFound();
   }
 
@@ -128,7 +135,11 @@ export default async function PanelSettingsPage({ params, searchParams }: PanelS
     businessName: record.businessName,
     vatNumber: record.vatNumber,
     description: record.description as unknown as LocalizedText,
-    address: record.address,
+    address: {
+      text: addressRow.address,
+      lat: addressRow.lat,
+      lng: addressRow.lng,
+    },
     photos: record.photos,
   };
 

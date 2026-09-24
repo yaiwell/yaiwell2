@@ -22,6 +22,7 @@ import 'server-only';
 import type { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/db/prisma';
+import type { StorableLocalizedText } from '@/lib/i18n';
 
 import type {
   BusinessType,
@@ -91,12 +92,21 @@ const DEFAULT_PROFESSIONAL_SCHEDULE = {
 // Tipos internos del repo
 // ============================================================================
 
+/**
+ * Los textos localizados que entran al repositorio son
+ * `StorableLocalizedText`, no un `Record<string, string>` cualquiera:
+ * ese tipo marcado solo se obtiene pasando por `buildLocalizedText`,
+ * `ensureSpanish` o `storableLocalizedTextSchema`, que garantizan la
+ * clave `es`. Un objeto construido a mano en una action deja de
+ * compilar aquí, que es justo lo que queríamos.
+ */
+
 export interface InsertProviderWithLocationArgs {
   userId: string;
   type: BusinessType;
   businessName: string;
   slug: string;
-  description: Record<string, string | undefined>;
+  description: StorableLocalizedText;
   address: string;
   location: { lat: number; lng: number };
   priceRange: PriceRangeChoice;
@@ -113,8 +123,8 @@ export interface CreateServiceArgs {
   providerId: string;
   categoryId: string;
   professionalId: string | null;
-  name: Record<string, string | undefined>;
-  description: Record<string, string | undefined>;
+  name: StorableLocalizedText;
+  description: StorableLocalizedText;
   durationMinutes: number;
   priceCents: number;
 }

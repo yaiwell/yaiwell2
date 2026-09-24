@@ -8,6 +8,36 @@
 
 ## 2026-09-24
 
+### 2026-09-24 (2) — Los dos últimos P0, y el candado para que no vuelvan
+
+Cierra los 7 P0 de la auditoría. El encargo no era arreglar tres sitios sino **hacer que el error no se pueda volver a escribir**, y eso es lo que distingue esta entrada de un parche.
+
+#### La dirección que no seguía al negocio
+
+- `/panel/centro` guardaba la calle nueva y **nunca tocaba `location`**: el `ST_MakePoint` de PostGIS vivía solo en el repositorio del onboarding. Un centro que se mudaba seguía apareciendo en las coordenadas viejas en `/buscar`, en el mapa y en el filtro de distancia, sin ningún error visible. Un cliente buscando "cerca de mí" podía plantarse en la puerta equivocada.
+- **Se descartó geocodificar el texto en servidor.** Mapbox devuelve "el mejor candidato" para casi cualquier cadena, así que un dedazo habría movido el centro a otra calle **en silencio** — sustituir un fallo mudo por otro no es arreglarlo. El campo pasa a usar el `AddressAutocomplete` del onboarding: el texto y el punto que se guardan son el mismo objeto que el dueño vio y confirmó. El servidor revalida igual, porque no se fía del cliente.
+- **La garantía es de compilación, no de disciplina.** El repositorio exige un `GeolocatedAddress` *branded* cuyo símbolo no se exporta: la única fábrica exige texto **y** coordenadas, así que actualizar la calle sin la ubicación **no compila**. Hay tests con `@ts-expect-error` que se ponen rojos si alguien reabre la puerta, y como `typecheck` incluye los tests, la garantía se vigila sola.
+- Si el geocoder cae, se conserva la dirección vigente y el resto de campos se guardan con normalidad: nunca calle nueva con punto viejo. Y si llega un payload sin coordenadas (API directa), la operación entera se aborta antes de tocar BD.
+
+#### Los textos sin castellano
+
+- Dos síntomas que se alimentaban: el panel guardaba **solo el idioma activo** (`{ [locale]: texto }`), y `pickLocalized` caía a `text.es ?? ''` con un comentario que daba por hecho que *"el castellano siempre está presente"*. Un servicio creado con el panel en catalán, inglés o alemán nacía **sin nombre público**: invendible, y sin ningún error. Ya lo habíamos parcheado a mano en tres pantallas; esto cierra la fuente.
+- **Guardián de escritura** (`lib/i18n/localizedText.ts`): tipo marcado + Zod compartido que exige `es` no vacío, aplicado en **todos** los bordes — alta y edición de servicios, onboarding, descripción del negocio. Los repositorios exigen el tipo marcado, así que un objeto construido a mano ya no pasa la puerta.
+- **Decisión de producto, visible y documentada**: cuando el proveedor escribe en otro idioma, `es` se rellena **duplicando ese texto**. Un servicio llamado `Haarschnitt` que todo el mundo puede leer y reservar es mejor que un hueco en blanco; bloquear el guardado añadiría fricción en el momento más frágil del alta, y la traducción automática está descartada en MVP. Consecuencia aceptada: un servicio puede mostrar nombre alemán bajo `/es`.
+- **Cadena de fallback completa** en `pickLocalized` (`locale → es → ca → en → de`), y `LocalizedText.ca` pasa a opcional: era mentira que estuviera siempre, los repositorios la fabricaban con `?? ''` al leer.
+- **15 indexaciones directas migradas**, incluidas dos que nadie había mirado: el `generateMetadata` de la ficha de servicio (el nombre en blanco llegaba al `<title>` y a la tarjeta de OpenGraph) y el repositorio de sugerencias, donde una categoría sin castellano dejaba de ser buscable **en todos los idiomas**.
+- **Regla de ESLint** `no-restricted-syntax` contra indexar por el locale activo, con selector por regex `/[Ll]ocale$/` — el bug había viajado bajo tres nombres de variable distintos (`locale`, `typedLocale`, `panelLocale`) y un selector literal habría dejado pasar uno. Cuatro excepciones justificadas una a una (diccionarios que sí tienen los cuatro idiomas escritos en el mismo fichero); la regla no se relajó para ninguna. Verificada cazando una violación real antes de borrarla.
+- **Script de backfill idempotente** para los datos ya guardados, con `--dry-run` y reporte de filas incurables. **Escrito y testeado, no ejecutado**: lo lanza el dev. Sin DDL.
+
+#### Integración por el orquestador
+
+- El segundo agente **devolvió un hueco en vez de invadirlo**: la descripción de `/panel/centro` seguía sin guardián porque esos ficheros los tenía el otro agente. Cerrado al integrar, y de paso el repositorio del panel pasa a exigir el tipo marcado como ya hacía el del onboarding.
+- **Dos casts retirados**: el que el primer agente dejó avisando de que aplazaba el problema, y uno idéntico que `AddressAutocomplete` arrastraba desde que sus claves no existían — **existen desde hace meses** y nadie volvió a mirarlo. Al quitarlo, el compilador destapó al instante un `Record<SaveErrorCode, string>` que impedía verificar que las claves de error existieran.
+- **Una regresión propia, detectada por los tests**: al forzar castellano incluso sin parche, un proveedor **sin descripción** que guardara otros campos recibía un error. La semántica correcta del candado es "si hay texto, tiene castellano", y el vacío la cumple de forma trivial — corregido en la fábrica, que es el único sitio autorizado a acuñar la marca.
+- 61 tests nuevos (811 en total). `typecheck`, `lint`, `build` y paridad i18n (980 × 4) limpios.
+
+---
+
 ### 2026-09-24 — Flujo de reserva y confirmación
 
 Cuarta pantalla de la auditoría, y la que mueve el dinero. Dos agentes en paralelo con ficheros disjuntos; el i18n lo aplicó el orquestador al integrar.

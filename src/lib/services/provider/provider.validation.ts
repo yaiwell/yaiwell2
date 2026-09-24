@@ -10,6 +10,8 @@
 
 import { z } from 'zod';
 
+import { localizedTextPatchSchema } from '@/lib/validation/localized-text';
+
 /**
  * Subset de `LocalizedText` aplicable al update de descripción del
  * panel. Las cuatro claves son opcionales en estructura — la UI hoy
@@ -19,22 +21,20 @@ import { z } from 'zod';
  * `min(1)` evita guardar strings vacíos bajo una clave (el merge prefiere
  * conservar lo existente si la nueva es vacía).
  */
-const descriptionPatchSchema = z
-  .object({
-    es: z.string().min(1).max(2000).optional(),
-    ca: z.string().min(1).max(2000).optional(),
-    en: z.string().min(1).max(2000).optional(),
-    de: z.string().min(1).max(2000).optional(),
-  })
-  .optional();
+const descriptionPatchSchema = localizedTextPatchSchema.optional();
 
 /**
  * Validación de los campos editables desde `/panel/centro`.
  *
- * Solo cubre lo que el form expone hoy (businessName, vatNumber,
- * description, address). Teléfono, email de contacto, ciudad/CP
- * separados y horario semanal entrarán en un schema aparte cuando el
- * form los recoja de verdad.
+ * `address`, `lat` y `lng` **no** están aquí: los valida
+ * `parseGeolocatedAddress` (`provider.address.ts`), que los convierte en
+ * un único value object marcado. Separarlos permite devolver un error
+ * tipado propio (`ProviderLocationRequiredError`) cuando lo que falta
+ * son las coordenadas, en vez de un `ZodError` genérico que la UI no
+ * podría distinguir de "revisa los campos".
+ *
+ * Teléfono, email de contacto, ciudad/CP separados y horario semanal
+ * entrarán cuando el form los recoja de verdad.
  */
 export const updateProviderSettingsSchema = z.object({
   businessName: z.string().trim().min(2).max(120),
@@ -46,7 +46,6 @@ export const updateProviderSettingsSchema = z.object({
     .nullable()
     .transform((value) => (value && value.length > 0 ? value : null)),
   description: descriptionPatchSchema,
-  address: z.string().trim().min(2).max(240),
 });
 
 export type UpdateProviderSettingsParsed = z.infer<typeof updateProviderSettingsSchema>;

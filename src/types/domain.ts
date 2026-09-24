@@ -18,18 +18,29 @@
  * Se usa para campos que vienen del dominio (nombre de proveedor,
  * descripción de servicio, etc.) y no del namespace i18n estático.
  *
- * **es/ca son requeridos** (mercado primario en Mallorca, garantía de
- * cobertura mínima). **en/de son opcionales** porque el contenido cargado
- * por el proveedor empieza en es/ca y la traducción a inglés/alemán llega
- * después (manual desde el panel, o vía sugerencia automática en Fase 2).
+ * **Solo `es` es requerido.** Es la única clave que el sistema puede
+ * garantizar, y la garantiza en el borde de escritura: todo texto que
+ * llega a BD pasa por `buildLocalizedText()` / `ensureSpanish()` o por
+ * `storableLocalizedTextSchema`, que rellenan el castellano duplicando
+ * el idioma en que escribió el proveedor si hiciera falta.
+ *
+ * `ca`, `en` y `de` son opcionales porque el contenido cargado por el
+ * proveedor empieza en un solo idioma y la traducción llega después
+ * (manual desde el panel, o asistida en Fase 2).
+ *
+ * Históricamente `ca` figuraba como requerido y no lo era: los
+ * repositorios lo fabricaban con `?? ''` al leer de BD, o sea que el
+ * tipo mentía. Declararlo opcional pone el contrato en línea con el
+ * dato real y deja `es` como la única promesa que sí se defiende.
  *
  * Para resolver un `LocalizedText` al locale activo usar `pickLocalized()`
- * de `@/lib/i18n/pickLocalized` — aplica la cadena de fallback
- * (`en` → `es`, `de` → `es`) sin que la UI tenga que repetir lógica.
+ * de `@/lib/i18n` — aplica la cadena de fallback (locale → es → ca →
+ * en → de) sin que la UI tenga que repetir lógica. Indexar a mano
+ * (`text[locale]`) está prohibido por ESLint.
  */
 export interface LocalizedText {
   es: string;
-  ca: string;
+  ca?: string;
   en?: string;
   de?: string;
 }

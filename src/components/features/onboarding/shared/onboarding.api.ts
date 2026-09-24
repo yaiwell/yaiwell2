@@ -8,6 +8,8 @@
  */
 
 import type { AppLocale } from '@/i18n/routing';
+import { buildLocalizedText } from '@/lib/i18n';
+import type { LocalizedText } from '@/types/domain';
 
 import type {
   OnboardingApiError,
@@ -19,12 +21,16 @@ import type {
 const JSON_HEADERS = { 'Content-Type': 'application/json' } as const;
 
 /**
- * Construye un `LocalizedText` con solo la clave del locale activo.
- * El backend exige al menos una clave con contenido y el wizard es
- * monolingüe en el locale del usuario.
+ * Construye el `LocalizedText` que viaja al backend.
+ *
+ * El wizard es monolingüe (escribe en el locale del usuario), así que
+ * delegamos en `buildLocalizedText`, que además **duplica el texto en
+ * `es`**. Antes se enviaba solo `{ [locale]: value }` y el backend lo
+ * aceptaba con un `refine` de "al menos un idioma": un centro dado de
+ * alta en alemán nacía con descripción vacía en la ficha pública.
  */
-function localized(locale: AppLocale, value: string): Record<string, string> {
-  return { [locale]: value };
+function localized(locale: AppLocale, value: string): LocalizedText {
+  return buildLocalizedText(locale, value);
 }
 
 /**
@@ -77,7 +83,7 @@ interface CreateProviderPayload {
   businessName: string;
   slug: string;
   vatNumber?: string;
-  description: Record<string, string>;
+  description: LocalizedText;
   address: string;
   location: { lat: number; lng: number };
   priceRange: '€' | '€€' | '€€€';
@@ -94,8 +100,8 @@ interface CheckSlugResult {
 interface CreateFirstServicePayload {
   providerId: string;
   categoryId: string;
-  name: Record<string, string>;
-  description?: Record<string, string>;
+  name: LocalizedText;
+  description?: LocalizedText;
   durationMinutes: number;
   priceCents: number;
 }
@@ -128,12 +134,22 @@ export async function apiCreateProvider(input: {
   lng: number;
   priceRange: '€' | '€€' | '€€€';
 }): Promise<OnboardingApiResult<CreateProviderResult>> {
+  // `localized` lanza si el texto está vacío. Lo traducimos a un error
+  // de resultado para que el wizard lo pinte como cualquier otro fallo
+  // de validación en vez de reventar con una promesa rechazada.
+  let description: LocalizedText;
+  try {
+    description = localized(input.locale, input.description);
+  } catch {
+    return { error: { code: 'VALIDATION' } };
+  }
+
   const body: CreateProviderPayload = {
     type: input.type,
     businessName: input.businessName,
     slug: input.slug,
     vatNumber: input.vatNumber && input.vatNumber.length > 0 ? input.vatNumber : undefined,
-    description: localized(input.locale, input.description),
+    description,
     address: input.address,
     location: { lat: input.lat, lng: input.lng },
     priceRange: input.priceRange,
@@ -170,17 +186,23 @@ export async function apiCreateFirstService(input: {
   durationMinutes: number;
   priceCents: number;
 }): Promise<OnboardingApiResult<CreateFirstServiceResult>> {
-  const body: CreateFirstServicePayload = {
-    providerId: input.providerId,
-    categoryId: input.categoryId,
-    name: localized(input.locale, input.name),
-    description:
-      input.description && input.description.length > 0
-        ? localized(input.locale, input.description)
-        : undefined,
-    durationMinutes: input.durationMinutes,
-    priceCents: input.priceCents,
-  };
+  let body: CreateFirstServicePayload;
+  try {
+    body = {
+      providerId: input.providerId,
+      categoryId: input.categoryId,
+      name: localized(input.locale, input.name),
+      description:
+        input.description && input.description.trim().length > 0
+          ? localized(input.locale, input.description)
+          : undefined,
+      durationMinutes: input.durationMinutes,
+      priceCents: input.priceCents,
+    };
+  } catch {
+    // Nombre vacío: mismo tratamiento que arriba, error de resultado.
+    return { error: { code: 'VALIDATION' } };
+  }
   return safeFetch<CreateFirstServiceResult>('/api/provider-onboarding/first-service', {
     method: 'POST',
     headers: JSON_HEADERS,

@@ -37,6 +37,26 @@ export class ProviderValidationError extends Error {
 }
 
 /**
+ * Se ha intentado guardar una dirección sin coordenadas válidas.
+ *
+ * La dirección y la geolocalización son el mismo dato para el
+ * marketplace: si solo se persistiera el texto, el centro seguiría
+ * apareciendo en el mapa y en el filtro de distancia sobre el punto
+ * anterior y el cliente acabaría en la puerta equivocada. Por eso
+ * preferimos abortar el guardado entero a dejar el estado a medias.
+ *
+ * En la UI se traduce a "elige una dirección de las sugerencias".
+ */
+export class ProviderLocationRequiredError extends Error {
+  readonly code = 'LOCATION_REQUIRED';
+
+  constructor(message = 'La dirección debe tener coordenadas resueltas.') {
+    super(message);
+    this.name = 'ProviderLocationRequiredError';
+  }
+}
+
+/**
  * El Provider no tiene ningún Professional asociado.
  *
  * En el wizard de onboarding se crea siempre 1 Professional al alta

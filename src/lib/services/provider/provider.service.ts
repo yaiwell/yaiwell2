@@ -19,10 +19,13 @@ import 'server-only';
 
 import type { Prisma } from '@prisma/client';
 
+import { ensureSpanishIfAny } from '@/lib/i18n';
+import type { StorableLocalizedText } from '@/lib/i18n';
 import { weeklyScheduleSchema } from '@/lib/services/availability';
 import type { WeeklySchedule } from '@/lib/services/availability';
 import type { LocalizedText } from '@/types/domain';
 
+import { parseGeolocatedAddress } from './provider.address';
 import { ProviderHasNoProfessionalError, ProviderNotFoundError } from './provider.errors';
 import { providerRepository } from './provider.repository';
 import { updateProviderSettingsSchema } from './provider.validation';
@@ -45,13 +48,21 @@ const EMPTY_SCHEDULE: WeeklySchedule = {
 /**
  * Actualiza los campos editables del Provider desde `/panel/centro`.
  *
+ * La dirección se valida ANTES de leer nada de BD y se convierte en un
+ * `GeolocatedAddress`: o llegan texto y coordenadas, o no se guarda
+ * nada. Preferimos abortar la operación entera (nombre y descripción
+ * incluidos) a persistir una calle nueva sobre el punto geográfico
+ * viejo, que es el fallo silencioso que este flujo tenía.
+ *
  * @param providerId — id del Provider autorizado (ya validado por el caller).
  * @param input — datos crudos del formulario; se validan con Zod.
+ * @throws ProviderLocationRequiredError si la dirección llega sin coordenadas válidas.
  * @throws ProviderNotFoundError si el Provider no existe o está soft-deleted.
  * @throws ZodError si el input no pasa la validación.
  */
 export async function updateProviderSettings(providerId: string, input: unknown): Promise<void> {
   const data = updateProviderSettingsSchema.parse(input);
+  const address = parseGeolocatedAddress(input);
 
   // Necesitamos la descripción existente para fusionar el parche del
   // locale activo sin perder las traducciones de los demás idiomas.
@@ -62,12 +73,19 @@ export async function updateProviderSettings(providerId: string, input: unknown)
 
   const mergedDescription = mergeDescription(existing.description, data.description);
 
-  await providerRepository.updateSettings(providerId, {
+  const updatedRows = await providerRepository.updateSettings(providerId, {
     businessName: data.businessName,
     vatNumber: data.vatNumber,
     description: mergedDescription,
-    address: data.address,
+    address,
   });
+
+  // El UPDATE va por raw SQL, así que Prisma no lanza si no encuentra
+  // fila: lo comprobamos a mano para cubrir la carrera de un borrado
+  // entre la lectura y la escritura.
+  if (updatedRows === 0) {
+    throw new ProviderNotFoundError();
+  }
 }
 
 /**
@@ -80,11 +98,15 @@ export async function updateProviderSettings(providerId: string, input: unknown)
 function mergeDescription(
   existing: LocalizedText,
   patch: Partial<LocalizedText> | undefined,
-): LocalizedText {
-  if (!patch) return existing;
+): StorableLocalizedText {
+  if (!patch) return ensureSpanishIfAny(existing);
   const hasAny = Boolean(patch.es || patch.ca || patch.en || patch.de);
-  if (!hasAny) return existing;
-  return { ...existing, ...patch };
+  if (!hasAny) return ensureSpanishIfAny(existing);
+  // `ensureSpanishIfAny` y no un spread a pelo: sin castellano el texto
+  // sale EN BLANCO en la ficha pública para todo el mundo, porque es el
+  // último eslabón de la cadena de fallback. Es el mismo guardián que
+  // aplica el alta de servicios.
+  return ensureSpanishIfAny({ ...existing, ...patch });
 }
 
 /**
