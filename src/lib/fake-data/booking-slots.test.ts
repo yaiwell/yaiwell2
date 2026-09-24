@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  buildUpcomingDays,
-  generateBookingSlots,
-  getDateKey,
-  toAvailabilitySlot,
-} from './booking-slots';
+import { generateBookingSlots, toAvailabilitySlot } from './booking-slots';
 
 /**
  * Tests del generador determinista de slots de reserva mock.
@@ -84,36 +79,6 @@ describe('generateBookingSlots', () => {
     // robustez contra cambios de horario sin sacrificar la verificación.
     expect(occupiedRatio).toBeGreaterThan(0.15);
     expect(occupiedRatio).toBeLessThan(0.45);
-  });
-});
-
-describe('getDateKey', () => {
-  it('compone YYYY-MM-DD con cero a la izquierda', () => {
-    const date = new Date(2026, 0, 5); // 5 enero 2026
-
-    expect(getDateKey(date)).toBe('2026-01-05');
-  });
-});
-
-describe('buildUpcomingDays', () => {
-  it('devuelve N días consecutivos a partir del día inicial', () => {
-    const from = new Date(2026, 4, 20); // 20 mayo 2026
-
-    const days = buildUpcomingDays(from, 7);
-
-    expect(days).toHaveLength(7);
-    expect(days[0].getDate()).toBe(20);
-    expect(days[6].getDate()).toBe(26);
-  });
-
-  it('normaliza la hora a 00:00 para evitar arrastrar minutos del input', () => {
-    const fromWithTime = new Date(2026, 4, 20, 17, 42, 11);
-
-    const [first] = buildUpcomingDays(fromWithTime, 1);
-
-    expect(first.getHours()).toBe(0);
-    expect(first.getMinutes()).toBe(0);
-    expect(first.getSeconds()).toBe(0);
   });
 });
 

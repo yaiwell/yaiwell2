@@ -23,6 +23,12 @@ export const bookingFlowStyles = {
   // Contenido del paso activo: tarjeta con padding generoso.
   card: 'rounded-3xl border border-border bg-card p-5 shadow-sm md:p-7',
 
+  // Aviso informativo sobre el paso activo (hueco caducado, etc.).
+  // Tono de atención sin llegar a error: no ha fallado nada, hay que
+  // volver a elegir.
+  notice:
+    'rounded-2xl border border-dashed border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground',
+
   // Pie del flujo: navegación entre pasos.
   footer: 'flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between',
   backButton:

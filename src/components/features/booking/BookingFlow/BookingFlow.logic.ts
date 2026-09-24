@@ -4,6 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { createBookingCheckoutAction } from '@/app/[locale]/centro/[slugWithId]/reservar/actions';
 
+import { clearBookingDraft } from './BookingFlow.draft';
+import { useBookingDraft } from './BookingFlow.persistence';
+import { useBookingPaymentStatus } from './BookingFlow.status';
 import type { BookingDraft, BookingStep, CheckoutState } from './BookingFlow.types';
 
 /**
@@ -23,8 +26,11 @@ export const BOOKING_STEPS: readonly BookingStep[] = [
  *
  * Encapsula:
  *  - Paso activo y navegación adelante/atrás.
- *  - Draft con la información acumulada (slot, notas, id de reserva).
+ *  - Draft con la información acumulada (slot, notas, id de reserva),
+ *    persistido en `sessionStorage` para que sobreviva al viaje a
+ *    `/entrar` o `/registro`.
  *  - Apertura del checkout de Stripe al entrar en el paso de pago.
+ *  - Estado real de la reserva en la pantalla de confirmación.
  *
  * La reserva se crea en BD (estado `pending`) al pasar de "resumen" a
  * "pago", no al pulsar "pagar": así el slot queda retenido mientras el
@@ -35,13 +41,11 @@ export function useBookingFlow(args: { serviceId: string }) {
   const { serviceId } = args;
 
   const [step, setStep] = useState<BookingStep>('slot');
-  const [draft, setDraft] = useState<BookingDraft>({
-    slotStartIso: null,
-    slotEndIso: null,
-    notes: '',
-    bookingId: null,
-  });
   const [checkout, setCheckout] = useState<CheckoutState>({ status: 'idle' });
+  // El borrador se recupera de `sessionStorage` al montar y se guarda en
+  // cada cambio: así sobrevive al viaje a `/entrar` o `/registro`.
+  // `slotExpired` avisa de que el hueco guardado ya no admite reserva.
+  const { draft, setDraft, slotExpired, setSlotExpired } = useBookingDraft(serviceId);
 
   // Espejos del estado en refs para poder consultarlo dentro de los
   // callbacks sin meterlo en sus dependencias (y sin ejecutar efectos
@@ -65,6 +69,12 @@ export function useBookingFlow(args: { serviceId: string }) {
   }, [draft]);
 
   const stepIndex = useMemo(() => BOOKING_STEPS.indexOf(step), [step]);
+
+  // En la confirmación el estado lo dicta BD, no el retorno de Stripe.
+  const { paymentPending } = useBookingPaymentStatus({
+    bookingId: draft.bookingId,
+    active: step === 'confirmation',
+  });
 
   /**
    * Crea la reserva y el PaymentIntent.
@@ -110,7 +120,7 @@ export function useBookingFlow(args: { serviceId: string }) {
       clientSecret: result.clientSecret,
       amountCents: result.amountCents,
     });
-  }, [serviceId, draft.slotStartIso, draft.notes]);
+  }, [serviceId, draft.slotStartIso, draft.notes, setDraft]);
 
   const goNext = useCallback(() => {
     // El salto resumen → pago es el que dispara la creación de la
@@ -138,9 +148,12 @@ export function useBookingFlow(args: { serviceId: string }) {
     });
   }, []);
 
-  const updateDraft = useCallback((patch: Partial<BookingDraft>) => {
-    setDraft((prev) => ({ ...prev, ...patch }));
-  }, []);
+  const updateDraft = useCallback(
+    (patch: Partial<BookingDraft>) => {
+      setDraft((prev) => ({ ...prev, ...patch }));
+    },
+    [setDraft],
+  );
 
   /**
    * Selecciona un hueco. Si el usuario cambia de slot después de haber
@@ -148,29 +161,54 @@ export function useBookingFlow(args: { serviceId: string }) {
    * de otra hora. Lo reseteamos para que el siguiente avance cree una
    * reserva nueva sobre el slot correcto.
    */
-  const selectSlot = useCallback((startAtIso: string, endAtIso: string) => {
-    const slotChanged = draftRef.current.slotStartIso !== startAtIso;
+  const selectSlot = useCallback(
+    (startAtIso: string, endAtIso: string) => {
+      const slotChanged = draftRef.current.slotStartIso !== startAtIso;
 
-    setDraft((prev) => ({
-      ...prev,
-      slotStartIso: startAtIso,
-      slotEndIso: endAtIso,
-      bookingId: slotChanged ? null : prev.bookingId,
-    }));
+      // Elegir hueco retira el aviso de "el anterior ya no vale": el
+      // usuario acaba de resolverlo.
+      setSlotExpired(false);
+      setDraft((prev) => ({
+        ...prev,
+        slotStartIso: startAtIso,
+        slotEndIso: endAtIso,
+        bookingId: slotChanged ? null : prev.bookingId,
+      }));
 
-    if (slotChanged) {
-      checkoutRef.current = { status: 'idle' };
-      setCheckout({ status: 'idle' });
-    }
-  }, []);
+      if (slotChanged) {
+        checkoutRef.current = { status: 'idle' };
+        setCheckout({ status: 'idle' });
+      }
+    },
+    [setDraft, setSlotExpired],
+  );
+
+  /**
+   * Vuelve al calendario descartando el hueco actual.
+   *
+   * Es la salida del callejón `SLOT_UNAVAILABLE`: alguien se adelantó y
+   * reintentar el mismo hueco fallaría siempre. Limpiamos hueco y
+   * checkout para que el usuario elija otro y el flujo cree una reserva
+   * nueva.
+   */
+  const chooseAnotherSlot = useCallback(() => {
+    checkoutRef.current = { status: 'idle' };
+    setCheckout({ status: 'idle' });
+    setDraft((prev) => ({ ...prev, slotStartIso: null, slotEndIso: null, bookingId: null }));
+    setSlotExpired(true);
+    setStep('slot');
+  }, [setDraft, setSlotExpired]);
 
   /**
    * Avanza a la confirmación tras un pago resuelto sin redirección.
    *
    * No marca la reserva como confirmada: eso lo hace el webhook
-   * `payment_intent.succeeded`. Aquí sólo cambiamos de pantalla.
+   * `payment_intent.succeeded`, y `useBookingPaymentStatus` se encarga
+   * de preguntarle a BD si ya ha pasado. Aquí sólo cambiamos de
+   * pantalla y tiramos el borrador, que ya cumplió su función.
    */
   const completePayment = useCallback(() => {
+    clearBookingDraft();
     setStep('confirmation');
   }, []);
 
@@ -195,10 +233,13 @@ export function useBookingFlow(args: { serviceId: string }) {
     draft,
     checkout,
     canAdvance,
+    slotExpired,
+    paymentPending,
     goNext,
     goBack,
     updateDraft,
     selectSlot,
+    chooseAnotherSlot,
     completePayment,
     retryCheckout,
   };

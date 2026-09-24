@@ -4,6 +4,13 @@
  * Cualquier consumidor (page, route handler, server action, otros
  * services) debe importar desde aquí. Importar archivos internos
  * directamente está prohibido por convención del proyecto.
+ *
+ * EXCEPCIÓN — Client Components: este barrel reexporta el service, que
+ * arrastra Prisma (`pg → dns/fs/net/tls`) al bundle del navegador y
+ * rompe el build. El código de cliente importa directamente de
+ * `./availability.client`, que es el único archivo del módulo libre de
+ * dependencias de servidor. Aquí solo reexportamos su TIPO (los tipos se
+ * borran en compilación, así que no arrastran nada).
  */
 export { getAvailableSlots, getSlotsForService, isSlotAvailable } from './availability.service';
 export { getProvidersAvailability } from './availability.status.service';
@@ -35,6 +42,7 @@ export {
   weeklyScheduleSchema,
   type GetAvailableSlotsParsed,
 } from './availability.validation';
+export type { BookingSlot } from './availability.client';
 export type {
   GetAvailableSlotsInput,
   ProfessionalScheduleBundle,

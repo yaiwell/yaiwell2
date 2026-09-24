@@ -8,7 +8,7 @@ import {
   ProfessionalNotFoundError,
   ServiceForAvailabilityNotFoundError,
 } from '@/lib/services/availability';
-import type { Slot } from '@/lib/services/availability';
+import type { BookingSlot, Slot } from '@/lib/services/availability';
 
 /**
  * Endpoint público de slots disponibles para un servicio en un día.
@@ -35,11 +35,7 @@ import type { Slot } from '@/lib/services/availability';
  * podamos extender el endpoint para devolver también ocupados (slots
  * con `available: false`) sin romper consumidores actuales.
  */
-interface SlotDto {
-  startAtIso: string;
-  endAtIso: string;
-  available: true;
-}
+type SlotDto = Omit<BookingSlot, 'available'> & { available: true };
 
 interface SlotsSuccess {
   slots: SlotDto[];

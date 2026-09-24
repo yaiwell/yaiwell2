@@ -1,7 +1,10 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createBookingCheckoutAction } from '@/app/[locale]/centro/[slugWithId]/reservar/actions';
+import {
+  createBookingCheckoutAction,
+  getBookingStatusAction,
+} from '@/app/[locale]/centro/[slugWithId]/reservar/actions';
 
 import { BOOKING_STEPS, useBookingFlow } from './BookingFlow.logic';
 
@@ -16,9 +19,11 @@ import { BOOKING_STEPS, useBookingFlow } from './BookingFlow.logic';
 
 vi.mock('@/app/[locale]/centro/[slugWithId]/reservar/actions', () => ({
   createBookingCheckoutAction: vi.fn(),
+  getBookingStatusAction: vi.fn(),
 }));
 
 const mockedAction = vi.mocked(createBookingCheckoutAction);
+const mockedStatusAction = vi.mocked(getBookingStatusAction);
 
 const SLOT_START = '2026-05-30T10:00:00.000Z';
 const SLOT_END = '2026-05-30T11:00:00.000Z';
@@ -50,8 +55,18 @@ async function advanceToPayment(result: { current: ReturnType<typeof useBookingF
 }
 
 beforeEach(() => {
+  // El borrador vive en `sessionStorage`: sin limpiarlo, un test
+  // arrastraría el hueco del anterior.
+  window.sessionStorage.clear();
   mockedAction.mockReset();
   mockedAction.mockResolvedValue(OK_RESULT);
+  mockedStatusAction.mockReset();
+  mockedStatusAction.mockResolvedValue({
+    ok: true,
+    bookingId: 'bk-123',
+    status: 'pending',
+    isConfirmed: false,
+  });
 });
 
 describe('useBookingFlow', () => {

@@ -30,6 +30,20 @@ export interface BookingDraft {
 }
 
 /**
+ * Borrador que sobrevive al viaje a `/entrar` o `/registro`.
+ *
+ * Sólo intención del usuario: hueco y notas. El `bookingId` queda fuera
+ * a propósito (ver `BookingFlow.draft.ts`). El `serviceId` viaja dentro
+ * para poder descartar un borrador de otro servicio.
+ */
+export interface PersistedBookingDraft {
+  serviceId: string;
+  slotStartIso: string | null;
+  slotEndIso: string | null;
+  notes: string;
+}
+
+/**
  * Estado del checkout de Stripe dentro del flujo.
  *
  * Es una máquina de estados explícita en vez de un par de booleanos:

@@ -2,6 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
+import { pickLocalized } from '@/lib/i18n/pickLocalized';
+
 import { formatPriceCents, formatSlotDateLong, formatSlotTimeOnly } from './BookingSummary.logic';
 import { bookingSummaryStyles as s } from './BookingSummary.styles';
 import type { BookingSummaryProps } from './BookingSummary.types';
@@ -22,10 +24,20 @@ export function BookingSummary({
   slotStartIso,
   slotEndIso,
   notes,
+  amountCents,
   onNotesChange,
 }: BookingSummaryProps) {
   const t = useTranslations('booking.summary');
   const tPolicy = useTranslations('booking.policy');
+
+  // `en` y `de` son opcionales en `LocalizedText`: indexar a pelo dejaba
+  // el nombre del servicio en blanco en esos dos idiomas.
+  const serviceName = pickLocalized(service.name, locale);
+
+  // El servidor es la fuente del importe en cuanto existe reserva; antes
+  // de eso no hay nada que cobrar todavía y mostramos el precio de
+  // catálogo (ver comentario de `amountCents` en los tipos).
+  const totalCents = amountCents ?? service.priceCents;
 
   return (
     <div className={s.root} data-component="booking-summary">
@@ -51,7 +63,7 @@ export function BookingSummary({
       <dl className={s.list}>
         <div className={s.row}>
           <dt className={s.rowLabel}>{t('serviceLabel')}</dt>
-          <dd className={s.rowValue}>{service.name[locale]}</dd>
+          <dd className={s.rowValue}>{serviceName}</dd>
         </div>
         <div className={s.row}>
           <dt className={s.rowLabel}>{t('dateLabel')}</dt>
@@ -73,7 +85,7 @@ export function BookingSummary({
         </div>
         <div className={s.row}>
           <dt className={s.rowLabel}>{t('totalLabel')}</dt>
-          <dd className={s.rowValueStrong}>{formatPriceCents(service.priceCents, locale)}</dd>
+          <dd className={s.rowValueStrong}>{formatPriceCents(totalCents, locale)}</dd>
         </div>
       </dl>
 

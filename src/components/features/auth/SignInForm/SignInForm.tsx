@@ -5,10 +5,15 @@ import { useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+// Import directo al módulo, no al barrel `@/lib/validation`: ése
+// reexporta `sign-up-params`, que arrastra el barrel de `plans` y con
+// él Prisma. Desde un Client Component eso mete `pg` en el bundle y
+// rompe el build.
+import { withRedirectUrl } from '@/lib/validation/redirect-url';
 
 import { useSignInForm } from './SignInForm.logic';
 import { signInStyles as s } from './SignInForm.styles';
-import type { SignInErrorCode, SignInRole } from './SignInForm.types';
+import type { SignInErrorCode, SignInFormProps, SignInRole } from './SignInForm.types';
 
 /**
  * Formulario de sign-in mock.
@@ -17,13 +22,16 @@ import type { SignInErrorCode, SignInRole } from './SignInForm.types';
  * (Server Component) se limita a envolverla en el contenedor visual y a
  * activar el locale.
  *
- * No conectamos con Clerk todavía: el submit hace un pequeño delay y
- * redirige a `/panel` o `/` según el rol elegido. Cuando integremos auth
- * real, lo único que cambia es el contenido de `useSignInForm.handleSubmit`.
+ * `redirectUrl` llega de `/entrar?redirect_url=…` ya saneado y decide
+ * el destino tras autenticarse. También se propaga al enlace de alta
+ * para no perder el retorno si el usuario resulta no tener cuenta.
  */
-export function SignInForm() {
+export function SignInForm({ redirectUrl = null }: SignInFormProps = {}) {
   const t = useTranslations('signIn');
-  const { role, setRole, draft, updateDraft, status, errorCode, handleSubmit } = useSignInForm();
+  const { role, setRole, draft, updateDraft, status, errorCode, handleSubmit } = useSignInForm(
+    'client',
+    redirectUrl,
+  );
 
   const isSubmitting = status === 'submitting';
   // Errores de campo (email/password) anclan el mensaje al input; errores
@@ -242,7 +250,7 @@ export function SignInForm() {
             <p className={s.footer}>
               {t('footer.noAccount')}{' '}
               <Link
-                href="/registro"
+                href={withRedirectUrl('/registro', redirectUrl)}
                 className={s.footerLink}
                 data-component="sign-in-go-to-register"
               >

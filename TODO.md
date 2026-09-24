@@ -95,7 +95,7 @@
 - [x] SEO básico (meta tags, OG image, sitemap).
 - [x] Verificar que todo el texto está en es/ca (audit + 🔴 hardcoded labels arreglados).
 - [ ] Aplicar 🟠 y 🟡 restantes del audit (`docs/audit-2026-05-27.md`).
-- [~] **Aplicar los hallazgos de `docs/pantallas-2026-09-23.md`** (auditoría de las 25 pantallas, 7 P0). Se van cerrando pantalla a pantalla: ✅ `/` (landing), ✅ `/profesionales` y ✅ ficha de centro (con `/buscar` de rebote en el arreglo de fotos), las tres el 2026-09-23. **Quedan 2 de los 7 P0**: los nombres de servicio en blanco en `/en` y `/de` fuera de la ficha (ficha de servicio, reservar, confirmación) y los dos del panel del proveedor (geocoding de la dirección, servicio creado sin clave `es`). Siguiente pantalla por prioridad: el flujo de reserva.
+- [~] **Aplicar los hallazgos de `docs/pantallas-2026-09-23.md`** (auditoría de las 25 pantallas, 7 P0). Cerradas: ✅ `/` (landing), ✅ `/profesionales`, ✅ ficha de centro (con `/buscar` de rebote) el 2026-09-23, y ✅ flujo de reserva + confirmación el 2026-09-24. **Quedan 2 de los 7 P0**, los dos del panel del proveedor: la dirección que no re-geocodifica y el servicio creado en ca/en/de sin clave `es`. Del P0 de los nombres en blanco solo falta la ficha de servicio (que además está huérfana: nada enlaza a ella). Siguiente por prioridad: el panel del proveedor.
 - [ ] Verificar Lighthouse: Performance > 90, Accessibility > 95.
 - [ ] Deploy final en Vercel con dominio definitivo.
 - [ ] Captura de pantallas para la presentación a la cliente.
@@ -187,6 +187,8 @@
 - [ ] **Cachear la lectura de planes** en `/profesionales` si la página recibe tráfico real: hoy consulta Postgres en cada visita. Un `unstable_cache` de unos minutos basta; las tarifas cambian como mucho un par de veces al año.
 - [ ] **Trocear `providers.repository.ts`** (344 líneas, el límite de §6.bis son 250): el mismo `SELECT` está replicado en `findAll` / `findById` / `findBySlug`. Extraer un fragmento compartido resuelve tamaño y deriva a la vez. Detectado 2026-09-23.
 - [ ] **Revisar la z de la atribución del mapa en `/buscar`**: el mini-mapa de la ficha lleva `z-[1000]` explícito porque los panes de Leaflet llegan a 700; `SearchMap` no lo lleva y su atribución podría estar tapada. Comprobación visual, detectado 2026-09-23.
+- [ ] **Limpieza de `src/lib/fake-data/booking-slots.ts`**: tras mover `buildUpcomingDays` / `getDateKey` / `BookingSlot` a sus módulos reales (2026-09-24), lo que queda (`generateBookingSlots`, `toAvailabilitySlot`, `SCHEDULE`, `hashSeed`) solo lo consume su propio test. Mismo caso que `fakeCustomerBookings` y los dos de admin.
+- [ ] **Trocear `SignInForm` (265 líneas) y `SignUpForm`**, ambos por encima del límite de 250 de §6.bis. Ya lo estaban antes de cablearles el `redirect_url`; el cambio del 2026-09-24 les sumó 5-8 líneas.
 - [ ] Notificaciones por email (Resend).
 - [ ] 4 planes de suscripción con Stripe Billing.
 - [ ] Onboarding de proveedor con formulario manual (jerarquía categoría → tipo → subtipo).

@@ -2,6 +2,7 @@ import { CheckCircle2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
+import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
 import {
   formatPriceCents,
@@ -17,7 +18,8 @@ import type { BookingConfirmationProps } from './BookingConfirmation.types';
  *
  * Server Component: solo recibe props y compone JSX (los textos vienen
  * de `next-intl`, que funciona en SSR). No necesita ningún hook ni
- * estado; el "estado" es el hecho de haber llegado a esta ruta del flujo.
+ * estado; el "estado" del pago se lo dicta `paymentPending`, que en
+ * ambos caminos (3DS y sin 3DS) sale de BD y no del retorno de Stripe.
  */
 export function BookingConfirmation({
   provider,
@@ -27,9 +29,14 @@ export function BookingConfirmation({
   slotEndIso,
   bookingId,
   providerSlugWithId,
+  amountCents,
   paymentPending = false,
 }: BookingConfirmationProps) {
   const t = useTranslations('booking.confirmation');
+
+  // `en` y `de` son opcionales en `LocalizedText`: indexar a pelo dejaba
+  // el nombre del servicio en blanco en esos dos idiomas.
+  const serviceName = pickLocalized(service.name, locale);
 
   return (
     <div className={s.root} data-component="booking-confirmation">
@@ -53,19 +60,22 @@ export function BookingConfirmation({
         </div>
         <div className={s.row}>
           <dt className={s.rowLabel}>{t('serviceLabel')}</dt>
-          <dd className={s.rowValue}>{service.name[locale]}</dd>
+          <dd className={s.rowValue}>{serviceName}</dd>
         </div>
         <div className={s.row}>
           <dt className={s.rowLabel}>{t('whenLabel')}</dt>
+          {/* `formatSlotDateLong` ya incluye la hora de inicio, así que
+              la de fin cierra un rango: separador `→`, el mismo que usa
+              el resumen. Con `·` parecía una lista de dos horas sueltas. */}
           <dd className={s.rowValue}>
             {formatSlotDateLong(slotStartIso, locale)}
-            {' · '}
+            {' → '}
             {formatSlotTimeOnly(slotEndIso, locale)}
           </dd>
         </div>
         <div className={s.row}>
           <dt className={s.rowLabel}>{t('totalLabel')}</dt>
-          <dd className={s.rowValue}>{formatPriceCents(service.priceCents, locale)}</dd>
+          <dd className={s.rowValue}>{formatPriceCents(amountCents, locale)}</dd>
         </div>
       </dl>
 
@@ -77,12 +87,16 @@ export function BookingConfirmation({
         >
           {t('backToProvider')}
         </Link>
+        {/* El copy de "pago en curso" remite a «Mis reservas»: desde
+            aquí se llega, que es donde el estado se relee en cada
+            visita. Sustituye a "Seguir explorando", que mandaba al
+            catálogo a alguien que acababa de pagar. */}
         <Link
-          href="/buscar"
+          href="/mis-reservas"
           className={s.primaryAction}
-          data-component="booking-confirmation-keep-browsing"
+          data-component="booking-confirmation-my-bookings"
         >
-          {t('keepBrowsing')}
+          {t('viewMyBookings')}
         </Link>
       </div>
     </div>

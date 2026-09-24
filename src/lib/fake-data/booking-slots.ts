@@ -1,3 +1,5 @@
+import { getDateKey } from '@/lib/utils/calendar-days';
+import type { BookingSlot } from '@/lib/services/availability/availability.client';
 import type { AvailabilitySlot } from '@/types/domain';
 
 /**
@@ -34,20 +36,6 @@ const SCHEDULE = {
 } as const;
 
 /**
- * Slot de reserva mock con la información que el calendario necesita
- * para renderizar la cuadrícula: hora, duración del servicio y si
- * está libre u ocupado.
- */
-export interface BookingSlot {
-  /** ISO string del inicio del slot. Usamos string para que sea serializable entre Server/Client Components. */
-  startAtIso: string;
-  /** ISO string del fin (incluye la duración real del servicio). */
-  endAtIso: string;
-  /** `true` si está libre; `false` si está ocupado por otra reserva fake. */
-  available: boolean;
-}
-
-/**
  * Hash trivial determinista de un string a un entero no negativo.
  * No criptográfico — solo necesitamos algo estable y disperso para
  * decidir qué slots aparecen como ocupados.
@@ -58,18 +46,6 @@ function hashSeed(seed: string): number {
     hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
   }
   return hash;
-}
-
-/**
- * Devuelve la clave `YYYY-MM-DD` de una fecha en zona horaria local,
- * usada como parte del seed determinista. Evitamos `toISOString()`
- * porque colapsaría días distintos si el cliente está en otra zona.
- */
-export function getDateKey(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }
 
 /**
@@ -142,24 +118,6 @@ export function generateBookingSlots(
   }
 
   return slots;
-}
-
-/**
- * Construye la lista de los próximos `days` días empezando por `from`,
- * usada por el calendario del SlotPicker para renderizar las pestañas
- * navegables de día.
- *
- * @param from — fecha de inicio (incluida).
- * @param days — cantidad de días a generar.
- * @returns array de fechas a las 00:00 de su día local.
- */
-export function buildUpcomingDays(from: Date, days: number): Date[] {
-  const start = new Date(from.getFullYear(), from.getMonth(), from.getDate());
-  return Array.from({ length: days }, (_, i) => {
-    const next = new Date(start);
-    next.setDate(start.getDate() + i);
-    return next;
-  });
 }
 
 /**

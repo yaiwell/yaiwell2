@@ -9,6 +9,7 @@ import { routing, type AppLocale } from '@/i18n/routing';
 import { getBookingForConfirmation } from '@/lib/services/checkout';
 import { getProviderDetail } from '@/lib/services/providers';
 import { ensureUserFromClerk } from '@/lib/services/user';
+import { isBookingPaymentSettled } from '@/lib/utils/booking-payment-status';
 import { parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
 
 /**
@@ -93,9 +94,12 @@ export default async function BookingConfirmationPage({
         slotEndIso={booking.endAt.toISOString()}
         bookingId={booking.id}
         providerSlugWithId={slugWithId}
-        // El webhook puede tardar unos segundos: si aún está `pending`,
-        // el copy lo dice en lugar de prometer una confirmación falsa.
-        paymentPending={booking.status === 'pending'}
+        // Importe congelado al crear la reserva: es el que se cobró.
+        amountCents={booking.priceCents}
+        // El webhook puede tardar unos segundos: si el cobro aún no
+        // está liquidado, el copy lo dice en lugar de prometer una
+        // confirmación falsa. Mismo criterio que el camino sin 3DS.
+        paymentPending={!isBookingPaymentSettled(booking.status)}
       />
     </section>
   );

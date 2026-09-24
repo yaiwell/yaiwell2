@@ -23,7 +23,7 @@ import { SignUpVerificationPanel } from './SignUpVerificationPanel';
  * para que quien llega desde un CTA de `/profesionales` no aterrice en
  * la pestaña equivocada.
  */
-export function SignUpForm({ initialRole, initialPlan }: SignUpFormProps) {
+export function SignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpFormProps) {
   const t = useTranslations('signUp');
 
   const {
@@ -40,7 +40,7 @@ export function SignUpForm({ initialRole, initialPlan }: SignUpFormProps) {
     submitVerification,
     switchRole,
     resetToForm,
-  } = useSignUpForm({ initialRole, initialPlan });
+  } = useSignUpForm({ initialRole, initialPlan, redirectUrl });
 
   // Mapeo exhaustivo código → mensaje. Si se añade un código nuevo al
   // union `AuthErrorCode`, TypeScript marca este Record como incompleto.

@@ -661,7 +661,8 @@
       "back": "Atrás",
       "cancel": "Cancelar reserva",
       "continue": "Continuar",
-      "goToPayment": "Ir al pago"
+      "goToPayment": "Ir al pago",
+      "slotExpiredNotice": "El hueco que tenías elegido ya no está disponible. Elige otro para continuar."
     },
     "slotPicker": {
       "dayStripLabel": "Días disponibles",
@@ -670,7 +671,11 @@
       "noMorningSlots": "No quedan huecos por la mañana.",
       "noAfternoonSlots": "No quedan huecos por la tarde.",
       "emptyTitle": "Sin huecos este día",
-      "emptySubtitle": "Prueba con otro día del calendario o vuelve mañana."
+      "emptySubtitle": "Prueba con otro día del calendario o vuelve mañana.",
+      "loadingLabel": "Buscando huecos disponibles…",
+      "errorTitle": "No hemos podido cargar los huecos",
+      "errorSubtitle": "Ha fallado la conexión con la agenda del centro. No significa que no haya hueco: vuelve a intentarlo.",
+      "retry": "Reintentar"
     },
     "summary": {
       "serviceLabel": "Servicio",
@@ -701,16 +706,16 @@
     },
     "confirmation": {
       "title": "¡Reserva confirmada!",
-      "subtitle": "Hemos enviado los detalles a tu email. Te esperamos.",
+      "subtitle": "Tienes el detalle en «Mis reservas». Te esperamos.",
       "bookingIdLabel": "Nº de reserva",
       "providerLabel": "Centro",
       "serviceLabel": "Servicio",
       "whenLabel": "Cuándo",
       "totalLabel": "Total",
       "backToProvider": "Volver al centro",
-      "keepBrowsing": "Seguir explorando",
       "pendingTitle": "Pago en curso",
-      "pendingSubtitle": "Estamos confirmando el cobro con tu banco. En cuanto termine, verás la reserva en «Mis reservas»."
+      "pendingSubtitle": "Estamos confirmando el cobro con tu banco. En cuanto termine, verás la reserva en «Mis reservas».",
+      "viewMyBookings": "Ver mis reservas"
     },
     "checkout": {
       "loadingTitle": "Preparando el pago",
@@ -723,7 +728,10 @@
       "errorPaymentFailed": "No hemos podido conectar con la pasarela de pago. Vuelve a intentarlo en unos segundos.",
       "errorGeneric": "Algo ha ido mal. Vuelve a intentarlo en unos segundos.",
       "retry": "Reintentar",
-      "signIn": "Iniciar sesión"
+      "signIn": "Iniciar sesión",
+      "signUp": "Crear cuenta",
+      "draftKeptHint": "Guardamos tu hueco y tus notas: al volver seguirás justo donde lo dejaste.",
+      "chooseAnotherSlot": "Elegir otro hueco"
     }
   },
   "customerArea": {

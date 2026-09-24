@@ -93,4 +93,24 @@ describe('resolvePostAuthDestination', () => {
   it('admin → /admin', () => {
     expect(resolvePostAuthDestination('admin')).toBe('/admin');
   });
+
+  it('el cliente vuelve al destino de retorno si lo hay', () => {
+    // Es lo que permite que quien se fue a autenticarse a mitad de una
+    // reserva aterrice de nuevo en su reserva.
+    expect(resolvePostAuthDestination('client', '/centro/spa-1/reservar?serviceId=svc-1')).toBe(
+      '/centro/spa-1/reservar?serviceId=svc-1',
+    );
+  });
+
+  it('proveedor y admin ignoran el destino de retorno', () => {
+    // Un proveedor que entra desde un enlace con `redirect_url` sigue
+    // necesitando su panel; mandarlo a un embudo de compra lo pierde.
+    expect(resolvePostAuthDestination('provider', '/centro/spa-1/reservar')).toBe('/panel');
+    expect(resolvePostAuthDestination('admin', '/centro/spa-1/reservar')).toBe('/admin');
+  });
+
+  it('un destino vacío o nulo no cambia el comportamiento de siempre', () => {
+    expect(resolvePostAuthDestination('client', null)).toBe('/');
+    expect(resolvePostAuthDestination('client', '')).toBe('/');
+  });
 });

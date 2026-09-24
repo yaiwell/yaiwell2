@@ -3,9 +3,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
-import { buildUpcomingDays, getDateKey, type BookingSlot } from '@/lib/fake-data/booking-slots';
+// Importamos del archivo client-safe, NUNCA del barrel
+// `@/lib/services/availability`: ese reexporta el service y arrastraría
+// Prisma (`pg → dns/fs/net/tls`) al bundle del navegador.
+import {
+  BUSINESS_TIMEZONE,
+  fetchServiceSlots,
+  type BookingSlot,
+} from '@/lib/services/availability/availability.client';
+import { buildUpcomingDays, getDateKey } from '@/lib/utils/calendar-days';
 
-import type { DayTab } from './SlotPicker.types';
+import type { DayTab, SlotPickerLocale } from './SlotPicker.types';
 
 /**
  * Cantidad de días navegables que se muestran a la vez en la tira
@@ -15,18 +23,38 @@ import type { DayTab } from './SlotPicker.types';
 const VISIBLE_DAYS = 14;
 
 /**
- * Forma de los slots tal y como los devuelve el endpoint
- * `/api/availability/services/[serviceId]`. El motor sólo devuelve
- * slots disponibles, así que `available: true` es siempre constante.
- * Mantenemos el shape `BookingSlot` para no tocar el componente UI.
+ * Hora (en zona del centro) a partir de la cual un hueco se considera
+ * "Tarde". Coincide con el cierre típico de la jornada de mañana.
  */
-interface SlotsApiResponse {
-  slots: BookingSlot[];
-  took: number;
-}
+const AFTERNOON_START_HOUR = 14;
 
-interface SlotsApiError {
-  error: { code: string; message: string };
+/**
+ * Formateador de la hora del centro. Se crea una sola vez porque
+ * instanciar `Intl.DateTimeFormat` es caro y aquí se invoca una vez por
+ * slot en cada render.
+ *
+ * `hourCycle: 'h23'` garantiza `0..23` (con `h24` la medianoche sería
+ * "24" y rompería la comparación numérica).
+ */
+const businessHourFormatter = new Intl.DateTimeFormat('en-GB', {
+  timeZone: BUSINESS_TIMEZONE,
+  hour: 'numeric',
+  hourCycle: 'h23',
+});
+
+/**
+ * Devuelve la hora (0-23) de un instante **en la zona del centro**.
+ *
+ * No usamos `Date#getHours()` porque devuelve la hora local del
+ * navegador: un cliente en Berlín vería un hueco de las 13:30 de Madrid
+ * como las 14:30 y lo colocaríamos bajo "Tarde" mientras la etiqueta
+ * dice "13:30" (`formatSlotTime` sí renderiza en Madrid). El usuario
+ * leía una contradicción en la misma pantalla.
+ */
+function getBusinessHour(iso: string): number {
+  const parts = businessHourFormatter.formatToParts(new Date(iso));
+  const hour = parts.find((part) => part.type === 'hour')?.value ?? '0';
+  return Number.parseInt(hour, 10);
 }
 
 /**
@@ -34,7 +62,7 @@ interface SlotsApiError {
  * la primera letra en mayúscula y sin punto final. `Intl.DateTimeFormat`
  * ya entrega la forma localizada; aquí solo normalizamos formato.
  */
-function formatWeekdayShort(date: Date, locale: 'es' | 'ca' | 'en' | 'de'): string {
+function formatWeekdayShort(date: Date, locale: SlotPickerLocale): string {
   const formatter = new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
     weekday: 'short',
   });
@@ -57,7 +85,12 @@ export function isSameLocalDay(a: Date, b: Date): boolean {
 
 /**
  * Particiona la lista de slots en bloques de "Mañana" (<14:00) y
- * "Tarde" (>=14:00). Mantiene el orden original dentro de cada bloque.
+ * "Tarde" (>=14:00), **usando la hora del centro**, no la del navegador.
+ *
+ * Mantiene el orden original dentro de cada bloque.
+ *
+ * @param slots — huecos tal y como los devuelve la API.
+ * @returns los mismos huecos repartidos en dos listas.
  */
 export function splitSlotsByDayPart(slots: BookingSlot[]): {
   morning: BookingSlot[];
@@ -66,8 +99,7 @@ export function splitSlotsByDayPart(slots: BookingSlot[]): {
   const morning: BookingSlot[] = [];
   const afternoon: BookingSlot[] = [];
   for (const slot of slots) {
-    const startHour = new Date(slot.startAtIso).getHours();
-    if (startHour < 14) morning.push(slot);
+    if (getBusinessHour(slot.startAtIso) < AFTERNOON_START_HOUR) morning.push(slot);
     else afternoon.push(slot);
   }
   return { morning, afternoon };
@@ -85,48 +117,13 @@ export function splitSlotsByDayPart(slots: BookingSlot[]): {
  * aquí simplemente le pedimos a `Intl` que renderice esa hora en la
  * misma zona donde está el negocio.
  */
-export function formatSlotTime(slot: BookingSlot, locale: 'es' | 'ca' | 'en' | 'de'): string {
+export function formatSlotTime(slot: BookingSlot, locale: SlotPickerLocale): string {
   return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
-    timeZone: 'Europe/Madrid',
+    timeZone: BUSINESS_TIMEZONE,
   }).format(new Date(slot.startAtIso));
-}
-
-/**
- * Construye la URL del endpoint público de availability. Centralizada
- * en un helper para que el `queryKey` y la URL de fetch coincidan
- * exactamente — TanStack Query usa la clave como cache key.
- */
-function buildSlotsUrl(serviceId: string, dateKey: string): string {
-  return `/api/availability/services/${encodeURIComponent(serviceId)}?date=${dateKey}`;
-}
-
-/**
- * Hace fetch del endpoint público y devuelve la lista de `BookingSlot`.
- *
- * El motor sólo devuelve disponibles, así que el array está vacío
- * cuando no hay slots libres (la UI lo trata como "día sin huecos").
- * Lanza si la respuesta no es OK para que TanStack lo capture y
- * exponga `isError` al componente.
- */
-async function fetchSlots(
-  serviceId: string,
-  dateKey: string,
-  signal?: AbortSignal,
-): Promise<BookingSlot[]> {
-  const res = await fetch(buildSlotsUrl(serviceId, dateKey), {
-    method: 'GET',
-    headers: { Accept: 'application/json' },
-    signal,
-  });
-  if (!res.ok) {
-    const payload = (await res.json().catch(() => null)) as SlotsApiError | null;
-    throw new Error(payload?.error?.message ?? `Slots API ${res.status}`);
-  }
-  const json = (await res.json()) as SlotsApiResponse;
-  return json.slots;
 }
 
 /**
@@ -139,6 +136,9 @@ async function fetchSlots(
  *    consulta `Professional.schedule` + bookings activas del día, así
  *    que los huecos reflejan la realidad del centro.
  *  - Construcción de las pestañas de día con metadatos visuales.
+ *  - Los tres estados que la UI debe distinguir: cargando, error y
+ *    cargado (con o sin huecos). Colapsarlos hacía que un 500 del
+ *    servidor se leyera como "este centro no tiene hueco".
  *
  * Mantenemos `now` como parámetro inyectable para los tests, igual que
  * `ProviderHeader.logic.ts`, evitando llamar `Date.now()` en render.
@@ -151,7 +151,7 @@ export function useSlotPicker(args: {
   providerId: string;
   serviceId: string;
   serviceDurationMinutes: number;
-  locale: 'es' | 'ca' | 'en' | 'de';
+  locale: SlotPickerLocale;
   now?: Date;
 }) {
   // El instante de referencia se fija al montar el hook para que el
@@ -180,20 +180,15 @@ export function useSlotPicker(args: {
     // queryKey segmentado por serviceId + día: cache automático cuando
     // el usuario vuelve a un día ya consultado.
     queryKey: ['availability', args.serviceId, dateKey],
-    queryFn: ({ signal }) => fetchSlots(args.serviceId, dateKey, signal),
+    queryFn: ({ signal }) => fetchServiceSlots(args.serviceId, dateKey, signal),
     // Slots cambian poco en minutos: caché 60s para evitar refetch
     // agresivo al hacer click rápido entre días.
     staleTime: 60_000,
-    // Mantenemos los slots del día anterior visibles mientras carga
-    // el nuevo, así no hay parpadeo de "vacío" entre clics.
-    placeholderData: (prev) => prev,
+    // Deliberadamente SIN `placeholderData`: mantener los huecos del día
+    // anterior mientras carga el nuevo pinta horas que no pertenecen a la
+    // pestaña marcada. El esqueleto ya evita el salto de layout y no
+    // miente.
   });
-
-  // El componente espera `slots: BookingSlot[]` sin loading state;
-  // mientras carga devolvemos lista vacía. Si el componente quiere
-  // distinguir "cargando" de "sin huecos" puede leer `query.isPending`
-  // que también exponemos.
-  const slots: BookingSlot[] = query.data ?? [];
 
   return {
     now,
@@ -201,8 +196,10 @@ export function useSlotPicker(args: {
     selectedDay,
     selectedDayKey: dateKey,
     setSelectedDay,
-    slots,
+    slots: query.data ?? [],
     isLoading: query.isPending,
     isError: query.isError,
+    /** Reintento manual tras un fallo, sin recargar la página entera. */
+    refetch: query.refetch,
   };
 }

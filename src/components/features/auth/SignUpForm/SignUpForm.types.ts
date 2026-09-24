@@ -43,6 +43,13 @@ export interface SignUpFormProps {
    * asigna `free` a fuego y no tiene paso de selección de plan.
    */
   initialPlan?: SignUpPlanTier;
+  /**
+   * Ruta interna a la que volver tras completar el alta, ya saneada por
+   * `parseInternalRedirectUrl` en la page. Hoy la manda el flujo de
+   * reserva, que empuja aquí al anónimo en el paso de pago. Sólo aplica
+   * al rol `client` (ver `resolvePostAuthDestination`).
+   */
+  redirectUrl?: string | null;
 }
 
 /**

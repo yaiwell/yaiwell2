@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 import { Link } from '@/i18n/navigation';
+import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
 import { BookingConfirmation } from '../BookingConfirmation';
 import { BookingSummary } from '../BookingSummary';
@@ -22,7 +23,7 @@ import type { BookingFlowProps } from './BookingFlow.types';
  *  1. `slot`: el usuario elige día y hora.
  *  2. `summary`: revisa los datos y añade notas opcionales.
  *  3. `payment`: se crea la reserva en `pending` y se cobra con Stripe.
- *  4. `confirmation`: ve el tick verde y los CTAs finales.
+ *  4. `confirmation`: ve el resultado real del pago según BD.
  *
  * El componente JSX se limita a componer; toda la lógica vive en
  * `BookingFlow.logic.ts` para cumplir con la convención del proyecto.
@@ -37,13 +38,39 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
     draft,
     checkout,
     canAdvance,
+    slotExpired,
+    paymentPending,
     goNext,
     goBack,
     selectSlot,
     updateDraft,
+    chooseAnotherSlot,
     completePayment,
     retryCheckout,
   } = useBookingFlow({ serviceId: service.id });
+
+  // `en` y `de` son opcionales en `LocalizedText`; indexar a pelo deja
+  // el nombre del servicio en blanco en esos idiomas.
+  const serviceName = pickLocalized(service.name, locale);
+
+  /**
+   * Ruta interna del propio flujo, para que `/entrar` y `/registro`
+   * sepan devolver al usuario aquí. Sin prefijo de locale: los helpers
+   * de `@/i18n/navigation` lo añaden al navegar.
+   */
+  const bookingPath = `/centro/${providerSlugWithId}/reservar?serviceId=${encodeURIComponent(service.id)}`;
+
+  /**
+   * Importe a mostrar.
+   *
+   * Sólo hay dato de servidor una vez creada la reserva (`checkout`
+   * `ready` devuelve el `amountCents` que Stripe va a cobrar). Antes de
+   * eso —pasos de hueco y resumen— no existe todavía ninguna reserva, así
+   * que enseñamos el precio de catálogo del servicio como estimación. El
+   * número que se cobra es siempre el del servidor, y es el que ven el
+   * paso de pago y la confirmación.
+   */
+  const amountCents = checkout.status === 'ready' ? checkout.amountCents : service.priceCents;
 
   /**
    * URL absoluta a la que Stripe devuelve al usuario si la tarjeta exige
@@ -70,6 +97,11 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
           slotEndIso={draft.slotEndIso}
           bookingId={draft.bookingId}
           providerSlugWithId={providerSlugWithId}
+          amountCents={amountCents}
+          // La reserva sólo pasa a `confirmed` cuando llega el webhook
+          // `payment_intent.succeeded`. Hasta que BD lo diga, el copy
+          // honesto es "pago en curso" — también en el camino sin 3DS.
+          paymentPending={paymentPending}
         />
       </section>
     );
@@ -101,7 +133,7 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
         <p className={s.serviceLine}>
           {provider.name}
           {' · '}
-          {service.name[locale]}
+          {serviceName}
         </p>
         <div className={s.stepper} aria-hidden>
           {BOOKING_STEPS.map((stepName, index) => {
@@ -111,6 +143,15 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
           })}
         </div>
       </header>
+
+      {/* El hueco guardado puede haber caducado mientras el usuario se
+          autenticaba. Lo decimos con claridad en lugar de devolverlo al
+          calendario sin explicación. */}
+      {step === 'slot' && slotExpired && (
+        <p className={s.notice} role="status" data-component="booking-flow-slot-expired">
+          {t('slotExpiredNotice')}
+        </p>
+      )}
 
       <div className={s.card}>
         {step === 'slot' && (
@@ -132,6 +173,7 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
             slotStartIso={draft.slotStartIso}
             slotEndIso={draft.slotEndIso}
             notes={draft.notes}
+            amountCents={checkout.status === 'ready' ? checkout.amountCents : null}
             onNotesChange={(notes) => updateDraft({ notes })}
           />
         )}
@@ -141,8 +183,10 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
             checkout={checkout}
             locale={locale}
             returnUrl={returnUrl}
+            redirectUrl={bookingPath}
             onSucceeded={completePayment}
             onRetry={retryCheckout}
+            onChooseAnotherSlot={chooseAnotherSlot}
           />
         )}
       </div>

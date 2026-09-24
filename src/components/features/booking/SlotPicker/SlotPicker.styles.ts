@@ -36,4 +36,17 @@ export const slotPickerStyles = {
     'flex flex-col items-center gap-2 rounded-2xl border border-dashed border-border bg-muted/30 p-6 text-center',
   emptyTitle: 'text-sm font-medium text-foreground',
   emptySubtitle: 'text-xs text-muted-foreground',
+
+  // Estado de carga: reproduce la forma real de la rejilla (dos títulos
+  // de sección + dos bloques de huecos) para que al llegar los datos no
+  // haya salto de layout.
+  skeletonSectionTitle: 'h-3 w-20 rounded-full bg-muted animate-pulse mt-1 first:mt-0',
+  skeletonSlot: 'h-11 rounded-xl bg-muted animate-pulse',
+
+  // Estado de error: la petición falló. Visualmente distinto del vacío
+  // (borde sólido, no punteado) para que no se confundan de un vistazo.
+  error:
+    'flex flex-col items-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/5 p-6 text-center',
+  errorTitle: 'text-sm font-medium text-foreground',
+  errorSubtitle: 'text-xs text-muted-foreground',
 } as const;

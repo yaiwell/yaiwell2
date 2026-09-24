@@ -42,11 +42,14 @@ const initialDraft: SignInDraft = {
  *  4. Lectura del rol con `getRoleFromUser` (publicMetadata con
  *     fallback a unsafeMetadata) y redirect con `router.replace` a
  *     `/` o `/panel` según el rol — usamos replace para que el back
- *     del navegador no devuelva al usuario a `/entrar`.
+ *     del navegador no devuelva al usuario a `/entrar`. Si venimos de
+ *     otra pantalla con `redirect_url` (hoy, el flujo de reserva), ese
+ *     destino manda para el cliente: la gracia es que quien se fue a
+ *     autenticarse a mitad de una reserva vuelva donde estaba.
  *  5. Cualquier error de Clerk se traduce a `AuthErrorCode` via
  *     `mapClerkError` para que el componente lo pinte con i18n.
  */
-export function useSignInForm(initialRole: SignInRole = 'client') {
+export function useSignInForm(initialRole: SignInRole = 'client', redirectUrl?: string | null) {
   const router = useRouter();
   const { signIn, setActive, isLoaded } = useSignIn();
   const { user } = useUser();
@@ -100,7 +103,7 @@ export function useSignInForm(initialRole: SignInRole = 'client') {
           // tick; el rol siempre puede leerse luego del redirect, pero
           // intentamos resolverlo aquí para acertar al primer destino.
           const resolvedRole = getRoleFromUser(user);
-          router.replace(resolvePostAuthDestination(resolvedRole));
+          router.replace(resolvePostAuthDestination(resolvedRole, redirectUrl));
           return;
         }
 
@@ -114,7 +117,7 @@ export function useSignInForm(initialRole: SignInRole = 'client') {
         setStatus('error');
       }
     },
-    [draft, isLoaded, router, setActive, signIn, user],
+    [draft, isLoaded, redirectUrl, router, setActive, signIn, user],
   );
 
   return {

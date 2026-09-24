@@ -8,10 +8,14 @@ import { SignInForm } from '@/components/features/auth';
 import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { getRoleFromUser, resolvePostAuthDestination } from '@/lib/auth';
+import { REDIRECT_URL_PARAM, parseInternalRedirectUrl } from '@/lib/validation';
 
 interface SignInPageProps {
   // En Next.js 16 los `params` de los segmentos dinámicos son asíncronos.
   params: Promise<{ locale: string }>;
+  // `searchParams` también es una Promise en Next 16, y sus valores
+  // pueden ser `string[]` si el parámetro llega repetido en la URL.
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
 /**
@@ -41,8 +45,14 @@ export async function generateMetadata({ params }: SignInPageProps): Promise<Met
  * → `/`, proveedor → `/panel`). Esto evita que un usuario logueado vea
  * el formulario de entrada — es la primera capa del guard de auth, la
  * segunda vivirá en los layouts privados (`/panel`, etc.).
+ *
+ * Acepta además un `redirect_url` con la ruta interna de la que viene
+ * el usuario (hoy lo usa el flujo de reserva, que manda aquí al anónimo
+ * en el paso de pago). Se sanea con Zod antes de usarse: sin esa
+ * validación sería un redirect abierto, o sea un vector de phishing
+ * bajo nuestro dominio.
  */
-export default async function SignInPage({ params }: SignInPageProps) {
+export default async function SignInPage({ params, searchParams }: SignInPageProps) {
   const { locale } = await params;
 
   if (!hasLocale(routing.locales, locale)) {
@@ -50,6 +60,8 @@ export default async function SignInPage({ params }: SignInPageProps) {
   }
 
   setRequestLocale(locale);
+
+  const redirectUrl = parseInternalRedirectUrl((await searchParams)[REDIRECT_URL_PARAM]);
 
   // Guard: si ya hay sesión activa, mandamos al usuario a su destino
   // según rol. Usamos `currentUser()` porque el rol vive en
@@ -59,8 +71,8 @@ export default async function SignInPage({ params }: SignInPageProps) {
   if (userId) {
     const user = await currentUser();
     const role = getRoleFromUser(user);
-    redirect({ href: resolvePostAuthDestination(role), locale });
+    redirect({ href: resolvePostAuthDestination(role, redirectUrl), locale });
   }
 
-  return <SignInForm />;
+  return <SignInForm redirectUrl={redirectUrl} />;
 }

@@ -1,14 +1,21 @@
-import type { BookingSlot } from '@/lib/fake-data/booking-slots';
+import type { BookingSlot } from '@/lib/services/availability/availability.client';
 
 /**
  * Tipos del componente SlotPicker.
  */
 
+/**
+ * Locales soportados por la app. Se repite aquí (en vez de importar el
+ * union del módulo de i18n) porque el componente solo necesita decidir
+ * el formateador de `Intl`, no acoplarse a la configuración de rutas.
+ */
+export type SlotPickerLocale = 'es' | 'ca' | 'en' | 'de';
+
 export interface SlotPickerProps {
   providerId: string;
   serviceId: string;
   serviceDurationMinutes: number;
-  locale: 'es' | 'ca' | 'en' | 'de';
+  locale: SlotPickerLocale;
   /** Slot actualmente seleccionado (su `startAtIso`), si lo hay. */
   selectedStartIso: string | null;
   /** Callback al seleccionar un slot disponible. */

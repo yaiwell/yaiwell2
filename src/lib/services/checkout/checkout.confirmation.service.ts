@@ -22,6 +22,13 @@ export interface BookingConfirmationData {
   startAt: Date;
   endAt: Date;
   status: string;
+  /**
+   * Importe congelado al crear la reserva, en céntimos. Es **el que se
+   * cobra**, así que es el único que la confirmación debe enseñar: el
+   * `Service.priceCents` que tiene el navegador puede haber cambiado
+   * desde entonces o venir de una caché.
+   */
+  priceCents: number;
 }
 
 /**
@@ -49,6 +56,7 @@ export async function getBookingForConfirmation(
       startAt: true,
       endAt: true,
       status: true,
+      priceCents: true,
     },
   });
   return booking;

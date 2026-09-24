@@ -4,6 +4,11 @@ import { useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
 import type { AppLocale } from '@/i18n/routing';
+// Import directo al módulo, no al barrel `@/lib/validation`: ése
+// reexporta `sign-up-params`, que arrastra el barrel de `plans` y con
+// él Prisma. Desde un Client Component eso mete `pg` en el bundle y
+// rompe el build.
+import { withRedirectUrl } from '@/lib/validation/redirect-url';
 
 import { StripePaymentStep } from '../StripePaymentStep';
 import { stripePaymentStepStyles as s } from '../StripePaymentStep/StripePaymentStep.styles';
@@ -15,8 +20,15 @@ interface BookingCheckoutPanelProps {
   locale: AppLocale;
   /** URL absoluta de retorno tras un 3DS. */
   returnUrl: string;
+  /**
+   * Ruta interna del flujo, sin prefijo de locale, a la que volver tras
+   * autenticarse. Viaja como `redirect_url` a `/entrar` y `/registro`.
+   */
+  redirectUrl: string;
   onSucceeded: () => void;
   onRetry: () => void;
+  /** Descarta el hueco actual y vuelve al calendario. */
+  onChooseAnotherSlot: () => void;
 }
 
 /**
@@ -29,8 +41,10 @@ export function BookingCheckoutPanel({
   checkout,
   locale,
   returnUrl,
+  redirectUrl,
   onSucceeded,
   onRetry,
+  onChooseAnotherSlot,
 }: BookingCheckoutPanelProps) {
   const t = useTranslations('booking.checkout');
 
@@ -52,9 +66,40 @@ export function BookingCheckoutPanel({
         <p className={s.statusTitle}>{t('errorTitle')}</p>
         <p className={s.statusText}>{resolveErrorMessage(t, checkout.code)}</p>
         {checkout.code === 'UNAUTHENTICATED' ? (
-          <Link href="/entrar" className={s.retryButton}>
-            {t('signIn')}
-          </Link>
+          // El anónimo llega aquí con el hueco elegido y las notas
+          // escritas. Los dos enlaces llevan `redirect_url` para
+          // devolverlo a este mismo flujo, y el borrador sigue en
+          // `sessionStorage`: al volver no tiene que rehacer nada.
+          <>
+            <p className={s.statusText} data-component="booking-checkout-draft-kept">
+              {t('draftKeptHint')}
+            </p>
+            <Link
+              href={withRedirectUrl('/registro', redirectUrl)}
+              className={s.retryButton}
+              data-component="booking-checkout-sign-up"
+            >
+              {t('signUp')}
+            </Link>
+            <Link
+              href={withRedirectUrl('/entrar', redirectUrl)}
+              className={s.retryButton}
+              data-component="booking-checkout-sign-in"
+            >
+              {t('signIn')}
+            </Link>
+          </>
+        ) : checkout.code === 'SLOT_UNAVAILABLE' ? (
+          // Reintentar el mismo hueco fallaría siempre: otro cliente se
+          // lo ha quedado. La única acción útil es elegir otro.
+          <button
+            type="button"
+            onClick={onChooseAnotherSlot}
+            className={s.retryButton}
+            data-component="booking-checkout-choose-another-slot"
+          >
+            {t('chooseAnotherSlot')}
+          </button>
         ) : (
           <button type="button" onClick={onRetry} className={s.retryButton}>
             {t('retry')}

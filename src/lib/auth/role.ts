@@ -39,8 +39,21 @@ export function getRoleFromUser(user: UserLike | null | undefined): UserRole {
  *
  * Centralizado aquí para que sign-in, sign-up y el guard de capa 3
  * compartan el criterio sin riesgo de drift.
+ *
+ * `redirectUrl` es la ruta de la que venía el usuario cuando una
+ * pantalla lo mandó a autenticarse (por ejemplo, el flujo de reserva).
+ * **Sólo se respeta para el rol `client`**: un proveedor o un admin que
+ * entra desde un enlace con `redirect_url` sigue necesitando su panel,
+ * y devolverlo a un embudo de compra sería desorientarlo. Llega ya
+ * saneado desde `parseInternalRedirectUrl` — aquí no se valida de nuevo
+ * porque este módulo es client-safe y la validación vive en el borde
+ * que lee la URL.
+ *
+ * @param role — rol persistido del usuario.
+ * @param redirectUrl — ruta interna de retorno, o `null`/`undefined`.
  */
-export function resolvePostAuthDestination(role: UserRole): '/' | '/panel' | '/admin' {
+export function resolvePostAuthDestination(role: UserRole, redirectUrl?: string | null): string {
+  if (role === 'client' && redirectUrl) return redirectUrl;
   if (role === 'provider') return '/panel';
   if (role === 'admin') return '/admin';
   return '/';

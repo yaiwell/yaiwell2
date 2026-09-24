@@ -2,19 +2,25 @@
 
 import { useTranslations } from 'next-intl';
 
+import { SlotButton } from './SlotButton';
+import { SlotGridSkeleton } from './SlotGridSkeleton';
 import { formatSlotTime, splitSlotsByDayPart, useSlotPicker } from './SlotPicker.logic';
 import { slotPickerStyles as s } from './SlotPicker.styles';
 import type { SlotPickerProps } from './SlotPicker.types';
+import { SlotPickerError } from './SlotPickerError';
 
 /**
  * Selector de slot para reservar un servicio.
  *
  * Client Component: el usuario navega entre días y selecciona un hueco
  * concreto. Combina una tira de días en la parte superior y una cuadrícula
- * de huecos divididos por mañana/tarde debajo. Renderiza los slots ocupados
- * con tipografía tachada (visible pero no interactivo) para que el usuario
- * perciba la "densidad real" del centro y entienda por qué su hueco preferido
- * podría no estar disponible.
+ * de huecos divididos por mañana/tarde debajo.
+ *
+ * La tira de días se renderiza SIEMPRE (incluso cargando o con error)
+ * para que el usuario pueda probar otro día sin esperar. Debajo hay tres
+ * estados excluyentes y con copy propio — cargando, error y cargado —
+ * porque colapsarlos hacía que un 500 del servidor se leyera como "este
+ * centro no tiene hueco", que además de falso pierde la reserva.
  */
 export function SlotPicker({
   providerId,
@@ -27,7 +33,7 @@ export function SlotPicker({
 }: SlotPickerProps) {
   const t = useTranslations('booking.slotPicker');
 
-  const { dayTabs, setSelectedDay, slots } = useSlotPicker({
+  const { dayTabs, setSelectedDay, slots, isLoading, isError, refetch } = useSlotPicker({
     providerId,
     serviceId,
     serviceDurationMinutes,
@@ -36,7 +42,6 @@ export function SlotPicker({
   });
 
   const { morning, afternoon } = splitSlotsByDayPart(slots);
-  const isEmpty = slots.length === 0;
 
   return (
     <div className={s.root} data-component="booking-slot-picker">
@@ -61,7 +66,16 @@ export function SlotPicker({
         })}
       </div>
 
-      {isEmpty ? (
+      {isLoading ? (
+        <SlotGridSkeleton label={t('loadingLabel')} />
+      ) : isError ? (
+        <SlotPickerError
+          title={t('errorTitle')}
+          subtitle={t('errorSubtitle')}
+          retryLabel={t('retry')}
+          onRetry={() => void refetch()}
+        />
+      ) : slots.length === 0 ? (
         <div className={s.empty} data-component="booking-slot-picker-empty">
           <p className={s.emptyTitle}>{t('emptyTitle')}</p>
           <p className={s.emptySubtitle}>{t('emptySubtitle')}</p>
@@ -104,41 +118,5 @@ export function SlotPicker({
         </>
       )}
     </div>
-  );
-}
-
-/**
- * Botón individual de slot. Pequeño helper local porque no necesita
- * estado ni reutilización fuera de este componente.
- */
-function SlotButton({
-  label,
-  available,
-  selected,
-  onClick,
-}: {
-  label: string;
-  available: boolean;
-  selected: boolean;
-  onClick: () => void;
-}) {
-  // Resolución de variante en este orden: ocupado > seleccionado > libre.
-  const variantClass = !available
-    ? s.slotButtonDisabled
-    : selected
-      ? s.slotButtonSelected
-      : s.slotButtonIdle;
-
-  return (
-    <button
-      type="button"
-      disabled={!available}
-      aria-pressed={selected}
-      onClick={onClick}
-      className={`${s.slotButtonBase} ${variantClass}`}
-      data-component={`booking-slot-picker-slot-${label.replace(':', '')}`}
-    >
-      {label}
-    </button>
   );
 }

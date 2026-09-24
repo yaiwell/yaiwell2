@@ -661,7 +661,8 @@
       "back": "Zurück",
       "cancel": "Buchung abbrechen",
       "continue": "Weiter",
-      "goToPayment": "Zur Zahlung"
+      "goToPayment": "Zur Zahlung",
+      "slotExpiredNotice": "Der von dir gewählte Termin ist nicht mehr verfügbar. Wähle einen anderen, um fortzufahren."
     },
     "slotPicker": {
       "dayStripLabel": "Verfügbare Tage",
@@ -670,7 +671,11 @@
       "noMorningSlots": "Keine Termine mehr am Vormittag.",
       "noAfternoonSlots": "Keine Termine mehr am Nachmittag.",
       "emptyTitle": "Keine Termine an diesem Tag",
-      "emptySubtitle": "Versuche einen anderen Tag im Kalender oder komm morgen wieder."
+      "emptySubtitle": "Versuche einen anderen Tag im Kalender oder komm morgen wieder.",
+      "loadingLabel": "Freie Termine werden gesucht…",
+      "errorTitle": "Die freien Termine konnten nicht geladen werden",
+      "errorSubtitle": "Die Verbindung zum Kalender des Studios ist fehlgeschlagen. Das heißt nicht, dass es keine Termine gibt — bitte versuche es erneut.",
+      "retry": "Erneut versuchen"
     },
     "summary": {
       "serviceLabel": "Service",
@@ -701,16 +706,16 @@
     },
     "confirmation": {
       "title": "Buchung bestätigt!",
-      "subtitle": "Wir haben dir die Details per E-Mail geschickt. Wir freuen uns auf dich.",
+      "subtitle": "Die Details findest du unter „Meine Buchungen“. Wir freuen uns auf dich.",
       "bookingIdLabel": "Buchungsnummer",
       "providerLabel": "Studio",
       "serviceLabel": "Service",
       "whenLabel": "Wann",
       "totalLabel": "Gesamt",
       "backToProvider": "Zurück zum Studio",
-      "keepBrowsing": "Weiter stöbern",
       "pendingTitle": "Zahlung läuft",
-      "pendingSubtitle": "Wir bestätigen die Abbuchung mit deiner Bank. Sobald sie durch ist, siehst du die Buchung unter „Meine Buchungen“."
+      "pendingSubtitle": "Wir bestätigen die Abbuchung mit deiner Bank. Sobald sie durch ist, siehst du die Buchung unter „Meine Buchungen“.",
+      "viewMyBookings": "Meine Buchungen ansehen"
     },
     "checkout": {
       "loadingTitle": "Zahlung wird vorbereitet",
@@ -723,7 +728,10 @@
       "errorPaymentFailed": "Wir konnten das Zahlungssystem nicht erreichen. Bitte versuche es in ein paar Sekunden erneut.",
       "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es in ein paar Sekunden erneut.",
       "retry": "Erneut versuchen",
-      "signIn": "Anmelden"
+      "signIn": "Anmelden",
+      "signUp": "Konto erstellen",
+      "draftKeptHint": "Wir merken uns deinen Termin und deine Notizen: Wenn du zurückkommst, machst du genau dort weiter.",
+      "chooseAnotherSlot": "Anderen Termin wählen"
     }
   },
   "customerArea": {

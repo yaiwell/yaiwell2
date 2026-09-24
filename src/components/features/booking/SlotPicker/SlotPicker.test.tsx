@@ -17,6 +17,10 @@ import { SlotPicker } from './SlotPicker';
  *
  * Anclamos `now` lejos en el futuro para que el formateo no excluya
  * slots por "hora ya pasada" del lado del cliente.
+ *
+ * Los tres estados (cargando / error / cargado) se prueban por separado
+ * porque el bug que motivó este bloque era precisamente colapsarlos:
+ * un 500 del servidor se leía como "este centro no tiene hueco".
  */
 
 const messages = {
@@ -29,6 +33,10 @@ const messages = {
       noAfternoonSlots: 'Sin huecos por la tarde',
       emptyTitle: 'Sin huecos este día',
       emptySubtitle: 'Prueba con otro día del calendario.',
+      loadingLabel: 'Buscando huecos…',
+      errorTitle: 'No hemos podido cargar los huecos',
+      errorSubtitle: 'Ha fallado la conexión con el centro. Vuelve a intentarlo.',
+      retry: 'Reintentar',
     },
   },
 };
@@ -45,13 +53,24 @@ const FAKE_SLOTS = [
   { startAtIso: '2099-06-14T17:00:00.000Z', endAtIso: '2099-06-14T18:00:00.000Z', available: true },
 ];
 
+/** Respuesta OK con la lista de slots indicada. */
+function okResponse(slots: unknown[] = FAKE_SLOTS): Response {
+  return { ok: true, status: 200, json: async () => ({ slots, took: 0 }) } as Response;
+}
+
+/** Respuesta 500 con el sobre de error del Route Handler. */
+function serverErrorResponse(): Response {
+  return {
+    ok: false,
+    status: 500,
+    json: async () => ({ error: { code: 'INTERNAL', message: 'Error inesperado.' } }),
+  } as Response;
+}
+
 beforeEach(() => {
   // Mock global de fetch: el hook llama a `/api/availability/...` y
   // aquí lo sustituimos por una respuesta JSON con la lista fija.
-  vi.spyOn(global, 'fetch').mockResolvedValue({
-    ok: true,
-    json: async () => ({ slots: FAKE_SLOTS, took: 0 }),
-  } as Response);
+  vi.spyOn(global, 'fetch').mockResolvedValue(okResponse());
 });
 
 afterEach(() => {
@@ -66,6 +85,8 @@ function renderPicker(overrides?: {
   const onSelect = overrides?.onSelect ?? vi.fn();
 
   // Cliente nuevo por test para no compartir caché entre casos.
+  // `retry: false` para que un fallo se propague al primer intento y el
+  // test del estado de error no dependa de temporizadores internos.
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false, gcTime: 0 } },
   });
@@ -160,5 +181,67 @@ describe('SlotPicker', () => {
     const lastUrl = String(fetchSpy.mock.calls[fetchSpy.mock.calls.length - 1][0]);
     expect(lastUrl).toMatch(/\/api\/availability\/services\/svc-01\?date=\d{4}-\d{2}-\d{2}/u);
     expect(tabs[2]).toHaveAttribute('aria-selected', 'true');
+  });
+
+  describe('estado de carga', () => {
+    it('muestra el esqueleto y NO el mensaje de "sin huecos" mientras la petición está en vuelo', () => {
+      // Petición que nunca resuelve: el componente se queda en `isPending`.
+      vi.mocked(global.fetch).mockReturnValue(new Promise<Response>(() => {}));
+
+      renderPicker();
+
+      expect(screen.getByRole('status', { name: 'Buscando huecos…' })).toBeInTheDocument();
+      expect(screen.queryByText('Sin huecos este día')).not.toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      // La tira de días sigue navegable durante la carga.
+      expect(screen.getByRole('tablist', { name: 'Días disponibles' })).toBeInTheDocument();
+    });
+  });
+
+  describe('estado vacío', () => {
+    it('muestra "sin huecos" solo cuando la API responde 200 con lista vacía', async () => {
+      vi.mocked(global.fetch).mockResolvedValue(okResponse([]));
+
+      renderPicker();
+
+      expect(await screen.findByText('Sin huecos este día')).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(screen.queryByRole('status')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('estado de error', () => {
+    it('muestra un mensaje de fallo (y no "sin huecos") cuando la API devuelve 500', async () => {
+      vi.mocked(global.fetch).mockResolvedValue(serverErrorResponse());
+
+      renderPicker();
+
+      const alert = await screen.findByRole('alert');
+      expect(within(alert).getByText('No hemos podido cargar los huecos')).toBeInTheDocument();
+      // Lo esencial: un fallo de servidor NO puede leerse como
+      // "este centro no tiene hueco".
+      expect(screen.queryByText('Sin huecos este día')).not.toBeInTheDocument();
+      expect(screen.queryByText('Mañana')).not.toBeInTheDocument();
+    });
+
+    it('reintenta la petición al pulsar "Reintentar" y pinta los huecos al recuperarse', async () => {
+      const fetchSpy = vi.mocked(global.fetch);
+      fetchSpy.mockResolvedValueOnce(serverErrorResponse());
+
+      renderPicker();
+
+      await screen.findByRole('alert');
+      const callsBeforeRetry = fetchSpy.mock.calls.length;
+
+      // A partir de aquí el mock por defecto (`beforeEach`) vuelve a
+      // responder OK, así que el reintento debe recuperar la rejilla.
+      await userEvent.click(screen.getByRole('button', { name: /Reintentar/u }));
+
+      await waitFor(() => {
+        expect(fetchSpy.mock.calls.length).toBeGreaterThan(callsBeforeRetry);
+      });
+      expect(await screen.findByText('Mañana')).toBeInTheDocument();
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
   });
 });

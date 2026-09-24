@@ -16,17 +16,12 @@
 
 import { z } from 'zod';
 
-/**
- * Margen mínimo entre la creación de la reserva y el inicio del slot,
- * expresado en milisegundos. Coincide con la regla de cancelación
- * del proveedor para mantener la simetría de la política.
- */
-const MIN_LEAD_TIME_MS = 2 * 60 * 60 * 1000;
+import { MIN_BOOKING_LEAD_TIME_MS } from '@/lib/utils/booking-lead-time';
 
 export const createBookingSchema = z.object({
   serviceId: z.string().uuid(),
   professionalId: z.string().uuid(),
-  slotStart: z.coerce.date().refine((d) => d.getTime() > Date.now() + MIN_LEAD_TIME_MS, {
+  slotStart: z.coerce.date().refine((d) => d.getTime() > Date.now() + MIN_BOOKING_LEAD_TIME_MS, {
     message: 'La reserva debe ser con al menos 2 horas de antelación.',
   }),
   notes: z.string().max(500).optional(),

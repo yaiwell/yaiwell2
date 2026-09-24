@@ -19,6 +19,17 @@ import type { AuthErrorCode } from '@/lib/auth';
  */
 export type SignInRole = 'client' | 'provider';
 
+/**
+ * Props del formulario de entrada.
+ *
+ * `redirectUrl` es la ruta interna a la que volver tras autenticarse,
+ * ya saneada por `parseInternalRedirectUrl` en la page. Sólo aplica al
+ * rol `client` (ver `resolvePostAuthDestination`).
+ */
+export interface SignInFormProps {
+  redirectUrl?: string | null;
+}
+
 /** Datos crudos que captura el formulario antes de validar. */
 export interface SignInDraft {
   email: string;

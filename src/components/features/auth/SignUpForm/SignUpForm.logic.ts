@@ -112,7 +112,7 @@ const providerSchema = withPasswordMatch(
  * `/registro` (ya validados con Zod en la page) para conservar la
  * intención de quien pulsa un CTA en `/profesionales`.
  */
-export function useSignUpForm({ initialRole, initialPlan }: SignUpFormProps = {}) {
+export function useSignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpFormProps = {}) {
   const router = useRouter();
   const { signUp, setActive, isLoaded } = useSignUp();
   const { user } = useUser();
@@ -249,7 +249,9 @@ export function useSignUpForm({ initialRole, initialPlan }: SignUpFormProps = {}
         if (result.status === 'complete' && result.createdSessionId) {
           await setActive({ session: result.createdSessionId });
           const resolvedRole = getRoleFromUser(user) ?? role;
-          router.replace(resolvePostAuthDestination(resolvedRole));
+          // Con `redirect_url` el cliente vuelve a donde estaba (hoy,
+          // su reserva a medias); el proveedor sigue yendo a su panel.
+          router.replace(resolvePostAuthDestination(resolvedRole, redirectUrl));
           return;
         }
         // Cualquier estado intermedio (missing_requirements, etc.) lo
@@ -264,7 +266,7 @@ export function useSignUpForm({ initialRole, initialPlan }: SignUpFormProps = {}
         setIsSubmitting(false);
       }
     },
-    [isLoaded, isSubmitting, role, router, setActive, signUp, user, verificationCode],
+    [isLoaded, isSubmitting, redirectUrl, role, router, setActive, signUp, user, verificationCode],
   );
 
   const switchRole = useCallback((next: SignUpRole) => {

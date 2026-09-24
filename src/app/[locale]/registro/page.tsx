@@ -8,7 +8,7 @@ import { SignUpForm } from '@/components/features/auth/SignUpForm';
 import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { getRoleFromUser, resolvePostAuthDestination } from '@/lib/auth';
-import { parseSignUpIntent } from '@/lib/validation';
+import { REDIRECT_URL_PARAM, parseInternalRedirectUrl, parseSignUpIntent } from '@/lib/validation';
 
 interface SignUpPageProps {
   // En Next.js 16 los `params` de los segmentos dinámicos son asíncronos.
@@ -59,7 +59,12 @@ export default async function SignUpPage({ params, searchParams }: SignUpPagePro
 
   // Saneado con Zod: los valores vienen de la URL (`?as=admin` no puede
   // colarse como rol) — ver `lib/validation/sign-up-params.ts`.
-  const intent = parseSignUpIntent(await searchParams);
+  const resolvedSearchParams = await searchParams;
+  const intent = parseSignUpIntent(resolvedSearchParams);
+  // Ruta de retorno con la que llega quien venía de otra pantalla (hoy,
+  // el flujo de reserva). Validada aparte para cerrar el redirect
+  // abierto — ver `lib/validation/redirect-url.ts`.
+  const redirectUrl = parseInternalRedirectUrl(resolvedSearchParams[REDIRECT_URL_PARAM]);
 
   // Guard: si ya hay sesión, mandamos al usuario directamente a su
   // destino post-auth para no mostrarle el alta otra vez.
@@ -67,12 +72,12 @@ export default async function SignUpPage({ params, searchParams }: SignUpPagePro
   if (userId) {
     const user = await currentUser();
     const role = getRoleFromUser(user);
-    redirect({ href: resolvePostAuthDestination(role), locale });
+    redirect({ href: resolvePostAuthDestination(role, redirectUrl), locale });
   }
 
   return (
     <div data-component="sign-up-page" className="contents">
-      <SignUpForm initialRole={intent.role} initialPlan={intent.plan} />
+      <SignUpForm initialRole={intent.role} initialPlan={intent.plan} redirectUrl={redirectUrl} />
     </div>
   );
 }

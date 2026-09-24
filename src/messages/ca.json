@@ -661,7 +661,8 @@
       "back": "Enrere",
       "cancel": "Cancel·lar reserva",
       "continue": "Continuar",
-      "goToPayment": "Anar al pagament"
+      "goToPayment": "Anar al pagament",
+      "slotExpiredNotice": "L’hora que havies triat ja no està disponible. Tria’n una altra per continuar."
     },
     "slotPicker": {
       "dayStripLabel": "Dies disponibles",
@@ -670,7 +671,11 @@
       "noMorningSlots": "No queden hores al matí.",
       "noAfternoonSlots": "No queden hores a la tarda.",
       "emptyTitle": "Sense hores aquest dia",
-      "emptySubtitle": "Prova amb un altre dia del calendari o torna demà."
+      "emptySubtitle": "Prova amb un altre dia del calendari o torna demà.",
+      "loadingLabel": "Buscant hores disponibles…",
+      "errorTitle": "No hem pogut carregar les hores",
+      "errorSubtitle": "Ha fallat la connexió amb l’agenda del centre. No vol dir que no hi hagi hores: torna-ho a provar.",
+      "retry": "Torna-ho a provar"
     },
     "summary": {
       "serviceLabel": "Servei",
@@ -701,16 +706,16 @@
     },
     "confirmation": {
       "title": "Reserva confirmada!",
-      "subtitle": "Hem enviat els detalls al teu correu. T’esperem.",
+      "subtitle": "Tens el detall a «Les meves reserves». T’hi esperem.",
       "bookingIdLabel": "Núm. de reserva",
       "providerLabel": "Centre",
       "serviceLabel": "Servei",
       "whenLabel": "Quan",
       "totalLabel": "Total",
       "backToProvider": "Tornar al centre",
-      "keepBrowsing": "Seguir explorant",
       "pendingTitle": "Pagament en curs",
-      "pendingSubtitle": "Estem confirmant el cobrament amb el teu banc. Quan acabi, veuràs la reserva a «Les meves reserves»."
+      "pendingSubtitle": "Estem confirmant el cobrament amb el teu banc. Quan acabi, veuràs la reserva a «Les meves reserves».",
+      "viewMyBookings": "Veure les meves reserves"
     },
     "checkout": {
       "loadingTitle": "Preparant el pagament",
@@ -723,7 +728,10 @@
       "errorPaymentFailed": "No hem pogut connectar amb la passarel·la de pagament. Torna-ho a provar d’aquí uns segons.",
       "errorGeneric": "Alguna cosa ha anat malament. Torna-ho a provar d’aquí uns segons.",
       "retry": "Torna-ho a provar",
-      "signIn": "Iniciar sessió"
+      "signIn": "Iniciar sessió",
+      "signUp": "Crear compte",
+      "draftKeptHint": "Guardem la teva hora i les teves notes: en tornar continuaràs just on ho vas deixar.",
+      "chooseAnotherSlot": "Triar una altra hora"
     }
   },
   "customerArea": {

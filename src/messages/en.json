@@ -661,7 +661,8 @@
       "back": "Back",
       "cancel": "Cancel booking",
       "continue": "Continue",
-      "goToPayment": "Go to payment"
+      "goToPayment": "Go to payment",
+      "slotExpiredNotice": "The time you had chosen is no longer available. Pick another one to continue."
     },
     "slotPicker": {
       "dayStripLabel": "Available days",
@@ -670,7 +671,11 @@
       "noMorningSlots": "No morning slots left.",
       "noAfternoonSlots": "No afternoon slots left.",
       "emptyTitle": "No slots this day",
-      "emptySubtitle": "Try another day on the calendar or come back tomorrow."
+      "emptySubtitle": "Try another day on the calendar or come back tomorrow.",
+      "loadingLabel": "Looking for available times…",
+      "errorTitle": "We could not load the available times",
+      "errorSubtitle": "The connection with the venue’s calendar failed. It does not mean there are no times available — please try again.",
+      "retry": "Try again"
     },
     "summary": {
       "serviceLabel": "Service",
@@ -701,16 +706,16 @@
     },
     "confirmation": {
       "title": "Booking confirmed!",
-      "subtitle": "We've sent the details to your email. See you soon.",
+      "subtitle": "You will find the details under “My bookings”. See you there.",
       "bookingIdLabel": "Booking no.",
       "providerLabel": "Centre",
       "serviceLabel": "Service",
       "whenLabel": "When",
       "totalLabel": "Total",
       "backToProvider": "Back to centre",
-      "keepBrowsing": "Keep exploring",
       "pendingTitle": "Payment in progress",
-      "pendingSubtitle": "We're confirming the charge with your bank. As soon as it clears you'll see the booking under “My bookings”."
+      "pendingSubtitle": "We're confirming the charge with your bank. As soon as it clears you'll see the booking under “My bookings”.",
+      "viewMyBookings": "View my bookings"
     },
     "checkout": {
       "loadingTitle": "Preparing your payment",
@@ -723,7 +728,10 @@
       "errorPaymentFailed": "We couldn't reach the payment gateway. Please try again in a moment.",
       "errorGeneric": "Something went wrong. Please try again in a moment.",
       "retry": "Try again",
-      "signIn": "Sign in"
+      "signIn": "Sign in",
+      "signUp": "Create account",
+      "draftKeptHint": "We are keeping your time slot and your notes: when you come back you will pick up right where you left off.",
+      "chooseAnotherSlot": "Choose another time"
     }
   },
   "customerArea": {
