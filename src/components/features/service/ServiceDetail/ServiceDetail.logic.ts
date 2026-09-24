@@ -1,3 +1,5 @@
+import { toIntlLocale } from '@/lib/i18n';
+
 import type { SupportedLocale } from './ServiceDetail.types';
 
 /**
@@ -18,7 +20,7 @@ import type { SupportedLocale } from './ServiceDetail.types';
  */
 export function formatPriceCents(cents: number, locale: SupportedLocale): string {
   const hasDecimals = cents % 100 !== 0;
-  const intlLocale = locale === 'ca' ? 'ca-ES' : 'es-ES';
+  const intlLocale = toIntlLocale(locale);
 
   return new Intl.NumberFormat(intlLocale, {
     style: 'currency',

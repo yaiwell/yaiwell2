@@ -14,9 +14,13 @@ import { routing } from './i18n/routing';
  *    navegarse sin sesión; las páginas autenticadas se protegerán en su
  *    propio `layout.tsx` con `auth.protect()` cuando toque.
  *
- * 2. **i18n (`next-intl`)**: detecta el locale, añade/elimina el prefijo
- *    según `localePrefix: 'as-needed'` y negocia con `Accept-Language` y
- *    la cookie de preferencia. Solo aplica a rutas de página, no a `/api/*`.
+ * 2. **i18n (`next-intl`)**: detecta el locale y, con
+ *    `localePrefix: 'always'`, garantiza que toda ruta de página lleve
+ *    prefijo de idioma. Las URLs sin prefijo (`/`, `/buscar`) se
+ *    redirigen al locale negociado por `Accept-Language` o por la
+ *    cookie de preferencia — por eso nunca pueden declararse como
+ *    canónicas (ver `@/lib/seo`). Solo aplica a rutas de página, no a
+ *    `/api/*`.
  *
  * Orden: Clerk envuelve al de next-intl. Para `/api/*` cortamos antes de
  * delegar en next-intl (las APIs no necesitan i18n y next-intl

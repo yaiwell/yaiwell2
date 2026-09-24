@@ -73,20 +73,9 @@
       "categories": "Categories",
       "pricing": "Pricing"
     },
-    "company": {
-      "title": "Company",
-      "about": "About us",
-      "blog": "Blog",
-      "careers": "Careers"
-    },
-    "legal": {
-      "title": "Legal",
-      "terms": "Terms",
-      "privacy": "Privacy",
-      "cookies": "Cookies"
-    },
     "madeIn": "Made in {city}",
-    "copyright": "© {year} Yaiwell"
+    "copyright": "© {year} Yaiwell",
+    "contact": "Contact"
   },
   "home": {
     "hero": {
@@ -332,10 +321,6 @@
       "providerLabel": "Active business",
       "sidebarNavLabel": "Panel navigation",
       "bottomNavLabel": "Panel quick access"
-    },
-    "mockBanner": {
-      "title": "Sample data",
-      "description": "This section still shows a demo. Your real data will appear here once we wire this feature to the backend."
     },
     "preview": {
       "show": "Preview with sample data",
@@ -1413,6 +1398,18 @@
       "sessionExists": "There is already an active session in this browser.",
       "networkError": "We could not connect. Check your connection and try again.",
       "unknown": "Something went wrong. Please try again in a few seconds."
+    }
+  },
+  "error": {
+    "title": "Something broke on our side",
+    "description": "We could not load this page. It is usually temporary — try again in a few seconds.",
+    "retry": "Try again",
+    "backHome": "Back to home",
+    "digestLabel": "Error code",
+    "panel": {
+      "title": "The dashboard hit a problem",
+      "description": "We could not load this section. Try again and, if the problem persists, share the error code with support.",
+      "backToDashboard": "Go to overview"
     }
   }
 }

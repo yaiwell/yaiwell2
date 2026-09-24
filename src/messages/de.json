@@ -73,20 +73,9 @@
       "categories": "Kategorien",
       "pricing": "Preise"
     },
-    "company": {
-      "title": "Unternehmen",
-      "about": "Über uns",
-      "blog": "Blog",
-      "careers": "Karriere"
-    },
-    "legal": {
-      "title": "Rechtliches",
-      "terms": "AGB",
-      "privacy": "Datenschutz",
-      "cookies": "Cookies"
-    },
     "madeIn": "Gemacht in {city}",
-    "copyright": "© {year} Yaiwell"
+    "copyright": "© {year} Yaiwell",
+    "contact": "Kontakt"
   },
   "home": {
     "hero": {
@@ -332,10 +321,6 @@
       "providerLabel": "Aktives Geschäft",
       "sidebarNavLabel": "Panel-Navigation",
       "bottomNavLabel": "Schnellzugriffe im Panel"
-    },
-    "mockBanner": {
-      "title": "Beispieldaten",
-      "description": "Dieser Bereich zeigt noch eine Demo. Deine echten Daten erscheinen hier, sobald wir diese Funktion mit dem Backend verbinden."
     },
     "preview": {
       "show": "Mit Beispieldaten ansehen",
@@ -1413,6 +1398,18 @@
       "sessionExists": "In diesem Browser ist bereits eine Sitzung aktiv.",
       "networkError": "Verbindung fehlgeschlagen. Bitte prüfe deine Verbindung und versuche es erneut.",
       "unknown": "Etwas ist schiefgelaufen. Bitte versuche es in ein paar Sekunden erneut."
+    }
+  },
+  "error": {
+    "title": "Bei uns ist etwas schiefgelaufen",
+    "description": "Diese Seite konnte nicht geladen werden. Das ist meist vorübergehend — versuche es in ein paar Sekunden erneut.",
+    "retry": "Erneut versuchen",
+    "backHome": "Zurück zur Startseite",
+    "digestLabel": "Fehlercode",
+    "panel": {
+      "title": "Im Verwaltungsbereich ist ein Problem aufgetreten",
+      "description": "Dieser Bereich konnte nicht geladen werden. Versuche es erneut und teile bei anhaltendem Problem den Fehlercode mit dem Support.",
+      "backToDashboard": "Zur Übersicht"
     }
   }
 }

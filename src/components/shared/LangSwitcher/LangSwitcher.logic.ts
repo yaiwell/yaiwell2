@@ -20,8 +20,8 @@ export function useLangSwitcher() {
 
   /**
    * Cambia el idioma activo redirigiendo a la misma ruta en el locale
-   * destino. next-intl se encarga de añadir/quitar el prefijo según la
-   * estrategia `as-needed`.
+   * destino. next-intl reescribe el prefijo de idioma de la URL; con
+   * `localePrefix: 'always'` siempre hay uno que sustituir.
    */
   const changeLocale = (next: AppLocale) => {
     if (next === currentLocale) return;

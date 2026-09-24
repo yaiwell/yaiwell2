@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { SearchView } from '@/components/features/search';
 import type { SearchViewInitialState } from '@/components/features/search';
 import { routing } from '@/i18n/routing';
+import { buildAlternates } from '@/lib/seo';
 import { getFromPriceCentsBatch, searchProviders } from '@/lib/services/providers';
 import type { PriceRange } from '@/types/domain';
 
@@ -31,16 +32,16 @@ export async function generateMetadata({
   const { locale } = await params;
   const safeLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
   const t = await getTranslations({ locale: safeLocale, namespace: 'seo.search' });
-  const canonicalPath = safeLocale === routing.defaultLocale ? '/buscar' : `/${safeLocale}/buscar`;
+  const alternates = buildAlternates(safeLocale, '/buscar');
 
   return {
     title: t('title'),
     description: t('description'),
-    alternates: { canonical: canonicalPath },
+    alternates,
     openGraph: {
       title: t('title'),
       description: t('description'),
-      url: canonicalPath,
+      url: alternates.canonical,
     },
     twitter: { title: t('title'), description: t('description') },
   };

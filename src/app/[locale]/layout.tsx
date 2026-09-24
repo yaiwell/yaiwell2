@@ -24,6 +24,12 @@ import {
   COOKIE_NAME as LOCATION_COOKIE_NAME,
   readLocationFromHeaders,
 } from '@/lib/services/location';
+import {
+  buildAlternates,
+  SITE_URL,
+  toOpenGraphAlternateLocales,
+  toOpenGraphLocale,
+} from '@/lib/seo';
 import { isThemePreference, THEME_COOKIE_NAME, type ThemePreference } from '@/lib/utils/theme';
 
 import '../globals.css';
@@ -51,25 +57,18 @@ const geistMono = Geist_Mono({
 });
 
 /**
- * URL base canónica del sitio. Imprescindible para que las URLs
- * absolutas (`openGraph.url`, `canonical`, sitemap) sean correctas en
- * cada entorno. Vercel expone `VERCEL_URL` con el host del deploy actual.
- */
-const SITE_URL =
-  process.env.NEXT_PUBLIC_APP_URL ??
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
-
-/**
  * Genera los metadatos SEO por locale.
  *
  * Incluye:
  *  - `title` con plantilla `%s | Yaiwell` para que las páginas hijas
  *    solo definan su título específico.
  *  - `description` editorial traducible.
- *  - `openGraph` y `twitter` con imagen por defecto en /og-default.png
- *    (placeholder; ver reporte: pendiente crear 1200x630 real).
- *  - `alternates.canonical` y `alternates.languages` (hreflang) para que
- *    Google sirva la versión correcta por mercado.
+ *  - `openGraph` y `twitter`. **La imagen NO se declara aquí**: la
+ *    aportan `opengraph-image.tsx` y `twitter-image.tsx` de este mismo
+ *    segmento, que la generan en código a 1200x630. Declarar
+ *    `openGraph.images` en el metadata desactivaría esa convención.
+ *  - `alternates.canonical` y `alternates.languages` (hreflang)
+ *    derivados de `routing.locales` vía `@/lib/seo`.
  *  - `robots` con allow explícito mientras estamos en Fase 0.
  */
 export async function generateMetadata({
@@ -81,9 +80,10 @@ export async function generateMetadata({
   const safeLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
   const t = await getTranslations({ locale: safeLocale, namespace: 'seo' });
 
-  // Con `localePrefix: 'as-needed'` la versión `es` no lleva prefijo y
-  // la `ca` sí. Calculamos el path canónico en consecuencia.
-  const canonicalPath = safeLocale === routing.defaultLocale ? '/' : `/${safeLocale}`;
+  // Con `localePrefix: 'always'` TODA URL indexable lleva prefijo de
+  // idioma: `/` solo existe como redirección negociada por
+  // `Accept-Language`, así que no puede ser canónica de nada.
+  const alternates = buildAlternates(safeLocale, '/');
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -93,35 +93,20 @@ export async function generateMetadata({
     },
     description: t('defaultDescription'),
     applicationName: 'Yaiwell',
-    alternates: {
-      canonical: canonicalPath,
-      languages: {
-        es: '/',
-        ca: '/ca',
-        'x-default': '/',
-      },
-    },
+    alternates,
     openGraph: {
       type: 'website',
       siteName: 'Yaiwell',
       title: t('defaultTitle'),
       description: t('defaultDescription'),
-      url: canonicalPath,
-      locale: safeLocale === 'ca' ? 'ca_ES' : 'es_ES',
-      images: [
-        {
-          url: '/og-default.png',
-          width: 1200,
-          height: 630,
-          alt: t('ogImageAlt'),
-        },
-      ],
+      url: alternates.canonical,
+      locale: toOpenGraphLocale(safeLocale),
+      alternateLocale: toOpenGraphAlternateLocales(safeLocale),
     },
     twitter: {
       card: 'summary_large_image',
       title: t('defaultTitle'),
       description: t('defaultDescription'),
-      images: ['/og-default.png'],
     },
     robots: {
       index: true,
@@ -270,8 +255,19 @@ export default async function RootLayout({ children, params }: RootLayoutProps) 
                   {/* El padding inferior en mobile reserva espacio para el bottom
                     tab bar (MobileNav). En desktop el tab bar se oculta y no
                     hace falta el padding extra. El `id="main"` es el destino
-                    del skip link. */}
-                  <main id="main" className="flex flex-1 flex-col pb-20 md:pb-0">
+                    del skip link.
+
+                    `tabIndex={-1}` es obligatorio: sin él, el ancla del
+                    skip link mueve el scroll pero NO el foco, y el
+                    siguiente Tab devuelve al usuario a la cabecera. El
+                    -1 lo hace focusable por programa sin meterlo en el
+                    orden de tabulación. `outline-none` evita pintar un
+                    anillo alrededor de toda la página al recibirlo. */}
+                  <main
+                    id="main"
+                    tabIndex={-1}
+                    className="flex flex-1 flex-col pb-20 outline-none md:pb-0"
+                  >
                     {children}
                   </main>
                   <Footer />

@@ -6,10 +6,11 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { ProviderDetail } from '@/components/features/provider/ProviderDetail';
 import { routing, type AppLocale } from '@/i18n/routing';
 import { pickLocalized } from '@/lib/i18n';
+import { buildAlternates } from '@/lib/seo';
 import { getProvidersAvailability } from '@/lib/services/availability';
 import { getProviderSchedule, ProviderHasNoProfessionalError } from '@/lib/services/provider';
 import { getProviderDetail } from '@/lib/services/providers';
-import { parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
+import { buildProviderSlugWithId, parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
 import type { ProviderWithAvailability } from '@/types/domain';
 
 interface ProviderPageProps {
@@ -41,13 +42,22 @@ export async function generateMetadata({ params }: ProviderPageProps): Promise<M
 
   const { provider } = detail;
   const description = pickLocalized(provider.description, locale as AppLocale);
+  // La ficha existe en los cuatro idiomas bajo el mismo `{slug}-{id}`,
+  // así que declaramos hreflang completo: es contenido público real y
+  // el turista alemán tiene que poder aterrizar en `/de/centro/...`.
+  const alternates = buildAlternates(
+    locale as AppLocale,
+    `/centro/${buildProviderSlugWithId(provider)}`,
+  );
 
   return {
     title: `${provider.name} · Yaiwell`,
     description,
+    alternates,
     openGraph: {
       title: provider.name,
       description,
+      url: alternates.canonical,
       images: provider.photos[0] ? [{ url: provider.photos[0] }] : undefined,
     },
   };

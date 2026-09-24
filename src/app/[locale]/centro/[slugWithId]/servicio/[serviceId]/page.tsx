@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { ServiceDetail } from '@/components/features/service/ServiceDetail';
 import { routing } from '@/i18n/routing';
 import { pickLocalized } from '@/lib/i18n';
+import { buildAlternates } from '@/lib/seo';
 import { getProviderService } from '@/lib/services/providers';
 import { buildProviderSlugWithId, parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
 
@@ -43,13 +44,19 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
   // en blanco para cualquier servicio sin castellano.
   const serviceName = pickLocalized(service.name, locale);
   const description = pickLocalized(service.description, locale);
+  const alternates = buildAlternates(
+    locale,
+    `/centro/${buildProviderSlugWithId(provider)}/servicio/${service.id}`,
+  );
 
   return {
     title: `${serviceName} · ${provider.name} · Yaiwell`,
     description,
+    alternates,
     openGraph: {
       title: `${serviceName} · ${provider.name}`,
       description,
+      url: alternates.canonical,
       images: provider.photos[0] ? [{ url: provider.photos[0] }] : undefined,
     },
   };

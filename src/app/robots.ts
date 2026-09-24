@@ -1,12 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-/**
- * URL base canónica para apuntar al sitemap desde robots.txt.
- * Misma lógica de fallback que en `sitemap.ts` y `layout.tsx`.
- */
-const SITE_URL =
-  process.env.NEXT_PUBLIC_APP_URL ??
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+import { SITE_URL } from '@/lib/seo';
 
 /**
  * Genera el `robots.txt` del sitio.

@@ -11,6 +11,7 @@ import {
   fetchServiceSlots,
   type BookingSlot,
 } from '@/lib/services/availability/availability.client';
+import { toIntlLocale } from '@/lib/i18n';
 import { buildUpcomingDays, getDateKey } from '@/lib/utils/calendar-days';
 
 import type { DayTab, SlotPickerLocale } from './SlotPicker.types';
@@ -63,7 +64,7 @@ function getBusinessHour(iso: string): number {
  * ya entrega la forma localizada; aquí solo normalizamos formato.
  */
 function formatWeekdayShort(date: Date, locale: SlotPickerLocale): string {
-  const formatter = new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+  const formatter = new Intl.DateTimeFormat(toIntlLocale(locale), {
     weekday: 'short',
   });
   const raw = formatter.format(date).replace('.', '').trim();
@@ -118,7 +119,7 @@ export function splitSlotsByDayPart(slots: BookingSlot[]): {
  * misma zona donde está el negocio.
  */
 export function formatSlotTime(slot: BookingSlot, locale: SlotPickerLocale): string {
-  return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+  return new Intl.DateTimeFormat(toIntlLocale(locale), {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,

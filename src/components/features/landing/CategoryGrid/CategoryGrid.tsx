@@ -33,7 +33,10 @@ export function CategoryGrid() {
   const t = useTranslations('home.categories');
 
   return (
-    <section className={s.root} data-component="category-grid">
+    // El `id` es el destino del enlace "Categorías" del footer
+    // (`/#categories`). En inglés y alineado con el `data-component`
+    // para que el ancla sea la misma en los cuatro idiomas.
+    <section id="categories" className={s.root} data-component="category-grid">
       <div className={s.container}>
         <header className={s.header} data-component="category-grid-header">
           <h2 className={s.title}>{t('title')}</h2>

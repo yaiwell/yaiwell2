@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { ForProvidersLanding } from '@/components/features/marketing';
 import { routing } from '@/i18n/routing';
 import { isSentryEnabled } from '@/lib/integrations/sentry';
+import { buildAlternates } from '@/lib/seo';
 import { listPublicPlans, PlansNotSeededError, type PublicPlan } from '@/lib/services/plans';
 
 interface ForProvidersPageProps {
@@ -37,13 +38,16 @@ export async function generateMetadata({ params }: ForProvidersPageProps): Promi
   if (!hasLocale(routing.locales, locale)) return {};
 
   const t = await getTranslations({ locale, namespace: 'forProviders.meta' });
+  const alternates = buildAlternates(locale, '/profesionales');
 
   return {
     title: t('title'),
     description: t('description'),
+    alternates,
     openGraph: {
       title: t('title'),
       description: t('description'),
+      url: alternates.canonical,
     },
     twitter: {
       title: t('title'),

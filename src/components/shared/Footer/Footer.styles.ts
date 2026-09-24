@@ -8,7 +8,12 @@
 export const footerStyles = {
   root: 'border-t border-border bg-muted/40 pb-28 md:pb-0',
   container: 'mx-auto max-w-7xl px-6 py-12 md:py-16',
-  top: 'grid gap-10 md:grid-cols-[1.2fr_repeat(3,1fr)]',
+  // Con una sola columna de enlaces (ver Footer.tsx: `company` y `legal`
+  // se retiraron el 2026-09-24) el reparto es marca + enlaces. En mobile
+  // apilan; a partir de `sm` van a dos columnas y en `md` la de marca
+  // pesa el doble para que el tagline respire sin dejar un hueco muerto
+  // a la derecha.
+  top: 'grid gap-10 sm:grid-cols-2 md:grid-cols-[2fr_1fr]',
   brandCol: 'flex flex-col gap-3',
   brand: 'flex items-center gap-2 text-base font-semibold tracking-tight text-foreground',
   brandMark:

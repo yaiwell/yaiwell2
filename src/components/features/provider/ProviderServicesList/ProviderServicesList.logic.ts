@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
+import { toIntlLocale } from '@/lib/i18n';
 import type { Service, ServiceWithRootCategory } from '@/types/domain';
 
 import type { ServiceGroup, SupportedLocale } from './ProviderServicesList.types';
@@ -62,7 +63,7 @@ export function groupServicesByRootCategory(services: ServiceWithRootCategory[])
  */
 export function formatPriceCents(cents: number, locale: SupportedLocale): string {
   const hasDecimals = cents % 100 !== 0;
-  const intlLocale = locale === 'ca' ? 'ca-ES' : 'es-ES';
+  const intlLocale = toIntlLocale(locale);
 
   return new Intl.NumberFormat(intlLocale, {
     style: 'currency',

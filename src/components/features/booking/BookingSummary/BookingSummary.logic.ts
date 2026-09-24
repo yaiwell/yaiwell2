@@ -5,13 +5,15 @@
  * presentacional puro y para poder reutilizarlos en otros pasos.
  */
 
+import { toIntlLocale } from '@/lib/i18n';
+
 /**
  * Formatea un slot ISO a un string "viernes 22 de mayo, 17:30" según
  * el locale. La fecha larga sirve como ancla visual fuerte en el resumen
  * para que el usuario no dude del día reservado.
  */
 export function formatSlotDateLong(iso: string, locale: 'es' | 'ca' | 'en' | 'de'): string {
-  return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+  return new Intl.DateTimeFormat(toIntlLocale(locale), {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
@@ -26,7 +28,7 @@ export function formatSlotDateLong(iso: string, locale: 'es' | 'ca' | 'en' | 'de
  * "17:30 → 18:30" en una sola línea.
  */
 export function formatSlotTimeOnly(iso: string, locale: 'es' | 'ca' | 'en' | 'de'): string {
-  return new Intl.DateTimeFormat(locale === 'ca' ? 'ca-ES' : 'es-ES', {
+  return new Intl.DateTimeFormat(toIntlLocale(locale), {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
@@ -41,7 +43,7 @@ export function formatSlotTimeOnly(iso: string, locale: 'es' | 'ca' | 'en' | 'de
  */
 export function formatPriceCents(cents: number, locale: 'es' | 'ca' | 'en' | 'de'): string {
   const hasDecimals = cents % 100 !== 0;
-  const intlLocale = locale === 'ca' ? 'ca-ES' : 'es-ES';
+  const intlLocale = toIntlLocale(locale);
 
   return new Intl.NumberFormat(intlLocale, {
     style: 'currency',

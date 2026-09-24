@@ -1,3 +1,5 @@
+import { toIntlLocale } from '@/lib/i18n';
+
 import type { PanelWeeklyMetrics, SupportedLocale } from './DashboardMetrics.types';
 
 /**
@@ -14,7 +16,7 @@ export function getMaxDailyRevenueCents(metrics: PanelWeeklyMetrics): number {
 }
 
 /**
- * Formatea un valor en céntimos como precio localizado (es-ES / ca-ES).
+ * Formatea un valor en céntimos como precio localizado en el idioma activo.
  *
  * Centralizamos el formateador aquí en vez de en `Intl.NumberFormat`
  * inline para que el componente JSX quede limpio y para poder probarlo
@@ -25,7 +27,7 @@ export function getMaxDailyRevenueCents(metrics: PanelWeeklyMetrics): number {
  * @returns string formateado con símbolo €, sin decimales para >=1000.
  */
 export function formatCurrencyFromCents(cents: number, locale: SupportedLocale): string {
-  const intlLocale = locale === 'ca' ? 'ca-ES' : 'es-ES';
+  const intlLocale = toIntlLocale(locale);
   const amount = cents / 100;
   // Sin decimales cuando el importe es grande para no ensuciar la card.
   // Por debajo de 1000 conservamos 2 decimales (los precios típicos
@@ -58,7 +60,7 @@ export function computeBarHeightPct(value: number, max: number): number {
  * Ejemplo: 12.4 → "+12,4 %", -5 → "-5 %".
  */
 export function formatDeltaPct(delta: number, locale: SupportedLocale): string {
-  const intlLocale = locale === 'ca' ? 'ca-ES' : 'es-ES';
+  const intlLocale = toIntlLocale(locale);
   const sign = delta > 0 ? '+' : delta < 0 ? '−' : '';
   const formatted = new Intl.NumberFormat(intlLocale, {
     maximumFractionDigits: 1,

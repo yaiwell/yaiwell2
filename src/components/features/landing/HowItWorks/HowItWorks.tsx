@@ -29,7 +29,10 @@ export function HowItWorks() {
   const t = useTranslations('home.howItWorks');
 
   return (
-    <section className={s.root} data-component="how-it-works">
+    // El `id` es el destino del enlace "Cómo funciona" del footer
+    // (`/#how-it-works`). Se mantiene en inglés y coincide con el
+    // `data-component` para que el ancla no cambie según el idioma.
+    <section id="how-it-works" className={s.root} data-component="how-it-works">
       <div className={s.container}>
         <header className={s.header} data-component="how-it-works-header">
           <h2 className={s.title}>{t('title')}</h2>

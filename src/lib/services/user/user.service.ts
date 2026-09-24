@@ -13,9 +13,14 @@ import type { ClerkUserSyncInput } from './user.types';
 const VALID_ROLES = ['client', 'provider', 'admin'] as const satisfies readonly UserRole[];
 
 /**
- * Locales soportados en MVP. Espejo del enum `Locale` de Prisma.
+ * Locales soportados. Espejo del enum `Locale` de Prisma.
+ *
+ * Listaba solo `es` y `ca`, residuo de cuando la app tenía dos idiomas:
+ * el `unsafeMetadata.locale` de alguien que se registraba desde `/en` o
+ * `/de` no pasaba el filtro y se persistía `es` en silencio, así que el
+ * email transaccional le llegaba en castellano.
  */
-const VALID_LOCALES = ['es', 'ca'] as const satisfies readonly Locale[];
+const VALID_LOCALES = ['es', 'ca', 'en', 'de'] as const satisfies readonly Locale[];
 
 /**
  * Sincroniza un evento `user.created` o `user.updated` de Clerk con la

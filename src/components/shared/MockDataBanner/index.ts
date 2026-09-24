@@ -1,1 +1,0 @@
-export { MockDataBanner } from './MockDataBanner';

@@ -8,6 +8,46 @@
 
 ## 2026-09-24
 
+### 2026-09-24 (3) — Chrome global: SEO multi-idioma, resiliencia y accesibilidad
+
+Lo que atraviesa las 25 pantallas a la vez. Dos agentes en paralelo; el i18n lo aplicó el orquestador.
+
+#### El SEO multi-idioma estaba roto justo para los dos mercados que lo justifican
+
+- El `hreflang` y la canónica se quedaron escritos para la estrategia de rutas **anterior**: declaraban `es` y `ca` y **dejaban fuera `en` y `de` por completo** — los dos idiomas por los que se hizo el refactor a 4 locales. Un turista alemán buscando en Google no recibía ninguna señal de que existiera `/de`. Además se declaraba como canónica `/`, que el proxy **redirige**, y el sitemap publicaba 4 entradas inválidas por el mismo motivo. El comentario que decía `as-needed` seguía tres líneas encima del código que ya no lo cumplía.
+- **Nuevo `lib/seo/`**: canónicas y alternativas se generan **delegando en `getPathname` de next-intl e iterando `routing.locales`**. La estrategia de prefijos y la lista de idiomas viven en un solo sitio, así que un quinto idioma se publica solo. Se unifica de paso la `SITE_URL`, que estaba **triplicada** en layout, sitemap y robots, ya lista para divergir.
+- **`x-default` apunta a `/es`, no a `/`**, y el porqué está razonado: con prefijo siempre, la raíz no sirve contenido — responde una redirección cuyo destino depende del `Accept-Language`. Google exige que todo destino hreflang sea rastreable, devuelva 200 y sea auto-canónico; una redirección variable por cabecera no cumple ninguna de las tres.
+- **Tres páginas no declaraban canónica ninguna** (`/profesionales`, ficha de centro y ficha de servicio), así que heredaban la `og:url` de la home.
+- **El sitemap listaba `/panel` y `/mis-reservas`** —áreas autenticadas, bloqueadas en `robots.ts`— mientras su propio comentario afirmaba que no incluía áreas privadas. Fuera. Ahora incluye las fichas de centro, que son el contenido público real, con una query de tres columnas sobre el filtro ya indexado y sin tocar BD en build.
+
+#### Un bug mayor que el que fuimos a arreglar
+
+- **`user.service.ts` validaba los locales contra `['es','ca']`** frente a un enum de Prisma con cuatro. Quien se registraba desde `/en` o `/de` quedaba guardado como `es` **en silencio**, y recibiría los emails en castellano. Y su test **codificaba el bug**: afirmaba que `'en'` debía convertirse en `'es'`. Reescrito.
+- **Nueve formateadores de `Intl`** hacían `locale === 'ca' ? 'ca-ES' : 'es-ES'`: fechas y precios en castellano para inglés y alemán, repartidos por booking, panel, ficha de servicio y dashboard. Centralizados en `toIntlLocale()`.
+
+#### La imagen de compartir llevaba rota desde siempre
+
+- El layout apuntaba a `/og-default.png` y en `public/` solo existía `og-default.svg`, que las plataformas no renderizan: **cada enlace compartido en WhatsApp, Twitter o LinkedIn daba 404**. Ahora se genera en código con `ImageResponse`, una por idioma, prerenderizada en build. Verificado leyendo el chunk IHDR de los PNG generados: **1200×630 en los cuatro**, y de tamaños distintos, lo que confirma que la copy cambia por idioma. Sin claves nuevas: reutiliza las de SEO.
+
+#### Cualquier fallo de base de datos era una pantalla en blanco
+
+- No existía `[locale]/error.tsx`, así que saltaba siempre el boundary global, que pintaba un error desnudo de Next: sin marca, sin idioma, sin cabecera y sin botón de volver. Su docstring decía que solo saltaba *"si escapa del error.tsx por locale"* — ese fichero no existía.
+- **Hallazgo de la API**: en esta versión de Next, `reset()` **re-renderiza sin volver a pedir los datos**, así que ante un Postgres que tosió repinta el mismo error. Lo que re-fetchea es `unstable_retry()`. Los boundaries lo usan con respaldo a `reset` por si lo estabilizan o renombran.
+- **`panel/error.tsx` no reportaba a Sentry** pese a un comentario que afirmaba que *"Sentry ya captura por su lado"*: Next se traga el error en el boundary. Era además el último resto de la paleta de Fase 0 dentro del panel **y tenía el copy hardcodeado en castellano**, así que un proveedor alemán que reventara el panel leía español.
+- Se descartaron boundaries en `/admin` y `/mis-reservas`: lo único que aportarían es conservar su shell, y si lo que falló es la consulta que la alimenta, re-renderizarla no es ventaja.
+- **Cuatro `loading.tsx`, no doce** — elegidos por dónde duele la espera (`/buscar`, ficha de centro, `/mis-reservas` y uno que cubre las cinco páginas del panel), con cada exclusión justificada. Limitación anotada con honestidad: los layouts privados leen la sesión, dato de runtime, así que el esqueleto rinde sobre todo al navegar entre secciones.
+
+#### Footer y accesibilidad
+
+- **12 enlaces, 12 destinos falsos**, todos a `#` — que además hace scroll al inicio, así que el usuario cree que el click ha fallado. Ahora: "cómo funciona" y "categorías" apuntan a secciones reales de la landing (hubo que añadir los `id`, no existía ninguno), "precios" a `/profesionales`, y "Contacto" es un `mailto` real.
+- **Retiradas dos columnas enteras**: la legal (decisión del usuario: prometer documentos que no existen es peor que no ofrecerlos; vuelven cuando se redacten) y la de empresa, que tampoco tenía ningún destino. Con comentario fechado para que no se lea como olvido.
+- Los textos de las 8 claves retiradas, para reponerlas sin retraducir — **es**: `footer.company` = Empresa / Sobre nosotros / Blog / Trabaja con nosotros; `footer.legal` = Legal / Términos / Privacidad / Cookies. Las traducciones ca/en/de están en el historial de este commit.
+- **El "saltar al contenido" movía el scroll pero no el foco**: faltaba `tabIndex={-1}` en el `<main>`, así que el siguiente Tab volvía a la cabecera. Y el `aria-label="Contacto"` era la última cadena de usuario hardcodeada del chrome.
+- Borrado `MockDataBanner`, sin consumidores desde la migración a datos reales.
+- 30 tests nuevos (841 en total, 113 ficheros). Los dos que habrían detectado esto: uno compara las alternativas declaradas contra `routing.locales` en vez de contra una lista literal, y otro verifica que **ninguna URL declarada canónica sea de las que el proxy redirige**, con una guardia que falla si mañana cambia la estrategia de prefijos.
+
+---
+
 ### 2026-09-24 (2) — Los dos últimos P0, y el candado para que no vuelvan
 
 Cierra los 7 P0 de la auditoría. El encargo no era arreglar tres sitios sino **hacer que el error no se pueda volver a escribir**, y eso es lo que distingue esta entrada de un parche.

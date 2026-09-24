@@ -8,6 +8,7 @@
  */
 
 export { pickLocalized } from './pickLocalized';
+export { toIntlLocale } from './intlLocale';
 
 export {
   buildLocalizedText,

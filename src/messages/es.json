@@ -73,20 +73,9 @@
       "categories": "Categorías",
       "pricing": "Precios"
     },
-    "company": {
-      "title": "Empresa",
-      "about": "Sobre nosotros",
-      "blog": "Blog",
-      "careers": "Trabaja con nosotros"
-    },
-    "legal": {
-      "title": "Legal",
-      "terms": "Términos",
-      "privacy": "Privacidad",
-      "cookies": "Cookies"
-    },
     "madeIn": "Hecho en {city}",
-    "copyright": "© {year} Yaiwell"
+    "copyright": "© {year} Yaiwell",
+    "contact": "Contacto"
   },
   "home": {
     "hero": {
@@ -332,10 +321,6 @@
       "providerLabel": "Negocio activo",
       "sidebarNavLabel": "Navegación del panel",
       "bottomNavLabel": "Accesos rápidos del panel"
-    },
-    "mockBanner": {
-      "title": "Datos de ejemplo",
-      "description": "Esta sección aún muestra una demostración. Tus datos reales aparecerán cuando conectemos esta función con el backend."
     },
     "preview": {
       "show": "Ver con datos de ejemplo",
@@ -1413,6 +1398,18 @@
       "sessionExists": "Ya hay una sesión activa en este navegador.",
       "networkError": "No hemos podido conectar. Revisa tu conexión e inténtalo de nuevo.",
       "unknown": "Algo no ha ido bien. Inténtalo de nuevo en unos segundos."
+    }
+  },
+  "error": {
+    "title": "Algo se ha roto por nuestro lado",
+    "description": "No hemos podido cargar esta página. Suele ser temporal: vuelve a intentarlo en unos segundos.",
+    "retry": "Reintentar",
+    "backHome": "Volver a inicio",
+    "digestLabel": "Código de error",
+    "panel": {
+      "title": "El panel ha tenido un problema",
+      "description": "No hemos podido cargar esta sección. Reintenta y, si el problema persiste, comparte el código de error con soporte.",
+      "backToDashboard": "Ir al resumen"
     }
   }
 }

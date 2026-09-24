@@ -73,20 +73,9 @@
       "categories": "Categories",
       "pricing": "Preus"
     },
-    "company": {
-      "title": "Empresa",
-      "about": "Sobre nosaltres",
-      "blog": "Blog",
-      "careers": "Treballa amb nosaltres"
-    },
-    "legal": {
-      "title": "Legal",
-      "terms": "Termes",
-      "privacy": "Privacitat",
-      "cookies": "Galetes"
-    },
     "madeIn": "Fet a {city}",
-    "copyright": "© {year} Yaiwell"
+    "copyright": "© {year} Yaiwell",
+    "contact": "Contacte"
   },
   "home": {
     "hero": {
@@ -332,10 +321,6 @@
       "providerLabel": "Negoci actiu",
       "sidebarNavLabel": "Navegació del panell",
       "bottomNavLabel": "Accessos ràpids del panell"
-    },
-    "mockBanner": {
-      "title": "Dades d'exemple",
-      "description": "Aquesta secció encara mostra una demostració. Les teves dades reals apareixeran quan connectem aquesta funció amb el backend."
     },
     "preview": {
       "show": "Veure amb dades d'exemple",
@@ -1413,6 +1398,18 @@
       "sessionExists": "Ja hi ha una sessió activa en aquest navegador.",
       "networkError": "No hem pogut connectar. Revisa la connexió i torna a provar-ho.",
       "unknown": "Alguna cosa no ha anat bé. Torna a provar-ho en uns segons."
+    }
+  },
+  "error": {
+    "title": "Alguna cosa s’ha trencat per la nostra banda",
+    "description": "No hem pogut carregar aquesta pàgina. Acostuma a ser temporal: torna-ho a provar d’aquí a uns segons.",
+    "retry": "Torna-ho a provar",
+    "backHome": "Tornar a l’inici",
+    "digestLabel": "Codi d’error",
+    "panel": {
+      "title": "El panell ha tingut un problema",
+      "description": "No hem pogut carregar aquesta secció. Torna-ho a provar i, si el problema continua, comparteix el codi d’error amb suport.",
+      "backToDashboard": "Anar al resum"
     }
   }
 }

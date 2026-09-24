@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { prisma } from '@/lib/db/prisma';
+import type { SitemapProviderRef } from '@/lib/seo';
 import type { LocalizedText, Provider, Service, ServiceWithRootCategory } from '@/types/domain';
 
 import { resolveRootCategory } from './providers.categories';
@@ -340,5 +341,28 @@ export const providersRepository = {
     });
 
     return new Map(rows.map((row) => [row.providerId, row._min.priceCents ?? null]));
+  },
+
+  /**
+   * Proyección mínima de los proveedores públicos para el sitemap.
+   *
+   * Deliberadamente NO reutiliza `findAll()`: aquella trae descripción,
+   * fotos, categorías agregadas y extrae lng/lat con PostGIS, y el
+   * sitemap solo necesita construir la URL y el `lastmod`. Aquí van
+   * tres columnas, sin joins ni geometría, sobre el mismo filtro
+   * indexado (`verificationStatus`, `deletedAt`).
+   *
+   * @param limit — tope de filas. El protocolo Sitemaps admite 50.000
+   *   URLs por fichero y nosotros emitimos una por locale, así que el
+   *   caller debe pasar `50000 / nº de locales` como mucho. Si algún
+   *   día lo superamos, toca partir el sitemap con `generateSitemaps`.
+   */
+  async findAllForSitemap(limit: number): Promise<SitemapProviderRef[]> {
+    return prisma.provider.findMany({
+      where: { verificationStatus: 'approved', deletedAt: null },
+      select: { id: true, slug: true, updatedAt: true },
+      orderBy: { updatedAt: 'desc' },
+      take: limit,
+    });
   },
 };

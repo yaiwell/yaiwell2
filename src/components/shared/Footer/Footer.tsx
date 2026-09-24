@@ -1,39 +1,49 @@
-import { AtSign, Camera, Send, Sparkles } from 'lucide-react';
+import { Send, Sparkles } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+
+import { Link } from '@/i18n/navigation';
 
 import { footerStyles as s } from './Footer.styles';
 import type { FooterLinkGroup } from './Footer.types';
 
 /**
- * Estructura estática de los grupos de enlaces del footer.
+ * Dirección de contacto pública de Yaiwell. Es la misma que ofrece la
+ * página 404 (`notFound.helpHint`), así que el usuario ve un único
+ * canal en toda la app.
+ */
+const CONTACT_EMAIL = 'hola@yaiwell.com';
+
+/**
+ * Columnas de enlaces del footer.
  *
- * Todos los `href` son placeholders por ahora; cuando exista la página
- * destino los iremos sustituyendo. Mantenerlos como datos (no como JSX
- * inline) nos permite mapearlos limpiamente y traducirlos por clave.
+ * Todos los destinos son reales: un `href="#"` hace scroll al inicio y
+ * el usuario interpreta que el click ha fallado, así que aquí no entra
+ * nada que no exista todavía.
+ *
+ * Columnas retiradas a propósito el 2026-09-24 — reponerlas en cuanto
+ * existan las páginas, con su clave i18n (que sigue en `messages/*.json`):
+ *
+ *  - **Empresa** (`about`, `blog`, `careers`): no hay ni "sobre
+ *    nosotros", ni blog, ni página de empleo. Tres enlaces muertos
+ *    valen menos que ninguna columna.
+ *  - **Legal** (`terms`, `privacy`, `cookies`): decisión de producto
+ *    del 2026-09-24. Los documentos no están redactados y prometer
+ *    condiciones legales inexistentes es peor que no ofrecerlas.
+ *    Producción va en modo test y sin clientes reales, así que no hay
+ *    nadie a quien se le deban todavía. **Vuelven el día que se
+ *    escriban** — si lees esto y el footer no tiene legales, es una
+ *    decisión registrada, no un olvido.
  */
 const linkGroups: FooterLinkGroup[] = [
   {
     titleKey: 'product',
     links: [
-      { href: '#', labelKey: 'howItWorks' },
-      { href: '#', labelKey: 'categories' },
-      { href: '#', labelKey: 'pricing' },
-    ],
-  },
-  {
-    titleKey: 'company',
-    links: [
-      { href: '#', labelKey: 'about' },
-      { href: '#', labelKey: 'blog' },
-      { href: '#', labelKey: 'careers' },
-    ],
-  },
-  {
-    titleKey: 'legal',
-    links: [
-      { href: '#', labelKey: 'terms' },
-      { href: '#', labelKey: 'privacy' },
-      { href: '#', labelKey: 'cookies' },
+      // Ancla a la sección "Cómo funciona" de la landing.
+      { href: '/#how-it-works', labelKey: 'howItWorks' },
+      // Ancla a la rejilla de categorías populares de la landing.
+      { href: '/#categories', labelKey: 'categories' },
+      // La tabla de planes y comisiones vive en la landing comercial.
+      { href: '/profesionales', labelKey: 'pricing' },
     ],
   },
 ];
@@ -41,15 +51,16 @@ const linkGroups: FooterLinkGroup[] = [
 /**
  * Footer global de la app.
  *
- * Estructura: bloque de marca + tagline + columnas de enlaces + barra
- * inferior con copyright y origen ("Hecho en Barcelona"). En mobile el
- * footer respeta el espacio del MobileNav con padding inferior extra.
+ * Estructura: bloque de marca + tagline + contacto + columnas de
+ * enlaces + barra inferior con copyright y origen ("Hecho en
+ * Barcelona"). En mobile el footer respeta el espacio del MobileNav con
+ * padding inferior extra.
  *
- * Nota sobre iconos de redes: lucide-react eliminó los iconos de marca
- * (Instagram, X, LinkedIn) por motivos de licencia. Usamos iconos genéricos
- * como representación visual neutra (Camera ≈ Instagram, AtSign ≈ X,
- * Send ≈ contacto) y dejamos los aria-labels descriptivos para
- * accesibilidad. Los enlaces reales se conectarán cuando existan cuentas.
+ * Nota sobre el icono de contacto: lucide-react eliminó los iconos de
+ * marca por motivos de licencia, así que usamos `Send` como
+ * representación neutra del "escríbenos". Los botones de Instagram y X
+ * se retiraron el 2026-09-24: no existen esas cuentas y apuntaban a
+ * `#`. Se reponen cuando haya perfiles reales.
  */
 export function Footer() {
   const tFooter = useTranslations('footer');
@@ -75,26 +86,12 @@ export function Footer() {
               {tFooter('tagline')}
             </p>
             <div className={s.socials} data-component="footer-socials">
+              {/* `<a>` nativo y no el `Link` de next-intl: `mailto:` no
+                  pasa por el routing localizado. */}
               <a
-                href="#"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className={s.socialButton}
-                aria-label="Instagram"
-                data-component="footer-social-instagram"
-              >
-                <Camera className="size-4" />
-              </a>
-              <a
-                href="#"
-                className={s.socialButton}
-                aria-label="X / Twitter"
-                data-component="footer-social-twitter"
-              >
-                <AtSign className="size-4" />
-              </a>
-              <a
-                href="#"
-                className={s.socialButton}
-                aria-label="Contacto"
+                aria-label={tFooter('contact')}
                 data-component="footer-social-contact"
               >
                 <Send className="size-4" />
@@ -102,10 +99,7 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Columnas de enlaces.
-              Recorremos cada grupo con un switch por titleKey para que
-              TypeScript pueda estrechar el tipo de `labelKey` y validar
-              en compile-time la clave i18n combinada. */}
+          {/* Columnas de enlaces. */}
           {linkGroups.map((group) => (
             <div
               key={group.titleKey}
@@ -114,42 +108,17 @@ export function Footer() {
             >
               <h2 className={s.groupTitle}>{tFooter(`${group.titleKey}.title`)}</h2>
               <ul className={s.groupList}>
-                {group.titleKey === 'product' &&
-                  group.links.map((link) => (
-                    <li key={`product-${link.labelKey}`}>
-                      <a
-                        href={link.href}
-                        className={s.groupLink}
-                        data-component={`footer-link-product-${link.labelKey}`}
-                      >
-                        {tFooter(`product.${link.labelKey}`)}
-                      </a>
-                    </li>
-                  ))}
-                {group.titleKey === 'company' &&
-                  group.links.map((link) => (
-                    <li key={`company-${link.labelKey}`}>
-                      <a
-                        href={link.href}
-                        className={s.groupLink}
-                        data-component={`footer-link-company-${link.labelKey}`}
-                      >
-                        {tFooter(`company.${link.labelKey}`)}
-                      </a>
-                    </li>
-                  ))}
-                {group.titleKey === 'legal' &&
-                  group.links.map((link) => (
-                    <li key={`legal-${link.labelKey}`}>
-                      <a
-                        href={link.href}
-                        className={s.groupLink}
-                        data-component={`footer-link-legal-${link.labelKey}`}
-                      >
-                        {tFooter(`legal.${link.labelKey}`)}
-                      </a>
-                    </li>
-                  ))}
+                {group.links.map((link) => (
+                  <li key={`${group.titleKey}-${link.labelKey}`}>
+                    <Link
+                      href={link.href}
+                      className={s.groupLink}
+                      data-component={`footer-link-${group.titleKey}-${link.labelKey}`}
+                    >
+                      {tFooter(`${group.titleKey}.${link.labelKey}`)}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
           ))}
