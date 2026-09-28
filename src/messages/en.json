@@ -658,6 +658,8 @@
       "loadingLabel": "Looking for available times…",
       "errorTitle": "We could not load the available times",
       "errorSubtitle": "The connection with the venue’s calendar failed. It does not mean there are no times available — please try again.",
+      "notBookableTitle": "This service cannot be booked online yet",
+      "notBookableSubtitle": "The venue has not set up its calendar yet. You can choose another service or come back later.",
       "retry": "Try again"
     },
     "summary": {

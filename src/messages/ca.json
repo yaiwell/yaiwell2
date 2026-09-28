@@ -658,6 +658,8 @@
       "loadingLabel": "Buscant hores disponibles…",
       "errorTitle": "No hem pogut carregar les hores",
       "errorSubtitle": "Ha fallat la connexió amb l’agenda del centre. No vol dir que no hi hagi hores: torna-ho a provar.",
+      "notBookableTitle": "Aquest servei encara no admet reserva en línia",
+      "notBookableSubtitle": "El centre encara no ha configurat la seva agenda. Pots triar un altre servei o tornar més endavant.",
       "retry": "Torna-ho a provar"
     },
     "summary": {

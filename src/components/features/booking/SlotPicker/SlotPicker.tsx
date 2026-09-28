@@ -33,13 +33,14 @@ export function SlotPicker({
 }: SlotPickerProps) {
   const t = useTranslations('booking.slotPicker');
 
-  const { dayTabs, setSelectedDay, slots, isLoading, isError, refetch } = useSlotPicker({
-    providerId,
-    serviceId,
-    serviceDurationMinutes,
-    locale,
-    now,
-  });
+  const { dayTabs, setSelectedDay, slots, isLoading, isError, isNotBookable, refetch } =
+    useSlotPicker({
+      providerId,
+      serviceId,
+      serviceDurationMinutes,
+      locale,
+      now,
+    });
 
   const { morning, afternoon } = splitSlotsByDayPart(slots);
 
@@ -68,6 +69,12 @@ export function SlotPicker({
 
       {isLoading ? (
         <SlotGridSkeleton label={t('loadingLabel')} />
+      ) : isNotBookable ? (
+        // Respuesta definitiva del servidor, no un fallo: sin botón de reintentar.
+        <div className={s.empty} data-component="booking-slot-picker-not-bookable">
+          <p className={s.emptyTitle}>{t('notBookableTitle')}</p>
+          <p className={s.emptySubtitle}>{t('notBookableSubtitle')}</p>
+        </div>
       ) : isError ? (
         <SlotPickerError
           title={t('errorTitle')}

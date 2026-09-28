@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 // `@/lib/services/availability`: ese reexporta el service y arrastraría
 // Prisma (`pg → dns/fs/net/tls`) al bundle del navegador.
 import {
+  AvailabilitySlotsRequestError,
   BUSINESS_TIMEZONE,
   fetchServiceSlots,
   type BookingSlot,
@@ -28,6 +29,19 @@ const VISIBLE_DAYS = 14;
  * "Tarde". Coincide con el cierre típico de la jornada de mañana.
  */
 const AFTERNOON_START_HOUR = 14;
+
+/**
+ * Indica si el error significa "este servicio no se puede reservar
+ * online" y no "no hemos podido consultarlo".
+ *
+ * El endpoint responde 404 cuando el servicio no existe, está pausado o
+ * el centro no tiene ningún profesional con agenda. Es una respuesta
+ * definitiva: presentarla como fallo de conexión invitaba a reintentar
+ * algo que nunca va a funcionar.
+ */
+export function isNotBookableError(error: unknown): boolean {
+  return error instanceof AvailabilitySlotsRequestError && error.status === 404;
+}
 
 /**
  * Formateador de la hora del centro. Se crea una sola vez porque
@@ -200,6 +214,8 @@ export function useSlotPicker(args: {
     slots: query.data ?? [],
     isLoading: query.isPending,
     isError: query.isError,
+    /** El servicio no admite reserva online (404): sin reintento posible. */
+    isNotBookable: isNotBookableError(query.error),
     /** Reintento manual tras un fallo, sin recargar la página entera. */
     refetch: query.refetch,
   };

@@ -658,6 +658,8 @@
       "loadingLabel": "Freie Termine werden gesucht…",
       "errorTitle": "Die freien Termine konnten nicht geladen werden",
       "errorSubtitle": "Die Verbindung zum Kalender des Studios ist fehlgeschlagen. Das heißt nicht, dass es keine Termine gibt — bitte versuche es erneut.",
+      "notBookableTitle": "Dieser Service ist noch nicht online buchbar",
+      "notBookableSubtitle": "Das Studio hat seinen Kalender noch nicht eingerichtet. Wähle einen anderen Service oder schau später wieder vorbei.",
       "retry": "Erneut versuchen"
     },
     "summary": {

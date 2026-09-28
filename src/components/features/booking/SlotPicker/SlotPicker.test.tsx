@@ -37,6 +37,8 @@ const messages = {
       errorTitle: 'No hemos podido cargar los huecos',
       errorSubtitle: 'Ha fallado la conexión con el centro. Vuelve a intentarlo.',
       retry: 'Reintentar',
+      notBookableTitle: 'Este servicio aún no admite reserva online',
+      notBookableSubtitle: 'El centro todavía no ha configurado su agenda.',
     },
   },
 };
@@ -242,6 +244,32 @@ describe('SlotPicker', () => {
       });
       expect(await screen.findByText('Mañana')).toBeInTheDocument();
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('servicio no reservable', () => {
+    /** 404 del endpoint: centro sin profesional, servicio pausado o inexistente. */
+    function notFoundResponse(): Response {
+      return {
+        ok: false,
+        status: 404,
+        json: async () => ({
+          error: { code: 'SERVICE_NOT_FOUND', message: 'Sin profesionales activos.' },
+        }),
+      } as Response;
+    }
+
+    it('con un 404 explica que no admite reserva online, sin fallo de conexión ni reintento', async () => {
+      vi.mocked(global.fetch).mockResolvedValue(notFoundResponse());
+
+      renderPicker();
+
+      expect(
+        await screen.findByText('Este servicio aún no admite reserva online'),
+      ).toBeInTheDocument();
+      // Era el bug: el 404 se pintaba como "ha fallado la conexión, reintenta".
+      expect(screen.queryByText('No hemos podido cargar los huecos')).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: /Reintentar/u })).not.toBeInTheDocument();
     });
   });
 });
