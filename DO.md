@@ -8,6 +8,17 @@
 
 ## 2026-09-28
 
+### 2026-09-28 (3) — Publicado en producción, y la reserva que "fallaba la conexión"
+
+- **Producción llevaba dos meses parada.** El último push era del 2026-07-27: los 10 commits siguientes (cobro real con Stripe Connect, ciclo de vida de la reserva y toda la auditoría por pantallas) solo existían en local, así que el dev veía en el móvil el filtro de categorías roto de julio. Publicados con permiso del dev y **verificados en vivo** sobre `yaiwell2.vercel.app`: Deporte 5, Belleza 5, Estética 4, Bienestar 2, "padel" → Born Pàdel Club.
+- **El aviso de certificado (`ERR_CERT_AUTHORITY_INVALID`) no era de la web**: el Fortinet de la red del dev bloquea `yaiwell.app` por categoría y sirve su propia página. Desde el móvil con datos carga bien.
+- **"No hemos podido cargar los huecos… vuelve a intentarlo"** al reservar: el endpoint respondía **404** porque 12 de los 13 centros sembrados no tenían `Professional`, y el `SlotPicker` pintaba esa respuesta definitiva como fallo de conexión con botón de reintentar, que nunca podía funcionar. Ahora un 404 dice "este servicio aún no admite reserva online", sin reintento; los fallos reales (red, 5xx) mantienen su mensaje. Test del caso en los 4 idiomas.
+- **Sembrado `db:seed:dev`** con permiso del dev: 12 profesionales con horario, 36 servicios recreados (los ids cambian; no había reservas) y 10 reservas sintéticas. Verificado en producción: **los 13 centros devuelven huecos** (tres abren de miércoles a sábado, por eso el lunes y el martes salen vacíos) y "Disponible ahora" pasa de ~1 a 5 centros.
+- Hallado de paso y anotado en `TODO.md`: la migración 7 está aplicada en Supabase pero sin registrar en `_prisma_migrations`.
+- 889 tests. `typecheck` y `lint` limpios.
+
+---
+
 ### 2026-09-28 (2) — `/buscar`: filtros verificados contra BD y pantalla cerrada
 
 El dev volvió a señalar que los filtros no funcionaban. Con el MCP de Supabase conectado (solo lectura) se pudo medir contra los datos reales en vez de razonar sobre el código. Dos agentes en paralelo con ficheros disjuntos (servidor / cliente); integración y validación por el orquestador.
