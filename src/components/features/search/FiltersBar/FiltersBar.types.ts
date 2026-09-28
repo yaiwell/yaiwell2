@@ -1,4 +1,17 @@
+/** Categoría raíz ya localizada, tal y como la pinta el chip. */
+export interface FiltersBarCategory {
+  id: string;
+  slug: string;
+  /** Nombre visible en el locale activo (resuelto en servidor). */
+  label: string;
+}
+
 export interface FiltersBarProps {
+  /**
+   * Categorías raíz que se pintan como chips. Llegan de la BD vía la
+   * page: así una categoría nueva aparece sin tocar código ni mensajes.
+   */
+  categories: FiltersBarCategory[];
   /** Slug de la categoría raíz activa, o `null` si "Todas". */
   activeCategorySlug: string | null;
   /** Estado del toggle "solo disponibles ahora". */

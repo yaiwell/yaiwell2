@@ -10,10 +10,19 @@ import type { GeoPoint, Provider, ProviderWithAvailability } from '@/types/domai
 import { InvalidSearchFiltersError } from './providers.errors';
 import { providersRepository } from './providers.repository';
 import {
+  buildProviderHaystack,
+  matchesAllTokens,
+  tokenizeSearchQuery,
+} from './providers.text-match';
+import {
   searchProvidersFiltersSchema,
   type SearchProvidersFiltersParsed,
 } from './providers.validation';
-import type { SearchProvidersFilters, SearchProvidersResult } from './providers.types';
+import type {
+  SearchableProvider,
+  SearchProvidersFilters,
+  SearchProvidersResult,
+} from './providers.types';
 
 /**
  * Búsqueda de proveedores para el listado público `/buscar`.
@@ -43,14 +52,16 @@ function haversineKm(a: GeoPoint, b: GeoPoint): number {
 }
 
 /**
- * Aplica los filtros sobre un Provider crudo y devuelve `true` si pasa
- * el corte. El filtro por categoría usa el `categoryId` ya resuelto
- * (ver `searchProviders`) para evitar lookups por iteración.
+ * Aplica los filtros sobre un proveedor crudo y devuelve `true` si pasa
+ * el corte. El filtro por categoría usa el `categoryId` ya resuelto y
+ * los términos de la consulta ya normalizados (ver `searchProviders`)
+ * para no repetir ese trabajo en cada iteración.
  */
 function matchesFilters(
-  provider: Provider,
+  { provider, searchText }: SearchableProvider,
   filters: SearchProvidersFiltersParsed,
   resolvedCategoryId: string | null,
+  queryTokens: readonly string[],
 ): boolean {
   // Filtro por categoría: si el caller pidió un slug pero no existe en
   // BD, `resolvedCategoryId` viene null y descartamos todo.
@@ -59,20 +70,12 @@ function matchesFilters(
     if (!provider.categoryIds.includes(resolvedCategoryId)) return false;
   }
 
-  // Filtro por texto libre: matching simple, case-insensitive, sobre
-  // nombre, dirección y descripción es/ca. Es el placeholder hasta
-  // que conectemos `searchRepository.searchProviders` (FTS) cuando
-  // crezca el catálogo y este `filter()` en Node deje de escalar.
-  if (filters.query && filters.query.length > 0) {
-    const haystack = [
-      provider.name,
-      provider.address,
-      provider.description.es,
-      provider.description.ca,
-    ]
-      .join(' ')
-      .toLowerCase();
-    if (!haystack.includes(filters.query.toLowerCase())) return false;
+  // Filtro por texto libre: todos los términos, sin tildes ni
+  // mayúsculas, sobre datos del proveedor + servicios + categorías.
+  // Placeholder hasta conectar el FTS (`searchRepository`) cuando el
+  // catálogo crezca y este `filter()` en Node deje de escalar.
+  if (queryTokens.length > 0) {
+    if (!matchesAllTokens(buildProviderHaystack(provider, searchText), queryTokens)) return false;
   }
 
   if (filters.minRating !== undefined && provider.rating < filters.minRating) {
@@ -154,10 +157,15 @@ export async function searchProviders(
       )?.id ?? null)
     : null;
 
-  const all = await providersRepository.findAll();
+  const all = await providersRepository.findAllForSearch();
+  const queryTokens = tokenizeSearchQuery(parsed.data.query ?? '');
 
-  // 1. Filtro previo basado en propiedades del proveedor.
-  const filtered = all.filter((p) => matchesFilters(p, parsed.data, resolvedCategoryId));
+  // 1. Filtro previo basado en propiedades del proveedor. Nos quedamos
+  //    solo con el `Provider`: el texto de búsqueda es interno y no debe
+  //    viajar en la respuesta al cliente.
+  const filtered = all
+    .filter((entry) => matchesFilters(entry, parsed.data, resolvedCategoryId, queryTokens))
+    .map((entry) => entry.provider);
 
   // 2. Disponibilidad real, en 2 consultas para todo el conjunto.
   const availabilityByProvider = await getProvidersAvailability(filtered.map((p) => p.id));

@@ -10,7 +10,12 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet';
 import type { GeoPoint } from '@/types/domain';
 
 import { MapProviderPopup } from './MapProviderPopup';
-import { buildPinHtml, buildUserLocationHtml, searchMapStyles as s } from './SearchMap.styles';
+import {
+  TILE_LAYER_CLASS,
+  buildPinHtml,
+  buildUserLocationHtml,
+  searchMapStyles as s,
+} from './SearchMap.styles';
 import type { SearchMapProps } from './SearchMap.types';
 
 /**
@@ -172,6 +177,10 @@ export function SearchMap({
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           maxZoom={19}
           attribution=""
+          // Clase de enganche para el tratamiento dark de los tiles (ver
+          // `globals.css`). Va en la capa, no en el mapa, para que el
+          // filtro no alcance a los pines ni a los popups.
+          className={TILE_LAYER_CLASS}
         />
 
         {userLocation && userIcon && (

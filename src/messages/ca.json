@@ -178,11 +178,7 @@
       "map": "Mapa"
     },
     "categories": {
-      "all": "Totes",
-      "belleza": "Bellesa",
-      "estetica": "Estètica",
-      "bienestar": "Benestar",
-      "deporte": "Esport"
+      "all": "Totes"
     },
     "empty": {
       "title": "Sense resultats per ara",

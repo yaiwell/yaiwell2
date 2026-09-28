@@ -79,3 +79,18 @@ export interface ProviderServiceDetail {
   provider: Provider;
   service: Service;
 }
+
+/**
+ * Proveedor tal y como lo necesita el buscador: el `Provider` público
+ * más un blob de texto con los nombres de sus servicios activos y de
+ * las categorías (con ascendencia) en todos los idiomas.
+ *
+ * Es un tipo interno del módulo a propósito: `searchText` no debe
+ * acabar en `Provider` (dominio compartido con la futura app móvil)
+ * ni viajar al cliente en la respuesta de `/buscar`. Por eso va al
+ * lado del proveedor y no mezclado con sus campos.
+ */
+export interface SearchableProvider {
+  provider: Provider;
+  searchText: string;
+}

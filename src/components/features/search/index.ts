@@ -5,8 +5,13 @@
  *
  *   import { SearchView } from '@/components/features/search';
  */
-export { SearchView } from './SearchView';
-export type { SearchViewInitialState, SearchViewProps } from './SearchView';
+export { SearchView, buildSearchCategories, parseSearchParams } from './SearchView';
+export type {
+  SearchCategoriesData,
+  SearchCategoryOption,
+  SearchViewInitialState,
+  SearchViewProps,
+} from './SearchView';
 
 export { SearchAutocomplete } from './SearchAutocomplete';
 export type { SearchAutocompleteProps } from './SearchAutocomplete';

@@ -6,35 +6,20 @@ import { usePathname, useRouter } from '@/i18n/navigation';
 import type { Suggestion } from '@/lib/fake-data/search-suggestions';
 import type { PriceRange } from '@/types/domain';
 
-import type { ActiveFilterChip } from '../ActiveFiltersChips';
 import type { AdvancedFiltersValue } from '../FiltersSheet';
+import { useFilterChipHandlers } from './SearchView.chips';
 import { NEAR_ME_RADIUS_METERS, useNearMe } from './SearchView.nearMe';
-import type { MobileTab, SearchViewInitialState } from './SearchView.types';
+import type {
+  MobileTab,
+  SearchFilters,
+  SearchUrlState,
+  SearchViewInitialState,
+} from './SearchView.types';
+import { buildSearchParams } from './SearchView.url';
 
 // Re-export del radio para que los consumidores lo importen desde la
 // fachada habitual de lógica (en lugar de tirar del archivo nearMe).
 export { NEAR_ME_RADIUS_METERS };
-
-/**
- * Construye la URL de búsqueda a partir de los filtros activos.
- *
- * Estrategia "URL as state": cada cambio dispara una navegación que
- * re-renderiza la page server-side con los nuevos `searchParams`,
- * y next-intl mantiene el locale automáticamente.
- *
- * Mantenemos compacto el querystring: omitimos claves cuyos valores
- * son los predeterminados (sin texto, sin categoría, sin "ahora", etc.).
- */
-function buildSearchParams(filters: SearchViewInitialState['filters']): string {
-  const params = new URLSearchParams();
-  if (filters.query) params.set('q', filters.query);
-  if (filters.categorySlug) params.set('cat', filters.categorySlug);
-  if (filters.availabilityOnly) params.set('now', '1');
-  if (filters.priceRange.length > 0) params.set('price', filters.priceRange.join(','));
-  if (filters.minRating !== null) params.set('rating', String(filters.minRating));
-  const qs = params.toString();
-  return qs ? `?${qs}` : '';
-}
 
 /**
  * Hook orquestador del buscador.
@@ -56,6 +41,33 @@ export function useSearchView(initial: SearchViewInitialState) {
   const [filtersSheetOpen, setFiltersSheetOpen] = useState(false);
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
+  // Estado local que SIEMPRE refleja la URL. Lo derivamos del initial
+  // que llega del server; cada navegación produce un nuevo `initial`.
+  const filters = initial.filters;
+
+  /**
+   * Navega a la URL que codifica `state`. Es la única salida hacia el
+   * router, así que ningún handler puede olvidarse de un parámetro.
+   */
+  const navigate = useCallback(
+    (state: SearchUrlState) => {
+      const qs = buildSearchParams(state);
+      // pathname viene sin prefijo de locale; el wrapper de next-intl
+      // se encarga de añadir `/ca` si procede.
+      startTransition(() => {
+        router.replace(`${pathname}${qs}`, { scroll: false });
+      });
+    },
+    [pathname, router],
+  );
+
+  // Al cambiar "Cerca de ti" reescribimos `?near=me` conservando el
+  // resto de filtros, para que el estado se pueda compartir y recargar.
+  const handleNearMeChange = useCallback(
+    (nearMeOnly: boolean) => navigate({ ...filters, nearMeOnly }),
+    [filters, navigate],
+  );
+
   // Distancia + filtro "Cerca de ti" viven en su propio hook para no
   // inflar este orquestador (ver `SearchView.nearMe.ts`).
   const {
@@ -66,27 +78,19 @@ export function useSearchView(initial: SearchViewInitialState) {
     nearMeYieldedEmpty,
     handleToggleNearMe,
     handleDisableNearMe,
-  } = useNearMe(initial.providers, { initialNearMeOnly: initial.nearMeOnly });
-
-  // Estado local que SIEMPRE refleja la URL. Lo derivamos del initial
-  // que llega del server; cada navegación produce un nuevo `initial`.
-  const filters = initial.filters;
+  } = useNearMe(initial.providers, {
+    initialNearMeOnly: initial.nearMeOnly ?? false,
+    onNearMeChange: handleNearMeChange,
+  });
 
   /**
    * Aplica un patch parcial sobre los filtros y navega a la nueva URL.
-   * Centralizamos aquí para que cada setter de UI sea una línea.
+   * Arrastra el valor vigente de "Cerca de ti": antes se perdía en
+   * cuanto el usuario tocaba cualquier otro filtro.
    */
   const updateFilters = useCallback(
-    (patch: Partial<SearchViewInitialState['filters']>) => {
-      const next: SearchViewInitialState['filters'] = { ...filters, ...patch };
-      const qs = buildSearchParams(next);
-      // pathname viene sin prefijo de locale; el wrapper de next-intl
-      // se encarga de añadir `/ca` si procede.
-      startTransition(() => {
-        router.replace(`${pathname}${qs}`, { scroll: false });
-      });
-    },
-    [filters, pathname, router],
+    (patch: Partial<SearchFilters>) => navigate({ ...filters, ...patch, nearMeOnly }),
+    [filters, nearMeOnly, navigate],
   );
 
   const handleQueryChange = useCallback(
@@ -115,51 +119,21 @@ export function useSearchView(initial: SearchViewInitialState) {
     [updateFilters],
   );
 
+  // Cerramos el sheet igual que "Aplicar": limpiar también es una
+  // decisión final, y dejarlo abierto ocultaba el resultado del cambio.
   const handleClearAdvanced = useCallback(() => {
     updateFilters({
       priceRange: [] as PriceRange[],
       minRating: null,
     });
+    setFiltersSheetOpen(false);
   }, [updateFilters]);
 
-  /**
-   * Elimina un chip concreto sin tocar el resto. El switch garantiza
-   * que el TypeScript chequee todos los casos del discriminated union.
-   */
-  const handleRemoveChip = useCallback(
-    (chip: ActiveFilterChip) => {
-      switch (chip.kind) {
-        case 'query':
-          updateFilters({ query: '' });
-          return;
-        case 'category':
-          updateFilters({ categorySlug: null });
-          return;
-        case 'availability':
-          updateFilters({ availabilityOnly: false });
-          return;
-        case 'price':
-          updateFilters({
-            priceRange: filters.priceRange.filter((p) => p !== chip.value),
-          });
-          return;
-        case 'rating':
-          updateFilters({ minRating: null });
-          return;
-      }
-    },
-    [filters.priceRange, updateFilters],
+  // Chips de filtros activos: handlers aislados en su propio hook.
+  const { handleRemoveChip, handleClearAllChips } = useFilterChipHandlers(
+    filters.priceRange,
+    updateFilters,
   );
-
-  const handleClearAllChips = useCallback(() => {
-    updateFilters({
-      query: '',
-      categorySlug: null,
-      availabilityOnly: false,
-      priceRange: [] as PriceRange[],
-      minRating: null,
-    });
-  }, [updateFilters]);
 
   /**
    * Resuelve la selección de una sugerencia del autocomplete dentro

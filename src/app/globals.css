@@ -250,6 +250,26 @@
 }
 
 /*
+ * Mapa en modo oscuro.
+ *
+ * Los tiles de OSM solo existen en claro, y en dark el mapa era un
+ * rectángulo blanco que deslumbraba. Invertimos SOLO la capa de tiles
+ * (clase puesta en el `<TileLayer>`): pines y popups quedan fuera del
+ * filtro y conservan sus colores de marca. El `hue-rotate(180deg)`
+ * devuelve el agua a azul y los parques a verde tras la inversión; el
+ * brillo y contraste rebajados evitan que las calles queden estridentes.
+ * El fondo del contenedor se oscurece también para que los tiles que
+ * aún cargan no parpadeen en gris claro.
+ */
+.dark .leaflet-container:has(.yaiwell-map-tiles) {
+  background-color: var(--muted);
+}
+
+.dark .yaiwell-map-tiles {
+  filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+}
+
+/*
  * Override del chrome del Popup de Leaflet para que case con la marca.
  * Leaflet inyecta sus propias clases (.leaflet-popup-*); no podemos
  * pasarlas por props, así que se sobrescriben aquí.

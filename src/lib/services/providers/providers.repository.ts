@@ -1,12 +1,19 @@
 import 'server-only';
 
-import { Prisma } from '@prisma/client';
-
 import { prisma } from '@/lib/db/prisma';
 import type { SitemapProviderRef } from '@/lib/seo';
-import type { LocalizedText, Provider, Service, ServiceWithRootCategory } from '@/types/domain';
+import type { Provider, Service, ServiceWithRootCategory } from '@/types/domain';
 
 import { resolveRootCategory } from './providers.categories';
+import {
+  mapPrismaService,
+  mapProviderRow,
+  mapSearchableProviderRow,
+  type ProviderRow,
+  type SearchableProviderRow,
+} from './providers.mapper';
+import { PROVIDER_COLUMNS_FRAGMENT, SEARCH_TEXT_FRAGMENT } from './providers.sql';
+import type { SearchableProvider } from './providers.types';
 
 /**
  * Repositorio de proveedores: única frontera entre la lógica de
@@ -18,172 +25,31 @@ import { resolveRootCategory } from './providers.categories';
  * pendientes de verificación viven en el panel admin (cola), no en
  * el listado público.
  *
- * `location` es PostGIS `geography(Point, 4326)` (Prisma la trata como
- * `Unsupported`), por lo que usamos raw SQL con `ST_X`/`ST_Y` para
- * extraer lng/lat al shape `GeoPoint` del dominio. Los categoryIds se
- * agregan en una subquery escalar sobre `provider_categories` para
- * evitar N+1 y mantener la query plana (sin GROUP BY).
+ * Las columnas y los subqueries (categorías derivadas, texto de
+ * búsqueda) viven en `providers.sql.ts`; el mapeo de filas, en
+ * `providers.mapper.ts`.
  */
-
-// ============================================================================
-// Tipos internos de mapeo
-// ============================================================================
-
-/**
- * Forma cruda que devuelve la raw query desde Postgres. Coincide con
- * el SELECT replicado en `findAll` / `findById` / `findBySlug` —
- * mantener los tres alineados al ampliar columnas.
- */
-interface ProviderRow {
-  id: string;
-  slug: string;
-  businessName: string;
-  type: 'autonomo' | 'centro';
-  description: unknown;
-  address: string;
-  lng: number;
-  lat: number;
-  photos: string[] | null;
-  ratingAvg: number;
-  ratingCount: number;
-  priceRange: '€' | '€€' | '€€€';
-  categoryIds: string[] | null;
-}
-
-/**
- * Convierte la fila cruda al `Provider` del dominio. Tolera
- * description JSONB con sólo `es`/`ca` o vacía y normaliza `photos`
- * y `categoryIds` a arrays nunca nulos.
- */
-function mapProviderRow(row: ProviderRow): Provider {
-  const desc = (row.description ?? {}) as Partial<LocalizedText>;
-  return {
-    id: row.id,
-    slug: row.slug,
-    name: row.businessName,
-    type: row.type,
-    description: {
-      es: desc.es ?? '',
-      ca: desc.ca ?? '',
-      en: desc.en,
-      de: desc.de,
-    },
-    address: row.address,
-    location: { lat: row.lat, lng: row.lng },
-    photos: row.photos ?? [],
-    rating: row.ratingAvg,
-    reviewsCount: row.ratingCount,
-    priceRange: row.priceRange,
-    categoryIds: row.categoryIds ?? [],
-  };
-}
-
-/**
- * Mapea un `Service` de Prisma al `Service` del dominio.
- *
- * `name` y `description` se persisten como `Json` en BD (la tabla puede
- * llegar a tener traducciones parciales). Tipamos como Partial para
- * tolerar el caso "sólo es/ca", que es lo que rellena el wizard.
- */
-function mapPrismaService(row: {
-  id: string;
-  providerId: string;
-  professionalId: string | null;
-  categoryId: string;
-  name: unknown;
-  description: unknown;
-  durationMinutes: number;
-  priceCents: number;
-}): Service {
-  const name = (row.name ?? {}) as Partial<LocalizedText>;
-  const description = (row.description ?? {}) as Partial<LocalizedText>;
-  return {
-    id: row.id,
-    providerId: row.providerId,
-    professionalId: row.professionalId,
-    categoryId: row.categoryId,
-    name: { es: name.es ?? '', ca: name.ca ?? '', en: name.en, de: name.de },
-    description: {
-      es: description.es ?? '',
-      ca: description.ca ?? '',
-      en: description.en,
-      de: description.de,
-    },
-    durationMinutes: row.durationMinutes,
-    priceCents: row.priceCents,
-  };
-}
-
-// ============================================================================
-// Repositorio
-// ============================================================================
-
-/**
- * Categorías a las que pertenece un proveedor, **derivadas de sus
- * servicios publicados** y no de una tabla de asociación.
- *
- * Antes esto agregaba `provider_categories`, y esa tabla **nunca ha
- * tenido ni una fila**: no la escribe el seed, ni el onboarding, ni
- * ningún service. Como el filtro de `/buscar` comprueba
- * `categoryIds.includes(...)`, el resultado era que **cualquier filtro
- * por categoría devolvía cero proveedores** — y sin ningún error a la
- * vista, porque una lista vacía es un resultado legítimo.
- *
- * Se deriva en vez de mantener la tabla porque un dato duplicado que
- * nadie sincroniza es justo lo que provocó el fallo: así un proveedor
- * entra en "Belleza" en cuanto publica un servicio de belleza, y sale
- * cuando lo pausa, sin que nadie tenga que acordarse de nada.
- *
- * Devuelve la categoría del servicio **y toda su ascendencia** (la
- * jerarquía tiene 3 niveles), para que filtrar por la raíz encuentre
- * también los servicios colgados de sus hijas: quien pulsa "Belleza"
- * espera ver manicuras.
- *
- * Solo cuenta servicios activos y no borrados: un proveedor cuyo único
- * servicio de belleza está pausado no debe aparecer bajo "Belleza".
- */
-const CATEGORY_IDS_FRAGMENT = Prisma.sql`(
-          SELECT COALESCE(array_agg(DISTINCT ancestry.category_id), ARRAY[]::text[])
-          FROM (
-            SELECT unnest(ARRAY[c.id, c."parentId", parent."parentId"]) AS category_id
-            FROM services s
-            JOIN categories c ON c.id = s."categoryId"
-            LEFT JOIN categories parent ON parent.id = c."parentId"
-            WHERE s."providerId" = p.id
-              AND s."deletedAt" IS NULL
-              AND s."isActive" = true
-          ) ancestry
-          WHERE ancestry.category_id IS NOT NULL
-        )`;
-
 export const providersRepository = {
   /**
    * Devuelve todos los proveedores aprobados y vivos, ordenados por
-   * rating descendente. La ordenación final por distancia/rating la
-   * decide el service (`searchProviders`).
+   * rating descendente, junto a su texto de búsqueda (servicios y
+   * categorías). La ordenación final por distancia/rating la decide
+   * el service (`searchProviders`).
+   *
+   * El texto de búsqueda solo se calcula aquí: la ficha
+   * (`findById`/`findBySlug`) no lo necesita y no pagamos el subquery.
    */
-  async findAll(): Promise<Provider[]> {
-    const rows = await prisma.$queryRaw<ProviderRow[]>`
+  async findAllForSearch(): Promise<SearchableProvider[]> {
+    const rows = await prisma.$queryRaw<SearchableProviderRow[]>`
       SELECT
-        p.id,
-        p.slug,
-        p."businessName",
-        p.type::text AS type,
-        p.description,
-        p.address,
-        ST_X(p.location::geometry)::float8 AS lng,
-        ST_Y(p.location::geometry)::float8 AS lat,
-        p.photos,
-        p."ratingAvg",
-        p."ratingCount",
-        p."priceRange"::text AS "priceRange",
-        ${CATEGORY_IDS_FRAGMENT} AS "categoryIds"
+        ${PROVIDER_COLUMNS_FRAGMENT},
+        ${SEARCH_TEXT_FRAGMENT} AS "searchText"
       FROM providers p
       WHERE p."verificationStatus" = 'approved'
         AND p."deletedAt" IS NULL
       ORDER BY p."ratingAvg" DESC, p."ratingCount" DESC
     `;
-    return rows.map(mapProviderRow);
+    return rows.map(mapSearchableProviderRow);
   },
 
   /**
@@ -192,20 +58,7 @@ export const providersRepository = {
    */
   async findById(id: string): Promise<Provider | null> {
     const rows = await prisma.$queryRaw<ProviderRow[]>`
-      SELECT
-        p.id,
-        p.slug,
-        p."businessName",
-        p.type::text AS type,
-        p.description,
-        p.address,
-        ST_X(p.location::geometry)::float8 AS lng,
-        ST_Y(p.location::geometry)::float8 AS lat,
-        p.photos,
-        p."ratingAvg",
-        p."ratingCount",
-        p."priceRange"::text AS "priceRange",
-        ${CATEGORY_IDS_FRAGMENT} AS "categoryIds"
+      SELECT ${PROVIDER_COLUMNS_FRAGMENT}
       FROM providers p
       WHERE p.id = ${id}
         AND p."verificationStatus" = 'approved'
@@ -221,20 +74,7 @@ export const providersRepository = {
    */
   async findBySlug(slug: string): Promise<Provider | null> {
     const rows = await prisma.$queryRaw<ProviderRow[]>`
-      SELECT
-        p.id,
-        p.slug,
-        p."businessName",
-        p.type::text AS type,
-        p.description,
-        p.address,
-        ST_X(p.location::geometry)::float8 AS lng,
-        ST_Y(p.location::geometry)::float8 AS lat,
-        p.photos,
-        p."ratingAvg",
-        p."ratingCount",
-        p."priceRange"::text AS "priceRange",
-        ${CATEGORY_IDS_FRAGMENT} AS "categoryIds"
+      SELECT ${PROVIDER_COLUMNS_FRAGMENT}
       FROM providers p
       WHERE p.slug = ${slug}
         AND p."verificationStatus" = 'approved'
@@ -374,7 +214,7 @@ export const providersRepository = {
   /**
    * Proyección mínima de los proveedores públicos para el sitemap.
    *
-   * Deliberadamente NO reutiliza `findAll()`: aquella trae descripción,
+   * Deliberadamente NO reutiliza `findAllForSearch()`: aquella trae descripción,
    * fotos, categorías agregadas y extrae lng/lat con PostGIS, y el
    * sitemap solo necesita construir la URL y el `lastmod`. Aquí van
    * tres columnas, sin joins ni geometría, sobre el mismo filtro

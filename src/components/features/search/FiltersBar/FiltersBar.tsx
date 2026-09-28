@@ -3,7 +3,6 @@
 import { Navigation, SlidersHorizontal, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { getRootCategories } from '@/lib/fake-data/categories';
 import { cn } from '@/lib/utils';
 
 import { filtersBarStyles as s } from './FiltersBar.styles';
@@ -13,7 +12,8 @@ import type { FiltersBarProps } from './FiltersBar.types';
  * Barra de filtros principales del buscador.
  *
  * Se compone de tres bloques de izquierda a derecha:
- *  1. Chips horizontales con las categorías raíz + chip "Todas".
+ *  1. Chips horizontales con las categorías raíz + chip "Todas". Las
+ *     categorías llegan por props desde la BD, ya localizadas.
  *  2. Toggle destacado "Solo disponibles ahora".
  *  3. Botón "Filtros" que abre el sheet de avanzados.
  *
@@ -21,6 +21,7 @@ import type { FiltersBarProps } from './FiltersBar.types';
  * fijos a la derecha gracias al `flex-1 + shrink-0`.
  */
 export function FiltersBar({
+  categories,
   activeCategorySlug,
   availabilityOnly,
   hasAdvancedFilters,
@@ -33,7 +34,6 @@ export function FiltersBar({
 }: FiltersBarProps) {
   const t = useTranslations('search');
   const tc = useTranslations('search.categories');
-  const rootCategories = getRootCategories();
 
   return (
     <div className={s.root} data-component="filters-bar">
@@ -53,7 +53,7 @@ export function FiltersBar({
         >
           {tc('all')}
         </button>
-        {rootCategories.map((cat) => {
+        {categories.map((cat) => {
           const isActive = activeCategorySlug === cat.slug;
           return (
             <button
@@ -65,7 +65,7 @@ export function FiltersBar({
               className={cn(s.chipBase, isActive ? s.chipActive : s.chipIdle)}
               data-component={`filters-bar-category-${cat.slug}`}
             >
-              {tc(cat.slug as 'belleza' | 'estetica' | 'bienestar' | 'deporte')}
+              {cat.label}
             </button>
           );
         })}

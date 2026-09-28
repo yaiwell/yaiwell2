@@ -3,12 +3,12 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { SearchView } from '@/components/features/search';
+import { SearchView, buildSearchCategories, parseSearchParams } from '@/components/features/search';
 import type { SearchViewInitialState } from '@/components/features/search';
 import { routing } from '@/i18n/routing';
 import { buildAlternates } from '@/lib/seo';
+import { getCategoriesTree } from '@/lib/services/provider-panel';
 import { getFromPriceCentsBatch, searchProviders } from '@/lib/services/providers';
-import type { PriceRange } from '@/types/domain';
 
 interface SearchPageProps {
   // En Next.js 16 `params` y `searchParams` son Promises.
@@ -53,7 +53,8 @@ export async function generateMetadata({
  * Server Component que:
  *  1. Valida el locale.
  *  2. Parsea los `searchParams` a un objeto de filtros tipado.
- *  3. Invoca `searchProviders` server-side para el SSR inicial.
+ *  3. Invoca `searchProviders` server-side para el SSR inicial y carga
+ *     el árbol de categorías de la BD para los chips.
  *  4. Calcula el precio "desde" de cada proveedor para las cards.
  *  5. Pasa el snapshot al orquestador cliente `<SearchView>`.
  *
@@ -71,30 +72,27 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
   const sp = await searchParams;
 
   // Convertimos los searchParams (siempre strings) a filtros tipados.
-  // `priceRange` viene como CSV "€,€€" → array.
-  const query = typeof sp.q === 'string' ? sp.q : '';
-  const categorySlug = typeof sp.cat === 'string' && sp.cat.length > 0 ? sp.cat : null;
-  const availabilityOnly = sp.now === '1' || sp.now === 'true';
-  // `near=me` viene del formulario del Hero cuando el usuario elige
-  // "Usar mi ubicación". Activamos el chip "Cerca de ti" al hidratar.
-  const nearMeOnly = sp.near === 'me';
-  const minRating = typeof sp.rating === 'string' ? Number(sp.rating) : NaN;
-  const priceRangeRaw = typeof sp.price === 'string' ? sp.price : '';
-  const allowedRanges: PriceRange[] = ['€', '€€', '€€€'];
-  const priceRange = priceRangeRaw
-    .split(',')
-    .map((s) => s.trim())
-    .filter((s): s is PriceRange => allowedRanges.includes(s as PriceRange));
+  // El parser vive junto a `buildSearchParams` para que ida y vuelta de
+  // la URL no puedan divergir (ver `SearchView.url.ts`).
+  const { nearMeOnly, ...filters } = parseSearchParams(sp);
+  const { query, categorySlug, availabilityOnly, minRating, priceRange } = filters;
 
   // Ejecutamos la búsqueda. El service ya enriquece con disponibilidad
   // y devuelve la lista ordenada lista para pintar.
-  const providers = await searchProviders({
-    query: query || undefined,
-    categorySlug: categorySlug ?? undefined,
-    availabilityOnly,
-    minRating: Number.isFinite(minRating) ? minRating : undefined,
-    priceRange: priceRange.length > 0 ? priceRange : undefined,
-  });
+  // Las categorías salen de la BD (no de fake-data) en paralelo con la
+  // búsqueda: son independientes y así no sumamos latencia.
+  const [providers, categoriesTree] = await Promise.all([
+    searchProviders({
+      query: query || undefined,
+      categorySlug: categorySlug ?? undefined,
+      availabilityOnly,
+      minRating: minRating ?? undefined,
+      priceRange: priceRange.length > 0 ? priceRange : undefined,
+    }),
+    getCategoriesTree(),
+  ]);
+  // Resolvemos nombres al locale aquí: al cliente solo le llegan strings.
+  const categories = buildSearchCategories(categoriesTree, locale, categorySlug);
 
   // Mapa providerId → precio "desde", en UNA sola agregación agrupada.
   // Antes se lanzaba un MIN por proveedor (N consultas por request);
@@ -108,19 +106,13 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
   const initial: SearchViewInitialState = {
     providers,
     fromPriceMap,
-    filters: {
-      query,
-      categorySlug,
-      availabilityOnly,
-      priceRange,
-      minRating: Number.isFinite(minRating) ? minRating : null,
-    },
+    filters,
     nearMeOnly,
   };
 
   return (
     <div data-component="search-page" className="contents">
-      <SearchView initial={initial} />
+      <SearchView initial={initial} categories={categories} />
     </div>
   );
 }

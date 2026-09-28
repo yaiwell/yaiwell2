@@ -4,8 +4,6 @@ import { List, MapPin } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 
-import { getCategoryBySlug } from '@/lib/fake-data/categories';
-import { pickLocalized } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 
 import { ActiveFiltersChips } from '../ActiveFiltersChips';
@@ -42,12 +40,13 @@ const SearchMapLazy = dynamic(() => import('../SearchMap/SearchMap').then((m) =>
  *
  * Toda la lógica está en `useSearchView`. Aquí solo JSX y wiring.
  */
-export function SearchView({ initial }: SearchViewProps) {
+export function SearchView({ initial, categories }: SearchViewProps) {
   const t = useTranslations('search');
   const locale = useLocale() as 'es' | 'ca' | 'en' | 'de';
   const {
     advancedValue,
     hasAdvancedFilters,
+    isPending,
     displayProviders,
     nearMeYieldedEmpty,
     mobileTab,
@@ -72,13 +71,6 @@ export function SearchView({ initial }: SearchViewProps) {
     handleSelectSuggestion,
   } = useSearchView(initial);
 
-  // Resolvemos la etiqueta visible de la categoría activa una sola vez
-  // para no recalcular en cada render del chip correspondiente.
-  const activeCategory = initial.filters.categorySlug
-    ? getCategoryBySlug(initial.filters.categorySlug)
-    : null;
-  const categoryLabel = activeCategory ? pickLocalized(activeCategory.name, locale) : null;
-
   return (
     <div className={s.root} data-component="search-view">
       <div className={s.stickyTop} data-component="search-sticky-top">
@@ -98,6 +90,7 @@ export function SearchView({ initial }: SearchViewProps) {
           />
 
           <FiltersBar
+            categories={categories.roots}
             activeCategorySlug={initial.filters.categorySlug}
             availabilityOnly={initial.filters.availabilityOnly}
             hasAdvancedFilters={hasAdvancedFilters}
@@ -146,13 +139,22 @@ export function SearchView({ initial }: SearchViewProps) {
       <div className={s.body} data-component="search-body">
         <div className={s.splitGrid}>
           {/* Columna lista: siempre montada en desktop, condicionada en móvil. */}
+          {/* `aria-busy` + atenuado mientras el server recalcula tras un
+              cambio de filtro: sin esto la lista vieja parecía ser ya el
+              resultado nuevo. Solo opacidad, para no mover el layout. */}
           <div
-            className={cn(s.listColumn, mobileTab === 'list' ? 'block' : 'hidden', 'lg:block')}
+            className={cn(
+              s.listColumn,
+              mobileTab === 'list' ? 'block' : 'hidden',
+              'lg:block',
+              isPending && s.listColumnPending,
+            )}
+            aria-busy={isPending}
             data-component="search-list-column"
           >
             <ActiveFiltersChips
               filters={initial.filters}
-              categoryLabel={categoryLabel}
+              categoryLabel={categories.activeLabel}
               onRemove={handleRemoveChip}
               onClearAll={handleClearAllChips}
             />

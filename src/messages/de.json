@@ -178,11 +178,7 @@
       "map": "Karte"
     },
     "categories": {
-      "all": "Alle",
-      "belleza": "Beauty",
-      "estetica": "Kosmetik",
-      "bienestar": "Wellness",
-      "deporte": "Sport"
+      "all": "Alle"
     },
     "empty": {
       "title": "Vorerst keine Ergebnisse",

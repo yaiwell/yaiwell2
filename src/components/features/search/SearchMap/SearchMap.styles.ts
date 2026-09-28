@@ -15,6 +15,15 @@ export const searchMapStyles = {
 } as const;
 
 /**
+ * Clase que se aplica a la capa de tiles de OSM.
+ *
+ * El tratamiento oscuro vive en `globals.css` bajo `.dark`: es CSS puro
+ * enganchado a la misma clase que pone el `ThemeProvider` en `<html>`,
+ * así que no necesita JS ni provoca desajustes de hidratación.
+ */
+export const TILE_LAYER_CLASS = 'yaiwell-map-tiles';
+
+/**
  * Genera el HTML del divIcon para un pin de Leaflet en función del
  * estado de disponibilidad y si está resaltado.
  *

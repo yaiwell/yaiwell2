@@ -27,7 +27,10 @@ export const searchViewStyles = {
   mobileTabActive: 'bg-card text-foreground shadow-sm',
   body: 'mx-auto w-full max-w-7xl flex-1 px-4 py-5 sm:px-6 sm:py-6',
   splitGrid: 'grid w-full grid-cols-1 gap-6 lg:grid-cols-2',
-  listColumn: 'flex flex-col gap-4',
+  // La transición vive en la base para que el atenuado entre y salga
+  // suave; `pointer-events-none` evita clics sobre resultados obsoletos.
+  listColumn: 'flex flex-col gap-4 transition-opacity duration-200',
+  listColumnPending: 'pointer-events-none opacity-60',
   // Base sin `hidden`: el componente añade la visibilidad condicional
   // según la pestaña activa para que las utilidades de mobile puedan
   // sobreescribirla sin pelearse con la cascada.

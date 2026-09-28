@@ -30,17 +30,37 @@ export const NEAR_ME_RADIUS_METERS = 5_000;
  */
 export function useNearMe(
   providers: ProviderWithAvailability[],
-  options: { initialNearMeOnly?: boolean } = {},
+  options: {
+    initialNearMeOnly?: boolean;
+    /**
+     * Se invoca con el nuevo valor cada vez que el usuario cambia el
+     * toggle. El orquestador lo usa para reflejar `?near=me` en la URL;
+     * el hook no conoce el router para seguir siendo testeable aislado.
+     */
+    onNearMeChange?: (next: boolean) => void;
+  } = {},
 ) {
+  const { initialNearMeOnly = false, onNearMeChange } = options;
+
   // Ubicación del usuario (real o fallback BCN). El provider siempre
   // devuelve algo, así que nunca tenemos que comprobar `null` aquí.
   const { location: userLocation, hasRealLocation } = useUserLocation();
 
-  // Toggle no persistido en URL: es un filtro puramente de cliente
-  // que se aplica sobre la lista ya ordenada por proximidad. Aceptamos
-  // un valor inicial para que la navegación desde el Hero (`?near=me`)
-  // ya entre con el chip activado sin un render adicional.
-  const [nearMeOnly, setNearMeOnly] = useState(options.initialNearMeOnly ?? false);
+  // El filtro se aplica en cliente sobre la lista ya ordenada por
+  // proximidad, pero su valor viaja en la URL (`?near=me`). Guardamos
+  // copia local para que el chip responda al instante, sin esperar a
+  // que termine la navegación.
+  const [nearMeOnly, setNearMeOnly] = useState(initialNearMeOnly);
+
+  // Si la URL cambia por fuera (atrás/adelante del navegador), el valor
+  // inicial que llega del server cambia y hay que re-sincronizar. Se
+  // ajusta durante el render —patrón recomendado por React— en lugar de
+  // con un efecto, para no pintar un frame con el chip desfasado.
+  const [syncedInitial, setSyncedInitial] = useState(initialNearMeOnly);
+  if (syncedInitial !== initialNearMeOnly) {
+    setSyncedInitial(initialNearMeOnly);
+    setNearMeOnly(initialNearMeOnly);
+  }
 
   /**
    * Lista enriquecida con la distancia real y ordenada de cerca a lejos.
@@ -87,13 +107,19 @@ export function useNearMe(
    */
   const nearMeYieldedEmpty = nearMeOnly && displayProviders.length === 0;
 
+  // Calculamos el siguiente valor fuera del updater de `setState`: el
+  // callback de URL es un efecto secundario y React puede invocar los
+  // updaters dos veces en StrictMode.
   const handleToggleNearMe = useCallback(() => {
-    setNearMeOnly((prev) => !prev);
-  }, []);
+    const next = !nearMeOnly;
+    setNearMeOnly(next);
+    onNearMeChange?.(next);
+  }, [nearMeOnly, onNearMeChange]);
 
   const handleDisableNearMe = useCallback(() => {
     setNearMeOnly(false);
-  }, []);
+    onNearMeChange?.(false);
+  }, [onNearMeChange]);
 
   return {
     userLocation,

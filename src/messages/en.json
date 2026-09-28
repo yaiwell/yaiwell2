@@ -178,11 +178,7 @@
       "map": "Map"
     },
     "categories": {
-      "all": "All",
-      "belleza": "Beauty",
-      "estetica": "Aesthetics",
-      "bienestar": "Wellness",
-      "deporte": "Sport"
+      "all": "All"
     },
     "empty": {
       "title": "No results just yet",

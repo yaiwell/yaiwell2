@@ -6,6 +6,24 @@
 
 ---
 
+## 2026-09-28
+
+### 2026-09-28 (2) — `/buscar`: filtros verificados contra BD y pantalla cerrada
+
+El dev volvió a señalar que los filtros no funcionaban. Con el MCP de Supabase conectado (solo lectura) se pudo medir contra los datos reales en vez de razonar sobre el código. Dos agentes en paralelo con ficheros disjuntos (servidor / cliente); integración y validación por el orquestador.
+
+- **Cerrado el pendiente del commit anterior**: el filtro de categorías funciona contra BD. Ejecutando el mismo subquery en Supabase: Belleza 5 centros, Estética 4, Bienestar 2, Deporte 5, y las subcategorías con sus cifras.
+- **El buscador de texto era casi inútil**, y se midió: solo miraba nombre, dirección y descripción es/ca del centro. "corte" encontraba 1 centro de los 3 que lo ofrecen, "padel" **0** con "Born Pàdel Club" en el catálogo, "uñas" 0. Ahora el haystack incluye los **nombres de servicios activos** y los **nombres de sus categorías con ascendencia**, en los 4 idiomas, normalizado sin acentos y con **AND por palabras**. Un único subquery en `findAllForSearch` (sin N+1) y el texto de búsqueda **no se filtra al tipo `Provider` de dominio**, que comparte la futura app móvil; un test lo vigila. `findById`/`findBySlug` no pagan ese coste.
+- **`providers.repository.ts` troceado** (396 → 236 líneas) en `providers.sql.ts` y `providers.mapper.ts`; el `SELECT` de columnas ya no está copiado tres veces.
+- **Los chips de categoría salían de `fake-data`**: ahora el árbol llega de BD en paralelo con la búsqueda y al cliente solo cruzan strings ya traducidas. La etiqueta del chip activo busca en los 3 niveles, así que `manicura-pedicura` desde la landing se nombra bien. Retiradas las 4 claves `search.categories.*` sin consumidor (975 claves × 4, paridad verificada). **Efecto colateral anotado**: sin campo de orden en `Category`, los chips van por orden alfabético del idioma.
+- **"Cerca de ti" se perdía de la URL** al tocar cualquier otro filtro. Parser y constructor de la URL viven ahora juntos (`SearchView.url.ts`), con test de ida y vuelta de todos los campos, y el toggle escribe `?near=me`.
+- **Estado de carga al refiltrar** (`aria-busy` + opacidad, sin salto de layout), **"Limpiar filtros" cierra el sheet** y **el mapa ya no es un rectángulo blanco en modo oscuro** (CSS puro sobre la capa de tiles con `.dark`, sin tocar pines ni la atribución de OSM).
+- **Diagnóstico de datos, no de código**: "Disponible ahora" sale casi vacío porque 12 de los 13 centros sembrados **no tienen ningún `Professional`**, así que no tienen horario. Se arregla con `npm run db:seed:dev`; anotado en `TODO.md` a la espera de confirmación del dev porque escribe en BD.
+- **Corrección de un diagnóstico propio**: al conectar el MCP se leyeron recuentos de `list_tables` (0 proveedores, 0 migraciones) que eran **estimaciones de estadísticas de Postgres**, no `count(*)`. Los reales: 13 proveedores, 40 servicios, 23 categorías, 7 migraciones registradas. Lección: contar con `count(*)` antes de concluir nada sobre los datos.
+- 42 tests nuevos (888 en total, 121 ficheros). `typecheck`, `lint` y `build` limpios.
+
+---
+
 ## 2026-09-24
 
 ### 2026-09-24 (3) — Chrome global: SEO multi-idioma, resiliencia y accesibilidad
