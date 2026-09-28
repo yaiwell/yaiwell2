@@ -195,6 +195,9 @@
 - [ ] **Enlaces de Términos y Privacidad en el registro**: el checkbox obligatorio de `SignUpForm.tsx:341,346` sigue apuntando a `/` (la home). La columna legal del footer se retiró el 2026-09-24 por no existir los documentos, pero este checkbox se quedó — y es el que el usuario **tiene que marcar** para darse de alta. Decidir si se retira el enlace o se espera a los documentos.
 - [ ] **Reponer el footer legal y la columna "Empresa"** cuando existan los destinos. Los textos de las 8 claves retiradas están en la entrada de `DO.md` del 2026-09-24, listos para copiar y pegar sin retraducir.
 - [ ] **`public/og-default.svg` queda huérfano** tras generar la imagen de compartición en código. Es el único asset de marca del repo, así que se conserva por si se reutiliza; borrarlo o no es decisión de diseño.
+- [ ] **Verificar el filtro de categorías contra la BD** en cuanto Supabase responda (el 2026-09-28 rechazaba conexiones: `Server has closed the connection`). El arreglo está verificado sobre el código y con tests que inspeccionan el SQL, pero **no sobre datos reales**: falta comprobar que `/buscar?cat=belleza` devuelve proveedores y que la cifra cuadra con los servicios publicados.
+- [ ] **Los chips de categoría de `/buscar` siguen saliendo de `fake-data`** (`FiltersBar.tsx:6` y `SearchView.tsx:7`). Hoy funcionan por coincidencia de slugs con el seed, pero una categoría creada en BD no aparece como chip y su etiqueta sale `null`. Ya anotado en la auditoría; queda pendiente cargarlas desde BD con `getCategoriesTree`.
+- [ ] **Decidir qué hacer con la tabla `provider_categories`**, que queda sin uso tras derivar las categorías de los servicios (2026-09-28). Nunca tuvo una fila. O se borra del schema con una migración, o se documenta por qué se conserva.
 - [ ] Notificaciones por email (Resend).
 - [ ] 4 planes de suscripción con Stripe Billing.
 - [ ] Onboarding de proveedor con formulario manual (jerarquía categoría → tipo → subtipo).

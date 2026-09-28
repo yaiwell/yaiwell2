@@ -1,5 +1,7 @@
 import 'server-only';
 
+import { Prisma } from '@prisma/client';
+
 import { prisma } from '@/lib/db/prisma';
 import type { SitemapProviderRef } from '@/lib/seo';
 import type { LocalizedText, Provider, Service, ServiceWithRootCategory } from '@/types/domain';
@@ -116,6 +118,44 @@ function mapPrismaService(row: {
 // Repositorio
 // ============================================================================
 
+/**
+ * Categorías a las que pertenece un proveedor, **derivadas de sus
+ * servicios publicados** y no de una tabla de asociación.
+ *
+ * Antes esto agregaba `provider_categories`, y esa tabla **nunca ha
+ * tenido ni una fila**: no la escribe el seed, ni el onboarding, ni
+ * ningún service. Como el filtro de `/buscar` comprueba
+ * `categoryIds.includes(...)`, el resultado era que **cualquier filtro
+ * por categoría devolvía cero proveedores** — y sin ningún error a la
+ * vista, porque una lista vacía es un resultado legítimo.
+ *
+ * Se deriva en vez de mantener la tabla porque un dato duplicado que
+ * nadie sincroniza es justo lo que provocó el fallo: así un proveedor
+ * entra en "Belleza" en cuanto publica un servicio de belleza, y sale
+ * cuando lo pausa, sin que nadie tenga que acordarse de nada.
+ *
+ * Devuelve la categoría del servicio **y toda su ascendencia** (la
+ * jerarquía tiene 3 niveles), para que filtrar por la raíz encuentre
+ * también los servicios colgados de sus hijas: quien pulsa "Belleza"
+ * espera ver manicuras.
+ *
+ * Solo cuenta servicios activos y no borrados: un proveedor cuyo único
+ * servicio de belleza está pausado no debe aparecer bajo "Belleza".
+ */
+const CATEGORY_IDS_FRAGMENT = Prisma.sql`(
+          SELECT COALESCE(array_agg(DISTINCT ancestry.category_id), ARRAY[]::text[])
+          FROM (
+            SELECT unnest(ARRAY[c.id, c."parentId", parent."parentId"]) AS category_id
+            FROM services s
+            JOIN categories c ON c.id = s."categoryId"
+            LEFT JOIN categories parent ON parent.id = c."parentId"
+            WHERE s."providerId" = p.id
+              AND s."deletedAt" IS NULL
+              AND s."isActive" = true
+          ) ancestry
+          WHERE ancestry.category_id IS NOT NULL
+        )`;
+
 export const providersRepository = {
   /**
    * Devuelve todos los proveedores aprobados y vivos, ordenados por
@@ -137,11 +177,7 @@ export const providersRepository = {
         p."ratingAvg",
         p."ratingCount",
         p."priceRange"::text AS "priceRange",
-        (
-          SELECT COALESCE(array_agg(pc."categoryId"), ARRAY[]::text[])
-          FROM provider_categories pc
-          WHERE pc."providerId" = p.id
-        ) AS "categoryIds"
+        ${CATEGORY_IDS_FRAGMENT} AS "categoryIds"
       FROM providers p
       WHERE p."verificationStatus" = 'approved'
         AND p."deletedAt" IS NULL
@@ -169,11 +205,7 @@ export const providersRepository = {
         p."ratingAvg",
         p."ratingCount",
         p."priceRange"::text AS "priceRange",
-        (
-          SELECT COALESCE(array_agg(pc."categoryId"), ARRAY[]::text[])
-          FROM provider_categories pc
-          WHERE pc."providerId" = p.id
-        ) AS "categoryIds"
+        ${CATEGORY_IDS_FRAGMENT} AS "categoryIds"
       FROM providers p
       WHERE p.id = ${id}
         AND p."verificationStatus" = 'approved'
@@ -202,11 +234,7 @@ export const providersRepository = {
         p."ratingAvg",
         p."ratingCount",
         p."priceRange"::text AS "priceRange",
-        (
-          SELECT COALESCE(array_agg(pc."categoryId"), ARRAY[]::text[])
-          FROM provider_categories pc
-          WHERE pc."providerId" = p.id
-        ) AS "categoryIds"
+        ${CATEGORY_IDS_FRAGMENT} AS "categoryIds"
       FROM providers p
       WHERE p.slug = ${slug}
         AND p."verificationStatus" = 'approved'

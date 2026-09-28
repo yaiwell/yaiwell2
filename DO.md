@@ -101,6 +101,20 @@ Cuarta pantalla de la auditoría, y la que mueve el dinero. Dos agentes en paral
 
 ## 2026-09
 
+### 2026-09-28 — El filtro de categorías nunca ha funcionado
+
+- **Sospecha del dev, confirmada y peor de lo que parecía.** Preguntó si los filtros de belleza, estética o bienestar podían haberse roto. No se han roto: **no han funcionado nunca** desde la migración a Postgres. `providers.repository.ts` derivaba los `categoryIds` de un `array_agg` sobre **`provider_categories`**, y esa tabla **jamás ha tenido una fila**: no la escribe `seed.ts`, ni `seed-dev.ts`, ni el onboarding, ni ningún service — verificado buscando inserciones, escrituras anidadas de Prisma y SQL crudo en todo el repo. Como `matchesFilters` comprueba `categoryIds.includes(...)`, **cualquier filtro por categoría devolvía cero proveedores**, sin ningún error a la vista: una lista vacía es un resultado legítimo.
+- **Corrección de un cierre anterior.** Al cerrar la landing (2026-09-23) se dijo que "una de las seis tarjetas de categoría llevaba a una página vacía" y que arreglar el slug `manicura` lo resolvía. Era falso: **las seis** llevan a una página vacía, y seguían haciéndolo. El slug estaba mal y arreglarlo hacía falta, pero el filtro fallaba un nivel más abajo. La auditoría rastreó la resolución del slug hasta `prisma.category` y se detuvo ahí, dando por buena la asociación del otro lado del `includes()` sin mirarla.
+- **Se deriva, no se rellena.** La alternativa era poblar `provider_categories` en el onboarding y al crear o borrar servicios. Descartada: es estado duplicado que se desincroniza en cuanto alguien pausa un servicio, y es exactamente la clase de dato derivado sin dueño que ha causado la mitad de los fallos de esta semana. Ahora las categorías salen de los servicios publicados, así que un proveedor entra en "Belleza" al publicar un servicio de belleza y sale al pausarlo, sin que nadie tenga que acordarse.
+- **Con ascendencia**: el subquery devuelve la categoría del servicio **y sus ancestros** (`unnest(ARRAY[c.id, c."parentId", parent."parentId"])`, que cubre los 3 niveles de la jerarquía), porque quien pulsa "Belleza" espera ver manicuras. Y solo cuenta servicios `isActive` y no borrados.
+- **El subquery estaba copiado tres veces** (`findAll`, `findById`, `findBySlug`): extraído a un único `Prisma.sql` compartido, que además era una tarea pendiente. Si una copia se hubiera quedado atrás, la ficha y el listado habrían discrepado en silencio.
+- **5 tests nuevos que inspeccionan el SQL generado.** Es la única forma de verificar esto sin BD, y el bug demuestra por qué hacía falta: con Prisma mockeado, ningún test de service podía detectarlo. **Verificado el caso negativo**: reintroduciendo el `array_agg` viejo, los cinco se ponen en rojo.
+- **Límite conocido y honesto**: el arreglo está verificado sobre el código, no sobre datos reales. Supabase rechazaba conexiones ese día (`Server has closed the connection`, síntoma de proyecto pausado), así que queda pendiente comprobar contra BD que `/buscar?cat=belleza` devuelve proveedores. Anotado en `TODO.md`.
+- 846 tests en total. `typecheck`, `lint` y `build` limpios.
+
+---
+
+
 ### 2026-09-23 (3) — Ficha de centro
 
 Tres de los siete P0 de la auditoría, más la accesibilidad y el crédito del mapa. Dos agentes en paralelo con ficheros disjuntos; el i18n lo aplicó el orquestador al integrar, que es lo que evitó la colisión del Hero de esta misma mañana.
