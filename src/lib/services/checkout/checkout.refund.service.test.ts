@@ -32,7 +32,6 @@ const bookingMock = vi.hoisted(() => {
 
   return {
     cancelBookingByProvider: vi.fn(),
-    bookingRepository: { findById: vi.fn() },
     BookingNotCancellableError,
     BookingTooLateToCancelError,
   };
@@ -40,10 +39,17 @@ const bookingMock = vi.hoisted(() => {
 
 vi.mock('@/lib/services/booking', () => ({
   cancelBookingByProvider: bookingMock.cancelBookingByProvider,
-  bookingRepository: bookingMock.bookingRepository,
   BookingNotCancellableError: bookingMock.BookingNotCancellableError,
   BookingTooLateToCancelError: bookingMock.BookingTooLateToCancelError,
 }));
+
+const refundRepoMock = vi.hoisted(() => ({
+  recordIssued: vi.fn(),
+  recordFailed: vi.fn(),
+  clearFailure: vi.fn(),
+}));
+
+vi.mock('./checkout.refund.repository', () => ({ refundRepository: refundRepoMock }));
 
 import { cancelBookingByProviderWithRefund } from './checkout.refund.service';
 
@@ -51,10 +57,15 @@ const BOOKING_ID = '9a1f7c2d-3b4e-4f5a-8b9c-0d1e2f3a4b5c';
 const PROVIDER_USER_ID = '11112222-3333-4444-5555-666677778888';
 const PAYMENT_INTENT_ID = 'pi_123';
 
-function bookingRow(overrides: Record<string, unknown> = {}) {
+/**
+ * Lo que devuelve `cancelBookingByProvider`: la fila ya cancelada más el
+ * estado que tenía en su propia lectura (`previousStatus`).
+ */
+function cancelledRow(overrides: Record<string, unknown> = {}) {
   return {
     id: BOOKING_ID,
-    status: 'confirmed',
+    status: 'cancelled',
+    previousStatus: 'confirmed',
     stripePaymentIntentId: PAYMENT_INTENT_ID,
     startAt: new Date(Date.now() + 48 * 60 * 60 * 1000),
     ...overrides,
@@ -70,8 +81,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   vi.spyOn(console, 'error').mockImplementation(() => undefined);
 
-  bookingMock.bookingRepository.findById.mockResolvedValue(bookingRow());
-  bookingMock.cancelBookingByProvider.mockResolvedValue({ id: BOOKING_ID, status: 'cancelled' });
+  bookingMock.cancelBookingByProvider.mockResolvedValue(cancelledRow());
   stripeMock.refunds.create.mockResolvedValue({ id: 're_123' });
 });
 
@@ -99,12 +109,14 @@ describe('cancelBookingByProviderWithRefund', () => {
       refund: 'issued',
       stripeRefundId: 're_123',
     });
+    // Auditoría: el id del refund queda en la reserva y la saca de la cola.
+    expect(refundRepoMock.recordIssued).toHaveBeenCalledWith(BOOKING_ID, 're_123');
+    expect(refundRepoMock.recordFailed).not.toHaveBeenCalled();
   });
 
   it('no emite un segundo reembolso si la reserva ya estaba cancelada', async () => {
     // Segunda pulsación de "Cancelar": el dominio booking corta por
     // estado y el dinero ni se toca.
-    bookingMock.bookingRepository.findById.mockResolvedValue(bookingRow({ status: 'cancelled' }));
     bookingMock.cancelBookingByProvider.mockRejectedValue(
       new bookingMock.BookingNotCancellableError(),
     );
@@ -130,6 +142,8 @@ describe('cancelBookingByProviderWithRefund', () => {
       refund: 'already_refunded',
       stripeRefundId: null,
     });
+    expect(refundRepoMock.clearFailure).toHaveBeenCalledWith(BOOKING_ID);
+    expect(refundRepoMock.recordFailed).not.toHaveBeenCalled();
   });
 
   it('mantiene la cancelación aunque Stripe se caiga', async () => {
@@ -152,26 +166,32 @@ describe('cancelBookingByProviderWithRefund', () => {
       refund: 'failed',
       stripeRefundId: null,
     });
+    // El fallo entra en la cola de /admin con el motivo técnico.
+    expect(refundRepoMock.recordFailed).toHaveBeenCalledWith(
+      BOOKING_ID,
+      expect.any(Date),
+      'unknown_error: ECONNRESET',
+    );
   });
 
-  it('no llama a Stripe si la reserva estaba pending (nunca se cobró)', async () => {
-    // `pending` con intent anclado es el caso real: el checkout ancla el
-    // PaymentIntent al crear la reserva, antes de que el cliente pague.
-    bookingMock.bookingRepository.findById.mockResolvedValue(bookingRow({ status: 'pending' }));
+  it('no deja de responder aunque falle el registro del fallo en BD', async () => {
+    stripeMock.refunds.create.mockRejectedValue(new Error('ECONNRESET'));
+    refundRepoMock.recordFailed.mockRejectedValueOnce(new Error('db down'));
 
     const result = await cancelBookingByProviderWithRefund(
       { bookingId: BOOKING_ID },
       PROVIDER_USER_ID,
     );
 
-    expect(stripeMock.refunds.create).not.toHaveBeenCalled();
-    expect(result.refund).toBe('not_applicable');
-    expect(result.stripeRefundId).toBeNull();
+    expect(result.refund).toBe('failed');
   });
 
+  // El caso `pending` (cancelar el PaymentIntent en vez de reembolsar)
+  // vive en `checkout.refund.pending.test.ts`.
+
   it('no llama a Stripe si la reserva no tiene PaymentIntent anclado', async () => {
-    bookingMock.bookingRepository.findById.mockResolvedValue(
-      bookingRow({ stripePaymentIntentId: null }),
+    bookingMock.cancelBookingByProvider.mockResolvedValue(
+      cancelledRow({ stripePaymentIntentId: null }),
     );
 
     const result = await cancelBookingByProviderWithRefund(
@@ -185,9 +205,6 @@ describe('cancelBookingByProviderWithRefund', () => {
 
   it('propaga BookingTooLateToCancelError sin tocar el dinero', async () => {
     // A 1 h 59 min del inicio: la regla de negocio precede al refund.
-    bookingMock.bookingRepository.findById.mockResolvedValue(
-      bookingRow({ startAt: new Date(Date.now() + 119 * 60 * 1000) }),
-    );
     bookingMock.cancelBookingByProvider.mockRejectedValue(
       new bookingMock.BookingTooLateToCancelError(),
     );

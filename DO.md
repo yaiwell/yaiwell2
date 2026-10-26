@@ -8,6 +8,41 @@
 
 ## 2026-10-26
 
+### 2026-10-26 (3) — Pagos: caducidad de `pending`, pago tardío y cola de reembolsos fallidos
+
+Primer uso de P12. Se decidió con el dev: caducidad de 30 min más un cron diario, porque Vercel Hobby solo permite un cron al día, y una sección en `/admin` para los reembolsos. Orquestación:
+- `db-migration-guard` revisó la migración en paralelo con la implementación.
+- `stripe-payments` hizo el backend y otro agente la UI de admin, en ficheros disjuntos.
+- `business-rules-auditor` y `conventions-reviewer` revisaron en paralelo.
+- Hubo dos rondas de arreglos y una re-auditoría.
+
+**Sin la auditoría esto no se habría podido publicar**: encontró dos P0, una carrera entre el webhook y la cancelación del proveedor en la que el dinero se quedaba cobrado, y una reserva cancelada que el webhook resucitaba.
+
+- **Caducidad de `pending`**:
+  - `booking.hold.ts` define `PENDING_HOLD_MINUTES = 30` y un `activeBookingWhere` compartido. Una `pending` de más de 30 min deja de bloquear la franja **al instante** en `findOverlapping` y en las dos consultas de disponibilidad, sin esperar al cron.
+  - El cron diario `GET /api/cron/expire-pending-bookings` (`vercel.json`, 03:00 UTC, `Bearer CRON_SECRET` comparado en tiempo constante) cancela primero el PaymentIntent en Stripe y después la reserva, con escritura condicional.
+  - Si Stripe dice que el pago ya está hecho, no toca la reserva y la deja para el webhook.
+- **Pago tardío** (era un agujero: el dinero se quedaba cobrado sobre reservas canceladas). Ahora:
+  - `succeeded` sobre una reserva `cancelled` → reembolso íntegro automático, sin resucitarla.
+  - Sobre una `pending` caducada → confirma solo si la franja sigue libre y no ha empezado; si no, cancela y reembolsa.
+  - La retención se evalúa con la hora del pago (`event.created`), no con la de proceso. Si alguien pagó a tiempo y pierde la franja por un webhook retrasado, se avisa a soporte en Sentry.
+  - Todas las confirmaciones y cancelaciones del webhook son ahora condicionales (`updateMany where status = 'pending'`).
+- **Cancelación del proveedor de una `pending`**:
+  - `cancelBookingByProvider` devuelve el `previousStatus` que leyó él mismo.
+  - Se cancela también el PaymentIntent. Si ya estaba cobrado, se reembolsa en el acto con la misma clave de idempotencia que el webhook, así que nunca hay doble reembolso.
+  - Si Stripe no responde, la reserva entra en la cola.
+- **Cola de reembolsos** (migración `9_booking_refund_audit`: `stripeRefundId` único, `refundedAt`, `refundFailedAt`, `refundFailureReason`):
+  - `issueBookingRefund` es la única función que emite reembolsos y deja auditado el desenlace.
+  - `charge.refunded` solo marca `refunded` si el cargo está devuelto del todo y nuestro refund no figura como fallido.
+  - Nuevo evento **`charge.refund.updated`**: un refund que falla después de aceptarse vuelve a la cola, solo si es nuestro y la reserva está muerta.
+  - `/admin/reembolsos` (guard en layout, página y action) lista los fallidos con un botón de reintentar. Cada reintento usa una clave nueva, porque Stripe guarda los errores 24 h, y es seguro: el refund es íntegro y `charge_already_refunded` cuenta como éxito.
+  - Solo se reintentan reservas `cancelled`.
+  - En los 4 idiomas, con las mismas 1008 claves en cada uno.
+- **Migración 9 aplicada** con `migrate deploy` por el session pooler. Verificado en BD: 4 columnas nullable y advisors sin avisos nuevos.
+- **965 tests** (eran 889). `typecheck`, `lint` y `build` limpios. `route.test.ts` del webhook se queda en 265 líneas, ligeramente por encima del límite de §6.bis.
+- **Pasos manuales pendientes** (en `TODO.md`): suscribir el webhook (ahora con `charge.refund.updated`) y `CRON_SECRET` en Vercel.
+- Riesgos que quedan, anotados en `TODO.md`: exclusion constraint contra la doble reserva, avisar de las `pending` cobradas cuyo webhook se perdió, comprobar la retención en la página de pago, la política de `payment_failed` y poder descartar de la cola las entradas sin cobro.
+
 ### 2026-10-26 (2) — Historial de migraciones al día y RLS en `_prisma_migrations`
 
 Primer uso de P13. Como los agentes de `.claude/agents/` solo se cargan al abrir sesión, el diagnóstico lo hizo un general-purpose siguiendo las instrucciones de `db-migration-guard`, en solo lectura.

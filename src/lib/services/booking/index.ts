@@ -11,6 +11,13 @@ export { cancelBookingByProvider, createBooking, markBookingCompleted } from './
 export { bookingRepository } from './booking.repository';
 
 export {
+  PENDING_HOLD_MINUTES,
+  activeBookingWhere,
+  getPendingHoldCutoff,
+  isBookingHoldingSlot,
+} from './booking.hold';
+
+export {
   BookingNotCancellableError,
   BookingNotConfirmedError,
   BookingNotFoundError,

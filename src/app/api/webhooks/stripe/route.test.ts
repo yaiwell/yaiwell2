@@ -41,26 +41,29 @@ vi.mock('@/lib/integrations/stripe', () => ({
   StripeWebhookSignatureError: StripeWebhookSignatureErrorStub,
 }));
 
-const { confirmMock, failMock, refundMock, NotFoundStub, MissingRefStub } = vi.hoisted(() => {
-  class NotFoundStub extends Error {
-    readonly code = 'BOOKING_FOR_CHECKOUT_NOT_FOUND';
-  }
-  class MissingRefStub extends Error {
-    readonly code = 'MISSING_BOOKING_REFERENCE';
-  }
-  return {
-    confirmMock: vi.fn(),
-    failMock: vi.fn(),
-    refundMock: vi.fn(),
-    NotFoundStub,
-    MissingRefStub,
-  };
-});
+const { confirmMock, failMock, refundMock, refundUpdatedMock, NotFoundStub, MissingRefStub } =
+  vi.hoisted(() => {
+    class NotFoundStub extends Error {
+      readonly code = 'BOOKING_FOR_CHECKOUT_NOT_FOUND';
+    }
+    class MissingRefStub extends Error {
+      readonly code = 'MISSING_BOOKING_REFERENCE';
+    }
+    return {
+      confirmMock: vi.fn(),
+      failMock: vi.fn(),
+      refundMock: vi.fn(),
+      refundUpdatedMock: vi.fn(),
+      NotFoundStub,
+      MissingRefStub,
+    };
+  });
 
 vi.mock('@/lib/services/checkout', () => ({
   confirmBookingPayment: confirmMock,
   failBookingPayment: failMock,
   refundBookingPayment: refundMock,
+  recordAsyncRefundFailure: refundUpdatedMock,
   BookingForCheckoutNotFoundError: NotFoundStub,
   MissingBookingReferenceError: MissingRefStub,
 }));
@@ -92,6 +95,7 @@ describe('POST /api/webhooks/stripe', () => {
     confirmMock.mockReset();
     failMock.mockReset();
     refundMock.mockReset();
+    refundUpdatedMock.mockReset();
     vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     vi.spyOn(console, 'error').mockImplementation(() => undefined);
   });
@@ -125,13 +129,20 @@ describe('POST /api/webhooks/stripe', () => {
 
   it('confirma la reserva ante payment_intent.succeeded', async () => {
     const intent = { id: 'pi_test', metadata: { bookingId: 'bk-1' } };
-    verifyMock.mockReturnValue({ type: 'payment_intent.succeeded', data: { object: intent } });
+    verifyMock.mockReturnValue({
+      type: 'payment_intent.succeeded',
+      created: 1_790_000_000,
+      data: { object: intent },
+    });
     confirmMock.mockResolvedValue({ bookingId: 'bk-1', changed: true, status: 'confirmed' });
 
     const res = await POST(buildRequest());
 
     expect(res.status).toBe(200);
-    expect(confirmMock).toHaveBeenCalledWith(intent);
+    // `event.created` viene en segundos: la retención se evalúa con él.
+    expect(confirmMock).toHaveBeenCalledWith(intent, {
+      paidAt: new Date(1_790_000_000 * 1000),
+    });
     expect(await res.json()).toEqual({
       received: true,
       type: 'payment_intent.succeeded',
@@ -153,15 +164,32 @@ describe('POST /api/webhooks/stripe', () => {
     expect((await res.json()).status).toBe('cancelled');
   });
 
+  it('encola el refund ante charge.refund.updated', async () => {
+    const refund = { id: 're_1', status: 'failed' };
+    verifyMock.mockReturnValue({ type: 'charge.refund.updated', data: { object: refund } });
+    refundUpdatedMock.mockResolvedValue({ bookingId: 'bk-4', changed: true, status: 'cancelled' });
+
+    const res = await POST(buildRequest());
+
+    expect(res.status).toBe(200);
+    expect(refundUpdatedMock).toHaveBeenCalledWith(refund);
+  });
+
   it('marca como refunded ante charge.refunded', async () => {
     const charge = { id: 'ch_test', payment_intent: 'pi_test', metadata: { bookingId: 'bk-3' } };
-    verifyMock.mockReturnValue({ type: 'charge.refunded', data: { object: charge } });
+    verifyMock.mockReturnValue({
+      type: 'charge.refunded',
+      created: 1_790_000_000,
+      data: { object: charge },
+    });
     refundMock.mockResolvedValue({ bookingId: 'bk-3', changed: true, status: 'refunded' });
 
     const res = await POST(buildRequest());
 
     expect(res.status).toBe(200);
-    expect(refundMock).toHaveBeenCalledWith(charge);
+    expect(refundMock).toHaveBeenCalledWith(charge, {
+      eventCreatedAt: new Date(1_790_000_000 * 1000),
+    });
     expect((await res.json()).status).toBe('refunded');
   });
 

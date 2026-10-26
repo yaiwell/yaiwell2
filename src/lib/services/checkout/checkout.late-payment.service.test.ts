@@ -1,0 +1,167 @@
+/**
+ * Tests del pago que llega tarde (`succeeded` sobre una reserva que ya
+ * no lo espera), llamando directamente al service.
+ *
+ * Caminos protegidos:
+ *  - Retención vencida y franja libre → se confirma (condicional).
+ *  - Retención vencida y franja ocupada → se cancela y se reembolsa.
+ *  - Franja ya empezada → se cancela y se reembolsa aunque esté libre.
+ *  - Pagó dentro de la retención pero el webhook llegó tarde y la franja
+ *    ya es de otro → reembolso + aviso `error` a Sentry.
+ *  - La confirmación condicional pierde la carrera → se sigue el estado
+ *    real sin resucitar nada.
+ *  - Fallo de Stripe → la reserva entra en la cola de /admin.
+ */
+
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import type * as BookingHold from '@/lib/services/booking/booking.hold';
+
+const bookingMock = vi.hoisted(() => ({ bookingRepository: { findOverlapping: vi.fn() } }));
+
+vi.mock('@/lib/services/booking', async () => {
+  const hold = await vi.importActual<typeof BookingHold>('@/lib/services/booking/booking.hold');
+  return {
+    bookingRepository: bookingMock.bookingRepository,
+    isBookingHoldingSlot: hold.isBookingHoldingSlot,
+  };
+});
+
+const repoMock = vi.hoisted(() => ({
+  confirmIfPending: vi.fn(),
+  cancelIfPending: vi.fn(),
+  findCheckoutRow: vi.fn(),
+  attachPaymentIntent: vi.fn(),
+}));
+
+vi.mock('./checkout.repository', () => ({ checkoutRepository: repoMock }));
+
+const issueMock = vi.hoisted(() => ({ issueBookingRefund: vi.fn() }));
+
+vi.mock('./checkout.refund.issue', () => issueMock);
+
+const warnMock = vi.hoisted(() => ({ reportCheckoutWarning: vi.fn() }));
+
+vi.mock('./checkout.payment-intent', () => warnMock);
+
+import { settlePaymentOnPendingBooking } from './checkout.late-payment.service';
+
+const NOW = new Date('2026-10-26T10:00:00.000Z');
+const MINUTE = 60 * 1000;
+
+function row(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 'bk-1',
+    status: 'pending',
+    stripePaymentIntentId: 'pi_123',
+    professionalId: 'pro-1',
+    startAt: new Date('2026-10-27T10:00:00.000Z'),
+    endAt: new Date('2026-10-27T11:00:00.000Z'),
+    stripeRefundId: null,
+    refundFailedAt: null,
+    // Retención vencida por defecto: creada hace 45 min.
+    createdAt: new Date(NOW.getTime() - 45 * MINUTE),
+    ...overrides,
+  };
+}
+
+const LATE_CLOCK = { paidAt: NOW, now: NOW };
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  bookingMock.bookingRepository.findOverlapping.mockResolvedValue([]);
+  repoMock.confirmIfPending.mockResolvedValue(true);
+  repoMock.cancelIfPending.mockResolvedValue(true);
+  issueMock.issueBookingRefund.mockResolvedValue({ outcome: 'issued', stripeRefundId: 're_1' });
+});
+
+describe('settlePaymentOnPendingBooking', () => {
+  it('confirma con la retención vencida si la franja sigue libre', async () => {
+    // La única fila solapada es ella misma: no cuenta como ocupación.
+    bookingMock.bookingRepository.findOverlapping.mockResolvedValue([{ id: 'bk-1' }]);
+
+    const result = await settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK);
+
+    expect(repoMock.confirmIfPending).toHaveBeenCalledWith('bk-1');
+    expect(issueMock.issueBookingRefund).not.toHaveBeenCalled();
+    expect(result).toEqual({ bookingId: 'bk-1', changed: true, status: 'confirmed' });
+  });
+
+  it('cancela y reembolsa si otra reserva cogió la franja', async () => {
+    bookingMock.bookingRepository.findOverlapping.mockResolvedValue([{ id: 'bk-otra' }]);
+
+    const result = await settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK);
+
+    expect(repoMock.confirmIfPending).not.toHaveBeenCalled();
+    expect(repoMock.cancelIfPending).toHaveBeenCalledWith('bk-1', NOW);
+    expect(issueMock.issueBookingRefund).toHaveBeenCalledWith('bk-1', 'pi_123', { now: NOW });
+    // Pagó tarde de verdad: no es incidencia para soporte.
+    expect(warnMock.reportCheckoutWarning).not.toHaveBeenCalled();
+    expect(result).toEqual({ bookingId: 'bk-1', changed: true, status: 'cancelled' });
+  });
+
+  it('cancela y reembolsa si la franja ya empezó, aunque esté libre', async () => {
+    const started = row({ startAt: new Date(NOW.getTime() - 10 * MINUTE) });
+
+    const result = await settlePaymentOnPendingBooking(started, 'pi_123', LATE_CLOCK);
+
+    expect(repoMock.confirmIfPending).not.toHaveBeenCalled();
+    expect(issueMock.issueBookingRefund).toHaveBeenCalled();
+    expect(result.status).toBe('cancelled');
+  });
+
+  it('avisa a Sentry si pagó dentro de la retención pero el webhook llegó tarde', async () => {
+    // Pagó a los 10 min de crear; procesamos a los 45 min y la franja
+    // ya es de otro.
+    const clock = { paidAt: new Date(NOW.getTime() - 35 * MINUTE), now: NOW };
+    bookingMock.bookingRepository.findOverlapping.mockResolvedValue([{ id: 'bk-otra' }]);
+
+    const result = await settlePaymentOnPendingBooking(row(), 'pi_123', clock);
+
+    expect(issueMock.issueBookingRefund).toHaveBeenCalled();
+    expect(warnMock.reportCheckoutWarning).toHaveBeenCalledWith(
+      expect.any(String),
+      'bk-1',
+      'error',
+    );
+    expect(result.status).toBe('cancelled');
+  });
+
+  it('confirma sin mirar la franja si la retención sigue vigente', async () => {
+    const fresh = row({ createdAt: new Date(NOW.getTime() - 5 * MINUTE) });
+
+    await settlePaymentOnPendingBooking(fresh, 'pi_123', LATE_CLOCK);
+
+    expect(bookingMock.bookingRepository.findOverlapping).not.toHaveBeenCalled();
+    expect(repoMock.confirmIfPending).toHaveBeenCalledWith('bk-1');
+  });
+
+  it('si el proveedor canceló entre medias, no resucita y reembolsa', async () => {
+    repoMock.confirmIfPending.mockResolvedValue(false);
+    repoMock.findCheckoutRow.mockResolvedValue(row({ status: 'cancelled' }));
+
+    const result = await settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK);
+
+    expect(issueMock.issueBookingRefund).toHaveBeenCalledWith('bk-1', 'pi_123');
+    expect(result).toEqual({ bookingId: 'bk-1', changed: false, status: 'cancelled' });
+  });
+
+  it('si otra entrega ya la confirmó, no hace nada', async () => {
+    repoMock.confirmIfPending.mockResolvedValue(false);
+    repoMock.findCheckoutRow.mockResolvedValue(row({ status: 'confirmed' }));
+
+    const result = await settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK);
+
+    expect(issueMock.issueBookingRefund).not.toHaveBeenCalled();
+    expect(result).toEqual({ bookingId: 'bk-1', changed: false, status: 'confirmed' });
+  });
+
+  it('ancla el intent antes de reembolsar si el checkout no llegó a guardarlo', async () => {
+    bookingMock.bookingRepository.findOverlapping.mockResolvedValue([{ id: 'bk-otra' }]);
+
+    await settlePaymentOnPendingBooking(row({ stripePaymentIntentId: null }), 'pi_123', LATE_CLOCK);
+
+    expect(repoMock.attachPaymentIntent).toHaveBeenCalledWith('bk-1', 'pi_123');
+  });
+});

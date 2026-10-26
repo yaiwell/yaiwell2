@@ -12,6 +12,7 @@ import {
   MissingBookingReferenceError,
   confirmBookingPayment,
   failBookingPayment,
+  recordAsyncRefundFailure,
   refundBookingPayment,
 } from '@/lib/services/checkout';
 
@@ -46,6 +47,7 @@ const HANDLED_EVENTS = [
   'payment_intent.succeeded',
   'payment_intent.payment_failed',
   'charge.refunded',
+  'charge.refund.updated',
 ] as const;
 
 interface WebhookResponse {
@@ -144,11 +146,23 @@ function isHandledEvent(type: string): type is (typeof HANDLED_EVENTS)[number] {
 async function dispatch(event: Stripe.Event) {
   switch (event.type) {
     case 'payment_intent.succeeded':
-      return confirmBookingPayment(event.data.object);
+      // La retención de la `pending` se evalúa con el instante del pago
+      // (`event.created`, en segundos), no con el de proceso: un webhook
+      // reintentado horas después no debe penalizar a quien pagó a tiempo.
+      return confirmBookingPayment(event.data.object, {
+        paidAt: new Date(event.created * 1000),
+      });
     case 'payment_intent.payment_failed':
       return failBookingPayment(event.data.object);
     case 'charge.refunded':
-      return refundBookingPayment(event.data.object);
+      // `event.created` permite descartar un `charge.refunded` que llega
+      // después de un fallo del refund registrado más tarde.
+      return refundBookingPayment(event.data.object, {
+        eventCreatedAt: new Date(event.created * 1000),
+      });
+    case 'charge.refund.updated':
+      // Un refund aceptado puede fallar después: lo mete en la cola de admin.
+      return recordAsyncRefundFailure(event.data.object);
     default:
       // Inalcanzable: `isHandledEvent` filtra antes de llegar aquí.
       throw new Error(`Evento no cableado: ${event.type}`);

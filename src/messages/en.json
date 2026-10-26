@@ -770,7 +770,8 @@
       "ariaLabel": "Admin panel navigation",
       "dashboard": "Dashboard",
       "queue": "Queue",
-      "exit": "Exit panel"
+      "exit": "Exit panel",
+      "refunds": "Failed refunds"
     },
     "dashboard": {
       "title": "Operational overview",
@@ -834,6 +835,52 @@
           "NOTES_REQUIRED": "The reason must be at least 5 characters.",
           "FORBIDDEN": "You don’t have permission for this action.",
           "INTERNAL": "Something went wrong. Please try again."
+        }
+      }
+    },
+    "refunds": {
+      "meta": {
+        "title": "Failed refunds · Admin"
+      },
+      "title": "Failed refunds",
+      "subtitle": "Cancelled bookings whose refund Stripe rejected. These clients have not got their money back yet: check the reason and retry.",
+      "notice": {
+        "title": "Retrying is safe",
+        "noDoubleRefund": "A retry cannot refund the money twice: the refund is always for the full amount and Stripe rejects a second refund on a charge that has already been refunded.",
+        "stillFailing": "If it keeps failing, check the cause in the Stripe dashboard before trying again; for example, the balance of the business's connected account."
+      },
+      "queue": {
+        "title": "Refund queue",
+        "count": "{count, plural, =0 {None pending} one {# pending} other {# pending}}",
+        "empty": "There are no failed refunds pending."
+      },
+      "item": {
+        "amount": "Amount",
+        "clientEmail": "Client email",
+        "appointment": "Appointment",
+        "failedAt": "Failed",
+        "reason": "Technical reason",
+        "reasonUnknown": "Stripe did not return a reason.",
+        "openInStripe": "View payment in Stripe",
+        "opensInNewTab": "(opens in a new tab)",
+        "noPaymentIntent": "No linked payment in Stripe"
+      },
+      "retry": {
+        "label": "Retry refund",
+        "pending": "Retrying…",
+        "aria": "Retry the refund for {provider}"
+      },
+      "feedback": {
+        "succeeded": "Refund issued ({provider}). Stripe will confirm it shortly.",
+        "failed": "The refund for {provider} is still failing. Check the updated reason and the payment in Stripe.",
+        "notApplicable": "The booking with {provider} has no payment in Stripe, so there is nothing to refund. Review it manually.",
+        "dismiss": "Dismiss",
+        "errors": {
+          "BOOKING_NOT_FOUND": "The booking with {provider} no longer exists.",
+          "NOT_IN_QUEUE": "The refund for {provider} is no longer in the queue. Reload the page to see its current status.",
+          "VALIDATION": "Could not retry the refund for {provider}: invalid identifier.",
+          "FORBIDDEN": "Your session does not have admin permissions to retry the refund for {provider}.",
+          "INTERNAL": "Unexpected error while retrying the refund for {provider}. Please try again in a few minutes."
         }
       }
     }

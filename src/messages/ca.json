@@ -770,7 +770,8 @@
       "ariaLabel": "Navegació del panell admin",
       "dashboard": "Dashboard",
       "queue": "Cua",
-      "exit": "Sortir del panell"
+      "exit": "Sortir del panell",
+      "refunds": "Reemborsaments fallits"
     },
     "dashboard": {
       "title": "Resum operatiu",
@@ -834,6 +835,52 @@
           "NOTES_REQUIRED": "El motiu ha de tenir com a mínim 5 caràcters.",
           "FORBIDDEN": "No tens permís per a aquesta acció.",
           "INTERNAL": "Alguna cosa ha fallat. Torna-ho a provar."
+        }
+      }
+    },
+    "refunds": {
+      "meta": {
+        "title": "Reemborsaments fallits · Admin"
+      },
+      "title": "Reemborsaments fallits",
+      "subtitle": "Reserves cancel·lades amb un reemborsament que Stripe va rebutjar. Els diners d'aquesta clientela encara no s'han retornat: revisa el motiu i torna-ho a provar.",
+      "notice": {
+        "title": "Tornar-ho a provar és segur",
+        "noDoubleRefund": "Un reintent no pot retornar els diners dues vegades: el reemborsament és sempre íntegre i Stripe rebutja un segon reemborsament sobre un càrrec ja retornat.",
+        "stillFailing": "Si continua fallant, revisa'n la causa al dashboard de Stripe abans de tornar-ho a provar; per exemple, el saldo del compte connectat del centre."
+      },
+      "queue": {
+        "title": "Cua de reemborsaments",
+        "count": "{count, plural, =0 {Cap pendent} one {# pendent} other {# pendents}}",
+        "empty": "No hi ha reemborsaments fallits pendents."
+      },
+      "item": {
+        "amount": "Import",
+        "clientEmail": "Correu de la clientela",
+        "appointment": "Cita",
+        "failedAt": "Ha fallat",
+        "reason": "Motiu tècnic",
+        "reasonUnknown": "Stripe no ha retornat cap motiu.",
+        "openInStripe": "Veure el pagament a Stripe",
+        "opensInNewTab": "(s'obre en una pestanya nova)",
+        "noPaymentIntent": "Sense pagament associat a Stripe"
+      },
+      "retry": {
+        "label": "Tornar a provar el reemborsament",
+        "pending": "Tornant-ho a provar…",
+        "aria": "Tornar a provar el reemborsament de {provider}"
+      },
+      "feedback": {
+        "succeeded": "Reemborsament emès ({provider}). Stripe confirmarà la devolució d'aquí a poc.",
+        "failed": "El reemborsament de {provider} continua fallant. Revisa el motiu actualitzat i el pagament a Stripe.",
+        "notApplicable": "La reserva de {provider} no té cap pagament a Stripe: no hi ha res a reemborsar. Revisa-la manualment.",
+        "dismiss": "Tancar",
+        "errors": {
+          "BOOKING_NOT_FOUND": "La reserva de {provider} ja no existeix.",
+          "NOT_IN_QUEUE": "El reemborsament de {provider} ja no és a la cua. Torna a carregar la pàgina per veure'n l'estat actual.",
+          "VALIDATION": "No s'ha pogut tornar a provar el reemborsament de {provider}: identificador no vàlid.",
+          "FORBIDDEN": "La teva sessió no té permisos d'admin per tornar a provar el reemborsament de {provider}.",
+          "INTERNAL": "Error inesperat en tornar a provar el reemborsament de {provider}. Torna-ho a intentar d'aquí a uns minuts."
         }
       }
     }

@@ -126,3 +126,19 @@ export class MissingBookingReferenceError extends Error {
     this.name = 'MissingBookingReferenceError';
   }
 }
+
+/**
+ * Se pidió reintentar el reembolso de una reserva que no está en la
+ * cola de fallidos: nunca falló o ya se resolvió (`refundedAt`). Si la
+ * reserva ni existe se lanza `BookingForCheckoutNotFoundError`.
+ * Permite a la server action de admin responder sin llamar a Stripe ni
+ * adivinar por qué la fila desapareció de la lista.
+ */
+export class RefundNotInQueueError extends Error {
+  readonly code = 'REFUND_NOT_IN_QUEUE';
+
+  constructor(message = 'La reserva no tiene un reembolso pendiente de reintento.') {
+    super(message);
+    this.name = 'RefundNotInQueueError';
+  }
+}

@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/db/prisma';
+import { activeBookingWhere } from '@/lib/services/booking';
 
 import type { ProfessionalScheduleBundle } from './availability.types';
 
@@ -38,8 +39,9 @@ export const availabilityRepository = {
   },
 
   /**
-   * Devuelve las reservas activas (`pending` o `confirmed`) de un
-   * profesional que pueden bloquear slots dentro del rango dado.
+   * Devuelve las reservas activas (`confirmed`, o `pending` dentro de
+   * la ventana de retención de `booking.hold.ts`) de un profesional que
+   * pueden bloquear slots dentro del rango dado.
    *
    * Estrategia de overlap: traemos todas las reservas cuyo `startAt`
    * caiga antes del fin del rango y cuyo `endAt` caiga después del
@@ -53,11 +55,12 @@ export const availabilityRepository = {
     professionalId: string,
     dayStart: Date,
     dayEnd: Date,
+    now: Date = new Date(),
   ): Promise<{ startAt: Date; endAt: Date }[]> {
     return prisma.booking.findMany({
       where: {
         professionalId,
-        status: { in: ['pending', 'confirmed'] },
+        ...activeBookingWhere(now),
         startAt: { lt: dayEnd },
         endAt: { gt: dayStart },
       },
@@ -177,13 +180,14 @@ export const availabilityRepository = {
     providerIds: readonly string[],
     from: Date,
     to: Date,
+    now: Date = new Date(),
   ): Promise<{ professionalId: string; startAt: Date; endAt: Date }[]> {
     if (providerIds.length === 0) return [];
 
     return prisma.booking.findMany({
       where: {
         providerId: { in: providerIds as string[] },
-        status: { in: ['pending', 'confirmed'] },
+        ...activeBookingWhere(now),
         startAt: { lt: to },
         endAt: { gt: from },
       },

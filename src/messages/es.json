@@ -770,7 +770,8 @@
       "ariaLabel": "Navegación del panel admin",
       "dashboard": "Dashboard",
       "queue": "Cola",
-      "exit": "Salir del panel"
+      "exit": "Salir del panel",
+      "refunds": "Reembolsos fallidos"
     },
     "dashboard": {
       "title": "Resumen operativo",
@@ -834,6 +835,52 @@
           "NOTES_REQUIRED": "El motivo debe tener al menos 5 caracteres.",
           "FORBIDDEN": "No tienes permiso para esta acción.",
           "INTERNAL": "Algo ha fallado. Inténtalo de nuevo."
+        }
+      }
+    },
+    "refunds": {
+      "meta": {
+        "title": "Reembolsos fallidos · Admin"
+      },
+      "title": "Reembolsos fallidos",
+      "subtitle": "Reservas canceladas cuyo reembolso rechazó Stripe. El dinero de estos clientes sigue sin devolverse: revisa el motivo y reintenta.",
+      "notice": {
+        "title": "Reintentar es seguro",
+        "noDoubleRefund": "Un reintento no puede devolver el dinero dos veces: el reembolso es siempre íntegro y Stripe rechaza un segundo reembolso sobre un cargo ya devuelto.",
+        "stillFailing": "Si sigue fallando, revisa la causa en el dashboard de Stripe antes de volver a intentarlo; por ejemplo, el saldo de la cuenta conectada del centro."
+      },
+      "queue": {
+        "title": "Cola de reembolsos",
+        "count": "{count, plural, =0 {Sin pendientes} one {# pendiente} other {# pendientes}}",
+        "empty": "No hay reembolsos fallidos pendientes."
+      },
+      "item": {
+        "amount": "Importe",
+        "clientEmail": "Email de la clientela",
+        "appointment": "Cita",
+        "failedAt": "Falló",
+        "reason": "Motivo técnico",
+        "reasonUnknown": "Stripe no devolvió ningún motivo.",
+        "openInStripe": "Ver pago en Stripe",
+        "opensInNewTab": "(se abre en una pestaña nueva)",
+        "noPaymentIntent": "Sin pago asociado en Stripe"
+      },
+      "retry": {
+        "label": "Reintentar reembolso",
+        "pending": "Reintentando…",
+        "aria": "Reintentar el reembolso de {provider}"
+      },
+      "feedback": {
+        "succeeded": "Reembolso emitido ({provider}). Stripe confirmará la devolución en breve.",
+        "failed": "El reembolso de {provider} sigue fallando. Revisa el motivo actualizado y el pago en Stripe.",
+        "notApplicable": "La reserva de {provider} no tiene pago en Stripe: no hay nada que reembolsar. Revísala a mano.",
+        "dismiss": "Cerrar",
+        "errors": {
+          "BOOKING_NOT_FOUND": "La reserva de {provider} ya no existe.",
+          "NOT_IN_QUEUE": "El reembolso de {provider} ya no está en la cola. Recarga la página para ver el estado actual.",
+          "VALIDATION": "No se ha podido reintentar el reembolso de {provider}: identificador no válido.",
+          "FORBIDDEN": "Tu sesión no tiene permisos de admin para reintentar el reembolso de {provider}.",
+          "INTERNAL": "Error inesperado al reintentar el reembolso de {provider}. Vuelve a intentarlo en unos minutos."
         }
       }
     }

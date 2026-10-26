@@ -11,14 +11,17 @@ export { createBookingCheckout } from './checkout.service';
 
 export { cancelBookingByProviderWithRefund } from './checkout.refund.service';
 
+export { listPendingRefunds, retryBookingRefund } from './checkout.refund-queue.service';
+
+export { expireAbandonedPendingBookings } from './checkout.expiry.service';
+
+export { recordAsyncRefundFailure } from './checkout.refund-events.service';
+
 export { getBookingForConfirmation } from './checkout.confirmation.service';
 export type { BookingConfirmationData } from './checkout.confirmation.service';
 
-export {
-  confirmBookingPayment,
-  failBookingPayment,
-  refundBookingPayment,
-} from './checkout.webhook.service';
+export { confirmBookingPayment, failBookingPayment } from './checkout.webhook.service';
+export { refundBookingPayment } from './checkout.charge-refunded.service';
 
 export { checkoutRepository } from './checkout.repository';
 
@@ -30,17 +33,27 @@ export {
   ProviderNotChargeableError,
   RefundFailedError,
   RefundNotApplicableError,
+  RefundNotInQueueError,
 } from './checkout.errors';
 
-export { cancelBookingWithRefundSchema, createBookingCheckoutSchema } from './checkout.validation';
+export {
+  cancelBookingWithRefundSchema,
+  createBookingCheckoutSchema,
+  retryBookingRefundSchema,
+} from './checkout.validation';
 export type {
   CancelBookingWithRefundParsed,
   CreateBookingCheckoutParsed,
+  RetryBookingRefundParsed,
 } from './checkout.validation';
 
 export type {
   BookingCheckoutSession,
   BookingTransitionResult,
+  ExpirePendingSummary,
+  PendingRefundSummary,
   ProviderCancellationResult,
   RefundOutcome,
+  RetryRefundOutcome,
+  RetryRefundResult,
 } from './checkout.types';

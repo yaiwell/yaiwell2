@@ -37,6 +37,9 @@ export function AdminShell({ children }: AdminShellProps) {
           <Link href="/admin#verificaciones" className={s.navLink} data-component="admin-nav-queue">
             {t('nav.queue')}
           </Link>
+          <Link href="/admin/reembolsos" className={s.navLink} data-component="admin-nav-refunds">
+            {t('nav.refunds')}
+          </Link>
           <Link href="/" className={s.navLink} data-component="admin-nav-exit">
             {t('nav.exit')}
           </Link>

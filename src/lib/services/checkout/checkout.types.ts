@@ -72,3 +72,57 @@ export interface ProviderCancellationResult {
   /** Id del refund de Stripe cuando se emitió en esta llamada. */
   stripeRefundId: string | null;
 }
+
+/**
+ * Resumen de una ejecución del cron de caducidad de `pending`.
+ *
+ *  - `scanned`: candidatas leídas (pending más antiguas que la retención).
+ *  - `expired`: canceladas en esta ejecución.
+ *  - `skipped`: no se tocan a propósito: Stripe dice que el pago ya se
+ *    cobró o se está procesando (lo resolverá el webhook), o la fila
+ *    cambió de estado en paralelo.
+ *  - `failed`: error inesperado; se reintentará en la próxima ejecución.
+ */
+export interface ExpirePendingSummary {
+  scanned: number;
+  expired: number;
+  skipped: number;
+  failed: number;
+}
+
+/**
+ * Entrada de la cola de reembolsos fallidos que revisa soporte en
+ * /admin. Se forma con `refundFailedAt != null && refundedAt == null`.
+ */
+export interface PendingRefundSummary {
+  bookingId: string;
+  /** `Provider.businessName`. */
+  providerName: string;
+  /** Nombre del servicio resuelto al locale `es`. */
+  serviceName: string;
+  clientEmail: string;
+  priceCents: number;
+  startAt: Date;
+  cancelledAt: Date | null;
+  refundFailedAt: Date;
+  /** `código: mensaje` del último fallo de Stripe, sin PII. */
+  refundFailureReason: string | null;
+  stripePaymentIntentId: string | null;
+}
+
+/**
+ * Desenlace de un reintento manual de reembolso desde admin.
+ *
+ *  - `succeeded`: Stripe aceptó el refund o el cargo ya estaba devuelto.
+ *  - `failed`: Stripe volvió a fallar; la reserva sigue en la cola.
+ *  - `not_applicable`: la reserva no tiene PaymentIntent que reembolsar.
+ */
+export type RetryRefundOutcome = 'succeeded' | 'failed' | 'not_applicable';
+
+/** Resultado de `retryBookingRefund`. */
+export interface RetryRefundResult {
+  bookingId: string;
+  refund: RetryRefundOutcome;
+  /** Id del refund cuando Stripe lo devolvió en este intento. */
+  stripeRefundId: string | null;
+}

@@ -9,6 +9,7 @@
 
 import { prisma } from '@/lib/db/prisma';
 
+import { activeBookingWhere } from './booking.hold';
 import type { BookingStatus } from './booking.types';
 
 /**
@@ -16,11 +17,13 @@ import type { BookingStatus } from './booking.types';
  *
  * Mantenemos un set acotado para evitar que el repository acabe
  * recibiendo cualquier columna de la tabla; si en el futuro hace
- * falta otra (p. ej. `refundedAt`), se añade aquí explícitamente.
+ * falta otra, se añade aquí explícitamente.
  */
 export interface UpdateStatusExtraFields {
   cancelledAt?: Date;
   completedAt?: Date;
+  /** Confirmación del reembolso por Stripe (`charge.refunded`). */
+  refundedAt?: Date;
 }
 
 /**
@@ -54,16 +57,19 @@ export const bookingRepository = {
 
   /**
    * Busca reservas activas de un profesional cuyo rango temporal
-   * solape con `[start, end)`. Solo se consideran `pending` y
-   * `confirmed`: las `cancelled` y `refunded` liberan el slot.
+   * solape con `[start, end)`. "Activa" = `confirmed` o `pending` dentro
+   * de la ventana de retención (ver `booking.hold.ts`): una `pending`
+   * abandonada deja de bloquear sin esperar al cron.
    *
    * Condición de solape clásica: A.start < B.end && A.end > B.start.
+   *
+   * @param now — instante de referencia para la retención; inyectable en tests.
    */
-  async findOverlapping(professionalId: string, start: Date, end: Date) {
+  async findOverlapping(professionalId: string, start: Date, end: Date, now: Date = new Date()) {
     return prisma.booking.findMany({
       where: {
         professionalId,
-        status: { in: ['pending', 'confirmed'] },
+        ...activeBookingWhere(now),
         startAt: { lt: end },
         endAt: { gt: start },
       },
@@ -104,6 +110,7 @@ export const bookingRepository = {
         status,
         ...(extraFields?.cancelledAt ? { cancelledAt: extraFields.cancelledAt } : {}),
         ...(extraFields?.completedAt ? { completedAt: extraFields.completedAt } : {}),
+        ...(extraFields?.refundedAt ? { refundedAt: extraFields.refundedAt } : {}),
       },
     });
   },

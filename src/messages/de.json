@@ -770,7 +770,8 @@
       "ariaLabel": "Navigation im Admin-Panel",
       "dashboard": "Dashboard",
       "queue": "Warteschlange",
-      "exit": "Panel verlassen"
+      "exit": "Panel verlassen",
+      "refunds": "Fehlgeschlagene Erstattungen"
     },
     "dashboard": {
       "title": "Operative Übersicht",
@@ -834,6 +835,52 @@
           "NOTES_REQUIRED": "Der Grund muss mindestens 5 Zeichen enthalten.",
           "FORBIDDEN": "Du hast keine Berechtigung für diese Aktion.",
           "INTERNAL": "Etwas ist schiefgegangen. Bitte erneut versuchen."
+        }
+      }
+    },
+    "refunds": {
+      "meta": {
+        "title": "Fehlgeschlagene Erstattungen · Admin"
+      },
+      "title": "Fehlgeschlagene Erstattungen",
+      "subtitle": "Stornierte Buchungen, deren Erstattung Stripe abgelehnt hat. Das Geld wurde noch nicht zurückgezahlt: Grund prüfen und erneut versuchen.",
+      "notice": {
+        "title": "Ein erneuter Versuch ist sicher",
+        "noDoubleRefund": "Ein erneuter Versuch kann das Geld nicht doppelt erstatten: Die Erstattung erfolgt immer in voller Höhe, und Stripe lehnt eine zweite Erstattung für eine bereits erstattete Zahlung ab.",
+        "stillFailing": "Schlägt sie weiterhin fehl, prüfe die Ursache im Stripe-Dashboard, bevor du es erneut versuchst, zum Beispiel das Guthaben auf dem verbundenen Konto des Betriebs."
+      },
+      "queue": {
+        "title": "Erstattungswarteschlange",
+        "count": "{count, plural, =0 {Keine offen} one {# offen} other {# offen}}",
+        "empty": "Es gibt keine offenen fehlgeschlagenen Erstattungen."
+      },
+      "item": {
+        "amount": "Betrag",
+        "clientEmail": "E-Mail der Kundschaft",
+        "appointment": "Termin",
+        "failedAt": "Fehlgeschlagen",
+        "reason": "Technischer Grund",
+        "reasonUnknown": "Stripe hat keinen Grund angegeben.",
+        "openInStripe": "Zahlung in Stripe ansehen",
+        "opensInNewTab": "(öffnet in einem neuen Tab)",
+        "noPaymentIntent": "Keine verknüpfte Zahlung in Stripe"
+      },
+      "retry": {
+        "label": "Erstattung erneut versuchen",
+        "pending": "Wird erneut versucht…",
+        "aria": "Erstattung für {provider} erneut versuchen"
+      },
+      "feedback": {
+        "succeeded": "Erstattung ausgelöst ({provider}). Stripe bestätigt sie in Kürze.",
+        "failed": "Die Erstattung für {provider} schlägt weiterhin fehl. Aktualisierten Grund und Zahlung in Stripe prüfen.",
+        "notApplicable": "Die Buchung bei {provider} hat keine Zahlung in Stripe, es gibt nichts zu erstatten. Bitte manuell prüfen.",
+        "dismiss": "Schließen",
+        "errors": {
+          "BOOKING_NOT_FOUND": "Die Buchung bei {provider} existiert nicht mehr.",
+          "NOT_IN_QUEUE": "Die Erstattung für {provider} ist nicht mehr in der Warteschlange. Seite neu laden, um den aktuellen Stand zu sehen.",
+          "VALIDATION": "Die Erstattung für {provider} konnte nicht erneut versucht werden: ungültige Kennung.",
+          "FORBIDDEN": "Deine Sitzung hat keine Admin-Rechte, um die Erstattung für {provider} erneut zu versuchen.",
+          "INTERNAL": "Unerwarteter Fehler beim erneuten Versuch der Erstattung für {provider}. Bitte in ein paar Minuten noch einmal versuchen."
         }
       }
     }

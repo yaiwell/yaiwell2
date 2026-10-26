@@ -378,6 +378,16 @@ model Booking {
   /// Marca temporal de cancelación. Útil para auditoría sin tener que
   /// derivar del status (que se sobrescribe en refund).
   cancelledAt           DateTime?
+  /// Id del reembolso en Stripe (`re_…`). Se rellena al emitirlo, antes
+  /// de que llegue `charge.refunded`. Único: un refund, una reserva.
+  stripeRefundId        String?       @unique
+  /// Cuándo Stripe confirmó el reembolso (`charge.refunded`).
+  refundedAt            DateTime?
+  /// Último intento fallido de reembolso. Con `refundedAt` a null forma
+  /// la cola que soporte revisa en /admin/reembolsos.
+  refundFailedAt        DateTime?
+  /// Motivo técnico del último fallo (código y mensaje de Stripe).
+  refundFailureReason   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

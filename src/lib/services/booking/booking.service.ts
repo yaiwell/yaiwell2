@@ -114,6 +114,8 @@ export async function createBooking(input: unknown, clientId: string) {
  *
  * @param input — datos crudos validados con Zod.
  * @param providerUserId — `User.id` del proveedor autenticado.
+ * @returns la reserva ya cancelada más `previousStatus` (`pending` o
+ *   `confirmed`), el estado que tenía en la lectura de este servicio.
  * @throws BookingNotFoundError — si la reserva no existe.
  * @throws UnauthorizedCancellationError — si el usuario no es dueño.
  * @throws BookingNotCancellableError — si el estado actual no admite
@@ -147,9 +149,14 @@ export async function cancelBookingByProvider(input: unknown, providerUserId: st
     throw new BookingTooLateToCancelError();
   }
 
-  return bookingRepository.updateStatus(bookingId, 'cancelled', {
+  const cancelled = await bookingRepository.updateStatus(bookingId, 'cancelled', {
     cancelledAt: new Date(),
   });
+  // Devolvemos además el estado leído justo antes de cancelar: el caller
+  // de pagos lo necesita para saber si había cobro (`confirmed`) o solo
+  // un intent vivo (`pending`) sin depender de una lectura aparte, que
+  // abriría una ventana más de carrera con el webhook.
+  return { ...cancelled, previousStatus: booking.status };
 }
 
 /**

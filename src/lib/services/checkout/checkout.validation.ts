@@ -37,3 +37,13 @@ export const cancelBookingWithRefundSchema = z.object({
 });
 
 export type CancelBookingWithRefundParsed = z.infer<typeof cancelBookingWithRefundSchema>;
+
+/**
+ * Entrada del reintento manual de reembolso desde /admin. La
+ * autorización (rol admin) la hace la server action en el borde.
+ */
+export const retryBookingRefundSchema = z.object({
+  bookingId: z.string().uuid(),
+});
+
+export type RetryBookingRefundParsed = z.infer<typeof retryBookingRefundSchema>;

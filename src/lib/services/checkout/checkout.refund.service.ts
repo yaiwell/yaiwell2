@@ -1,12 +1,15 @@
 import 'server-only';
 
-import type Stripe from 'stripe';
+import { cancelBookingByProvider } from '@/lib/services/booking';
 
-import { isSentryEnabled } from '@/lib/integrations/sentry';
-import { getStripeClient } from '@/lib/integrations/stripe';
-import { bookingRepository, cancelBookingByProvider } from '@/lib/services/booking';
-
-import { RefundFailedError } from './checkout.errors';
+import {
+  cancelBookingPaymentIntent,
+  classifyPaymentIntent,
+  reportCheckoutWarning,
+  type PaymentIntentCancelOutcome,
+} from './checkout.payment-intent';
+import { describeStripeCode, issueBookingRefund } from './checkout.refund.issue';
+import { refundRepository } from './checkout.refund.repository';
 import type { ProviderCancellationResult } from './checkout.types';
 import { cancelBookingWithRefundSchema } from './checkout.validation';
 
@@ -18,12 +21,6 @@ import { cancelBookingWithRefundSchema } from './checkout.validation';
  * módulo que ya conoce Stripe Connect. Así el dominio `booking` sigue
  * siendo testeable sin SDK de pagos.
  */
-
-/**
- * Código de error de Stripe cuando el cargo ya estaba reembolsado.
- * Lo tratamos como éxito, no como fallo: ver `issueRefund`.
- */
-const STRIPE_ALREADY_REFUNDED_CODE = 'charge_already_refunded';
 
 export type { ProviderCancellationResult } from './checkout.types';
 
@@ -59,131 +56,94 @@ export async function cancelBookingByProviderWithRefund(
 ): Promise<ProviderCancellationResult> {
   const { bookingId } = cancelBookingWithRefundSchema.parse(input);
 
-  // Foto del estado ANTES de cancelar. Una vez la fila dice `cancelled`
-  // ya no se puede saber si el dinero llegó a cobrarse, y `pending` con
-  // `stripePaymentIntentId` es un caso real: el checkout ancla el intent
-  // al crear la reserva, mucho antes de que el cliente pague.
-  const snapshot = await bookingRepository.findById(bookingId);
+  // `previousStatus` sale de la misma lectura con la que el dominio
+  // booking validó la cancelación: sin snapshot aparte, una ventana de
+  // carrera menos con el webhook.
+  const cancelled = await cancelBookingByProvider({ bookingId }, providerUserId);
+  const paymentIntentId = cancelled.stripePaymentIntentId;
 
-  await cancelBookingByProvider({ bookingId }, providerUserId);
-
-  const paymentIntentId = snapshot?.stripePaymentIntentId ?? null;
-  if (!snapshot || snapshot.status === 'pending' || !paymentIntentId) {
-    // Nunca hubo cobro confirmado: cancelar se limita a liberar el hueco.
-    return {
-      bookingId,
-      status: 'cancelled',
-      refund: 'not_applicable',
-      stripeRefundId: null,
-    };
+  if (!paymentIntentId) {
+    // Sin intent anclado nunca hubo cobro: cancelar solo libera el hueco.
+    return notApplicable(bookingId);
   }
 
-  return issueRefund(bookingId, paymentIntentId);
+  if (cancelled.previousStatus === 'pending') {
+    // Sin cobro (en nuestra lectura), pero el intent sigue vivo: lo
+    // cancelamos para que el cliente no pueda pagar una reserva muerta.
+    // Va DESPUÉS de BD por el mismo motivo que el refund.
+    const outcome = await cancelPendingPaymentIntent(bookingId, paymentIntentId);
+    if (outcome === 'queued') {
+      // No sabemos si hubo cobro: la reserva ya está en la cola de admin.
+      return { bookingId, status: 'cancelled', refund: 'failed', stripeRefundId: null };
+    }
+    if (outcome !== 'already_paid') {
+      return notApplicable(bookingId);
+    }
+    // Carrera: el pago entró entre nuestra lectura y la cancelación. El
+    // webhook pudo procesarse ya (y no volverá a llegar), así que el
+    // reembolso no puede esperar a él. Misma clave que el pago tardío:
+    // si ambos caminos disparan, Stripe emite un solo refund.
+  }
+
+  // La emisión es común a todos los caminos de reembolso (ver
+  // `checkout.refund.issue.ts`): registra el desenlace y nunca lanza.
+  const { outcome, stripeRefundId } = await issueBookingRefund(bookingId, paymentIntentId);
+  return { bookingId, status: 'cancelled', refund: outcome, stripeRefundId };
+}
+
+function notApplicable(bookingId: string): ProviderCancellationResult {
+  return { bookingId, status: 'cancelled', refund: 'not_applicable', stripeRefundId: null };
 }
 
 /**
- * Emite el reembolso íntegro contra Stripe.
+ * Cancela el PaymentIntent de una reserva `pending` que el proveedor
+ * acaba de cancelar.
  *
- * `reverse_transfer: true` es obligatorio y es el punto crítico de todo
- * el flujo. Cobramos con **destination charges**: el neto ya viajó a la
- * cuenta conectada del centro en el momento del pago. `refund_application_fee`
- * por sí solo devolvería únicamente *nuestra comisión*, y la plataforma
- * acabaría pagando de su bolsillo el payout que ya se llevó el
- * proveedor. Con `reverse_transfer` Stripe revierte además esa
- * transferencia, que es de donde sale el grueso del dinero devuelto.
- *
- * Efecto secundario asumido: si el proveedor ya cobró su payout, la
- * reversión puede dejarle **saldo negativo** en Stripe. Es correcto —
- * el servicio no se prestó — y Stripe lo recupera del volumen futuro
- * de ese mismo centro.
- *
- * Nunca lanza: la cancelación ya está comprometida y el caller no puede
- * hacer nada útil con una excepción aquí.
+ * Nunca lanza: la reserva ya está cancelada en BD y el hueco liberado.
+ *  - `canceled`: nada más que hacer.
+ *  - `already_paid`: el caller reembolsa en el acto.
+ *  - `processing`: si el pago acaba cobrándose, el webhook del pago
+ *    tardío lo reembolsa; aquí solo se registra.
+ *  - `queued`: Stripe falló al cancelar y no pudimos confirmar el estado
+ *    real del intent. Como el pago pudo entrar en la carrera, la reserva
+ *    entra en la cola de admin (`pi_cancel_failed: <código>`) en vez de
+ *    darla por resuelta.
  */
-async function issueRefund(
+async function cancelPendingPaymentIntent(
   bookingId: string,
   paymentIntentId: string,
-): Promise<ProviderCancellationResult> {
-  const stripe = getStripeClient();
-
+): Promise<PaymentIntentCancelOutcome | 'queued'> {
+  let outcome: PaymentIntentCancelOutcome | 'inconclusive';
+  let failureCode: string | null = null;
   try {
-    const refund: Stripe.Refund = await stripe.refunds.create(
-      {
-        payment_intent: paymentIntentId,
-        // Recuperamos también nuestra comisión: si el servicio no se
-        // presta, la plataforma no cobra.
-        refund_application_fee: true,
-        reverse_transfer: true,
-      },
-      // Misma familia de claves que `booking_checkout_${bookingId}`: un
-      // doble click en "Cancelar" no emite dos reembolsos.
-      { idempotencyKey: `booking_refund_${bookingId}` },
-    );
-
-    return { bookingId, status: 'cancelled', refund: 'issued', stripeRefundId: refund.id };
+    outcome = await cancelBookingPaymentIntent(paymentIntentId, `booking_cancel_pi_${bookingId}`);
   } catch (err) {
-    if (isAlreadyRefundedError(err)) {
-      // El dinero ya está devuelto: alguien reembolsó a mano desde el
-      // dashboard, o se reintentó pasadas las 24 h de vida de la
-      // idempotency key. El objetivo de negocio está cumplido, así que
-      // es un éxito. Tratarlo como fallo llevaría al proveedor a
-      // reintentar en bucle una operación que ya no tiene efecto.
-      return {
-        bookingId,
-        status: 'cancelled',
-        refund: 'already_refunded',
-        stripeRefundId: null,
-      };
-    }
-
-    reportRefundFailure(bookingId, err);
-    return { bookingId, status: 'cancelled', refund: 'failed', stripeRefundId: null };
+    failureCode = describeStripeCode(err);
+    console.error('[checkout/refund] failed to cancel PaymentIntent:', bookingId, failureCode);
+    outcome = await classifyAfterFailure(paymentIntentId);
   }
+
+  if (outcome === 'inconclusive') {
+    const reason = `pi_cancel_failed: ${failureCode ?? 'unknown_error'}`;
+    reportCheckoutWarning(`Pending booking ${bookingId} queued: ${reason}.`, bookingId, 'error');
+    await refundRepository.recordFailed(bookingId, new Date(), reason);
+    return 'queued';
+  }
+  if (outcome !== 'canceled') {
+    const message = `PaymentIntent ${outcome} while provider cancelled pending booking ${bookingId}.`;
+    console.warn('[checkout/refund]', message);
+    reportCheckoutWarning(message, bookingId);
+  }
+  return outcome;
 }
 
-/**
- * Detecta el `charge_already_refunded` de Stripe.
- *
- * El SDK lo expone en `error.code`, pero los errores reconstruidos
- * desde la respuesta cruda lo dejan en `error.raw.code`. Miramos ambos
- * sin asumir la forma exacta del objeto.
- */
-function isAlreadyRefundedError(err: unknown): boolean {
-  if (typeof err !== 'object' || err === null) {
-    return false;
+/** Tras un fallo al cancelar, consulta el estado real; si falla también, no concluye. */
+async function classifyAfterFailure(
+  paymentIntentId: string,
+): Promise<PaymentIntentCancelOutcome | 'inconclusive'> {
+  try {
+    return await classifyPaymentIntent(paymentIntentId);
+  } catch {
+    return 'inconclusive';
   }
-  const candidate = err as { code?: unknown; raw?: { code?: unknown } | null };
-  return (
-    candidate.code === STRIPE_ALREADY_REFUNDED_CODE ||
-    candidate.raw?.code === STRIPE_ALREADY_REFUNDED_CODE
-  );
-}
-
-/**
- * Registra un reembolso fallido.
- *
- * Es dinero de un cliente que no se ha devuelto: necesita alerta, no
- * sólo una línea de log. Importamos Sentry de forma diferida y sólo con
- * DSN configurado para no arrastrar el SDK en entornos sin telemetría
- * (tests, desarrollo local).
- */
-function reportRefundFailure(bookingId: string, cause: unknown): void {
-  const error = new RefundFailedError(
-    `Stripe rechazó el reembolso de la reserva ${bookingId}.`,
-    cause,
-  );
-  console.error('[checkout/refund]', error.message, cause);
-
-  if (!isSentryEnabled()) {
-    return;
-  }
-  void import('@sentry/nextjs')
-    .then((Sentry) => {
-      Sentry.captureException(error, { tags: { domain: 'checkout', bookingId } });
-    })
-    .catch(() => {
-      // Si ni siquiera se puede cargar Sentry, el console.error de
-      // arriba es lo único que queda. No escalamos: el flujo del
-      // proveedor no debe romperse por la telemetría.
-    });
 }
