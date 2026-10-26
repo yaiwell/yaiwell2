@@ -26,7 +26,18 @@ This version has breaking changes — APIs, conventions, and file structure may 
 | **claude-code-guide** | Dudas sobre Claude Code, Agent SDK, API de Anthropic. | Dudas sobre Next.js, Prisma, Stripe, Tailwind. |
 | **statusline-setup** | Configurar la status line de Claude Code. | Cualquier otra cosa. |
 
-**Custom agents** (`.claude/agents/`): ninguno por ahora. Si alguna vez se añaden, listarlos aquí.
+### Agentes propios (`.claude/agents/`)
+
+Codifican las reglas de `CLAUDE.md` en su propio prompt, así que **no hace falta repetírselas**: basta con pasarles el scope (ficheros, diff o tarea) y el objetivo. Se invocan por nombre (`subagent_type`).
+
+| Agente | Modo | Modelo | Cuándo usar | Cuándo NO usar |
+|---|---|---|---|---|
+| **db-migration-guard** | Solo lectura + MCP Supabase (`SELECT`) · memoria de proyecto | sonnet | Antes de commitear cambios en `prisma/schema.prisma`, `prisma/migrations/`, RLS o raw SQL. Diagnosticar datos reales de Supabase. Comprobar que el historial de migraciones local y remoto cuadran. | Aplicar migraciones o escribir en BD (lo hace el dev). |
+| **stripe-payments** | Escribe código · precarga `stripe-best-practices` · memoria de proyecto | opus | Cualquier cambio en `integrations/stripe`, `services/{checkout,payments,plans}` o `/api/webhooks/stripe`: webhooks, refunds, sweeper de `pending`, Stripe Billing. | Configurar el dashboard de Stripe (lo devuelve como paso manual). |
+| **business-rules-auditor** | Solo lectura | opus | Revisión de §4.bis: cancelación ≥2h, valoraciones solo `completed` y en 30 días, auth y propiedad en endpoints, Zod en los bordes, RLS, tests de casos límite. | Revisión de estilo (eso es `conventions-reviewer`). |
+| **conventions-reviewer** | Solo lectura | sonnet | Revisión de §6.bis sobre lo tocado: separación de ficheros, comentarios en castellano, i18n en los 4 idiomas, ~250 líneas, barrels seguros para el cliente. | Reglas de negocio o seguridad. |
+
+Si un agente propio cubre la tarea, **se usa en lugar de Explore/general-purpose con prompt largo**. Si aparece una necesidad recurrente que ninguno cubre, crear el agente aquí (ver §6) en vez de copiar prompts de playbook en playbook.
 
 ---
 
@@ -71,7 +82,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Trigger:** "añade un botón que…", "crea endpoint que…".
 - **Agentes:** ninguno por defecto. El orquestador implementa siguiendo §6.bis de `CLAUDE.md` (separación `.tsx` / `.styles.ts` / `.logic.ts` / `.types.ts` / `index.ts`).
 - **Excepción:** si toca 2+ módulos no familiares → **1 Plan** primero.
-- **Éxito:** UI accesible, i18n es+ca, tests del happy path, `npm run validate` verde.
+- **Éxito:** UI accesible, i18n en los 4 idiomas, tests del happy path, `npm run validate` verde.
 
 ### P3 · Feature mediana (multivista, multimódulo)
 - **Trigger:** "geolocalización completa", "panel del proveedor con X secciones".
@@ -88,6 +99,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
   1. **1 Plan** con desglose por dominios (data → service → API → UI).
   2. **1 Explore** en paralelo si hay áreas que el orquestador no conoce.
   3. Implementación serial por capas (data primero, UI al final) para no romper tipos a mitad. Paralelizar **dentro** de cada capa si hay piezas independientes.
+     - Capa de datos: **db-migration-guard** revisa la migración antes de aplicarla.
+     - Si la feature toca dinero: la capa de pagos la implementa **stripe-payments**.
+  4. Cierre: **P10** completo.
 - **Éxito:** schema migrado, servicios con errores tipados, endpoints con Zod, UI con i18n, tests E2E del happy path.
 
 ### P5 · Refactor cross-cutting (rename, restructure, dark-mode pass)
@@ -116,7 +130,10 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ### P8 · Auditoría técnica (perf, seguridad, bundle, tests)
 - **Trigger:** "mira si hay N+1", "revisa el bundle de la landing", "qué endpoints van sin auth".
-- **Agentes:** **1-3 Explore en paralelo** por ángulo (queries Prisma, endpoints API, dependencias pesadas, cobertura de tests).
+- **Agentes:** **1-3 en paralelo** por ángulo:
+  - Endpoints sin auth, IDOR, validación → **business-rules-auditor**.
+  - BD (RLS, advisors, historial de migraciones, índices) → **db-migration-guard**.
+  - Queries N+1, bundle, cobertura de tests → **Explore (very thorough)**.
 - **Éxito:** informe en `docs/audit-YYYY-MM-DD.md` con hallazgos y prioridades. Implementación es una tarea separada (entra a `TODO.md`).
 
 ### P9 · Exploración / research del repo
@@ -129,15 +146,30 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ### P10 · Code review pre-PR / pre-commit grande
 - **Trigger:** "antes de hacer push, revisa".
-- **Agentes:** **2 Explore en paralelo**:
-  1. Cumplimiento de §6.bis (estructura, idioma de comentarios, i18n, separación de archivos).
-  2. Cumplimiento de reglas de negocio §4.bis (cancelaciones 2h, valoraciones solo si `completed`, RLS, validación con Zod).
-- **Éxito:** lista de findings con propuesta de fix, aplicada antes del commit.
+- **Agentes:** **en paralelo, en un único mensaje**:
+  1. **conventions-reviewer** → §6.bis (estructura, idioma de comentarios, i18n, separación de archivos).
+  2. **business-rules-auditor** → §4.bis (cancelaciones 2h, valoraciones solo si `completed`, auth, Zod).
+  3. **db-migration-guard** → solo si el diff toca `prisma/`.
+- **Prompt base:** "Revisa `git diff origin/main...HEAD` y el working tree. Devuelve hallazgos en tu formato."
+- **Éxito:** lista de findings con propuesta de fix, aplicada antes del commit. El CI (§7) repite `typecheck` + `lint` + `test` + `build` al hacer push.
 
-### P11 · i18n review (es + ca)
-- **Trigger:** "faltan textos en catalán", "revisar coherencia es/ca".
-- **Agentes:** **1 Explore** que compare `src/messages/es.json` y `src/messages/ca.json` y detecte claves desbalanceadas, hardcoded strings en JSX, y faltas de neutralidad de género.
-- **Éxito:** ambos ficheros con mismas claves, 0 strings hardcoded en componentes tocados.
+### P11 · i18n review (es + ca + en + de)
+- **Trigger:** "faltan textos en catalán", "revisar coherencia de idiomas".
+- **Agentes:** **1 Explore** que compare los 4 ficheros `src/messages/{es,ca,en,de}.json` y detecte claves desbalanceadas, hardcoded strings en JSX, y faltas de neutralidad de género. Si solo hay que revisar lo tocado en un diff, basta con **conventions-reviewer**.
+- **Éxito:** los 4 ficheros con mismas claves, 0 strings hardcoded en componentes tocados.
+
+### P12 · Pagos (Stripe Connect / Billing / webhooks / refunds)
+- **Trigger:** "da de alta el webhook", "sweeper de reservas pending", "planes con Stripe Billing", "cola de reembolsos".
+- **Agentes:**
+  1. **stripe-payments** implementa (si toca schema, primero **db-migration-guard** sobre la migración).
+  2. **business-rules-auditor** revisa el resultado (refund íntegro al cancelar el proveedor, idempotencia del webhook, auth).
+  3. El orquestador valida, commitea y lista al dev los pasos manuales del dashboard de Stripe.
+- **Éxito:** tests de Vitest con el SDK mockeado, `typecheck` + `test` verdes, pasos manuales documentados en `TODO.md`.
+
+### P13 · Cambio de schema / migración
+- **Trigger:** "añade la columna X", "nueva tabla", "registra la migración 7", "activa RLS en Y".
+- **Agentes:** **db-migration-guard** antes de aplicar (revisa SQL, RLS, ids `text`, historial) → orquestador escribe la migración → el dev la aplica (el agente nunca escribe en BD) → **db-migration-guard** otra vez para confirmar que el historial cuadra.
+- **Éxito:** migración versionada con RLS, `_prisma_migrations` coherente con `prisma/migrations/`, advisors sin avisos nuevos.
 
 ---
 
@@ -159,3 +191,11 @@ This version has breaking changes — APIs, conventions, and file structure may 
 Cuando aparezca un patrón de orquestación nuevo (ej. la tarea se resolvió bien con una combinación no listada), añadirlo como playbook **Pxx** después de cerrarla. Cuando un playbook deje de aplicarse, retirarlo. Si dos playbooks empiezan a colisionar, fundirlos.
 
 Actualizaciones a este archivo van en commits `docs: actualizar AGENTS.md — [resumen]`.
+
+Para crear un agente propio: fichero `.claude/agents/<nombre>.md` con frontmatter (`name`, `description`, `tools` con los permisos mínimos, `model`, y `memory: project` si debe acumular conocimiento del entorno real). Un agente = una responsabilidad. Empezar en solo lectura y dar `Edit`/`Write` solo si debe implementar. Añadirlo a la tabla de §1 y a los playbooks que lo usen. La memoria de proyecto de los agentes (`.claude/agent-memory/`) se commitea; la configuración local (`.claude/settings.local.json`) no.
+
+---
+
+## 7. CI
+
+`.github/workflows/ci.yml` ejecuta `typecheck`, `lint`, `test` y `build` en cada push a `main` y en cada PR. Es la red que cubre los commits que se saltan Husky. Si el CI está rojo, no se lanzan más lotes de subagentes hasta arreglarlo (regla 6 de §2).

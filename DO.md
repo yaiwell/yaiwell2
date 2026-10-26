@@ -6,6 +6,25 @@
 
 ---
 
+## 2026-10-26
+
+### 2026-10-26 — Equipo de agentes (ola 1) y CI en GitHub Actions
+
+Evaluación del equipo de agentes con las prácticas de 2026 (agentes estrechos con permisos mínimos, modelo por agente, memoria de proyecto, skills precargadas). Las colecciones genéricas de GitHub (VoltAgent, wshobson) se descartaron como instalación tal cual: chocan con §6.bis y la i18n en 4 idiomas. Sirven solo de referencia de formato.
+
+- **Cuatro agentes propios en `.claude/agents/`**, que llevan las reglas de `CLAUDE.md` en su propio prompt en vez de copiarlas en cada playbook:
+  - `db-migration-guard` (solo lectura + MCP de Supabase solo `SELECT`, sonnet, memoria de proyecto): RLS en tablas nuevas, ids `text` frente a `::uuid`, DDL y pooler, historial local vs `_prisma_migrations`, advisors.
+  - `stripe-payments` (escribe código, opus, precarga `stripe-best-practices`, memoria de proyecto): Connect, webhooks idempotentes, refunds, sweeper de `pending`, Billing. Devuelve los pasos del dashboard como manuales.
+  - `business-rules-auditor` (solo lectura, opus): §4.bis — cancelación ≥2h, valoraciones solo `completed` y en 30 días, auth e IDOR, Zod, tests de casos límite.
+  - `conventions-reviewer` (solo lectura, sonnet): §6.bis sobre lo tocado — separación de ficheros, castellano, i18n en 4 idiomas, ~250 líneas, barrels seguros para el cliente.
+- **`AGENTS.md`**: tabla de agentes propios en §1; P4, P8 y P10 los usan por nombre; P11 pasa a 4 idiomas; nuevos **P12 (pagos)** y **P13 (cambio de schema)**; §6 explica cómo crear un agente y §7 documenta el CI.
+- **`.gitignore`**: `.claude/` estaba ignorado entero. Ahora se versionan `agents/` y `agent-memory/`; `settings.local.json` y `worktrees/` siguen fuera.
+- **CI en `.github/workflows/ci.yml`**: `typecheck`, `lint`, `test` y `build` en cada push a `main` y en cada PR, con caché de npm y de `.next/cache`. **Verificado antes de publicarlo** en un worktree limpio sin `.env.local` y con `npm ci`: los cuatro pasos pasan sin ningún secreto (889 tests). `format:check` queda fuera porque hoy falla en 15 ficheros, y E2E también porque necesita Clerk y BD; ambos anotados en `TODO.md`.
+- **Script `npm run validate`** (`typecheck` + `lint` + `test`): `AGENTS.md` lo citaba como criterio de éxito en P2, P3 y P5, pero no existía.
+- Pendiente (en `TODO.md`): agentes de las olas 2 y 3, normalizar Prettier, job de E2E y protección de `main`.
+
+---
+
 ## 2026-09-28
 
 ### 2026-09-28 (3) — Publicado en producción, y la reserva que "fallaba la conexión"

@@ -209,6 +209,10 @@
 - [ ] Términos, política de privacidad, cookies, GDPR compliance.
 - [ ] Tests E2E de los flujos críticos.
 - [ ] **Pulido visual**: migrar `/cuenta` (`src/app/[locale]/cuenta/page.tsx`) de tokens `bg-stone-*` / `border-stone-*` / `text-stone-*` hardcoded a tokens semánticos shadcn (`bg-card`, `border-border/60`, `text-foreground`, `text-muted-foreground`, `bg-muted`). Detectado en auditoría P7 del 2026-06-11: divergencia visible al navegar `/panel` → `/cuenta` → `/mis-reservas` (los shells nuevos ya usan tokens semánticos, `/cuenta` se quedó con la paleta stone hardcoded heredada de Fase 0). Sin urgencia — no rompe nada, sólo coherencia.
+- [ ] **Normalizar Prettier y meter `format:check` en el CI** (detectado 2026-10-26): `npm run format:check` falla hoy en 15 ficheros (`ForProvidersPricing.styles.ts`, `LocationPill.tsx`, `ui/select.tsx`, `ui/tabs.tsx`…). Commit aislado `style:` con `prettier --write` sobre esos 15 y añadir el paso a `.github/workflows/ci.yml`.
+- [ ] **Job de E2E en el CI**: Playwright necesita Clerk (testing token) y BD, así que quedó fuera del workflow básico. Requiere secrets en GitHub y decidir contra qué BD corre (¿rama de Supabase?).
+- [ ] **Agentes de la ola 2** (`.claude/agents/`): `i18n-guardian` (paridad de claves en los 4 idiomas, apoyado en un script) y `e2e-tester` (Playwright de los flujos críticos, en worktree). Después, ola 3: `ui-a11y-auditor` y `seo-perf-auditor`. Propuesta completa del 2026-10-26 en `DO.md`.
+- [ ] **Activar la protección de `main` en GitHub** para que el CI sea obligatorio antes de mergear un PR (configuración del repo, la hace el dev).
 
 ---
 

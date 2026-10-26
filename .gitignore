@@ -45,5 +45,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Claude Code (preferencias locales del cliente, no van al repo)
-.claude/
+# Claude Code: las preferencias locales y los worktrees no van al repo;
+# los agentes del proyecto y su memoria compartida, sí.
+.claude/*
+!.claude/agents/
+!.claude/agent-memory/

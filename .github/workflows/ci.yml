@@ -1,0 +1,65 @@
+# CI de Yaiwell: la red que cubre los commits que se saltan Husky.
+#
+# Decisiones:
+#  - Sin secretos: typecheck, lint, tests y build pasan sin `.env.local`
+#    (verificado en un worktree limpio el 2026-10-26). Si algún día el build
+#    necesita una variable, añadirla aquí como secret, nunca en claro.
+#  - `format:check` queda fuera hasta normalizar los 15 ficheros que hoy no
+#    pasan Prettier (ver TODO.md); meterlo ahora dejaría el CI rojo de salida.
+#  - E2E (Playwright) fuera: necesita Clerk real y BD. Irá en un job aparte.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Un push nuevo a la misma rama cancela la ejecución anterior.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  validate:
+    name: Typecheck, lint, tests y build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # `postinstall` ejecuta `prisma generate`, así que el cliente tipado
+      # queda listo para el typecheck sin un paso aparte.
+      - name: Instalar dependencias
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Tests unitarios
+        run: npm run test
+
+      # Caché de Next.js entre ejecuciones para acelerar el build.
+      - uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**/*.[jt]s', 'src/**/*.[jt]sx') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+
+      - name: Build
+        run: npm run build
