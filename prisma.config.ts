@@ -7,12 +7,13 @@
  * (`prisma migrate`, `prisma studio`, etc.) tenga acceso a la URL.
  *
  * Estrategia con Supabase:
- * - **Migraciones y CLI** (este fichero): usan la conexión directa
- *   (`DATABASE_URL` apuntando a `db.<ref>.supabase.co:5432`). pgBouncer
- *   en transaction mode no soporta DDL, por eso no se usa el pooler.
- * - **Runtime de la app** (`src/lib/db/prisma.ts`): en local también
- *   usa `DATABASE_URL` directo; cuando deploye a Vercel sustituiremos
- *   por la URL del pooler vía `new PrismaClient({ datasourceUrl })`.
+ * - **Runtime de la app** (`src/lib/db/prisma.ts`): `DATABASE_URL` apunta
+ *   al transaction pooler (6543), el único que aguanta serverless.
+ * - **Migraciones y CLI** (este fichero): usan `DIRECT_URL` (session
+ *   pooler 5432 o conexión directa). El transaction pooler no admite DDL
+ *   ni los advisory locks de `migrate deploy`, y desde algunas redes ni
+ *   siquiera responde (verificado el 2026-10-26). Si `DIRECT_URL` no está
+ *   definida se cae a `DATABASE_URL` para no romper entornos antiguos.
  *
  * En CI / Vercel no existe `.env.local` y `dotenv` no falla: las
  * variables vienen ya del entorno de la plataforma.
@@ -35,6 +36,6 @@ export default defineConfig({
     seed: 'tsx prisma/seed.ts',
   },
   datasource: {
-    url: process.env.DATABASE_URL ?? '',
+    url: process.env.DIRECT_URL ?? process.env.DATABASE_URL ?? '',
   },
 });

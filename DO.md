@@ -8,6 +8,16 @@
 
 ## 2026-10-26
 
+### 2026-10-26 (2) — Historial de migraciones al día y RLS en `_prisma_migrations`
+
+Primer uso de P13. Como los agentes de `.claude/agents/` solo se cargan al abrir sesión, el diagnóstico lo hizo un general-purpose siguiendo las instrucciones de `db-migration-guard`, en solo lectura.
+
+- **Diagnóstico previo, contra la BD real**: la migración 7 estaba aplicada con la definición **exacta** del fichero (columna `text` nullable e índice único válido), así que registrarla era seguro. Los checksums de las migraciones 0 a 6 coinciden byte a byte con el historial. Hallazgo nuevo: `anon` y `authenticated` tenían **todos** los privilegios sobre `_prisma_migrations`, incluido `TRUNCATE`, que RLS no filtra. `postgres` no es superuser, pero tiene `BYPASSRLS`, así que RLS no afecta a Prisma.
+- **Migración 7 registrada** con `prisma migrate resolve --applied`, que no ejecuta su SQL.
+- **Migración `8_prisma_migrations_rls`** aplicada con `migrate deploy`: `ENABLE ROW LEVEL SECURITY` y `REVOKE ALL ... FROM anon, authenticated`, sin `FORCE` para no bloquear a Prisma. Verificado después: `relrowsecurity = true`, ACL solo con `postgres` y `service_role`, historial de 0 a 8 completo, y el **aviso ERROR del advisor ha desaparecido**. Queda el INFO `rls_enabled_no_policy`, que es intencionado.
+- **El transaction pooler (6543) no responde desde la red del dev**: acepta la conexión TCP pero el login hace timeout. El session pooler (5432) sí funciona. Se aplicó con una config temporal de Prisma contra el 5432, que se borró después. Arreglo permanente: `prisma.config.ts` prefiere `DIRECT_URL` para el CLI, y `.env.example` documenta las dos URLs. El comentario anterior decía que el CLI usaba la conexión directa, y no era cierto. Falta que el dev añada `DIRECT_URL` a su `.env.local` (anotado en `TODO.md`).
+- Anotado en `TODO.md`: dos funciones con `search_path` mutable (WARN del advisor). La cola de reembolsos pasa a ser la migración 9.
+
 ### 2026-10-26 — Equipo de agentes (ola 1) y CI en GitHub Actions
 
 Evaluación del equipo de agentes con las prácticas de 2026 (agentes estrechos con permisos mínimos, modelo por agente, memoria de proyecto, skills precargadas). Las colecciones genéricas de GitHub (VoltAgent, wshobson) se descartaron como instalación tal cual: chocan con §6.bis y la i18n en 4 idiomas. Sirven solo de referencia de formato.
