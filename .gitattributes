@@ -1,0 +1,3 @@
+# Las migraciones de Prisma se comparan por checksum con _prisma_migrations:
+# un CRLF introducido por autocrlf las daría por modificadas tras aplicarse.
+prisma/migrations/** text eol=lf
