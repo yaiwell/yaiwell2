@@ -1,8 +1,20 @@
 import {
+  addDaysToDateKey,
+  getDayOfMonth,
+  getMadridDateKey,
+  getMadridWeekStartKey,
+  getWeekDateKeys,
+} from '@/lib/utils/madrid-week';
+
+import type { BookingActionRow } from '../BookingActionsList/BookingActionsList.logic';
+import type { PanelBookingActionStatus } from '../BookingActionsList/BookingActionsList.types';
+import {
   PANEL_CALENDAR_END_HOUR,
   PANEL_CALENDAR_START_HOUR,
-  type PanelBooking,
-  type PositionedBooking,
+  type CalendarDay,
+  type CalendarWeek,
+  type PanelBookingStatus,
+  type PositionedRow,
   type WeekdayKey,
 } from './WeeklyCalendar.types';
 
@@ -21,7 +33,10 @@ export const WEEKDAY_KEYS: readonly WeekdayKey[] = [
 ] as const;
 
 /** Alto en píxeles de una franja de 1 hora en la cuadrícula. */
-const HOUR_HEIGHT_PX = 60;
+export const HOUR_HEIGHT_PX = 60;
+
+/** Alto mínimo de un bloque para que el texto y el toque sigan siendo usables. */
+const MIN_BLOCK_HEIGHT_PX = 28;
 
 /**
  * Convierte una hora `HH:mm` en minutos totales desde medianoche.
@@ -39,32 +54,56 @@ function parseTimeToMinutes(time: string): number {
 }
 
 /**
- * Calcula `topPx` y `heightPx` para colocar una reserva en su columna
- * de día, asumiendo que la franja del calendario empieza a
- * `PANEL_CALENDAR_START_HOUR` y cada hora ocupa `HOUR_HEIGHT_PX`.
+ * Minutos de inicio y fin de una reserva dentro de su día. Si termina
+ * después de medianoche, la cortamos a las 24:00 de su columna.
  */
-function positionBooking(booking: PanelBooking): PositionedBooking {
-  const startMin = parseTimeToMinutes(booking.startTime);
-  const endMin = parseTimeToMinutes(booking.endTime);
-  const baseMin = PANEL_CALENDAR_START_HOUR * 60;
+function getMinutesSpan(row: BookingActionRow): { startMin: number; endMin: number } {
+  const startMin = parseTimeToMinutes(row.booking.startTime);
+  const endRaw = parseTimeToMinutes(row.booking.endTime);
+  return { startMin, endMin: endRaw <= startMin ? 24 * 60 : endRaw };
+}
 
-  const topPx = ((startMin - baseMin) / 60) * HOUR_HEIGHT_PX;
-  const heightPx = Math.max(((endMin - startMin) / 60) * HOUR_HEIGHT_PX, 24);
-
-  return { booking, topPx, heightPx };
+/** Estado visual del bloque: `refunded` se pinta como `cancelled`. */
+export function toBlockStatus(status: PanelBookingActionStatus): PanelBookingStatus {
+  return status === 'refunded' ? 'cancelled' : status;
 }
 
 /**
- * Agrupa las reservas por día (`weekday`) y las posiciona dentro de su
- * columna para que el componente pueda pintarlas absolutamente.
+ * Horas que muestra la columna lateral.
  *
- * Devuelve un Record con clave `WeekdayKey` y array de bookings
- * posicionados (vacío si el día no tiene reservas).
+ * Por defecto 08:00–21:00, ampliado para que quepa cualquier reserva
+ * fuera de esa franja: antes una cita a las 07:00 se pintaba por
+ * encima de la cuadrícula.
  */
-export function groupBookingsByWeekday(
-  bookings: PanelBooking[],
-): Record<WeekdayKey, PositionedBooking[]> {
-  const grouped: Record<WeekdayKey, PositionedBooking[]> = {
+export function getHoursRange(rows: BookingActionRow[]): number[] {
+  let first = PANEL_CALENDAR_START_HOUR;
+  let last = PANEL_CALENDAR_END_HOUR;
+  for (const row of rows) {
+    const { startMin, endMin } = getMinutesSpan(row);
+    first = Math.min(first, Math.floor(startMin / 60));
+    last = Math.max(last, Math.ceil(endMin / 60));
+  }
+  return Array.from({ length: last - first }, (_, i) => first + i);
+}
+
+/** Formatea una hora entera (`8`) como `08:00`. */
+export function formatHourLabel(hour: number): string {
+  return `${String(hour).padStart(2, '0')}:00`;
+}
+
+/**
+ * Agrupa las reservas por día y calcula su posición en la columna.
+ *
+ * @param rows — reservas con acciones ya resueltas.
+ * @param firstHour — primera hora visible (de `getHoursRange`).
+ * @param formatPrice — formateador de importes del locale activo.
+ */
+export function groupRowsByWeekday(
+  rows: BookingActionRow[],
+  firstHour: number,
+  formatPrice: (cents: number) => string,
+): Record<WeekdayKey, PositionedRow[]> {
+  const grouped: Record<WeekdayKey, PositionedRow[]> = {
     mon: [],
     tue: [],
     wed: [],
@@ -74,35 +113,78 @@ export function groupBookingsByWeekday(
     sun: [],
   };
 
-  for (const booking of bookings) {
-    const key = WEEKDAY_KEYS[booking.weekday];
+  for (const row of rows) {
+    const key = WEEKDAY_KEYS[row.booking.weekday];
     if (!key) continue;
-    grouped[key].push(positionBooking(booking));
+    const { startMin, endMin } = getMinutesSpan(row);
+    grouped[key].push({
+      row,
+      topPx: ((startMin - firstHour * 60) / 60) * HOUR_HEIGHT_PX,
+      heightPx: Math.max(((endMin - startMin) / 60) * HOUR_HEIGHT_PX, MIN_BLOCK_HEIGHT_PX),
+      priceLabel: formatPrice(row.booking.priceCents),
+    });
   }
 
-  // Ordenamos por hora de inicio para que el render sea predecible.
   for (const key of WEEKDAY_KEYS) {
     grouped[key].sort((a, b) => a.topPx - b.topPx);
   }
-
   return grouped;
 }
 
 /**
- * Devuelve la lista de horas (enteras) que muestra la columna lateral.
- * Por ejemplo, para 08:00–21:00 devuelve [8, 9, ..., 20].
- *
- * Se exporta para reutilizar en cálculos visuales y en los tests.
+ * Día que abre la vista móvil: hoy si la semana lo incluye; si no, el
+ * primero con reservas; si no hay ninguna, el lunes.
  */
-export function getHoursRange(): number[] {
-  const hours: number[] = [];
-  for (let h = PANEL_CALENDAR_START_HOUR; h < PANEL_CALENDAR_END_HOUR; h += 1) {
-    hours.push(h);
-  }
-  return hours;
+export function getInitialDayIndex(
+  days: CalendarDay[],
+  grouped: Record<WeekdayKey, PositionedRow[]>,
+): number {
+  const today = days.findIndex((d) => d.isToday);
+  if (today >= 0) return today;
+  const withBookings = days.findIndex((d) => grouped[d.key].length > 0);
+  return withBookings >= 0 ? withBookings : 0;
 }
 
-/** Formatea una hora entera (`8`) como `08:00`. */
-export function formatHourLabel(hour: number): string {
-  return `${String(hour).padStart(2, '0')}:00`;
+/**
+ * Resuelve la semana que pinta el calendario: los 7 días con su fecha
+ * y los destinos de navegación.
+ *
+ * @param weekStartKey — lunes de la semana mostrada (`YYYY-MM-DD`).
+ * @param now — momento actual, para marcar hoy y la semana actual.
+ * @param intlLocale — locale BCP 47 para las fechas del rango.
+ */
+export function buildCalendarWeek(
+  weekStartKey: string,
+  now: Date,
+  intlLocale: string,
+): CalendarWeek {
+  const currentWeek = getMadridWeekStartKey(now);
+  const todayKey = getMadridDateKey(now);
+  const dateKeys = getWeekDateKeys(weekStartKey);
+
+  // Las claves son fechas civiles: las formateamos como medianoche UTC
+  // para que la zona del servidor no mueva el día.
+  const formatDay = new Intl.DateTimeFormat(intlLocale, {
+    day: 'numeric',
+    month: 'short',
+    timeZone: 'UTC',
+  });
+  const toLabel = (key: string) => formatDay.format(new Date(`${key}T00:00:00.000Z`));
+
+  return {
+    days: dateKeys.map((dateKey, i) => ({
+      key: WEEKDAY_KEYS[i],
+      dateKey,
+      dayOfMonth: getDayOfMonth(dateKey),
+      isToday: dateKey === todayKey,
+    })),
+    nav: {
+      startLabel: toLabel(dateKeys[0]),
+      endLabel: toLabel(dateKeys[6]),
+      previousWeek: addDaysToDateKey(weekStartKey, -7),
+      nextWeek: addDaysToDateKey(weekStartKey, 7),
+      currentWeek,
+      isCurrentWeek: weekStartKey === currentWeek,
+    },
+  };
 }

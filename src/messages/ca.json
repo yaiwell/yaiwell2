@@ -359,7 +359,7 @@
     },
     "calendar": {
       "title": "Calendari setmanal",
-      "subtitle": "Les teves reserves dels propers 7 dies.",
+      "subtitle": "Les teves reserves setmana a setmana. Toca una cita per veure'n les dades i gestionar-la.",
       "weekdays": {
         "mon": "Dilluns",
         "tue": "Dimarts",
@@ -388,9 +388,9 @@
       "legend": "Llegenda",
       "emptyDay": "Sense reserves",
       "bookingAriaLabel": "{service} amb {client} a les {time}",
-      "summary": "{count, plural, one {# reserva aquesta setmana} other {# reserves aquesta setmana}}",
+      "summary": "{count, plural, =0 {Cap reserva aquesta setmana} one {# reserva} other {# reserves}}",
       "actions": {
-        "title": "Reserves d’aquesta setmana",
+        "title": "Reserves de la setmana",
         "subtitle": "Marca com a finalitzada cada cita que hagis atès: és el que permet a la clientela valorar-te.",
         "empty": "No hi ha reserves aquesta setmana.",
         "readOnlyHint": "Estàs veient dades d’exemple: les accions estan desactivades.",
@@ -426,6 +426,27 @@
             "internal": "No s’ha pogut cancel·lar. Torna-ho a provar d’aquí a uns minuts."
           }
         }
+      },
+      "nav": {
+        "region": "Canviar de setmana",
+        "previous": "Setmana anterior",
+        "next": "Setmana següent",
+        "today": "Avui",
+        "label": "{start} – {end}"
+      },
+      "dayView": {
+        "tabsLabel": "Dies de la setmana",
+        "tabCount": "{count, plural, =0 {cap reserva} one {# reserva} other {# reserves}}"
+      },
+      "details": {
+        "close": "Tancar",
+        "description": "Dades de la reserva i accions disponibles.",
+        "when": "Quan",
+        "client": "Reserva de",
+        "professional": "Professional",
+        "price": "Import",
+        "status": "Estat",
+        "noActions": "Aquesta reserva ja està tancada: no hi ha accions pendents."
       }
     },
     "services": {

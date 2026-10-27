@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 /**
- * Mock del singleton Prisma: aquí no probamos la query sino el mapeo
- * a las dos proyecciones (cuadrícula + listado de acciones) y, sobre
+ * Mock del singleton Prisma: aquí no probamos la query sino el rango
+ * semanal, el mapeo de la proyección y, sobre
  * todo, la conversión de instantes UTC a hora de Madrid, que hasta
  * ahora vivía sin tests dentro de `page.tsx`.
  */
@@ -48,7 +48,7 @@ beforeEach(() => {
 });
 
 describe('getPanelWeekBookings', () => {
-  it('consulta la semana en curso del proveedor, de lunes a lunes', async () => {
+  it('consulta la semana del proveedor de lunes a lunes en hora de Madrid', async () => {
     mockedFindMany.mockResolvedValueOnce([] as never);
 
     await getPanelWeekBookings('prov-1', NOW_WINTER, 'es');
@@ -57,8 +57,9 @@ describe('getPanelWeekBookings', () => {
       where: { providerId: string; startAt: { gte: Date; lt: Date } };
     };
     expect(args.where.providerId).toBe('prov-1');
-    expect(args.where.startAt.gte.toISOString()).toBe('2026-01-12T00:00:00.000Z');
-    expect(args.where.startAt.lt.toISOString()).toBe('2026-01-19T00:00:00.000Z');
+    // Lunes 00:00 en Madrid (CET) = domingo 23:00 UTC.
+    expect(args.where.startAt.gte.toISOString()).toBe('2026-01-11T23:00:00.000Z');
+    expect(args.where.startAt.lt.toISOString()).toBe('2026-01-18T23:00:00.000Z');
   });
 
   it('coloca una reserva del lunes 00:30 en Madrid (invierno) en la columna del lunes', async () => {
@@ -72,12 +73,11 @@ describe('getPanelWeekBookings', () => {
       }),
     ] as never);
 
-    const { calendar, actionable } = await getPanelWeekBookings('prov-1', NOW_WINTER, 'es');
+    const [booking] = await getPanelWeekBookings('prov-1', NOW_WINTER, 'es');
 
-    expect(calendar[0].weekday).toBe(0);
-    expect(calendar[0].startTime).toBe('00:30');
-    expect(calendar[0].endTime).toBe('01:30');
-    expect(actionable[0].weekday).toBe(0);
+    expect(booking.weekday).toBe(0);
+    expect(booking.startTime).toBe('00:30');
+    expect(booking.endTime).toBe('01:30');
   });
 
   it('formatea las horas en hora de verano de Madrid (CEST, UTC+2)', async () => {
@@ -88,40 +88,31 @@ describe('getPanelWeekBookings', () => {
       }),
     ] as never);
 
-    const { calendar } = await getPanelWeekBookings(
+    const [booking] = await getPanelWeekBookings(
       'prov-1',
       new Date('2026-07-15T10:00:00.000Z'),
       'es',
     );
 
-    expect(calendar[0].startTime).toBe('10:00');
-    expect(calendar[0].endTime).toBe('11:30');
+    expect(booking.startTime).toBe('10:00');
+    expect(booking.endTime).toBe('11:30');
   });
 
-  it('colapsa `refunded` a `cancelled` en la cuadrícula pero lo conserva en el listado', async () => {
+  it('conserva `refunded` y expone el instante real en ISO', async () => {
     mockedFindMany.mockResolvedValueOnce([bookingRecord({ status: 'refunded' })] as never);
 
-    const { calendar, actionable } = await getPanelWeekBookings('prov-1', NOW_WINTER, 'es');
+    const [booking] = await getPanelWeekBookings('prov-1', NOW_WINTER, 'es');
 
-    expect(calendar[0].status).toBe('cancelled');
-    expect(actionable[0].status).toBe('refunded');
-  });
-
-  it('expone el instante real en ISO solo en el listado de acciones', async () => {
-    mockedFindMany.mockResolvedValueOnce([bookingRecord()] as never);
-
-    const { calendar, actionable } = await getPanelWeekBookings('prov-1', NOW_WINTER, 'es');
-
-    expect(actionable[0].startAtIso).toBe('2026-01-12T08:00:00.000Z');
-    expect(calendar[0]).not.toHaveProperty('startAtIso');
+    expect(booking.status).toBe('refunded');
+    expect(booking.startAtIso).toBe('2026-01-12T08:00:00.000Z');
   });
 
   it('resuelve el nombre del servicio en el locale activo y cae al castellano', async () => {
     mockedFindMany.mockResolvedValueOnce([bookingRecord()] as never);
 
-    const { calendar } = await getPanelWeekBookings('prov-1', NOW_WINTER, 'ca');
+    const [booking] = await getPanelWeekBookings('prov-1', NOW_WINTER, 'ca');
 
-    expect(calendar[0].serviceName).toBe('Tall dona');
+    expect(booking.serviceName).toBe('Tall dona');
   });
 
   it('usa el email del cliente cuando no hay nombre y admite reservas sin profesional', async () => {
@@ -132,10 +123,10 @@ describe('getPanelWeekBookings', () => {
       }),
     ] as never);
 
-    const { calendar } = await getPanelWeekBookings('prov-1', NOW_WINTER, 'es');
+    const [booking] = await getPanelWeekBookings('prov-1', NOW_WINTER, 'es');
 
-    expect(calendar[0].clientName).toBe('anon@example.com');
-    expect(calendar[0].professionalName).toBeNull();
+    expect(booking.clientName).toBe('anon@example.com');
+    expect(booking.professionalName).toBeNull();
   });
 });
 

@@ -1,2 +1,8 @@
 export { WeeklyCalendar } from './WeeklyCalendar';
-export type { WeeklyCalendarProps } from './WeeklyCalendar.types';
+export { buildCalendarWeek } from './WeeklyCalendar.logic';
+export type {
+  CalendarWeek,
+  PanelBooking,
+  PanelBookingStatus,
+  WeeklyCalendarProps,
+} from './WeeklyCalendar.types';

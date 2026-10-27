@@ -8,31 +8,39 @@ import {
   PanelPreviewToggle,
   PreviewBanner,
 } from '@/components/features/provider-panel/PanelPreviewToggle';
-import { WeeklyCalendar } from '@/components/features/provider-panel/WeeklyCalendar';
-import type { PanelBooking } from '@/components/features/provider-panel/WeeklyCalendar/WeeklyCalendar.types';
+import {
+  WeeklyCalendar,
+  buildCalendarWeek,
+} from '@/components/features/provider-panel/WeeklyCalendar';
 import type { AppLocale } from '@/i18n/routing';
 import { isPanelPreviewActive } from '@/lib/auth/panel-preview';
 import { requireCurrentProvider } from '@/lib/auth/server';
 import { fakePanelBookings } from '@/lib/fake-data/panel-bookings';
+import { toIntlLocale } from '@/lib/i18n';
 import { getPanelWeekBookings, toPreviewBookingActions } from '@/lib/services/provider-panel';
+import { getMadridWeekRange, parseWeekParam } from '@/lib/utils/madrid-week';
 
 interface PanelCalendarPageProps {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ semana?: string | string[] }>;
 }
 
 /**
- * Calendario semanal del panel (`/panel/calendario`).
+ * Calendario semanal del panel (`/panel/calendario?semana=YYYY-MM-DD`).
  *
- * Composición pura: el acceso a datos vive en
- * `getPanelWeekBookings` (§3 de CLAUDE.md — una página no habla con
- * Prisma). Debajo de la cuadrícula va el listado de acciones, que es
- * por donde una reserva llega a `completed` o se cancela.
+ * La semana se elige por URL (clave del lunes, en hora de Madrid) para
+ * que la navegación funcione sin JavaScript, se pueda compartir y el
+ * «atrás» del navegador haga lo esperado. Sin parámetro, semana actual.
  *
- * En modo preview enseñamos los mismos bloques con datos de ejemplo y
- * las acciones deshabilitadas: la gracia del preview es ver el panel
- * lleno, no esconder la mitad de la pantalla.
+ * Composición pura: el acceso a datos vive en `getPanelWeekBookings`
+ * (§3 de CLAUDE.md — una página no habla con Prisma). Cada bloque del
+ * calendario abre el detalle con sus acciones; debajo sigue el listado
+ * de la semana, la vista accesible de lo mismo.
+ *
+ * En modo preview enseñamos datos de ejemplo con las acciones
+ * deshabilitadas y sin navegación (los ejemplos no tienen fecha).
  */
-export default async function PanelCalendarPage({ params }: PanelCalendarPageProps) {
+export default async function PanelCalendarPage({ params, searchParams }: PanelCalendarPageProps) {
   const { locale } = await params;
 
   if (!hasLocale(['es', 'ca', 'en', 'de'], locale)) {
@@ -44,15 +52,21 @@ export default async function PanelCalendarPage({ params }: PanelCalendarPagePro
   const tPreview = await getTranslations('providerPanel.preview');
   const panelLocale = locale as AppLocale;
   const preview = await isPanelPreviewActive();
+  const now = new Date();
+  const weekKey = preview
+    ? parseWeekParam(undefined, now)
+    : parseWeekParam((await searchParams).semana, now);
 
-  let calendar: PanelBooking[];
-  let actionable: PanelBookingAction[];
+  let bookings: PanelBookingAction[];
   if (preview) {
-    calendar = fakePanelBookings;
-    actionable = toPreviewBookingActions(fakePanelBookings);
+    bookings = toPreviewBookingActions(fakePanelBookings);
   } else {
     const { id: providerId } = await requireCurrentProvider(panelLocale);
-    ({ calendar, actionable } = await getPanelWeekBookings(providerId, new Date(), panelLocale));
+    bookings = await getPanelWeekBookings(
+      providerId,
+      getMadridWeekRange(weekKey).start,
+      panelLocale,
+    );
   }
 
   return (
@@ -72,8 +86,14 @@ export default async function PanelCalendarPage({ params }: PanelCalendarPagePro
       </header>
 
       {preview ? <PreviewBanner /> : null}
-      <WeeklyCalendar bookings={calendar} />
-      <BookingActionsList bookings={actionable} locale={panelLocale} readOnly={preview} />
+      <WeeklyCalendar
+        bookings={bookings}
+        week={buildCalendarWeek(weekKey, now, toIntlLocale(panelLocale))}
+        locale={panelLocale}
+        readOnly={preview}
+        now={now}
+      />
+      <BookingActionsList bookings={bookings} locale={panelLocale} readOnly={preview} now={now} />
     </section>
   );
 }

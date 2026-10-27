@@ -4,51 +4,16 @@ import type {
   PanelBookingAction,
   PanelBookingActionStatus,
 } from '@/components/features/provider-panel/BookingActionsList/BookingActionsList.types';
-import type {
-  PanelBooking,
-  PanelBookingStatus,
-} from '@/components/features/provider-panel/WeeklyCalendar/WeeklyCalendar.types';
+import type { PanelBooking } from '@/components/features/provider-panel/WeeklyCalendar/WeeklyCalendar.types';
 import type { AppLocale } from '@/i18n/routing';
 import { prisma } from '@/lib/db/prisma';
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
+import {
+  PANEL_TIMEZONE as PANEL_TZ,
+  getMadridWeekRange,
+  getMadridWeekStartKey,
+} from '@/lib/utils/madrid-week';
 import type { LocalizedText } from '@/types/domain';
-
-/** Timezone fija para el panel: Yaiwell opera en España. */
-const PANEL_TZ = 'Europe/Madrid';
-
-/**
- * Las dos proyecciones que el panel de calendario necesita, resueltas
- * con una sola query.
- *
- * `calendar` alimenta la cuadrícula semanal (hora local ya formateada,
- * estado colapsado). `actionable` alimenta el listado de acciones, que
- * necesita el instante real (`startAtIso`) para la ventana de 2 h y el
- * estado sin colapsar para distinguir `cancelled` de `refunded`.
- */
-export interface PanelWeekBookings {
-  calendar: PanelBooking[];
-  actionable: PanelBookingAction[];
-}
-
-/**
- * Calcula el rango de la semana actual en UTC.
- *
- * NOTA: usamos límites en UTC (no en hora local de Madrid) para
- * simplificar. Eso puede dejar fuera reservas en la hora 00:00-01:00
- * del lunes Madrid en invierno (1h de offset). Es aceptable para v1
- * — cuando llegue ICU/temporal-polyfill en Fase 1 se afina.
- */
-function getCurrentWeekRange(now: Date): { start: Date; end: Date } {
-  // `getUTCDay()`: 0=domingo .. 6=sábado. Convertimos a 0=lunes.
-  const dayUTC = now.getUTCDay();
-  const daysSinceMondayUTC = (dayUTC + 6) % 7;
-  const start = new Date(now);
-  start.setUTCHours(0, 0, 0, 0);
-  start.setUTCDate(start.getUTCDate() - daysSinceMondayUTC);
-  const end = new Date(start);
-  end.setUTCDate(end.getUTCDate() + 7);
-  return { start, end };
-}
 
 /**
  * Devuelve el día de la semana en hora Madrid (0=lunes .. 6=domingo).
@@ -85,36 +50,29 @@ function timeInMadrid(date: Date): string {
 }
 
 /**
- * Mapea el `BookingStatus` de BD al union restringido del calendario.
- * `refunded` se trata visualmente como `cancelled` (un reembolso
- * sigue a una cancelación; no merece badge propio en la cuadrícula).
- */
-function mapStatus(status: PanelBookingActionStatus): PanelBookingStatus {
-  return status === 'refunded' ? 'cancelled' : status;
-}
-
-/**
- * Recupera las reservas del proveedor en la semana en curso y devuelve
- * las dos proyecciones que consume `/panel/calendario`.
+ * Recupera las reservas del proveedor en una semana de Madrid (lunes
+ * 00:00 a lunes 00:00, hora local) para `/panel/calendario`.
  *
  * Una única query con los joins necesarios (cliente, servicio,
- * profesional): las dos vistas pintan exactamente el mismo conjunto de
- * reservas, así que duplicar el viaje a BD solo añadiría latencia y
- * riesgo de inconsistencia entre cuadrícula y listado.
+ * profesional). La cuadrícula y el listado de acciones pintan el mismo
+ * conjunto, así que comparten esta proyección.
+ *
+ * Devuelve también las ya resueltas de la semana: si la reserva
+ * desapareciera al cancelar o completar, el proveedor no tendría
+ * confirmación visible de que su acción ha aterrizado (ni de si el
+ * reembolso salió). Los botones se deciden reserva a reserva por estado.
  *
  * @param providerId — Provider del usuario autenticado.
- * @param now — momento de referencia; determina la semana consultada.
- *   Se recibe por parámetro para poder testear sin congelar el reloj.
- * @param locale — locale activo, necesario para resolver el nombre
- *   localizado del servicio (`LocalizedText`).
- * @returns cuadrícula semanal y listado de acciones.
+ * @param reference — cualquier instante de la semana a consultar.
+ * @param locale — locale activo, para el nombre localizado del servicio.
+ * @returns reservas de la semana ordenadas por inicio.
  */
 export async function getPanelWeekBookings(
   providerId: string,
-  now: Date,
+  reference: Date,
   locale: AppLocale,
-): Promise<PanelWeekBookings> {
-  const { start, end } = getCurrentWeekRange(now);
+): Promise<PanelBookingAction[]> {
+  const { start, end } = getMadridWeekRange(getMadridWeekStartKey(reference));
 
   const records = await prisma.booking.findMany({
     where: {
@@ -134,37 +92,18 @@ export async function getPanelWeekBookings(
     orderBy: { startAt: 'asc' },
   });
 
-  // Proyección intermedia: los campos comunes a ambas vistas más el
-  // `startAt` crudo, que solo el listado de acciones necesita.
-  const rows = records.map((r) => ({
-    startAt: r.startAt,
-    common: {
-      id: r.id,
-      weekday: weekdayInMadrid(r.startAt),
-      startTime: timeInMadrid(r.startAt),
-      endTime: timeInMadrid(r.endAt),
-      clientName: r.client.fullName ?? r.client.email,
-      serviceName: pickLocalized(r.service.name as unknown as LocalizedText, locale),
-      professionalName: r.professional?.name ?? null,
-      status: r.status as PanelBookingActionStatus,
-      priceCents: r.priceCents,
-    },
+  return records.map((r) => ({
+    id: r.id,
+    startAtIso: r.startAt.toISOString(),
+    weekday: weekdayInMadrid(r.startAt),
+    startTime: timeInMadrid(r.startAt),
+    endTime: timeInMadrid(r.endAt),
+    clientName: r.client.fullName ?? r.client.email,
+    serviceName: pickLocalized(r.service.name as unknown as LocalizedText, locale),
+    professionalName: r.professional?.name ?? null,
+    status: r.status as PanelBookingActionStatus,
+    priceCents: r.priceCents,
   }));
-
-  return {
-    calendar: rows.map(({ common }) => ({
-      ...common,
-      status: mapStatus(common.status),
-    })),
-    // Devolvemos también las ya resueltas de la semana: si la fila
-    // desapareciera al cancelar o completar, el proveedor no tendría
-    // confirmación visible de que su acción ha aterrizado (ni de si el
-    // reembolso salió). Los botones se deciden fila a fila por estado.
-    actionable: rows.map(({ startAt, common }) => ({
-      ...common,
-      startAtIso: startAt.toISOString(),
-    })),
-  };
 }
 
 /**

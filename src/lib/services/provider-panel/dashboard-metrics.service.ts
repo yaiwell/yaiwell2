@@ -6,10 +6,13 @@ import type {
   PanelWeeklyMetrics,
 } from '@/components/features/provider-panel/DashboardMetrics/DashboardMetrics.types';
 import { prisma } from '@/lib/db/prisma';
+import {
+  PANEL_TIMEZONE as PANEL_TZ,
+  addDaysToDateKey,
+  getMadridWeekRange,
+  getMadridWeekStartKey,
+} from '@/lib/utils/madrid-week';
 import type { LocalizedText } from '@/types/domain';
-
-/** Timezone fija del panel: Yaiwell opera en España. */
-const PANEL_TZ = 'Europe/Madrid';
 
 /**
  * Estados de Booking que cuentan como "reserva real" para métricas.
@@ -23,26 +26,6 @@ const REVENUE_STATUSES = ['confirmed', 'completed'] as const;
 
 const WEEKDAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 type WeekdayKey = (typeof WEEKDAY_KEYS)[number];
-
-/**
- * Calcula el rango UTC de una semana relativa al lunes actual.
- *
- * `weeksAgo: 0` → semana en curso. `weeksAgo: 1` → semana anterior.
- *
- * NOTA: usamos límites en UTC para simplificar; eso desfasa el corte
- * en 1-2h respecto a Madrid pero es aceptable para v1. Cuando llegue
- * temporal-polyfill se ajusta al lunes 00:00 Madrid exacto.
- */
-function weekRangeRelative(now: Date, weeksAgo: number): { start: Date; end: Date } {
-  const dayUTC = now.getUTCDay();
-  const daysSinceMondayUTC = (dayUTC + 6) % 7;
-  const start = new Date(now);
-  start.setUTCHours(0, 0, 0, 0);
-  start.setUTCDate(start.getUTCDate() - daysSinceMondayUTC - weeksAgo * 7);
-  const end = new Date(start);
-  end.setUTCDate(end.getUTCDate() + 7);
-  return { start, end };
-}
 
 /**
  * Devuelve la clave de día (mon..sun) en hora Madrid de la fecha dada.
@@ -90,9 +73,11 @@ function computeDeltaPct(current: number, previous: number): number {
  * (incluidos los deltas) y `dailyRevenue` con los 7 días en 0.
  */
 export async function getWeeklyMetrics(providerId: string): Promise<PanelWeeklyMetrics> {
-  const now = new Date();
-  const thisWeek = weekRangeRelative(now, 0);
-  const lastWeek = weekRangeRelative(now, 1);
+  // Semanas de lunes a lunes en hora de Madrid: cortar en UTC dejaba
+  // fuera las reservas de la primera hora del lunes.
+  const thisWeekKey = getMadridWeekStartKey(new Date());
+  const thisWeek = getMadridWeekRange(thisWeekKey);
+  const lastWeek = getMadridWeekRange(addDaysToDateKey(thisWeekKey, -7));
 
   const bookings = await prisma.booking.findMany({
     where: {

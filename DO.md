@@ -8,6 +8,17 @@
 
 ## 2026-10-27
 
+### 2026-10-27 (9) — Calendario interactivo del panel
+
+P15: implementación → `e2e-tester` + `business-rules-auditor` + `conventions-reviewer` en paralelo → arreglos.
+
+- **Semanas en hora de Madrid** (`src/lib/utils/madrid-week.ts`): lunes 00:00 a lunes 00:00 local, con semanas de 167/169 h en los cambios de hora. Arregla el bug confirmado el 2026-09-20 (una reserva del lunes 00:30 no salía) en el calendario **y** en las métricas del dashboard.
+- **Navegación entre semanas** con enlaces `?semana=YYYY-MM-DD` (cualquier día se normaliza a su lunes; valores inválidos o años fuera de 2000–2100 vuelven a la semana actual). «Hoy» aparece fuera de la semana actual. Cabeceras con fecha y hoy marcado.
+- **Vista de día en móvil** (< md): pestañas accesibles (flechas, Home/End) y una columna a todo el ancho; abre por hoy o por el primer día con reservas.
+- **Acciones desde el bloque**: cada cita es un botón que abre su detalle (cuándo, quién reserva, profesional, importe, estado) con «Marcar finalizada» y «Cancelar reserva», con la misma regla de 2 h y los mismos permisos que el listado.
+- El rango de horas se amplía si hay citas antes de las 08:00 o después de las 21:00. Se quitó el `h1` duplicado del componente. Textos nuevos en los 4 idiomas.
+- **Tests**: 1175 unitarios; E2E `tests/e2e/provider-calendar.spec.ts` 5/5 (bug de UTC, navegación, finalizar, cancelar a <2 h / >2 h y vista móvil) con el proveedor de pruebas existente, sin crear usuarios en Clerk, y limpieza verificada en BD. `typecheck`, `lint` y `build` limpios.
+
 ### 2026-10-27 (8) — E2E de valorar ejecutado en verde
 
 - Con permiso del dev, `tests/e2e/customer-review.spec.ts` crea en `beforeAll` un usuario de test en Clerk (`e2e-review-<ts>+clerk_test@example.com`, rol `client`) y su fila en `users`, y en `afterAll` borra por id review, booking, fila y usuario de Clerk (con reintentos: la API de Clerk falla a ratos desde la red de la oficina) y comprueba que Studio Aura vuelve a 0/0.

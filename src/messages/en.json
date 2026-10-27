@@ -359,7 +359,7 @@
     },
     "calendar": {
       "title": "Weekly calendar",
-      "subtitle": "Your bookings for the next 7 days.",
+      "subtitle": "Your bookings week by week. Tap an appointment to see its details and manage it.",
       "weekdays": {
         "mon": "Monday",
         "tue": "Tuesday",
@@ -388,9 +388,9 @@
       "legend": "Legend",
       "emptyDay": "No bookings",
       "bookingAriaLabel": "{service} with {client} at {time}",
-      "summary": "{count, plural, one {# booking this week} other {# bookings this week}}",
+      "summary": "{count, plural, =0 {No bookings this week} one {# booking} other {# bookings}}",
       "actions": {
-        "title": "This week’s bookings",
+        "title": "Bookings for the week",
         "subtitle": "Mark every appointment you have delivered as finished: that is what lets your clients review you.",
         "empty": "No bookings this week.",
         "readOnlyHint": "You are viewing sample data: actions are disabled.",
@@ -426,6 +426,27 @@
             "internal": "We could not cancel it. Please try again in a few minutes."
           }
         }
+      },
+      "nav": {
+        "region": "Change week",
+        "previous": "Previous week",
+        "next": "Next week",
+        "today": "Today",
+        "label": "{start} – {end}"
+      },
+      "dayView": {
+        "tabsLabel": "Days of the week",
+        "tabCount": "{count, plural, =0 {no bookings} one {# booking} other {# bookings}}"
+      },
+      "details": {
+        "close": "Close",
+        "description": "Booking details and available actions.",
+        "when": "When",
+        "client": "Booked by",
+        "professional": "Professional",
+        "price": "Amount",
+        "status": "Status",
+        "noActions": "This booking is already closed: there is nothing left to do."
       }
     },
     "services": {

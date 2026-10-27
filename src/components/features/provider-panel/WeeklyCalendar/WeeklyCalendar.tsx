@@ -1,18 +1,18 @@
 import { useTranslations } from 'next-intl';
 
+import { buildBookingActionRows } from '../BookingActionsList/BookingActionsList.logic';
+import { formatCurrencyFromCents } from '../DashboardMetrics/DashboardMetrics.logic';
+import { CalendarDayColumn } from './CalendarDayColumn';
+import { CalendarDayView } from './CalendarDayView';
 import {
-  WEEKDAY_KEYS,
   formatHourLabel,
   getHoursRange,
-  groupBookingsByWeekday,
+  getInitialDayIndex,
+  groupRowsByWeekday,
 } from './WeeklyCalendar.logic';
-import type { PanelBookingStatus } from './WeeklyCalendar.types';
-import {
-  bookingBlockByStatus,
-  legendDotByStatus,
-  weeklyCalendarStyles as s,
-} from './WeeklyCalendar.styles';
-import type { WeeklyCalendarProps } from './WeeklyCalendar.types';
+import { legendDotByStatus, weeklyCalendarStyles as s } from './WeeklyCalendar.styles';
+import { WeekNavigation } from './WeekNavigation';
+import type { PanelBookingStatus, WeeklyCalendarProps } from './WeeklyCalendar.types';
 
 /** Estados que se muestran en la leyenda (orden visible). */
 const LEGEND_STATUSES: PanelBookingStatus[] = ['confirmed', 'pending', 'completed', 'cancelled'];
@@ -20,95 +20,88 @@ const LEGEND_STATUSES: PanelBookingStatus[] = ['confirmed', 'pending', 'complete
 /**
  * Calendario semanal del panel del proveedor.
  *
- * Renderiza una cuadrícula de 7 días con franjas horarias y bloques
- * absolutos que representan cada reserva. La altura de cada bloque es
- * proporcional a la duración del servicio (1h = 60px).
+ * Server Component: decide en el servidor las acciones de cada reserva
+ * (`buildBookingActionRows`, mismo criterio que el listado) y su
+ * posición. Solo cruzan a cliente los bloques (abren el detalle) y la
+ * vista de día móvil (pestañas).
  *
- * Server Component puro: las reservas vienen ya posicionadas a través de
- * `groupBookingsByWeekday`, y el componente solo compone la UI.
+ * Cuadrícula de 7 días desde `md`; por debajo, vista de un día.
  */
-export function WeeklyCalendar({ bookings }: WeeklyCalendarProps) {
+export function WeeklyCalendar({ bookings, week, locale, readOnly, now }: WeeklyCalendarProps) {
   const t = useTranslations('providerPanel.calendar');
-  const grouped = groupBookingsByWeekday(bookings);
-  const hours = getHoursRange();
+  const rows = buildBookingActionRows(bookings, now);
+  const hours = getHoursRange(rows);
+  const grouped = groupRowsByWeekday(rows, hours[0], (cents) =>
+    formatCurrencyFromCents(cents, locale),
+  );
+  const { days, nav } = week;
 
   return (
     <div className={s.root} data-component="weekly-calendar">
-      <header className={s.header}>
-        <h1 className={s.title}>{t('title')}</h1>
-        <p className={s.subtitle}>{t('subtitle')}</p>
-        <p className={s.summary}>{t('summary', { count: bookings.length })}</p>
-      </header>
+      <div className={s.toolbar}>
+        {readOnly ? null : <WeekNavigation nav={nav} />}
+        <p className={s.summary} data-component="weekly-calendar-summary">
+          {t('summary', { count: bookings.length })}
+        </p>
+      </div>
 
-      <div className={s.scroll}>
-        <div className={s.grid}>
-          {/* Cabecera con día de la semana */}
-          <div className={s.headerRow} role="row">
-            <div className={s.headerCell} aria-hidden />
-            {WEEKDAY_KEYS.map((dayKey) => (
-              <div
-                key={dayKey}
-                role="columnheader"
-                className={`${s.headerCell} ${s.headerCellDay}`}
-                data-component={`weekly-calendar-header-${dayKey}`}
-              >
-                {t(`weekdayShort.${dayKey}`)}
-              </div>
-            ))}
-          </div>
-
-          {/* Cuerpo: columna de horas + 7 columnas de días */}
-          <div className={s.body}>
-            <div className={s.hourColumn} aria-hidden>
-              {hours.map((h) => (
-                <span key={h} className={s.hourCell}>
-                  {formatHourLabel(h)}
-                </span>
+      <div className={s.desktop}>
+        <div className={s.scroll}>
+          <div className={s.grid}>
+            <div className={s.headerRow}>
+              <div className={s.headerCell} aria-hidden />
+              {days.map((day) => (
+                <div
+                  key={day.dateKey}
+                  className={`${s.headerCell} ${s.headerCellDay} ${day.isToday ? s.headerToday : ''}`}
+                  data-component={`weekly-calendar-header-${day.key}`}
+                  aria-current={day.isToday ? 'date' : undefined}
+                >
+                  {t(`weekdayShort.${day.key}`)}
+                  <span className={`${s.headerDate} ${day.isToday ? s.todayDot : ''}`}>
+                    {day.dayOfMonth}
+                  </span>
+                </div>
               ))}
             </div>
 
-            {WEEKDAY_KEYS.map((dayKey) => (
-              <div
-                key={dayKey}
-                className={s.dayColumn}
-                data-component={`weekly-calendar-day-${dayKey}`}
-              >
-                <div className={s.dayInner}>
-                  {/* Separadores horarios para guiar visualmente al usuario */}
-                  {hours.map((_, index) => (
-                    <span
-                      key={index}
-                      className={s.hourSeparator}
-                      style={{ top: `${index * 60}px` }}
-                      aria-hidden
-                    />
-                  ))}
-
-                  {grouped[dayKey].map(({ booking, topPx, heightPx }) => (
-                    <article
-                      key={booking.id}
-                      className={`${s.bookingBlock} ${bookingBlockByStatus[booking.status]}`}
-                      style={{ top: `${topPx}px`, height: `${heightPx}px` }}
-                      aria-label={t('bookingAriaLabel', {
-                        service: booking.serviceName,
-                        client: booking.clientName,
-                        time: booking.startTime,
-                      })}
-                      data-component={`weekly-calendar-booking-${booking.id}`}
-                      data-status={booking.status}
-                    >
-                      <p className={s.bookingTitle}>{booking.serviceName}</p>
-                      <p className={s.bookingMeta}>
-                        {booking.startTime} · {booking.clientName}
-                      </p>
-                    </article>
-                  ))}
-                </div>
+            <div className={s.body}>
+              <div className={s.hourColumn} aria-hidden>
+                {hours.map((h) => (
+                  <span key={h} className={s.hourCell}>
+                    {formatHourLabel(h)}
+                  </span>
+                ))}
               </div>
-            ))}
+
+              {days.map((day) => (
+                <div
+                  key={day.dateKey}
+                  className={`${s.dayColumn} ${day.isToday ? s.dayColumnToday : ''}`}
+                  data-component={`weekly-calendar-day-${day.key}`}
+                >
+                  <CalendarDayColumn
+                    positioned={grouped[day.key]}
+                    hours={hours}
+                    locale={locale}
+                    readOnly={readOnly}
+                    variant="week"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
+      <CalendarDayView
+        days={days}
+        grouped={grouped}
+        hours={hours}
+        locale={locale}
+        readOnly={readOnly}
+        initialDayIndex={getInitialDayIndex(days, grouped)}
+      />
 
       <div className={s.legend} data-component="weekly-calendar-legend">
         <span className={s.legendTitle}>{t('legend')}:</span>

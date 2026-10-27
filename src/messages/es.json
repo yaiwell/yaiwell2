@@ -359,7 +359,7 @@
     },
     "calendar": {
       "title": "Calendario semanal",
-      "subtitle": "Tus reservas de los próximos 7 días.",
+      "subtitle": "Tus reservas semana a semana. Toca una cita para ver sus datos y gestionarla.",
       "weekdays": {
         "mon": "Lunes",
         "tue": "Martes",
@@ -388,9 +388,9 @@
       "legend": "Leyenda",
       "emptyDay": "Sin reservas",
       "bookingAriaLabel": "{service} con {client} a las {time}",
-      "summary": "{count, plural, one {# reserva esta semana} other {# reservas esta semana}}",
+      "summary": "{count, plural, =0 {Sin reservas esta semana} one {# reserva} other {# reservas}}",
       "actions": {
-        "title": "Reservas de esta semana",
+        "title": "Reservas de la semana",
         "subtitle": "Marca como finalizada cada cita que hayas atendido: es lo que permite a la clientela valorarte.",
         "empty": "No hay reservas esta semana.",
         "readOnlyHint": "Estás viendo datos de ejemplo: las acciones están desactivadas.",
@@ -426,6 +426,27 @@
             "internal": "No se ha podido cancelar. Inténtalo de nuevo en unos minutos."
           }
         }
+      },
+      "nav": {
+        "region": "Cambiar de semana",
+        "previous": "Semana anterior",
+        "next": "Semana siguiente",
+        "today": "Hoy",
+        "label": "{start} – {end}"
+      },
+      "dayView": {
+        "tabsLabel": "Días de la semana",
+        "tabCount": "{count, plural, =0 {sin reservas} one {# reserva} other {# reservas}}"
+      },
+      "details": {
+        "close": "Cerrar",
+        "description": "Datos de la reserva y acciones disponibles.",
+        "when": "Cuándo",
+        "client": "Reserva de",
+        "professional": "Profesional",
+        "price": "Importe",
+        "status": "Estado",
+        "noActions": "Esta reserva ya está cerrada: no hay acciones pendientes."
       }
     },
     "services": {
