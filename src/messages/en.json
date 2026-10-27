@@ -1570,7 +1570,7 @@
   "googleAuth": {
     "continue": "Continue with Google",
     "redirecting": "Opening Google…",
-    "signInNote": "If you don't have an account yet, we'll create a customer account. Professional accounts are created from “Create account”.",
+    "signInNote": "If you don't have an account yet, we'll create a customer account. By continuing you accept the terms of use and the privacy policy.",
     "errors": {
       "networkError": "You're offline. Check your connection and try again.",
       "unknown": "We couldn't connect to Google. Try again or sign in with your email."

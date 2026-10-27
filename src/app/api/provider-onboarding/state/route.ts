@@ -1,6 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
+import { getCurrentRole } from '@/lib/auth/server';
 import { loadOnboardingState } from '@/lib/services/provider-onboarding';
 import { ensureUserFromClerk, MissingPrimaryEmailError } from '@/lib/services/user';
 
@@ -29,6 +30,13 @@ export async function GET(): Promise<NextResponse<unknown | ErrorBody>> {
   const { userId: clerkUserId } = await auth();
   if (!clerkUserId) {
     return NextResponse.json({ error: { code: 'UNAUTHORIZED' } }, { status: 401 });
+  }
+
+  // Solo un profesional da de alta un centro: la misma regla que aplica
+  // la página `/onboarding` con `requireRole(['provider'])`. Sin esto,
+  // una cuenta de cliente podía crear un `Provider` con un POST directo.
+  if ((await getCurrentRole()) !== 'provider') {
+    return NextResponse.json({ error: { code: 'FORBIDDEN_ROLE' } }, { status: 403 });
   }
 
   // 2. Resolución del userId interno con auto-sync si falta. Defensa

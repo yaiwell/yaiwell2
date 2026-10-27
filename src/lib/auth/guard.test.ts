@@ -40,7 +40,7 @@ vi.mock('@/i18n/navigation', () => ({
   redirect: redirectMock,
 }));
 
-import { requireRole } from './guard';
+import { getCurrentRole, requireRole } from './guard';
 
 /**
  * Atrapa la excepción del redirect mockeado y devuelve el destino. Hace
@@ -150,5 +150,28 @@ describe('requireRole', () => {
     const dest = await captureRedirect(requireRole(['admin'], 'es'));
 
     expect(dest).toEqual({ href: '/', locale: 'es' });
+  });
+});
+
+describe('getCurrentRole', () => {
+  beforeEach(() => {
+    authMock.mockReset();
+    currentUserMock.mockReset();
+    redirectMock.mockClear();
+  });
+
+  it('sin sesión devuelve null sin redirigir', async () => {
+    authMock.mockResolvedValue({ userId: null, sessionClaims: null });
+
+    expect(await getCurrentRole()).toBeNull();
+    expect(redirectMock).not.toHaveBeenCalled();
+  });
+
+  it('lee el rol igual que requireRole (claims y luego currentUser)', async () => {
+    authMock.mockResolvedValue({ userId: 'user_1', sessionClaims: {} });
+    currentUserMock.mockResolvedValue({ publicMetadata: {}, unsafeMetadata: { role: 'admin' } });
+
+    // `admin` en unsafeMetadata no cuenta: cae a cliente.
+    expect(await getCurrentRole()).toBe('client');
   });
 });

@@ -1570,7 +1570,7 @@
   "googleAuth": {
     "continue": "Weiter mit Google",
     "redirecting": "Google wird geöffnet…",
-    "signInNote": "Wenn du noch kein Konto hast, legen wir ein Kundenkonto an. Konten für Fachkräfte erstellst du über „Account erstellen“.",
+    "signInNote": "Wenn du noch kein Konto hast, legen wir ein Kundenkonto an. Wenn du fortfährst, akzeptierst du die Nutzungsbedingungen und die Datenschutzerklärung.",
     "errors": {
       "networkError": "Keine Verbindung. Prüfe sie und versuche es erneut.",
       "unknown": "Die Verbindung zu Google hat nicht geklappt. Versuche es erneut oder melde dich mit deiner E-Mail an."

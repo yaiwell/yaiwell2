@@ -15,7 +15,7 @@ import 'server-only';
  * actions que necesitan el usuario actual.
  */
 
-export { requireRole } from './guard';
+export { getCurrentRole, requireRole } from './guard';
 export type { GuardResult } from './guard';
 export { promoteRoleToPublicMetadata } from './promoteRole';
 export { getCurrentProviderId, requireCurrentProvider } from './provider';

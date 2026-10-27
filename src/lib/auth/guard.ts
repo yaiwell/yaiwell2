@@ -57,6 +57,31 @@ export interface GuardResult {
  * @returns `{ userId, role }` si el guard pasa. Si no, llama a `redirect`
  *   (que lanza una excepción interna de Next y nunca retorna).
  */
+/**
+ * Rol del usuario de la sesión: primero los claims del JWT (barato) y,
+ * si no lo traen, `currentUser()`. Es la única forma en que guards de
+ * página y de API leen el rol, para que decidan siempre igual.
+ */
+async function resolveRoleFromSession(claims: ClaimsShape | null): Promise<UserRole> {
+  const fromClaims = getRoleFromSessionClaims(claims);
+  if (fromClaims) return fromClaims;
+  return getRoleFromUser(await currentUser());
+}
+
+/**
+ * Rol del usuario actual para Route Handlers, que no pueden redirigir
+ * como los layouts: devuelve `null` sin sesión y el handler responde
+ * con 401/403.
+ *
+ * Usa la misma lectura que `requireRole`, así que un endpoint y la
+ * página que lo consume nunca discrepan sobre quién puede entrar.
+ */
+export async function getCurrentRole(): Promise<UserRole | null> {
+  const { userId, sessionClaims } = await auth();
+  if (!userId) return null;
+  return resolveRoleFromSession(sessionClaims as ClaimsShape | null);
+}
+
 export async function requireRole(
   allowedRoles: readonly UserRole[],
   locale: AppLocale,
@@ -70,14 +95,7 @@ export async function requireRole(
     throw new Error('unreachable: redirect should have thrown');
   }
 
-  // Intento barato: rol desde claims del JWT.
-  let role = getRoleFromSessionClaims(sessionClaims as ClaimsShape | null);
-
-  // Fallback: fetch del user completo. Solo si no había rol en claims.
-  if (!role) {
-    const user = await currentUser();
-    role = getRoleFromUser(user);
-  }
+  const role = await resolveRoleFromSession(sessionClaims as ClaimsShape | null);
 
   if (!allowedRoles.includes(role)) {
     redirect({ href: resolvePostAuthDestination(role), locale });

@@ -1570,7 +1570,7 @@
   "googleAuth": {
     "continue": "Continua amb Google",
     "redirecting": "Obrint Google…",
-    "signInNote": "Si encara no tens compte, en crearem un de client. Els comptes de professional es creen des de «Crear compte».",
+    "signInNote": "Si encara no tens compte, en crearem un de client. En continuar acceptes les condicions d'ús i la política de privacitat.",
     "errors": {
       "networkError": "No hi ha connexió. Revisa-la i torna-ho a provar.",
       "unknown": "No hem pogut connectar amb Google. Torna-ho a provar o entra amb el teu correu."

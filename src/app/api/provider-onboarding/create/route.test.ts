@@ -26,6 +26,12 @@ const { authMock, ensureUserMock, createProviderMock, MockMissingPrimaryEmailErr
   },
 );
 
+const { getCurrentRoleMock } = vi.hoisted(() => ({ getCurrentRoleMock: vi.fn() }));
+
+vi.mock('@/lib/auth/server', () => ({
+  getCurrentRole: getCurrentRoleMock,
+}));
+
 vi.mock('@clerk/nextjs/server', () => ({
   auth: authMock,
 }));
@@ -67,6 +73,19 @@ function buildRequest(body: unknown): NextRequest {
 describe('POST /api/provider-onboarding/create', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    getCurrentRoleMock.mockResolvedValue('provider');
+  });
+
+  it('devuelve 403 FORBIDDEN_ROLE si la cuenta no es de profesional', async () => {
+    authMock.mockResolvedValue({ userId: 'clerk_123' });
+    for (const role of ['client', 'admin']) {
+      getCurrentRoleMock.mockResolvedValueOnce(role);
+      const res = await POST(buildRequest({ businessName: 'Foo' }));
+      expect(res.status).toBe(403);
+      const body = await res.json();
+      expect(body.error.code).toBe('FORBIDDEN_ROLE');
+    }
+    expect(ensureUserMock).not.toHaveBeenCalled();
   });
 
   it('devuelve 401 UNAUTHORIZED si no hay sesión Clerk', async () => {

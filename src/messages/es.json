@@ -1570,7 +1570,7 @@
   "googleAuth": {
     "continue": "Continuar con Google",
     "redirecting": "Abriendo Google…",
-    "signInNote": "Si aún no tienes cuenta, crearemos una de cliente. Las cuentas de profesional se crean desde «Crear cuenta».",
+    "signInNote": "Si aún no tienes cuenta, crearemos una de cliente. Al continuar aceptas las condiciones de uso y la política de privacidad.",
     "errors": {
       "networkError": "No hay conexión. Revísala e inténtalo de nuevo.",
       "unknown": "No hemos podido conectar con Google. Inténtalo de nuevo o entra con tu email."

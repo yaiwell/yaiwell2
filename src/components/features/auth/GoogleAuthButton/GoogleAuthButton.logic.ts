@@ -38,8 +38,9 @@ export function buildGoogleRedirectUrls(locale: AppLocale, redirectUrl?: string 
  * Lanza el OAuth de Clerk por redirección (no popup: los bloqueadores
  * de ventanas y Safari en iOS lo rompen). En `signUp` añade el rol y,
  * si aplica, los datos del negocio, para que la cuenta nazca igual que
- * con el alta por email. `legalAccepted` solo se manda cuando el
- * formulario ha comprobado la casilla de condiciones.
+ * con el alta por email. `legalAccepted` se manda en `signUp` cuando el
+ * formulario ha comprobado la casilla, y en `signIn` porque el botón
+ * lleva el aviso de aceptación junto a él.
  */
 export function useGoogleAuth({ mode, redirectUrl, prepareSignUp }: GoogleAuthButtonProps) {
   const locale = useLocale() as AppLocale;
@@ -76,7 +77,10 @@ export function useGoogleAuth({ mode, redirectUrl, prepareSignUp }: GoogleAuthBu
 
       if (!signIn) return;
       setIsRedirecting(true);
-      await signIn.authenticateWithRedirect(base);
+      // En `/entrar` el botón lleva el aviso «al continuar aceptas las
+      // condiciones»: si la cuenta no existe y Clerk la crea por
+      // transferencia, queda registrado el consentimiento.
+      await signIn.authenticateWithRedirect({ ...base, legalAccepted: true });
     } catch (err) {
       // Si Google no está activado en Clerk o falla la red, el SDK lanza
       // antes de salir de la página: volvemos a dejar el botón usable.

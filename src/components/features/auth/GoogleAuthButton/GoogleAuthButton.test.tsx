@@ -44,7 +44,7 @@ describe('buildGoogleRedirectUrls', () => {
 });
 
 describe('GoogleAuthButton', () => {
-  it('en /entrar lanza el OAuth de Google sin datos de alta', async () => {
+  it('en /entrar lanza el OAuth de Google con el aviso de condiciones aceptado', async () => {
     renderButton({ mode: 'signIn' });
 
     fireEvent.click(screen.getByRole('button', { name: 'Continuar con Google' }));
@@ -54,9 +54,13 @@ describe('GoogleAuthButton', () => {
         strategy: 'oauth_google',
         redirectUrl: '/es/sso-callback',
         redirectUrlComplete: '/es/entrar',
+        legalAccepted: true,
       }),
     );
     expect(screen.getByText(/crearemos una de cliente/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Abriendo Google…' })).toHaveAccessibleDescription(
+      /Al continuar aceptas las condiciones de uso y la política de privacidad/,
+    );
   });
 
   it('en /registro manda el rol y las condiciones aceptadas', async () => {

@@ -8,6 +8,12 @@
 
 ## 2026-10-27
 
+### 2026-10-27 (11) — Aviso de condiciones con Google y rol en el onboarding
+
+- **`/entrar`**: junto a «Continuar con Google», el aviso «Al continuar aceptas las condiciones de uso y la política de privacidad» (4 idiomas, enlazado al botón con `aria-describedby`). El inicio con Google manda `legalAccepted: true`, así que una cuenta creada por transferencia queda con el consentimiento registrado (Clerk lo acepta: E2E de salida a Google en verde).
+- **Endpoints de onboarding** (`/api/provider-onboarding/{create,first-service,photos,plan,slug-availability,state}`): ahora exigen rol `provider` y responden `403 FORBIDDEN_ROLE` antes de tocar la BD. Antes bastaba con tener sesión y una cuenta de cliente podía crear un `Provider`. Usan `getCurrentRole()`, extraído de `requireRole` para que página y API lean el rol igual.
+- **Tests**: 1197 unitarios (403 para `client` y `admin` en las 6 rutas, `getCurrentRole`), E2E de Google 6/6. `typecheck` y `lint` limpios.
+
 ### 2026-10-27 (10) — Entrar y registrarse con Google, y cierre de la escalada a `admin`
 
 P15: implementación → `e2e-tester` + `business-rules-auditor` + `conventions-reviewer` en paralelo → arreglos.
