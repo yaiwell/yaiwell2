@@ -1198,8 +1198,6 @@
     },
     "divider": "o continúa con",
     "social": {
-      "google": "Google",
-      "googleAria": "Continuar con Google (próximamente)",
       "apple": "Apple",
       "appleAria": "Continuar con Apple (próximamente)",
       "comingSoon": "Próximamente"
@@ -1387,7 +1385,6 @@
     },
     "socialDivider": "o regístrate con",
     "social": {
-      "google": "Continuar con Google",
       "apple": "Continuar con Apple"
     },
     "haveAccount": "¿Ya tienes cuenta? <link>Entra aquí</link>",
@@ -1568,6 +1565,19 @@
       "title": "El panel ha tenido un problema",
       "description": "No hemos podido cargar esta sección. Reintenta y, si el problema persiste, comparte el código de error con soporte.",
       "backToDashboard": "Ir al resumen"
+    }
+  },
+  "googleAuth": {
+    "continue": "Continuar con Google",
+    "redirecting": "Abriendo Google…",
+    "signInNote": "Si aún no tienes cuenta, crearemos una de cliente. Las cuentas de profesional se crean desde «Crear cuenta».",
+    "errors": {
+      "networkError": "No hay conexión. Revísala e inténtalo de nuevo.",
+      "unknown": "No hemos podido conectar con Google. Inténtalo de nuevo o entra con tu email."
+    },
+    "callback": {
+      "title": "Entrando con Google…",
+      "description": "Un momento, estamos terminando de conectar tu cuenta."
     }
   }
 }

@@ -14,12 +14,13 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { updateUserMetadataMock, clerkClientMock } = vi.hoisted(() => {
+const { updateUserMetadataMock, getUserMock, clerkClientMock } = vi.hoisted(() => {
   const updateUserMetadataMock = vi.fn().mockResolvedValue({});
+  const getUserMock = vi.fn().mockResolvedValue({ publicMetadata: {} });
   const clerkClientMock = vi.fn().mockResolvedValue({
-    users: { updateUserMetadata: updateUserMetadataMock },
+    users: { updateUserMetadata: updateUserMetadataMock, getUser: getUserMock },
   });
-  return { updateUserMetadataMock, clerkClientMock };
+  return { updateUserMetadataMock, getUserMock, clerkClientMock };
 });
 
 vi.mock('@clerk/nextjs/server', () => ({
@@ -45,7 +46,19 @@ function buildPayload(overrides: Record<string, unknown> = {}) {
 describe('promoteRoleToPublicMetadata', () => {
   beforeEach(() => {
     updateUserMetadataMock.mockClear();
+    getUserMock.mockClear().mockResolvedValue({ publicMetadata: {} });
     clerkClientMock.mockClear();
+  });
+
+  it('no pisa un rol público puesto después del alta (reintento del webhook)', async () => {
+    getUserMock.mockResolvedValueOnce({ publicMetadata: { role: 'admin' } });
+
+    const result = await promoteRoleToPublicMetadata(
+      buildPayload({ unsafe_metadata: { role: 'client' } }),
+    );
+
+    expect(result).toBeNull();
+    expect(updateUserMetadataMock).not.toHaveBeenCalled();
   });
 
   it('promueve cuando publicMetadata está vacío y unsafe tiene provider', async () => {
@@ -71,31 +84,36 @@ describe('promoteRoleToPublicMetadata', () => {
     expect(updateUserMetadataMock).not.toHaveBeenCalled();
   });
 
-  it('no toca nada cuando unsafe no tiene rol válido', async () => {
+  it('sin rol en unsafe fija client para que la cuenta no quede sin rol oficial', async () => {
     const result = await promoteRoleToPublicMetadata(
       buildPayload({ unsafe_metadata: { foo: 'bar' } }),
     );
 
-    expect(result).toBeNull();
-    expect(updateUserMetadataMock).not.toHaveBeenCalled();
+    expect(result).toBe('client');
+    expect(updateUserMetadataMock).toHaveBeenCalledWith('user_test', {
+      publicMetadata: { role: 'client' },
+    });
   });
 
-  it('ignora valores no soportados (superuser, string vacío, número)', async () => {
-    await promoteRoleToPublicMetadata(buildPayload({ unsafe_metadata: { role: 'superuser' } }));
-    await promoteRoleToPublicMetadata(buildPayload({ unsafe_metadata: { role: '' } }));
-    await promoteRoleToPublicMetadata(buildPayload({ unsafe_metadata: { role: 42 } }));
+  it('valores no soportados (superuser, string vacío, número) acaban en client', async () => {
+    for (const role of ['superuser', '', 42]) {
+      await promoteRoleToPublicMetadata(buildPayload({ unsafe_metadata: { role } }));
+    }
 
-    expect(updateUserMetadataMock).not.toHaveBeenCalled();
+    expect(updateUserMetadataMock).toHaveBeenCalledTimes(3);
+    for (const call of updateUserMetadataMock.mock.calls) {
+      expect(call[1]).toEqual({ publicMetadata: { role: 'client' } });
+    }
   });
 
-  it('acepta admin como rol promocionable', async () => {
+  it('nunca promociona admin desde unsafeMetadata (lo escribe el propio usuario)', async () => {
     const result = await promoteRoleToPublicMetadata(
       buildPayload({ unsafe_metadata: { role: 'admin' } }),
     );
 
-    expect(result).toBe('admin');
+    expect(result).toBe('client');
     expect(updateUserMetadataMock).toHaveBeenCalledWith('user_test', {
-      publicMetadata: { role: 'admin' },
+      publicMetadata: { role: 'client' },
     });
   });
 });

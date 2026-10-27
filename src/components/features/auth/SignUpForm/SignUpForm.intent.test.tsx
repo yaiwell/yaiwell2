@@ -32,6 +32,10 @@ vi.mock('@clerk/nextjs', () => ({
   useUser: () => ({ user: null, isLoaded: true, isSignedIn: false }),
 }));
 
+// El botón de Google tiene sus propios tests; aquí solo estorbaría
+// (usa los dos hooks de Clerk y su propio namespace de textos).
+vi.mock('../GoogleAuthButton', () => ({ GoogleAuthButton: () => null }));
+
 vi.mock('@clerk/nextjs/legacy', () => ({
   useSignUp: () => ({
     isLoaded: true,

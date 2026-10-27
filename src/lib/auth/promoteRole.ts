@@ -1,6 +1,7 @@
 import type { UserJSON } from '@clerk/backend';
 import { clerkClient } from '@clerk/nextjs/server';
 
+import { sanitizeSelfServiceRole } from './role';
 import type { UserRole } from './types';
 
 /**
@@ -16,9 +17,10 @@ import type { UserRole } from './types';
  * Idempotencia:
  * - Si `publicMetadata.role` ya tiene un valor válido, no tocamos nada
  *   (el rol oficial siempre gana frente al unsafe).
- * - Si `unsafeMetadata.role` no tiene rol válido, no tocamos nada
- *   (no inventamos `client` aquí — eso ya lo cubre `getRoleFromUser`
- *   con su default seguro en tiempo de lectura).
+ * - Si `unsafeMetadata.role` no es `client` ni `provider` (ausente,
+ *   inválido o `admin`), promocionamos `client`. Antes no se tocaba
+ *   nada y la cuenta quedaba sin rol oficial, con lo que el guard caía
+ *   al `unsafeMetadata`, que el usuario puede reescribir.
  *
  * Errores:
  * - Si la llamada a Clerk falla (red caída, key inválida), propagamos
@@ -33,15 +35,27 @@ export async function promoteRoleToPublicMetadata(payload: UserJSON): Promise<Us
   const publicRole = pickValidRole(payload.public_metadata);
   if (publicRole) return null; // ya está bien, nada que hacer.
 
-  const unsafeRole = pickValidRole(payload.unsafe_metadata);
-  if (!unsafeRole) return null; // no hay rol del que tirar.
+  // Del rol que manda el navegador solo valen cliente o profesional:
+  // `admin` nunca se promociona. Sin rol válido (p. ej. una cuenta que
+  // nace al entrar con Google desde `/entrar`), fijamos `client`: así
+  // ninguna cuenta queda sin rol oficial y el usuario no puede elegirlo
+  // después reescribiendo su `unsafeMetadata`.
+  const role =
+    sanitizeSelfServiceRole((payload.unsafe_metadata as { role?: unknown } | null)?.role) ??
+    'client';
 
   const client = await clerkClient();
+  // El payload es la foto del alta, y Clerk reintenta entregas viejas:
+  // releemos el usuario para no pisar un rol puesto después a mano
+  // (p. ej. `admin` o `provider` desde el dashboard).
+  const current = await client.users.getUser(payload.id);
+  if (pickValidRole(current.publicMetadata)) return null;
+
   await client.users.updateUserMetadata(payload.id, {
-    publicMetadata: { role: unsafeRole },
+    publicMetadata: { role },
   });
 
-  return unsafeRole;
+  return role;
 }
 
 /**

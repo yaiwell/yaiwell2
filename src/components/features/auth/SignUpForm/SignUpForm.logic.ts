@@ -13,6 +13,7 @@ import {
   resolvePostAuthDestination,
 } from '@/lib/auth';
 
+import { prepareGoogleSignUp } from './SignUpForm.google';
 import type {
   SignUpDraft,
   SignUpFieldErrors,
@@ -269,6 +270,18 @@ export function useSignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpF
     [isLoaded, isSubmitting, redirectUrl, role, router, setActive, signUp, user, verificationCode],
   );
 
+  // Alta con Google: valida condiciones y negocio antes de salir de la
+  // página; si falta algo, se pintan los mismos errores de campo.
+  const prepareGoogle = useCallback(() => {
+    const result = prepareGoogleSignUp(role, draft, initialPlan);
+    if (!result.ok) {
+      setErrors(result.errors);
+      return null;
+    }
+    setErrors({});
+    return result.params;
+  }, [draft, initialPlan, role]);
+
   const switchRole = useCallback((next: SignUpRole) => {
     setRole(next);
     // Al cambiar de pestaña limpiamos errores: los campos requeridos
@@ -297,5 +310,6 @@ export function useSignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpF
     submitVerification,
     switchRole,
     resetToForm,
+    prepareGoogle,
   };
 }

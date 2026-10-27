@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 // rompe el build.
 import { withRedirectUrl } from '@/lib/validation/redirect-url';
 
+import { GoogleAuthButton } from '../GoogleAuthButton';
 import { useSignInForm } from './SignInForm.logic';
 import { signInStyles as s } from './SignInForm.styles';
 import type { SignInErrorCode, SignInFormProps, SignInRole } from './SignInForm.types';
@@ -221,19 +222,8 @@ export function SignInForm({ redirectUrl = null }: SignInFormProps = {}) {
             </div>
 
             <div className={s.socialRow}>
-              {/* Botones sociales en estado "Próximamente": deshabilitados
-                  pero presentes para que la UI ya muestre dónde irán. */}
-              <button
-                type="button"
-                className={s.socialButton}
-                disabled
-                aria-label={t('social.googleAria')}
-                data-component="sign-in-social-google"
-              >
-                <span aria-hidden="true">G</span>
-                {t('social.google')}
-                <span className={s.socialBadge}>{t('social.comingSoon')}</span>
-              </button>
+              <GoogleAuthButton mode="signIn" redirectUrl={redirectUrl} />
+              {/* Apple sigue en "Próximamente": exige cuenta de desarrollador de pago. */}
               <button
                 type="button"
                 className={s.socialButton}

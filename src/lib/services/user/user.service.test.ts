@@ -90,6 +90,13 @@ describe('normalizeClerkUser', () => {
     expect(result.role).toBe('provider');
   });
 
+  it('nunca acepta admin desde unsafeMetadata', () => {
+    const result = normalizeClerkUser(
+      buildClerkUser({ public_metadata: {}, unsafe_metadata: { role: 'admin' } }),
+    );
+    expect(result.role).toBe('client');
+  });
+
   it('ignora roles inválidos y cae a client', () => {
     const result = normalizeClerkUser(
       buildClerkUser({

@@ -29,7 +29,9 @@ export function getRoleFromUser(user: UserLike | null | undefined): UserRole {
   if (!user) return 'client';
   const fromPublic = sanitizeRole(user.publicMetadata?.role);
   if (fromPublic) return fromPublic;
-  const fromUnsafe = sanitizeRole(user.unsafeMetadata?.role);
+  // `unsafeMetadata` lo escribe el propio usuario desde el navegador:
+  // de ahí solo aceptamos roles de autoservicio, nunca `admin`.
+  const fromUnsafe = sanitizeSelfServiceRole(user.unsafeMetadata?.role);
   if (fromUnsafe) return fromUnsafe;
   return 'client';
 }
@@ -77,6 +79,11 @@ interface SessionClaimsShape {
  *
  * Devuelve `null` si los claims no contienen el rol — caller decide si
  * hacer fallback a `currentUser()` (más lento) o asumir `'client'`.
+ *
+ * SEGURIDAD: al configurar el JWT template en Clerk, el claim `metadata`
+ * debe salir de `{{user.public_metadata}}`, NUNCA de
+ * `{{user.unsafe_metadata}}`: aquí se acepta `admin` y el usuario puede
+ * escribir su `unsafeMetadata` desde el navegador.
  */
 export function getRoleFromSessionClaims(
   claims: SessionClaimsShape | null | undefined,
@@ -97,5 +104,18 @@ export function getRoleFromSessionClaims(
  */
 function sanitizeRole(raw: unknown): UserRole | null {
   if (raw === 'client' || raw === 'provider' || raw === 'admin') return raw;
+  return null;
+}
+
+/**
+ * Roles que alguien puede darse a sí mismo al registrarse.
+ *
+ * `unsafeMetadata` es editable por el propio usuario desde el navegador
+ * en cualquier momento (`user.update`), así que nunca puede conceder
+ * `admin`: los administradores se nombran solo desde el backend o el
+ * dashboard de Clerk, en `publicMetadata`.
+ */
+export function sanitizeSelfServiceRole(raw: unknown): Exclude<UserRole, 'admin'> | null {
+  if (raw === 'client' || raw === 'provider') return raw;
   return null;
 }

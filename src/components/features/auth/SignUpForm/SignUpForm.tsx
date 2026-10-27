@@ -7,6 +7,7 @@ import { Link } from '@/i18n/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { AuthErrorCode } from '@/lib/auth';
 
+import { GoogleAuthButton } from '../GoogleAuthButton';
 import { useSignUpForm } from './SignUpForm.logic';
 import { signUpFormStyles as s } from './SignUpForm.styles';
 import { SIGN_UP_FIELD_IDS, type SignUpFormProps, type SignUpRole } from './SignUpForm.types';
@@ -40,6 +41,7 @@ export function SignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpForm
     submitVerification,
     switchRole,
     resetToForm,
+    prepareGoogle,
   } = useSignUpForm({ initialRole, initialPlan, redirectUrl });
 
   // Mapeo exhaustivo código → mensaje. Si se añade un código nuevo al
@@ -81,6 +83,8 @@ export function SignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpForm
               switchRole={switchRole}
               updateField={updateField}
               handleSubmit={handleSubmit}
+              redirectUrl={redirectUrl}
+              prepareGoogle={prepareGoogle}
             />
           ) : (
             <SignUpVerificationPanel
@@ -135,6 +139,8 @@ function FormPhase(props: {
   switchRole: (role: SignUpRole) => void;
   updateField: ReturnType<typeof useSignUpForm>['updateField'];
   handleSubmit: ReturnType<typeof useSignUpForm>['handleSubmit'];
+  redirectUrl: SignUpFormProps['redirectUrl'];
+  prepareGoogle: ReturnType<typeof useSignUpForm>['prepareGoogle'];
 }) {
   const {
     t,
@@ -147,6 +153,8 @@ function FormPhase(props: {
     switchRole,
     updateField,
     handleSubmit,
+    redirectUrl,
+    prepareGoogle,
   } = props;
 
   return (
@@ -376,14 +384,11 @@ function FormPhase(props: {
             </div>
 
             <div className={s.socialRow}>
-              <button
-                type="button"
-                className={s.socialButton}
-                disabled
-                data-component="sign-up-social-google"
-              >
-                {t('social.google')}
-              </button>
+              <GoogleAuthButton
+                mode="signUp"
+                redirectUrl={redirectUrl}
+                prepareSignUp={prepareGoogle}
+              />
               <button
                 type="button"
                 className={s.socialButton}

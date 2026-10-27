@@ -1198,8 +1198,6 @@
     },
     "divider": "oder weiter mit",
     "social": {
-      "google": "Google",
-      "googleAria": "Mit Google fortfahren (demnächst)",
       "apple": "Apple",
       "appleAria": "Mit Apple fortfahren (demnächst)",
       "comingSoon": "Demnächst verfügbar"
@@ -1387,7 +1385,6 @@
     },
     "socialDivider": "oder registriere dich mit",
     "social": {
-      "google": "Mit Google fortfahren",
       "apple": "Mit Apple fortfahren"
     },
     "haveAccount": "Schon einen Account? <link>Hier anmelden</link>",
@@ -1568,6 +1565,19 @@
       "title": "Im Verwaltungsbereich ist ein Problem aufgetreten",
       "description": "Dieser Bereich konnte nicht geladen werden. Versuche es erneut und teile bei anhaltendem Problem den Fehlercode mit dem Support.",
       "backToDashboard": "Zur Übersicht"
+    }
+  },
+  "googleAuth": {
+    "continue": "Weiter mit Google",
+    "redirecting": "Google wird geöffnet…",
+    "signInNote": "Wenn du noch kein Konto hast, legen wir ein Kundenkonto an. Konten für Fachkräfte erstellst du über „Account erstellen“.",
+    "errors": {
+      "networkError": "Keine Verbindung. Prüfe sie und versuche es erneut.",
+      "unknown": "Die Verbindung zu Google hat nicht geklappt. Versuche es erneut oder melde dich mit deiner E-Mail an."
+    },
+    "callback": {
+      "title": "Anmeldung mit Google…",
+      "description": "Einen Moment, wir verbinden gerade dein Konto."
     }
   }
 }

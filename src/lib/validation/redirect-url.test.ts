@@ -45,6 +45,11 @@ describe('parseInternalRedirectUrl — destinos rechazados', () => {
     expect(parseInternalRedirectUrl('/\\evil.example/login')).toBeNull();
   });
 
+  it('rechaza un protocol-relative escondido tras el prefijo de locale', () => {
+    expect(parseInternalRedirectUrl('/es//evil.com')).toBeNull();
+    expect(parseInternalRedirectUrl('/de//evil.com/login')).toBeNull();
+  });
+
   it('rechaza esquemas no http (javascript:, data:)', () => {
     expect(parseInternalRedirectUrl('javascript:alert(1)')).toBeNull();
     expect(parseInternalRedirectUrl('data:text/html,<script>')).toBeNull();

@@ -43,6 +43,13 @@ describe('getRoleFromUser', () => {
     ).toBe('client');
   });
 
+  it('nunca concede admin desde unsafeMetadata (lo edita el propio usuario)', () => {
+    expect(getRoleFromUser({ unsafeMetadata: { role: 'admin' } })).toBe('client');
+    expect(getRoleFromUser({ publicMetadata: {}, unsafeMetadata: { role: 'admin' } })).toBe(
+      'client',
+    );
+  });
+
   it('publicMetadata gana sobre unsafeMetadata cuando ambos son válidos', () => {
     expect(
       getRoleFromUser({

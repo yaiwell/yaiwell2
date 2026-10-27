@@ -133,18 +133,27 @@ function resolvePrimaryEmail(payload: UserJSON): string | null {
 /**
  * Resuelve el rol con la cadena `publicMetadata.role` →
  * `unsafeMetadata.role` → `'client'`. Solo acepta valores del enum
- * de Prisma; cualquier otro string se ignora como si no estuviera.
+ * de Prisma; cualquier otro string se ignora como si no estuviera, y
+ * del `unsafeMetadata` nunca se acepta `admin`.
  */
 function resolveRole(payload: UserJSON): UserRole {
   const fromPublic = payload.public_metadata?.role;
   if (isValidRole(fromPublic)) return fromPublic;
   const fromUnsafe = payload.unsafe_metadata?.role;
-  if (isValidRole(fromUnsafe)) return fromUnsafe;
+  if (isSelfServiceRole(fromUnsafe)) return fromUnsafe;
   return 'client';
 }
 
 function isValidRole(value: unknown): value is UserRole {
   return typeof value === 'string' && (VALID_ROLES as readonly string[]).includes(value);
+}
+
+/**
+ * `unsafeMetadata` lo escribe el propio usuario desde el navegador: de
+ * ahí nunca aceptamos `admin`, solo los roles de autoservicio.
+ */
+function isSelfServiceRole(value: unknown): value is UserRole {
+  return value === 'client' || value === 'provider';
 }
 
 /**
@@ -218,7 +227,7 @@ function resolveRoleFromBackend(user: ClerkBackendUser): UserRole {
   const fromPublic = (user.publicMetadata as { role?: unknown } | null | undefined)?.role;
   if (isValidRole(fromPublic)) return fromPublic;
   const fromUnsafe = (user.unsafeMetadata as { role?: unknown } | null | undefined)?.role;
-  if (isValidRole(fromUnsafe)) return fromUnsafe;
+  if (isSelfServiceRole(fromUnsafe)) return fromUnsafe;
   return 'client';
 }
 

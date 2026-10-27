@@ -8,6 +8,16 @@
 
 ## 2026-10-27
 
+### 2026-10-27 (10) — Entrar y registrarse con Google, y cierre de la escalada a `admin`
+
+P15: implementación → `e2e-tester` + `business-rules-auditor` + `conventions-reviewer` en paralelo → arreglos.
+
+- **«Continuar con Google»** en `/entrar` y `/registro` (`GoogleAuthButton`, OAuth de Clerk por redirección). En `/registro` exige aceptar las condiciones y, para profesionales, el nombre del negocio, y manda rol, negocio y plan en `unsafeMetadata` con `legalAccepted`, igual que el alta por email. En `/entrar` avisa de que una cuenta nueva se crea como cliente. Apple sigue en «Próximamente».
+- **`/sso-callback`**: procesa la vuelta (`AuthenticateWithRedirectCallback`, con transferencia sign-in ↔ sign-up) y termina en `/entrar`, cuyo guard reparte por rol. El `redirect_url` de una reserva a medias viaja saneado en todo el viaje.
+- **Seguridad (fallo que ya existía)**: `unsafeMetadata.role` lo escribe el propio usuario desde el navegador y se aceptaba como respaldo, así que cualquiera podía darse `admin`. Ahora nunca concede `admin` (`getRoleFromUser`, webhook y sync de usuarios); el webhook fija `client` si el alta no trae rol válido, y relee el usuario para no pisar un rol puesto a mano. La única cuenta `admin` de producción (el dev) lo tiene en `publicMetadata`.
+- `parseInternalRedirectUrl` revalida tras quitar el prefijo de idioma (`/es//evil.com` ya no pasa).
+- **Tests**: 1189 unitarios; E2E `tests/e2e/google-auth-button.spec.ts` 6/6 sin iniciar sesión en Google (botón activo, validación en `/registro`, salida a Google con el callback correcto, `/sso-callback` sin 500, móvil). Google ya está activo en la instancia de desarrollo de Clerk. `typecheck`, `lint` y `build` limpios.
+
 ### 2026-10-27 (9) — Calendario interactivo del panel
 
 P15: implementación → `e2e-tester` + `business-rules-auditor` + `conventions-reviewer` en paralelo → arreglos.

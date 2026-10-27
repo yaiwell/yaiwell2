@@ -61,7 +61,11 @@ export const redirectUrlSchema = z
 export function parseInternalRedirectUrl(raw: unknown): string | null {
   const parsed = redirectUrlSchema.safeParse(raw);
   if (!parsed.success || !parsed.data) return null;
-  return stripLocalePrefix(parsed.data);
+  // Revalidamos tras quitar el prefijo: `/es//evil.com` pasa el schema,
+  // pero sin el `/es` queda `//evil.com`, que el navegador lee como otro
+  // dominio.
+  const stripped = redirectUrlSchema.safeParse(stripLocalePrefix(parsed.data));
+  return stripped.success && stripped.data ? stripped.data : null;
 }
 
 /**

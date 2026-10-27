@@ -1198,8 +1198,6 @@
     },
     "divider": "or continue with",
     "social": {
-      "google": "Google",
-      "googleAria": "Continue with Google (coming soon)",
       "apple": "Apple",
       "appleAria": "Continue with Apple (coming soon)",
       "comingSoon": "Coming soon"
@@ -1387,7 +1385,6 @@
     },
     "socialDivider": "or sign up with",
     "social": {
-      "google": "Continue with Google",
       "apple": "Continue with Apple"
     },
     "haveAccount": "Already have an account? <link>Sign in here</link>",
@@ -1568,6 +1565,19 @@
       "title": "The dashboard hit a problem",
       "description": "We could not load this section. Try again and, if the problem persists, share the error code with support.",
       "backToDashboard": "Go to overview"
+    }
+  },
+  "googleAuth": {
+    "continue": "Continue with Google",
+    "redirecting": "Opening Google…",
+    "signInNote": "If you don't have an account yet, we'll create a customer account. Professional accounts are created from “Create account”.",
+    "errors": {
+      "networkError": "You're offline. Check your connection and try again.",
+      "unknown": "We couldn't connect to Google. Try again or sign in with your email."
+    },
+    "callback": {
+      "title": "Signing in with Google…",
+      "description": "One moment, we're finishing connecting your account."
     }
   }
 }
