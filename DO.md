@@ -8,6 +8,12 @@
 
 ## 2026-10-27
 
+### 2026-10-27 (8) — E2E de valorar ejecutado en verde
+
+- Con permiso del dev, `tests/e2e/customer-review.spec.ts` crea en `beforeAll` un usuario de test en Clerk (`e2e-review-<ts>+clerk_test@example.com`, rol `client`) y su fila en `users`, y en `afterAll` borra por id review, booking, fila y usuario de Clerk (con reintentos: la API de Clerk falla a ratos desde la red de la oficina) y comprueba que Studio Aura vuelve a 0/0.
+- El login va desde `/es/entrar` (`clerk.signIn` no funciona desde `/es`, donde Clerk JS no llega a `loaded`).
+- **Pasa** con `E2E_PORT=3001`: CTA solo en la `completed`, errores de validación, 4 estrellas con teclado, aviso de éxito, ficha con 4,0 y 1 valoración, y sin poder valorar de nuevo. Sin bugs de producto. Limpieza verificada en BD (0 reseñas, 0 usuarios ni reservas de prueba, Studio Aura 0/0).
+
 ### 2026-10-27 (7) — El cliente ya puede valorar
 
 P15: implementador → `e2e-tester` + `business-rules-auditor` + `conventions-reviewer` en paralelo → arreglos.

@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { createClerkClient } from '@clerk/backend';
 import { clerk, setupClerkTestingToken } from '@clerk/testing/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import dotenv from 'dotenv';
@@ -19,7 +20,6 @@ import es from '../../src/messages/es.json';
 
 dotenv.config({ path: path.join(process.cwd(), '.env.local') });
 
-const CLIENT_ID = 'de494375-78ca-4aa7-a94d-37f795d15acb';
 const PROVIDER_ID = '70a8dc5a-2fed-4aa4-907c-ad93a49eb879';
 const SERVICE_ID = '239d106c-8967-4f2e-adb1-614e78d84206';
 const PROFESSIONAL_ID = '820ebfb1-8aae-4517-8956-1571d0a378a6';
@@ -31,6 +31,8 @@ test.setTimeout(180_000);
 test.describe.configure({ mode: 'serial' });
 
 let db: Client;
+let clientId = '';
+let clerkUserId = '';
 let bookingId = '';
 let clientEmail = '';
 let providerSlug = '';
@@ -53,11 +55,23 @@ test.beforeAll(async () => {
   db = new Client({ connectionString: process.env.DIRECT_URL });
   await db.connect();
 
-  const user = await db.query('SELECT email FROM users WHERE id = $1 AND role = $2', [
-    CLIENT_ID,
-    'client',
-  ]);
-  clientEmail = user.rows[0].email;
+  // Cliente de test propio de esta ejecución: usuario de Clerk (dominio
+  // `+clerk_test`, solo dev) y su espejo en `users`. Se borran por id en afterAll.
+  const clerkApi = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+  clientEmail = `e2e-review-${Date.now()}+clerk_test@example.com`;
+  const created = await clerkApi.users.createUser({
+    emailAddress: [clientEmail],
+    skipPasswordRequirement: true,
+    publicMetadata: { role: 'client' },
+  });
+  clerkUserId = created.id;
+  const inserted = await db.query(
+    `INSERT INTO users (id, "clerkId", email, role, locale, "fullName", "updatedAt")
+     VALUES (gen_random_uuid()::text, $1, $2, 'client', 'es', 'PRUEBA E2E', now())
+     RETURNING id`,
+    [clerkUserId, clientEmail],
+  );
+  clientId = inserted.rows[0].id;
   providerSlug = (await db.query('SELECT slug FROM providers WHERE id = $1', [PROVIDER_ID])).rows[0]
     .slug;
 
@@ -75,7 +89,7 @@ test.beforeAll(async () => {
        'completed', $5, 0, $6, now() - interval '2 days', now())
      RETURNING id`,
     [
-      CLIENT_ID,
+      clientId,
       SERVICE_ID,
       PROFESSIONAL_ID,
       PROVIDER_ID,
@@ -87,29 +101,49 @@ test.beforeAll(async () => {
 
   const others = await db.query(
     `SELECT id FROM bookings WHERE "clientId" = $1 AND status IN ('pending','confirmed')`,
-    [CLIENT_ID],
+    [clientId],
   );
   otherBookingIds = others.rows.map((r: { id: string }) => r.id);
 });
 
-test.afterAll(async () => {
-  if (!db) return;
-  try {
-    if (bookingId) {
-      await db.query('DELETE FROM reviews WHERE "bookingId" = $1', [bookingId]);
-      await db.query('DELETE FROM bookings WHERE id = $1', [bookingId]);
+/** Borra el usuario de Clerk con reintentos: la API a veces da `fetch failed` por red. */
+async function deleteClerkUser(id: string) {
+  const api = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+  for (let attempt = 1; ; attempt++) {
+    try {
+      await api.users.deleteUser(id);
+      return;
+    } catch (error) {
+      if (attempt >= 5) throw error;
+      await new Promise((r) => setTimeout(r, 3000 * attempt));
     }
-    const after = await providerRating();
-    expect(after.ratingCount, 'ratingCount debe volver a 0').toBe(0);
-    expect(Number(after.ratingAvg), 'ratingAvg debe volver a 0').toBe(0);
+  }
+}
+
+test.afterAll(async () => {
+  try {
+    if (db) {
+      if (bookingId) {
+        await db.query('DELETE FROM reviews WHERE "bookingId" = $1', [bookingId]);
+        await db.query('DELETE FROM bookings WHERE id = $1', [bookingId]);
+      }
+      if (clientId) await db.query('DELETE FROM users WHERE id = $1', [clientId]);
+    }
+    if (clerkUserId) await deleteClerkUser(clerkUserId);
+    if (db) {
+      const after = await providerRating();
+      expect(after.ratingCount, 'ratingCount debe volver a 0').toBe(0);
+      expect(Number(after.ratingAvg), 'ratingAvg debe volver a 0').toBe(0);
+    }
   } finally {
-    await db.end();
+    await db?.end();
   }
 });
 
 test('valorar una reserva completada, de principio a fin', async ({ page }) => {
   await setupClerkTestingToken({ page });
-  await page.goto('/es');
+  // Hace falta una página con el cliente JS de Clerk cargado (como en el E2E de onboarding).
+  await page.goto('/es/entrar', { waitUntil: 'domcontentloaded' });
   await clerk.signIn({ page, emailAddress: clientEmail });
 
   // 1. CTA solo en la completada.

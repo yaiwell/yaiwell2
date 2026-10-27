@@ -1,0 +1,1 @@
+- [Particularidades del entorno E2E](reference_e2e_env_quirks.md) — E2E_PORT=3001, login en /es/entrar, red Clerk intermitente, tsconfig reescrito
