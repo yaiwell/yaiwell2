@@ -145,6 +145,19 @@ describe('createReview', () => {
     );
   });
 
+  it('rechaza un booking en estado refunded, aunque llegara a completarse', async () => {
+    // Una reserva completada y reembolsada después conserva `completedAt`:
+    // lo que bloquea la reseña es el estado, no la fecha.
+    bookingFindUnique.mockResolvedValueOnce({
+      ...buildBooking({ status: 'refunded' }),
+      completedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+    } as never);
+
+    await expect(createReview(validInput, 'client-1')).rejects.toBeInstanceOf(
+      BookingNotCompletedError,
+    );
+  });
+
   it('rechaza si el author no es el cliente del booking', async () => {
     bookingFindUnique.mockResolvedValueOnce(buildBooking({ clientId: 'someone-else' }) as never);
 

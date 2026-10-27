@@ -134,6 +134,9 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
 - No se permite valorar bookings en estado `pending`, `confirmed`, `cancelled` ni `refunded`.
 - Una `Review` tiene FK obligatoria a un `Booking`. No hay reseñas huérfanas.
 - Ventana de valoración: 30 días desde `completed` (configurable en futuras versiones).
+- **Una reseña ya publicada sigue contando aunque la reserva se reembolse después** (decidido 2026-10-27): el cliente recibió el servicio y su opinión es verificada. Lo que se prohíbe es *crear* reseñas sobre reservas que no están `completed`.
+- La nota pública (`Provider.ratingAvg`/`ratingCount`) es una caché que mantiene el trigger `trg_reviews_refresh_provider_rating` (migración `9a_provider_rating_cache`) a partir de `reviews`; nunca se escribe a mano ni se siembra. Con 0 reseñas la UI muestra «Nuevo en Yaiwell».
+- **Migraciones**: Prisma ordena las carpetas como texto. Tras `9_…` van `9a_`, `9b_`… (un `10_` se aplicaría antes que `1_`).
 
 ### Cancelaciones por el proveedor
 - El proveedor puede cancelar una reserva desde su panel **siempre que falten al menos 2h** para `startAt`.

@@ -1,7 +1,7 @@
-import { Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { AvailabilityBadge } from '@/components/features/search/AvailabilityBadge';
+import { RatingSummary } from '@/components/shared/RatingSummary';
 import { Link } from '@/i18n/navigation';
 
 import { getMinutesUntilNextSlot } from './ProviderHeader.logic';
@@ -86,18 +86,14 @@ export function ProviderHeader({ provider }: ProviderHeaderProps) {
             {provider.priceRange}
           </span>
 
-          <div
-            className={s.ratingRow}
-            role="group"
-            aria-label={t('ratingGroupLabel')}
-            data-component="provider-header-rating"
-          >
-            <span className={s.rating}>
-              <Star className={s.ratingStar} aria-hidden />
-              {provider.rating.toFixed(1)}
-            </span>
-            <span className={s.reviews}>{t('reviewsLabel', { count: provider.reviewsCount })}</span>
-          </div>
+          {/* Sin reseñas pinta «Nuevo en Yaiwell»: la cifra sale de la
+              caché que mantiene el trigger de `reviews` (migración `9a_provider_rating_cache`). */}
+          <RatingSummary
+            ratingAvg={provider.rating}
+            reviewsCount={provider.reviewsCount}
+            variant="header"
+            dataComponent="provider-header-rating"
+          />
         </div>
       </div>
     </header>

@@ -175,3 +175,13 @@ describe('providersRepository — texto de búsqueda (findAllForSearch)', () => 
     expect(row?.provider.name).toBe('Born Pàdel Club');
   });
 });
+
+describe('providersRepository — orden determinista (findAllForSearch)', () => {
+  it('desempata por nombre e id cuando todos los centros empatan a 0/0', async () => {
+    await providersRepository.findAllForSearch();
+
+    expect(lastQuerySql()).toMatch(
+      /ORDER BY p\."ratingAvg" DESC, p\."ratingCount" DESC, p\."businessName" ASC, p\.id ASC/,
+    );
+  });
+});

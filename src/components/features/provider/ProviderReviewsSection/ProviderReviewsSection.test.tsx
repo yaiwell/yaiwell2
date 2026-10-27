@@ -39,12 +39,13 @@ function renderSection(args: {
   reviews: Review[];
   reviewsCount: number;
   breakdown: RatingBreakdown;
+  ratingAvg?: number;
 }) {
   return render(
     <NextIntlClientProvider locale="es" messages={messages}>
       <ProviderReviewsSection
         reviews={args.reviews}
-        ratingAvg={5}
+        ratingAvg={args.ratingAvg ?? 5}
         reviewsCount={args.reviewsCount}
         ratingBreakdown={args.breakdown}
         locale="es"
@@ -100,5 +101,32 @@ describe('ProviderReviewsSection', () => {
       screen.getByText('Aún no hay reseñas. Sé el primero en valorar este centro.'),
     ).toBeInTheDocument();
     expect(document.querySelector('[data-component="provider-reviews-summary"]')).toBeNull();
+  });
+
+  it('trata como vacía una caché con nota pero sin reseñas contadas', () => {
+    // Misma regla que la cabecera: con contador a 0 no hay resumen,
+    // aunque llegue alguna reseña o una media antigua.
+    renderSection({
+      reviews: [buildReview()],
+      reviewsCount: 0,
+      ratingAvg: 4.8,
+      breakdown: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 1 },
+    });
+
+    expect(document.querySelector('[data-component="provider-reviews-summary"]')).toBeNull();
+    expect(screen.queryByText(/4[.,]8/)).toBeNull();
+  });
+
+  it('formatea la nota con coma decimal en castellano', () => {
+    renderSection({
+      reviews: [buildReview()],
+      reviewsCount: 10,
+      ratingAvg: 4.6,
+      breakdown: { 1: 0, 2: 0, 3: 1, 4: 2, 5: 7 },
+    });
+
+    const summary = document.querySelector('[data-component="provider-reviews-summary"]');
+    expect(summary).toHaveTextContent('4,6');
+    expect(summary).not.toHaveTextContent('4.6');
   });
 });

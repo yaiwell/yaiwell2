@@ -23,11 +23,7 @@ export const providerCardStyles = {
   type: 'text-xs uppercase tracking-wider text-muted-foreground',
   address: 'text-sm leading-snug text-muted-foreground',
   metaRow: 'flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-foreground/80',
-  rating: 'inline-flex items-center gap-1 font-medium',
-  // Estrella de rating: brand-butter para mantener calor visual y coherencia
-  // con la paleta. En dark mode brand-butter se aclara y sigue legible.
-  ratingStar: 'size-3.5 fill-brand-butter stroke-brand-butter',
-  reviews: 'text-muted-foreground',
+  // La valoración la pinta `RatingSummary` (variant `card`).
   separator: 'text-border',
   distance: 'text-muted-foreground',
   // Pill compacta para la distancia al usuario. Mantenemos tokens

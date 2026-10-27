@@ -36,6 +36,10 @@ export const providersRepository = {
    * categorías). La ordenación final por distancia/rating la decide
    * el service (`searchProviders`).
    *
+   * Desempate por nombre e id: mientras ningún centro tenga reseñas
+   * todos empatan a 0/0 y, sin él, Postgres devolvía un orden no
+   * determinista. El `sort` del service es estable y lo conserva.
+   *
    * El texto de búsqueda solo se calcula aquí: la ficha
    * (`findById`/`findBySlug`) no lo necesita y no pagamos el subquery.
    */
@@ -47,7 +51,7 @@ export const providersRepository = {
       FROM providers p
       WHERE p."verificationStatus" = 'approved'
         AND p."deletedAt" IS NULL
-      ORDER BY p."ratingAvg" DESC, p."ratingCount" DESC
+      ORDER BY p."ratingAvg" DESC, p."ratingCount" DESC, p."businessName" ASC, p.id ASC
     `;
     return rows.map(mapSearchableProviderRow);
   },

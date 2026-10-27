@@ -189,7 +189,6 @@
     },
     "card": {
       "from": "des de",
-      "reviews": "{count, plural, one {# valoració} other {# valoracions}}",
       "distance": "a {km} km",
       "distanceShort": "a {distance}",
       "distanceFromFallback": "a {distance} *",
@@ -245,9 +244,7 @@
     },
     "header": {
       "typeAutonomous": "Autònom",
-      "typeCenter": "Centre",
-      "reviewsLabel": "{count, plural, one {# valoració} other {# valoracions}}",
-      "ratingGroupLabel": "Valoració"
+      "typeCenter": "Centre"
     },
     "tabs": {
       "services": "Serveis",
@@ -304,6 +301,11 @@
       "subtitle": "És possible que ja no estigui disponible o que l'enllaç sigui incorrecte.",
       "backToSearch": "Tornar a la cerca"
     }
+  },
+  "ratingSummary": {
+    "new": "Nou a Yaiwell",
+    "groupLabel": "Valoració",
+    "reviews": "{count, plural, one {# valoració} other {# valoracions}}"
   },
   "providerPanel": {
     "nav": {

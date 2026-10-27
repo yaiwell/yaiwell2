@@ -21,8 +21,8 @@ function daysAgo(days: number): Date {
  * Banco de reseñas ficticias distribuidas entre los 10 proveedores.
  *
  * Reglas seguidas al componerlas:
- *  - El promedio por proveedor se aproxima al `rating` declarado en
- *    `fakeProviders` (direccional, no exacto).
+ *  - No se siembran en BD: `fakeProviders` declara `rating`/`reviewsCount`
+ *    a 0 porque la caché real la calcula el trigger de `reviews`.
  *  - Mezcla natural de castellano y catalán, simulando una clientela
  *    real de Barcelona.
  *  - Nada por debajo de 3★ para evitar negatividad excesiva en demo.

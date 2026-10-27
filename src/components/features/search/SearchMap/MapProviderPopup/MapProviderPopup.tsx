@@ -1,9 +1,9 @@
 'use client';
 
-import { Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { PhotoPlaceholder } from '@/components/shared/PhotoPlaceholder';
+import { RatingSummary } from '@/components/shared/RatingSummary';
 
 import { AvailabilityBadge } from '../../AvailabilityBadge';
 
@@ -73,14 +73,12 @@ export function MapProviderPopup({
         <p className={s.address}>{provider.address}</p>
 
         <div className={s.metaRow}>
-          <span className={s.rating}>
-            <Star className="size-3.5 fill-current" aria-hidden />
-            {provider.rating.toFixed(1)}
-          </span>
-          <span className={s.separator} aria-hidden>
-            ·
-          </span>
-          <span className={s.reviews}>{t('reviews', { count: provider.reviewsCount })}</span>
+          <RatingSummary
+            ratingAvg={provider.rating}
+            reviewsCount={provider.reviewsCount}
+            variant="popup"
+            dataComponent="map-provider-popup-rating"
+          />
           {provider.distanceKm !== null && (
             <>
               <span className={s.separator} aria-hidden>

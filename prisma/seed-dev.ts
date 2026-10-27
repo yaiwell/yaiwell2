@@ -133,6 +133,11 @@ async function upsertProviders(userId: string, planId: string) {
     // Raw SQL porque `location` es PostGIS Unsupported en Prisma.
     // ON CONFLICT (slug) DO UPDATE para idempotencia. Marcamos siempre
     // `approved` para que aparezcan en `searchProviders` (que filtra).
+    //
+    // `ratingAvg`/`ratingCount` arrancan a 0/0 y NO se tocan en el
+    // UPDATE: son una caché que mantiene el trigger de `reviews`
+    // (migración `9a_provider_rating_cache`). Antes sembrábamos notas inventadas (4.8 · 312…) y
+    // la ficha contradecía a la sección de reseñas, que estaba vacía.
     await prisma.$executeRawUnsafe(
       `
       INSERT INTO providers (
@@ -142,8 +147,8 @@ async function upsertProviders(userId: string, planId: string) {
       ) VALUES (
         gen_random_uuid(), $1, $2::"ProviderType", $3, $4, $5::jsonb, $6,
         ST_SetSRID(ST_MakePoint($7, $8), 4326)::geography,
-        $9::text[], $10::"PriceRange", $11, $12,
-        $13, 'approved'::"VerificationStatus", NOW(), NOW()
+        $9::text[], $10::"PriceRange", 0, 0,
+        $11, 'approved'::"VerificationStatus", NOW(), NOW()
       )
       ON CONFLICT (slug) DO UPDATE SET
         "businessName" = EXCLUDED."businessName",
@@ -152,8 +157,6 @@ async function upsertProviders(userId: string, planId: string) {
         location = EXCLUDED.location,
         photos = EXCLUDED.photos,
         "priceRange" = EXCLUDED."priceRange",
-        "ratingAvg" = EXCLUDED."ratingAvg",
-        "ratingCount" = EXCLUDED."ratingCount",
         "verificationStatus" = 'approved'::"VerificationStatus",
         "updatedAt" = NOW();
       `,
@@ -167,8 +170,6 @@ async function upsertProviders(userId: string, planId: string) {
       fp.location.lat,
       fp.photos,
       fp.priceRange,
-      fp.rating,
-      fp.reviewsCount,
       planId,
     );
   }

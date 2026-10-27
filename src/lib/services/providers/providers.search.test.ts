@@ -29,7 +29,12 @@ vi.mock('./providers.repository', () => ({
 import { searchProviders } from './providers.search';
 
 /** Construye un proveedor mínimo con el texto de búsqueda indicado. */
-function entry(id: string, name: string, searchText: string): SearchableProvider {
+function entry(
+  id: string,
+  name: string,
+  searchText: string,
+  overrides: Partial<Provider> = {},
+): SearchableProvider {
   const provider: Provider = {
     id,
     slug: id,
@@ -43,6 +48,7 @@ function entry(id: string, name: string, searchText: string): SearchableProvider
     reviewsCount: 1,
     priceRange: '€€',
     categoryIds: [],
+    ...overrides,
   };
   return { provider, searchText };
 }
@@ -87,5 +93,65 @@ describe('searchProviders — texto libre', () => {
     expect(first).toBeDefined();
     expect(first).not.toHaveProperty('searchText');
     expect(first).not.toHaveProperty('provider');
+  });
+});
+
+describe('searchProviders — filtro de nota', () => {
+  it('un centro sin reseñas no pasa un filtro de nota aunque la caché tenga rating', async () => {
+    mocks.findAllForSearch.mockResolvedValue([
+      entry('nuevo', 'Centro Nuevo', '', { rating: 4.8, reviewsCount: 0 }),
+      entry('vacio', 'Centro Vacío', '', { rating: 0, reviewsCount: 0 }),
+      entry('bueno', 'Centro Bueno', '', { rating: 4.5, reviewsCount: 3 }),
+      entry('flojo', 'Centro Flojo', '', { rating: 3.2, reviewsCount: 5 }),
+    ]);
+
+    const result = await searchProviders({ minRating: 4 });
+    expect(result.map((p) => p.id)).toEqual(['bueno']);
+  });
+
+  it('sin filtro de nota los centros nuevos sí aparecen', async () => {
+    mocks.findAllForSearch.mockResolvedValue([
+      entry('nuevo', 'Centro Nuevo', '', { rating: 0, reviewsCount: 0 }),
+    ]);
+
+    expect((await searchProviders({})).map((p) => p.id)).toEqual(['nuevo']);
+  });
+});
+
+describe('searchProviders — orden determinista', () => {
+  it('con todos empatados a 0/0 ordena por nombre y luego por id', async () => {
+    // El repositorio los entrega desordenados: el service no debe
+    // depender de ese orden.
+    mocks.findAllForSearch.mockResolvedValue([
+      entry('c-2', 'Zafiro', '', { rating: 0, reviewsCount: 0 }),
+      entry('b-2', 'Aura', '', { rating: 0, reviewsCount: 0 }),
+      entry('b-1', 'Aura', '', { rating: 0, reviewsCount: 0 }),
+      entry('a-1', 'Mar', '', { rating: 0, reviewsCount: 0 }),
+    ]);
+
+    expect((await searchProviders({})).map((p) => p.id)).toEqual(['b-1', 'b-2', 'a-1', 'c-2']);
+  });
+
+  it('pone primero los centros con nota y trata la nota sin reseñas como 0', async () => {
+    mocks.findAllForSearch.mockResolvedValue([
+      entry('fantasma', 'Alfa', '', { rating: 4.9, reviewsCount: 0 }),
+      entry('pocas', 'Beta', '', { rating: 4.5, reviewsCount: 2 }),
+      entry('muchas', 'Gamma', '', { rating: 4.5, reviewsCount: 20 }),
+    ]);
+
+    expect((await searchProviders({})).map((p) => p.id)).toEqual(['muchas', 'pocas', 'fantasma']);
+  });
+
+  it('con ubicación ordena por distancia y desempata por nombre e id', async () => {
+    const same = { lat: 39.57, lng: 2.65 };
+    mocks.findAllForSearch.mockResolvedValue([
+      entry('lejos', 'Alfa', '', { location: { lat: 39.7, lng: 2.65 } }),
+      entry('z-2', 'Zeta', '', { location: same }),
+      entry('z-1', 'Zeta', '', { location: same }),
+      entry('b', 'Beta', '', { location: same }),
+    ]);
+
+    const result = await searchProviders({ userLocation: same });
+    expect(result.map((p) => p.id)).toEqual(['b', 'z-1', 'z-2', 'lejos']);
   });
 });

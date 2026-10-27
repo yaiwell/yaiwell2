@@ -189,7 +189,6 @@
     },
     "card": {
       "from": "desde",
-      "reviews": "{count, plural, one {# valoración} other {# valoraciones}}",
       "distance": "a {km} km",
       "distanceShort": "a {distance}",
       "distanceFromFallback": "a {distance} *",
@@ -245,9 +244,7 @@
     },
     "header": {
       "typeAutonomous": "Autónomo",
-      "typeCenter": "Centro",
-      "reviewsLabel": "{count, plural, one {# valoración} other {# valoraciones}}",
-      "ratingGroupLabel": "Valoración"
+      "typeCenter": "Centro"
     },
     "tabs": {
       "services": "Servicios",
@@ -304,6 +301,11 @@
       "subtitle": "Es posible que ya no esté disponible o que el enlace sea incorrecto.",
       "backToSearch": "Volver a la búsqueda"
     }
+  },
+  "ratingSummary": {
+    "new": "Nuevo en Yaiwell",
+    "groupLabel": "Valoración",
+    "reviews": "{count, plural, one {# valoración} other {# valoraciones}}"
   },
   "providerPanel": {
     "nav": {

@@ -5,10 +5,12 @@ import {
   getProvidersAvailability,
   type ProviderAvailabilityMap,
 } from '@/lib/services/availability';
+import { hasPublicRating } from '@/lib/utils/rating';
 import type { GeoPoint, Provider, ProviderWithAvailability } from '@/types/domain';
 
 import { InvalidSearchFiltersError } from './providers.errors';
 import { providersRepository } from './providers.repository';
+import { compareSearchResults } from './providers.search-order';
 import {
   buildProviderHaystack,
   matchesAllTokens,
@@ -78,8 +80,12 @@ function matchesFilters(
     if (!matchesAllTokens(buildProviderHaystack(provider, searchText), queryTokens)) return false;
   }
 
-  if (filters.minRating !== undefined && provider.rating < filters.minRating) {
-    return false;
+  // Un centro sin reseñas no tiene nota: no pasa ningún filtro de nota,
+  // aunque la caché arrastre un `rating` antiguo (misma regla que pinta
+  // «Nuevo en Yaiwell»).
+  if (filters.minRating !== undefined && filters.minRating > 0) {
+    if (!hasPublicRating(provider.rating, provider.reviewsCount)) return false;
+    if (provider.rating < filters.minRating) return false;
   }
 
   if (filters.priceRange && filters.priceRange.length > 0) {
@@ -125,7 +131,9 @@ function enrichProviders(
  *
  * Orden de los resultados:
  *  1. Si hay `userLocation`: por distancia ascendente.
- *  2. Si no: por rating descendente y, en empate, por número de reseñas.
+ *  2. Rating descendente y, en empate, número de reseñas.
+ *  3. Nombre e id, para que los empates (todos a 0/0 hoy) sean estables.
+ *  Ver `compareSearchResults`.
  *
  * La disponibilidad se calcula DESPUÉS del filtrado para no pagar el
  * cálculo de proveedores que se van a descartar igualmente.
@@ -188,11 +196,5 @@ export async function searchProviders(
   // 5. Ordenación final. La disponibilidad NO reordena a propósito:
   //    subir los verdes rompería la expectativa de "el más cercano
   //    primero" que crea el propio mapa.
-  return final.sort((a, b) => {
-    if (parsed.data.userLocation && a.distanceKm !== null && b.distanceKm !== null) {
-      return a.distanceKm - b.distanceKm;
-    }
-    if (b.rating !== a.rating) return b.rating - a.rating;
-    return b.reviewsCount - a.reviewsCount;
-  });
+  return final.sort(compareSearchResults(parsed.data.userLocation !== undefined));
 }

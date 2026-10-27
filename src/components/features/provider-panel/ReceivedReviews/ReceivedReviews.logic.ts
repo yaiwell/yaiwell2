@@ -2,7 +2,14 @@
 
 import { useMemo, useState } from 'react';
 
-import type { PanelReview, ReviewPeriod, ReviewsFilterState } from './ReceivedReviews.types';
+import { formatRatingValue, getRatingDisplay, roundRatingAverage } from '@/lib/utils/rating';
+
+import type {
+  PanelReview,
+  ReviewPeriod,
+  ReviewsFilterState,
+  SupportedLocale,
+} from './ReceivedReviews.types';
 
 /** Estado inicial: sin filtros, periodo amplio. */
 const INITIAL_FILTERS: ReviewsFilterState = {
@@ -49,12 +56,26 @@ export function useReviewsFilters(reviews: PanelReview[]) {
 }
 
 /**
- * Calcula la nota media (1 decimal) de un conjunto de reseñas.
- * Devuelve 0 si el array está vacío para que la UI pueda mostrar un
- * fallback sin condicionales extra.
+ * Resumen «4,6 sobre 5 · 12 valoraciones» de la cabecera del panel.
+ *
+ * Usa la misma regla y el mismo redondeo que la ficha pública
+ * (`@/lib/utils/rating`, mitad hacia arriba como el trigger SQL), así el
+ * dueño ve en su panel la nota que ven sus clientes.
+ *
+ * Sin reseñas devuelve `null` y el panel oculta el resumen: el empty
+ * state del listado ya dice que aún no hay valoraciones, y «0 sobre 5»
+ * se lee como una nota pésima, no como un centro recién llegado.
+ *
+ * @param reviews — todas las reseñas del centro (sin filtrar).
+ * @param locale — locale activo, para la coma o el punto decimal.
+ * @returns nota formateada y contador, o `null` si no hay nota.
  */
-export function computeAverageRating(reviews: PanelReview[]): number {
-  if (reviews.length === 0) return 0;
-  const total = reviews.reduce((sum, r) => sum + r.rating, 0);
-  return Math.round((total / reviews.length) * 10) / 10;
+export function getPanelRatingSummary(
+  reviews: PanelReview[],
+  locale: SupportedLocale,
+): { rating: string; count: number } | null {
+  const average = roundRatingAverage(reviews.map((r) => r.rating));
+  const display = getRatingDisplay(average, reviews.length);
+  if (display.kind === 'new') return null;
+  return { rating: formatRatingValue(display.value, locale), count: display.count };
 }

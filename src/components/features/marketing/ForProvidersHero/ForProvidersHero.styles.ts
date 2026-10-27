@@ -54,7 +54,7 @@ export const forProvidersHeroStyles = {
   mockFrame:
     'relative w-full max-w-md rounded-3xl border border-border bg-card p-5 shadow-xl shadow-black/5 md:p-6',
   mockBadge:
-    'inline-flex items-center gap-2 rounded-full bg-brand-sage-soft px-3 py-1 text-xs font-medium text-brand-sage',
+    'inline-flex items-center gap-2 rounded-full bg-status-now px-3 py-1 text-xs font-medium text-status-now-foreground',
   mockBadgeDot: 'size-1.5 animate-pulse rounded-full bg-brand-sage',
   mockBookingRow:
     'mt-4 flex items-center justify-between gap-3 rounded-2xl border border-border bg-background/60 p-4',
@@ -65,7 +65,7 @@ export const forProvidersHeroStyles = {
   mockBookingService: 'truncate text-sm font-medium text-foreground',
   mockBookingClient: 'truncate text-xs text-muted-foreground',
   mockBookingStatus:
-    'shrink-0 rounded-full bg-brand-sage-soft px-2.5 py-1 text-[11px] font-medium text-brand-sage',
+    'shrink-0 rounded-full bg-status-now px-2.5 py-1 text-[11px] font-medium text-status-now-foreground',
   mockMetricRow:
     'mt-3 flex items-center justify-between gap-3 rounded-2xl border border-border bg-background/60 p-4',
   mockMetricLabel: 'text-xs text-muted-foreground',

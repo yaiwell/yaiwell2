@@ -197,7 +197,11 @@ model Provider {
   /// URLs absolutas. La primera es la portada.
   photos       String[]
   priceRange   PriceRange
-  /// Cache de rating medio (1-5) recalculado por trigger al insertar reviews.
+  /// Caché de valoraciones: media 1-5 redondeada a 1 decimal (0 si no hay
+  /// reseñas) y número de reseñas. La mantiene el trigger
+  /// `trg_reviews_refresh_provider_rating` (migración `9a_provider_rating_cache`) en cada INSERT,
+  /// DELETE o cambio de `rating`, `providerId` o `bookingId` en `reviews`; no escribir a mano. No toca
+  /// `updatedAt`. `ratingCount = 0` se pinta como «Nuevo en Yaiwell».
   /// Permite ordenar en `searchProviders` sin agregar por cada query.
   ratingAvg    Float                                 @default(0)
   ratingCount  Int                                   @default(0)

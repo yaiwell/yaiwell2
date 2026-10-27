@@ -9,10 +9,14 @@ import { ProviderCard } from './ProviderCard';
 // Claves declaradas inline (patrón de ServiceDeleteButton.test.tsx).
 // `noPhoto` es nueva: hay que añadirla a src/messages/*.json.
 const messages = {
+  ratingSummary: {
+    new: 'Nuevo en Yaiwell',
+    groupLabel: 'Valoración',
+    reviews: '{count, plural, one {# valoración} other {# valoraciones}}',
+  },
   search: {
     card: {
       from: 'desde',
-      reviews: '{count, plural, one {# valoración} other {# valoraciones}}',
       distance: 'a {km} km',
       distanceShort: 'a {distance}',
       distanceFromFallback: 'a {distance} *',
@@ -89,5 +93,22 @@ describe('ProviderCard', () => {
 
     expect(document.querySelector('[data-component="provider-card-photo-placeholder"]')).toBeNull();
     expect(screen.getByAltText('Estudio Lumen')).toBeInTheDocument();
+  });
+
+  it('pinta «Nuevo en Yaiwell» y ninguna cifra si el centro no tiene reseñas', () => {
+    renderCard(buildProvider({ rating: 0, reviewsCount: 0 }));
+
+    const rating = document.querySelector('[data-component="provider-card-rating"]');
+    expect(rating).toHaveTextContent('Nuevo en Yaiwell');
+    expect(rating).not.toHaveTextContent(/\d/);
+    expect(screen.queryByText(/0[.,]0/)).toBeNull();
+  });
+
+  it('pinta la nota y el número de reseñas cuando las hay', () => {
+    renderCard(buildProvider({ rating: 4.8, reviewsCount: 12 }));
+
+    expect(screen.getByText('4,8')).toBeInTheDocument();
+    expect(screen.getByText('12 valoraciones')).toBeInTheDocument();
+    expect(screen.queryByText('Nuevo en Yaiwell')).toBeNull();
   });
 });

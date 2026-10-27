@@ -13,8 +13,7 @@ export const forProvidersPricingStyles = {
   root: 'bg-muted/40 py-16 md:py-24',
   container: 'mx-auto max-w-7xl px-6 md:px-8',
   header: 'mb-10 flex flex-col items-center gap-3 text-center md:mb-14',
-  eyebrow:
-    'text-xs font-medium uppercase tracking-wider text-muted-foreground md:text-sm',
+  eyebrow: 'text-xs font-medium uppercase tracking-wider text-muted-foreground md:text-sm',
   title:
     'max-w-3xl text-balance text-3xl font-medium tracking-tight text-foreground md:text-4xl lg:text-5xl',
   subtitle: 'max-w-2xl text-balance text-base text-muted-foreground md:text-lg',
@@ -38,7 +37,7 @@ export const forProvidersPricingStyles = {
   priceCurrency: 'text-2xl font-medium text-foreground md:text-3xl',
   priceSuffix: 'text-sm text-muted-foreground',
   commission:
-    'inline-flex w-fit items-center gap-1.5 rounded-full bg-brand-sage-soft px-2.5 py-1 text-xs font-medium text-brand-sage',
+    'inline-flex w-fit items-center gap-1.5 rounded-full bg-status-now px-2.5 py-1 text-xs font-medium text-status-now-foreground',
 
   // Lista de features.
   features: 'flex flex-1 flex-col gap-3 border-t border-border pt-5',

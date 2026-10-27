@@ -1,0 +1,1 @@
+- [Nombres de migración 9a](project_migration_naming_9a.md) — usar 9a/9b, nunca 10\_; estado de historial y advisors aceptados a 2026-10-27

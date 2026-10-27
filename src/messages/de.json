@@ -189,7 +189,6 @@
     },
     "card": {
       "from": "ab",
-      "reviews": "{count, plural, one {# Bewertung} other {# Bewertungen}}",
       "distance": "{km} km entfernt",
       "distanceShort": "{distance} entfernt",
       "distanceFromFallback": "{distance} entfernt *",
@@ -245,9 +244,7 @@
     },
     "header": {
       "typeAutonomous": "Selbstständig",
-      "typeCenter": "Studio",
-      "reviewsLabel": "{count, plural, one {# Bewertung} other {# Bewertungen}}",
-      "ratingGroupLabel": "Bewertung"
+      "typeCenter": "Studio"
     },
     "tabs": {
       "services": "Services",
@@ -304,6 +301,11 @@
       "subtitle": "Möglicherweise ist es nicht mehr verfügbar oder der Link ist fehlerhaft.",
       "backToSearch": "Zurück zur Suche"
     }
+  },
+  "ratingSummary": {
+    "new": "Neu bei Yaiwell",
+    "groupLabel": "Bewertung",
+    "reviews": "{count, plural, one {# Bewertung} other {# Bewertungen}}"
   },
   "providerPanel": {
     "nav": {

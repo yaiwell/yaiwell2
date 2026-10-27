@@ -51,8 +51,8 @@ export const weeklyCalendarStyles = {
  */
 export const bookingBlockByStatus: BookingStatusClassMap = {
   confirmed: 'border-primary/30 bg-primary/10 text-foreground',
-  pending: 'border-brand-butter/40 bg-brand-butter-soft text-brand-butter',
-  completed: 'border-brand-sage/40 bg-brand-sage-soft text-brand-sage',
+  pending: 'border-status-soon-foreground/30 bg-status-soon text-status-soon-foreground',
+  completed: 'border-status-now-foreground/30 bg-status-now text-status-now-foreground',
   cancelled: 'border-destructive/30 bg-destructive/15 text-destructive line-through opacity-70',
 } as const;
 

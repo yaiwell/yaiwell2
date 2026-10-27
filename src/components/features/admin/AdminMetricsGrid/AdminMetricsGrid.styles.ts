@@ -12,7 +12,7 @@ export const adminMetricsGridStyles = {
   value: 'font-display text-3xl leading-none text-foreground',
   deltaWrap: 'mt-2 inline-flex items-center gap-1 self-start text-xs font-medium',
   deltaPositive:
-    'rounded-full bg-brand-sage-soft px-2 py-1 text-brand-sage ring-1 ring-inset ring-brand-sage/30',
+    'rounded-full bg-status-now px-2 py-1 text-status-now-foreground ring-1 ring-inset ring-status-now-foreground/25',
   deltaNegative:
     'rounded-full bg-destructive/15 px-2 py-1 text-destructive ring-1 ring-inset ring-destructive/30',
 } as const;

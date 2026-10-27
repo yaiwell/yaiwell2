@@ -31,14 +31,17 @@ export const heroStyles = {
   // (ver `overlay` arriba), así que el texto se mantiene claro siempre.
   // Usamos `text-foreground/text-muted-foreground` no procede aquí porque
   // se invertirían en dark y dejarían el texto ilegible sobre la foto.
+  // Crema fijo y no `text-primary-foreground`: en oscuro ese token pasa a
+  // plum oscuro (texto de los CTA sobre el primario claro) y se perdería
+  // sobre la foto.
   content:
-    'relative flex w-full max-w-3xl flex-col items-center gap-6 text-center text-primary-foreground drop-shadow-[0_2px_12px_rgba(0,0,0,0.25)] md:gap-8',
+    'relative flex w-full max-w-3xl flex-col items-center gap-6 text-center text-[oklch(0.985_0.005_90)] drop-shadow-[0_2px_12px_rgba(0,0,0,0.25)] md:gap-8',
   titleLine1:
     'text-balance text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl md:text-6xl lg:text-7xl',
   titleLine2:
     'mt-1 block bg-gradient-to-r from-[oklch(0.92_0.08_15)] via-[oklch(0.95_0.05_50)] to-[oklch(0.9_0.08_230)] bg-clip-text font-display italic font-normal text-transparent',
   subtitle:
-    'max-w-2xl text-balance text-base leading-relaxed text-primary-foreground/95 sm:text-lg md:text-xl',
+    'max-w-2xl text-balance text-base leading-relaxed text-[oklch(0.985_0.005_90)]/95 sm:text-lg md:text-xl',
 
   // === Search card ===
   // Mobile: card vertical con campos apilados y separadores horizontales.

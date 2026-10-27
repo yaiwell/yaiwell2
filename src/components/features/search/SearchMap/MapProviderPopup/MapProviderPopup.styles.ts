@@ -34,11 +34,8 @@ export const mapProviderPopupStyles = {
 
   // Meta (rating, reseñas, distancia).
   metaRow: 'mt-1 flex items-center gap-1.5 text-xs text-foreground/80',
-  // Rating en brand-butter para mantener calor visual y coherencia con la
-  // estrella del ProviderCard. En dark se aclara automáticamente.
-  rating: 'inline-flex items-center gap-1 text-brand-butter font-medium',
+  // La valoración la pinta `RatingSummary` (variant `popup`).
   separator: 'text-muted-foreground/60',
-  reviews: 'text-muted-foreground',
   distance: 'text-muted-foreground',
 
   // CTA opcional al final.

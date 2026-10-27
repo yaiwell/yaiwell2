@@ -56,6 +56,19 @@
   --color-brand-lilac: var(--brand-lilac);
   --color-brand-lilac-soft: var(--brand-lilac-soft);
 
+  /* Tokens semánticos de estado (disponibilidad y chips de estado).
+     Cada par fondo/texto está calculado para ≥ 4.5:1 en claro y oscuro;
+     los `brand-*` pastel NO sirven como texto sobre su `*-soft` en claro
+     (auditoría de diseño 2026-10-27, P0 #1). */
+  --color-status-now: var(--status-now);
+  --color-status-now-foreground: var(--status-now-foreground);
+  --color-status-soon: var(--status-soon);
+  --color-status-soon-foreground: var(--status-soon-foreground);
+  --color-status-busy: var(--status-busy);
+  --color-status-busy-foreground: var(--status-busy-foreground);
+  --color-status-info: var(--status-info);
+  --color-status-info-foreground: var(--status-info-foreground);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -120,6 +133,24 @@
   --brand-lilac: oklch(0.72 0.1 300);
   --brand-lilac-soft: oklch(0.95 0.035 300);
 
+  /* Estados en claro: fondo = el `*-soft` de marca y texto en la misma
+     familia bajado a L 0.44-0.46 (tono tierra, sin verde/ámbar de
+     semáforo). `soon` gira a hue 75 para que el butter oscuro lea como
+     ocre cálido y no como oliva. Contrastes (WCAG 2.x):
+     - now  0.44 / 0.94 sage  ≈ 6.4:1 (AA)
+     - soon 0.46 / 0.96 butter ≈ 6.4:1 (AA)
+     - busy 0.42 / 0.965 muted ≈ 7.7:1 (AAA)
+     - info 0.45 / 0.94 sky   ≈ 6.2:1 (AA) — estados informativos
+       (completada, «cerca de ti»); el `brand-sky` puro daba 2.2:1. */
+  --status-now: oklch(0.94 0.03 145);
+  --status-now-foreground: oklch(0.44 0.07 145);
+  --status-soon: oklch(0.96 0.04 90);
+  --status-soon-foreground: oklch(0.46 0.08 75);
+  --status-busy: oklch(0.965 0.012 70);
+  --status-busy-foreground: oklch(0.42 0.025 340);
+  --status-info: oklch(0.94 0.03 230);
+  --status-info-foreground: oklch(0.45 0.08 235);
+
   --sidebar: oklch(0.985 0.008 70);
   --sidebar-foreground: oklch(0.22 0.025 350);
   --sidebar-primary: oklch(0.32 0.07 350);
@@ -139,12 +170,17 @@
      cumpliendo WCAG AA 4.5:1, y las superficies escalonadas (background
      → card → popover → muted → secondary) crean jerarquía clara.
 
-     Contrastes verificados (ratios aproximados):
+     Contrastes verificados (WCAG 2.x, recalculados 2026-10-27 con
+     conversión OKLCH → sRGB lineal; las cifras antiguas de primary
+     estaban sobreestimadas):
      - foreground 0.97 / background 0.16 ≈ 15:1 (AAA)
      - foreground 0.97 / muted 0.28 ≈ 9.5:1 (AAA)
-     - primary 0.62 / background 0.16 ≈ 5.6:1 (AA grande/normal)
-     - primary 0.62 / card 0.22 ≈ 4.7:1 (AA texto pequeño)
+     - primary-foreground 0.18 / primary 0.70 ≈ 6.6:1 (AA; antes 3.6:1)
+     - primary 0.70 / background 0.16 ≈ 6.8:1 (AA; antes 5.0:1)
+     - primary 0.70 / card 0.22 ≈ 6.1:1 (AA; antes 4.5:1)
+     - primary 0.70 / popover 0.26 ≈ 5.5:1 (AA; antes 4.0:1)
      - brand-X 0.83-0.90 / brand-X-soft 0.30-0.32 ≈ 6.5-7.6:1 (AAA)
+     - status-*-foreground / status-* ≈ 7.3-9.4:1 (AAA)
      - ring 0.78 / card 0.22 ≈ 8.4:1 (muy visible)
      - card 0.22 sobre background 0.16: ΔL 0.06, jerarquía clara */
   --background: oklch(0.16 0.018 350);
@@ -159,12 +195,16 @@
   --popover: oklch(0.26 0.025 350);
   --popover-foreground: oklch(0.97 0.01 70);
 
-  /* Primary: plum claro y saturado. Recupera la identidad de marca en
-     dark (el anterior era crema casi blanco, lo que rompía la jerarquía
-     cromática). Hue 350 = mismo plum que en light, L 0.62 lo hace claro
-     para destacar sobre dark sin saturar la vista. */
-  --primary: oklch(0.62 0.13 350);
-  --primary-foreground: oklch(0.97 0.01 70);
+  /* Primary: plum claro y saturado con texto plum oscuro encima.
+     Hue 350 y croma 0.13 = misma identidad que antes. Subimos L de 0.62
+     a 0.70 e invertimos el texto (crema → plum 0.18) porque con un solo
+     token no se podía cumplir a la vez «texto sobre el CTA» y «primary
+     como texto/enlace sobre fondo»: bajar a L 0.52 daba 5.4:1 en el CTA
+     pero 3.3:1 como enlace sobre background. Así ambos usos pasan AA sin
+     separar `bg-primary` de `text-primary` (auditoría 2026-10-27, P0 #4).
+     Los hovers `bg-primary/90` y `/80` siguen ≥ 4.5:1 con el texto. */
+  --primary: oklch(0.7 0.13 350);
+  --primary-foreground: oklch(0.18 0.025 350);
 
   /* Secondary y muted ahora forman dos escalones distintos sobre card,
      no se solapan como antes. */
@@ -216,12 +256,26 @@
   --brand-lilac: oklch(0.85 0.11 300);
   --brand-lilac-soft: oklch(0.3 0.07 300);
 
+  /* Estados en oscuro: mismos pares que los brand-* (fondo tintado
+     oscuro + texto pastel claro), duplicados para que el estado no
+     dependa de cambios futuros en la paleta decorativa.
+     - now  0.83 / 0.30 ≈ 8.2:1 · soon 0.90 / 0.32 ≈ 9.4:1
+     - busy 0.78 / 0.28 ≈ 7.3:1 · info 0.85 / 0.30 ≈ 8.7:1 */
+  --status-now: oklch(0.3 0.06 145);
+  --status-now-foreground: oklch(0.83 0.1 145);
+  --status-soon: oklch(0.32 0.07 90);
+  --status-soon-foreground: oklch(0.9 0.11 90);
+  --status-busy: oklch(0.28 0.025 350);
+  --status-busy-foreground: oklch(0.78 0.02 30);
+  --status-info: oklch(0.3 0.06 230);
+  --status-info-foreground: oklch(0.85 0.1 230);
+
   /* Sidebar alineado con los nuevos valores: usa popover como superficie
      (los sidebars son superficies elevadas, no cards inline). */
   --sidebar: oklch(0.26 0.025 350);
   --sidebar-foreground: oklch(0.97 0.01 70);
-  --sidebar-primary: oklch(0.62 0.13 350);
-  --sidebar-primary-foreground: oklch(0.97 0.01 70);
+  --sidebar-primary: oklch(0.7 0.13 350);
+  --sidebar-primary-foreground: oklch(0.18 0.025 350);
   --sidebar-accent: oklch(0.32 0.08 10);
   --sidebar-accent-foreground: oklch(0.97 0.01 70);
   --sidebar-border: oklch(1 0 0 / 16%);

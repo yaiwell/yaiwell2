@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import { ReviewReplyForm } from '@/components/features/provider-panel/ReviewReplyForm';
 
-import { computeAverageRating, useReviewsFilters } from './ReceivedReviews.logic';
+import { getPanelRatingSummary, useReviewsFilters } from './ReceivedReviews.logic';
 import { receivedReviewsStyles as s } from './ReceivedReviews.styles';
 import type {
   ReceivedReviewsProps,
@@ -39,7 +39,7 @@ export function ReceivedReviews({ reviews, locale }: ReceivedReviewsProps) {
   // su propio namespace `providerPanel.reviews.reply` desde `ReviewReplyForm`.
   const { filters, setFilters, filteredReviews } = useReviewsFilters(reviews);
 
-  const averageRating = computeAverageRating(reviews);
+  const ratingSummary = getPanelRatingSummary(reviews, locale);
   // eslint-disable-next-line no-restricted-syntax -- DATE_FORMATTERS es un `Record<AppLocale, Intl.DateTimeFormat>` construido en el propio módulo con los cuatro idiomas: no hay clave ausente posible.
   const dateFormatter = DATE_FORMATTERS[locale];
 
@@ -48,9 +48,11 @@ export function ReceivedReviews({ reviews, locale }: ReceivedReviewsProps) {
       <header className={s.header}>
         <h1 className={s.title}>{t('title')}</h1>
         <p className={s.subtitle}>{t('subtitle')}</p>
-        <p className={s.summary}>
-          {t('summary', { rating: averageRating, count: reviews.length })}
-        </p>
+        {ratingSummary && (
+          <p className={s.summary} data-component="received-reviews-summary">
+            {t('summary', ratingSummary)}
+          </p>
+        )}
       </header>
 
       <div className={s.filters} data-component="received-reviews-filters">

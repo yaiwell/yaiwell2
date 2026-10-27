@@ -189,7 +189,6 @@
     },
     "card": {
       "from": "from",
-      "reviews": "{count, plural, one {# review} other {# reviews}}",
       "distance": "{km} km away",
       "distanceShort": "{distance} away",
       "distanceFromFallback": "{distance} away *",
@@ -245,9 +244,7 @@
     },
     "header": {
       "typeAutonomous": "Freelancer",
-      "typeCenter": "Centre",
-      "reviewsLabel": "{count, plural, one {# review} other {# reviews}}",
-      "ratingGroupLabel": "Rating"
+      "typeCenter": "Centre"
     },
     "tabs": {
       "services": "Services",
@@ -304,6 +301,11 @@
       "subtitle": "It may no longer be available or the link could be incorrect.",
       "backToSearch": "Back to search"
     }
+  },
+  "ratingSummary": {
+    "new": "New on Yaiwell",
+    "groupLabel": "Rating",
+    "reviews": "{count, plural, one {# review} other {# reviews}}"
   },
   "providerPanel": {
     "nav": {

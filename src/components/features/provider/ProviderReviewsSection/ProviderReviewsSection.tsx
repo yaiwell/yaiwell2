@@ -3,6 +3,7 @@
 import { Star } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { formatRatingValue, getRatingDisplay } from '@/lib/utils/rating';
 import type { Review } from '@/types/domain';
 
 import {
@@ -33,9 +34,13 @@ export function ProviderReviewsSection({
 
   // Si no hay reseñas, no pintamos el resumen ni el breakdown:
   // solo un empty state honesto. Evita el "0 estrellas" feo.
+  // La decisión es la misma que la de la cabecera (`getRatingDisplay`),
+  // así cabecera y sección nunca se contradicen.
   // El h2 se pinta una única vez fuera del condicional para evitar
   // duplicación y simplificar la lectura del JSX.
-  const isEmpty = reviewsCount === 0 || reviews.length === 0;
+  const display = getRatingDisplay(ratingAvg, reviewsCount);
+  const isEmpty = display.kind === 'new' || reviews.length === 0;
+  const ratingLabel = display.kind === 'rated' ? formatRatingValue(display.value, locale) : '';
   const visibleReviews = reviews.slice(0, visibleCount);
 
   return (
@@ -51,11 +56,11 @@ export function ProviderReviewsSection({
       ) : (
         <>
           <SummaryBlock
-            ratingAvg={ratingAvg}
+            ratingLabel={ratingLabel}
             reviewsCount={reviewsCount}
             breakdown={ratingBreakdown}
             summaryLabel={t('summary', {
-              rating: ratingAvg.toFixed(1),
+              rating: ratingLabel,
               count: reviewsCount,
             })}
             breakdownLabel={(stars: number) => t('breakdownLabel', { stars })}
@@ -92,13 +97,14 @@ export function ProviderReviewsSection({
  * quede más legible y reflejando solo la composición.
  */
 function SummaryBlock({
-  ratingAvg,
+  ratingLabel,
   reviewsCount,
   breakdown,
   summaryLabel,
   breakdownLabel,
 }: {
-  ratingAvg: number;
+  /** Nota ya formateada según el idioma («4,8» / «4.8»). */
+  ratingLabel: string;
   reviewsCount: number;
   breakdown: RatingBreakdown;
   summaryLabel: string;
@@ -113,7 +119,7 @@ function SummaryBlock({
     <div className={s.summary} data-component="provider-reviews-summary">
       <div className={s.summaryLeft}>
         <div className={s.summaryRating}>
-          <span className={s.summaryRatingValue}>{ratingAvg.toFixed(1)}</span>
+          <span className={s.summaryRatingValue}>{ratingLabel}</span>
           <Star className={s.summaryStarIcon} aria-hidden="true" />
         </div>
         <span className={s.summaryCount}>{summaryLabel}</span>

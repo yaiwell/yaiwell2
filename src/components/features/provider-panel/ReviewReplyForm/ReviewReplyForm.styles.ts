@@ -17,7 +17,7 @@ export const reviewReplyFormStyles = {
 
   // Estado pendiente: badge + acción de respuesta.
   pendingBadge:
-    'inline-flex w-fit items-center gap-1 rounded-full bg-brand-butter-soft px-2 py-0.5 text-xs font-medium text-brand-butter',
+    'inline-flex w-fit items-center gap-1 rounded-full bg-status-soon px-2 py-0.5 text-xs font-medium text-status-soon-foreground',
   actionsRow: 'flex items-center justify-end',
 
   // Formulario expandido al pulsar "Responder".

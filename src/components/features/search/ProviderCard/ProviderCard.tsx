@@ -1,10 +1,11 @@
 'use client';
 
-import { ArrowRight, MapPin, Star } from 'lucide-react';
+import { ArrowRight, MapPin } from 'lucide-react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { PhotoPlaceholder } from '@/components/shared/PhotoPlaceholder';
+import { RatingSummary } from '@/components/shared/RatingSummary';
 import { Link } from '@/i18n/navigation';
 import { formatDistance } from '@/lib/services/location';
 import { cn } from '@/lib/utils';
@@ -122,13 +123,12 @@ export function ProviderCard({
           </p>
 
           <div className={s.metaRow} data-component="provider-card-meta">
-            <span className={s.rating} data-component="provider-card-rating">
-              <Star className={s.ratingStar} aria-hidden />
-              {provider.rating.toFixed(1)}
-            </span>
-            <span className={s.reviews} data-component="provider-card-reviews">
-              {t('reviews', { count: provider.reviewsCount })}
-            </span>
+            <RatingSummary
+              ratingAvg={provider.rating}
+              reviewsCount={provider.reviewsCount}
+              variant="card"
+              dataComponent="provider-card-rating"
+            />
             {distanceLabel !== null && (
               <span
                 className={s.distancePill}

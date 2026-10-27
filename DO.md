@@ -8,6 +8,17 @@
 
 ## 2026-10-27
 
+### 2026-10-27 (4) — P0 de la auditoría de diseño: contraste y valoraciones reales
+
+Implementación en paralelo (dos agentes, ficheros disjuntos) → `db-migration-guard` + `conventions-reviewer` + `business-rules-auditor` en paralelo → arreglos.
+
+- **Contraste** (medido con script OKLCH → WCAG, no a ojo): tokens semánticos `--status-now/soon/busy/info` (+ `-foreground`) en claro y oscuro. Badge de disponibilidad 1,55/2,04:1 → **6,4:1**; `brand-sky` (completada, «Cerca de ti») 2,2 → 6,2:1; chips de estado del panel, admin y marketing migrados. **CTA primario en oscuro 3,57 → 6,64:1**: el primario oscuro sube a L 0.70 con texto plum oscuro (cambio visible: botón rosa-plum claro en vez de plum medio con texto crema); bajar a L 0.52 hundía el primario como texto a 3,29:1. Hero con crema fija sobre la foto.
+- **Valoraciones**: las cifras «4.8 · 312» eran **inventadas por `seed-dev.ts`** (0 reseñas reales) y el trigger que decía el schema **no existía**. Migración `9a_provider_rating_cache` (nombre `9a` porque Prisma ordena como texto: `10_` iría antes que `1_`): función + trigger sobre `reviews` (`SECURITY INVOKER`, `search_path` fijo, `REVOKE EXECUTE`) y backfill a valores reales. Seed y fake-data sin notas inventadas. `RatingSummary` compartido con «Nuevo en Yaiwell»; util `src/lib/utils/rating.ts` como única regla (redondeo como SQL `ROUND`, formato por idioma: «4,8» en es/ca/de). El panel ya no pinta «0 sobre 5». Filtro de nota y orden de búsqueda deterministas con todo a 0.
+- **Decisión de producto** (CLAUDE.md §4.bis): una reseña publicada sigue contando aunque la reserva se reembolse después.
+- **Migración sin aplicar**: el sistema bloqueó `migrate deploy` a Claude; queda en `TODO.md` para el dev.
+- **1046 tests** (eran 1014), `typecheck`, `lint` y `build` limpios, 1015 claves en los 4 idiomas.
+
+---
 ### 2026-10-27 (3) — Reserva con 30 min de antelación y reservas de última hora
 
 El dev vio que el selector ofrecía las 10:00 a las 9:00 y el servidor lo rechazaba: la antelación mínima (2 h) no la aplicaba el motor de huecos, y «Disponible ahora» anunciaba huecos imposibles de comprar. Decisión de producto (CLAUDE.md §4.bis): **mínimo 30 min**; **menos de 2 h = última hora, pago online sin reembolso**; con margen, pago en el local en el futuro. Orquestación P15: implementador → `business-rules-auditor` + `conventions-reviewer` + `e2e-tester` en paralelo → dos rondas de arreglos → re-auditoría (apto).

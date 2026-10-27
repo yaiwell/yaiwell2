@@ -23,11 +23,12 @@ export const bookingCardStyles = {
   actions: 'flex flex-wrap items-center gap-2',
   statusBase:
     'inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset',
-  // Badges de estado usando los pasteles de marca para que sigan teniendo
-  // semántica de color en modo oscuro sin perder contraste.
-  statusPending: 'bg-brand-butter-soft text-brand-butter ring-brand-butter/30',
-  statusConfirmed: 'bg-brand-sage-soft text-brand-sage ring-brand-sage/30',
-  statusCompleted: 'bg-brand-sky-soft text-brand-sky ring-brand-sky/30',
+  // Badges de estado: pendiente y confirmada usan los pares semánticos
+  // `status-soon` / `status-now` (≥ 4.5:1 en ambos modos); el texto
+  // `brand-*` sobre su `*-soft` no llegaba a AA en claro.
+  statusPending: 'bg-status-soon text-status-soon-foreground ring-status-soon-foreground/25',
+  statusConfirmed: 'bg-status-now text-status-now-foreground ring-status-now-foreground/25',
+  statusCompleted: 'bg-status-info text-status-info-foreground ring-status-info-foreground/30',
   statusCancelled: 'bg-destructive/15 text-destructive ring-destructive/30',
   statusRefunded: 'bg-muted text-muted-foreground ring-border',
   blockedHint: 'text-xs text-muted-foreground',
