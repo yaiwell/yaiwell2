@@ -6,6 +6,16 @@
 
 ---
 
+## 2026-10-27
+
+### 2026-10-27 — Webhook de Stripe y cron dados de alta en producción
+
+- **Destino de eventos en Stripe (modo test)**: `https://yaiwell2.vercel.app/api/webhooks/stripe`, eventos de "Tu cuenta", carga snapshot, suscrito a `payment_intent.succeeded`, `payment_intent.payment_failed`, `charge.refunded` y `charge.refund.updated`. Versión `2026-09-30.endive`: el dashboard ya no ofrece la `dahlia` del SDK (alineación anotada en `TODO.md`).
+- **`STRIPE_WEBHOOK_SECRET` y `CRON_SECRET`** en Vercel (Production) y redeploy, configurados por el dev.
+- **Verificado en producción**: el cron responde 401 sin token (secreto cargado), el webhook responde 400 ante una firma falsa (secreto cargado) y un PaymentIntent de prueba de 1 € creado por API en modo test generó un `payment_intent.succeeded` entregado con `pending_webhooks: 0` (2xx al primer intento).
+- Pendiente: reserva de extremo a extremo con tarjeta de test (la hace el dev en el navegador) y `DIRECT_URL` en `.env.local`.
+
+---
 ## 2026-10-26
 
 ### 2026-10-26 (3) — Pagos: caducidad de `pending`, pago tardío y cola de reembolsos fallidos
