@@ -1,6 +1,8 @@
-import { CalendarClock, MapPin, Star, User } from 'lucide-react';
+import { CalendarClock, MapPin, User } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 
+import { ExistingReview } from '@/components/features/customer/ExistingReview';
+import { ReviewDialog } from '@/components/features/customer/ReviewForm';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
 import type { AppLocale } from '@/i18n/routing';
@@ -39,13 +41,18 @@ function statusClassName(status: BookingCardProps['booking']['status']): string 
  *  - `past`: solo botón "Ver detalle".
  *  - `pendingReview`: CTA primario "Valorar" + "Ver detalle".
  *
- * Server Component: desde que el cobro es real no hay ninguna acción
- * interactiva en la card. El botón "Cancelar" que existía aquí era una
- * simulación sin backend — pintaba "Cancelación solicitada" sobre una
- * reserva pagada que seguía en pie, así que se retiró. La política de
- * cancelación por parte del cliente sigue pendiente de definir
- * (§4.bis de CLAUDE.md); hasta entonces la cancelación se gestiona por
- * soporte y aquí solo se informa de ello.
+ * Lo relativo a valorar no depende de la variante sino de lo que calcula
+ * el servicio: CTA solo con `canReview`, la reseña propia si existe y un
+ * aviso discreto si el plazo de 30 días ya venció (§4.bis).
+ *
+ * Server Component: lo interactivo (el diálogo de valoración y el
+ * "Ver más" de la reseña) vive en Client Components hijos.
+ *
+ * Cancelación: el botón "Cancelar" que existía aquí era una simulación
+ * sin backend — pintaba "Cancelación solicitada" sobre una reserva
+ * pagada que seguía en pie — y se retiró. La política de cancelación por
+ * parte del cliente sigue pendiente de definir (§4.bis de CLAUDE.md);
+ * hasta entonces se gestiona por soporte y aquí solo se informa de ello.
  */
 export function BookingCard({ booking, variant }: BookingCardProps) {
   const t = useTranslations('customerArea');
@@ -120,14 +127,32 @@ export function BookingCard({ booking, variant }: BookingCardProps) {
 
         {booking.notes ? <p className={s.notes}>“{booking.notes}”</p> : null}
 
+        {booking.review ? (
+          <ExistingReview
+            bookingId={booking.id}
+            rating={booking.review.rating}
+            text={booking.review.text}
+          />
+        ) : null}
+
+        {booking.reviewWindowClosed ? (
+          <p
+            className={s.blockedHint}
+            data-component={`customer-booking-review-closed-${booking.id}`}
+          >
+            {t('actions.reviewWindowClosed')}
+          </p>
+        ) : null}
+
         <div className={s.footer}>
           <span className={s.price}>{priceFormatted}</span>
           <div className={s.actions}>
-            {variant === 'pendingReview' ? (
-              <Button size="lg" data-component={`customer-booking-review-${booking.id}`}>
-                <Star className="size-4" aria-hidden="true" />
-                {t('actions.review')}
-              </Button>
+            {booking.canReview ? (
+              <ReviewDialog
+                bookingId={booking.id}
+                serviceName={serviceName}
+                providerName={booking.providerName}
+              />
             ) : null}
 
             {variant === 'upcoming' ? (

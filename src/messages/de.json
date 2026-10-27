@@ -807,7 +807,51 @@
       "viewDetail": "Details ansehen",
       "cancelSupportHint": "Du musst absagen? Schreib uns und wir regeln es gemeinsam.",
       "lastMinuteHint": "Last-Minute-Buchung: keine Stornierung möglich. Kann das Studio dich nicht bedienen, schreib uns.",
-      "review": "Bewerten"
+      "review": "Bewerten",
+      "reviewWindowClosed": "Bewertungszeitraum abgelaufen"
+    },
+    "existingReview": {
+      "label": "Deine Bewertung:",
+      "ratingAria": "{rating} von 5 Sternen",
+      "showMore": "Mehr anzeigen",
+      "showLess": "Weniger anzeigen"
+    },
+    "reviewForm": {
+      "title": "Bewerte deine Erfahrung",
+      "description": "{service} bei {provider}. Deine Meinung hilft anderen bei der Auswahl.",
+      "close": "Schließen",
+      "cancel": "Abbrechen",
+      "ratingLegend": "Bewertung",
+      "ratingPrompt": "Wähle 1 bis 5 Sterne",
+      "ratingOption": "{count, plural, one {# Stern} other {# Sterne}}: {label}",
+      "ratingLabels": {
+        "1": "Sehr schlecht",
+        "2": "Ausbaufähig",
+        "3": "In Ordnung",
+        "4": "Sehr gut",
+        "5": "Ausgezeichnet"
+      },
+      "textLabel": "Erzähl uns, wie es war",
+      "textPlaceholder": "Was hat dir gefallen? Was könnte besser sein?",
+      "textHint": "Mindestens {min} Zeichen.",
+      "counter": "{count} / {max}",
+      "submit": "Bewertung veröffentlichen",
+      "submitting": "Wird veröffentlicht…",
+      "success": "Danke! Deine Bewertung ist jetzt auf der Seite des Studios sichtbar.",
+      "dismiss": "Hinweis schließen",
+      "fieldErrors": {
+        "RATING_REQUIRED": "Wähle eine Bewertung von 1 bis 5 Sternen.",
+        "TEXT_TOO_SHORT": "Schreib mindestens {min} Zeichen.",
+        "TEXT_TOO_LONG": "Der Text darf höchstens {max} Zeichen lang sein."
+      },
+      "errors": {
+        "NOT_COMPLETED": "Diese Buchung ist noch nicht als abgeschlossen markiert und kann daher noch nicht bewertet werden.",
+        "WINDOW_EXPIRED": "Der 30-tägige Zeitraum zur Bewertung dieser Buchung ist abgelaufen.",
+        "ALREADY_REVIEWED": "Diese Buchung wurde bereits bewertet.",
+        "FORBIDDEN": "Diese Buchung kann mit diesem Konto nicht bewertet werden. Prüfe, ob du mit dem Konto angemeldet bist, mit dem du gebucht hast.",
+        "VALIDATION": "Prüfe Bewertung und Text und versuche es erneut.",
+        "INTERNAL": "Die Bewertung konnte nicht veröffentlicht werden. Bitte versuche es in ein paar Minuten erneut."
+      }
     }
   },
   "adminArea": {

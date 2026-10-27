@@ -17,6 +17,15 @@ import type { LocalizedText } from '@/types/domain';
 export type { BookingStatus };
 
 /**
+ * Reseña propia del cliente sobre una reserva. Solo los campos que pinta
+ * la card: ni fotos ni respuesta del centro.
+ */
+export interface CustomerBookingReview {
+  rating: number;
+  text: string;
+}
+
+/**
  * Una reserva del cliente lista para renderizar en el área privada.
  */
 export interface CustomerBookingView {
@@ -48,8 +57,26 @@ export interface CustomerBookingView {
    * la UI necesita un caso vacío explícito en lugar de un `src=""`.
    */
   providerPhoto: string | null;
+  /**
+   * Momento en que el profesional marcó la reserva como finalizada.
+   * `null` mientras no esté `completed`.
+   */
+  completedAt: Date | null;
   /** Indica si el cliente ya dejó reseña (solo aplica a `completed`). */
   hasReview: boolean;
+  /** Valoración que dejó el cliente, para mostrarla en la card. */
+  review: CustomerBookingReview | null;
+  /**
+   * Si la card debe ofrecer «Valorar». Lo calcula el servicio con la
+   * misma regla que `createReview` (§4.bis): `completed` + dentro de la
+   * ventana de 30 días + sin reseña. La UI no lo recalcula.
+   */
+  canReview: boolean;
+  /**
+   * `completed`, sin reseña y fuera de plazo: la card puede decir
+   * «Plazo de valoración cerrado» en lugar de no decir nada.
+   */
+  reviewWindowClosed: boolean;
   /** Notas que el cliente escribió al reservar. */
   notes?: string;
 }

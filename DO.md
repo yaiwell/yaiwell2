@@ -8,6 +8,17 @@
 
 ## 2026-10-27
 
+### 2026-10-27 (7) — El cliente ya puede valorar
+
+P15: implementador → `e2e-tester` + `business-rules-auditor` + `conventions-reviewer` en paralelo → arreglos.
+
+- **`/mis-reservas`**: CTA «Valorar» solo cuando la reserva está `completed`, dentro de 30 días y sin reseña. `canReview` se calcula en el servicio con el mismo `isWithinReviewWindow` que usa `createReview` (límite inclusivo, probado a 30 días exactos y +1 ms en los dos lados). Con reseña, la card muestra la propia; fuera de plazo, «Plazo de valoración cerrado».
+- **Formulario** en un diálogo: estrellas como radios accesibles (teclado, `aria-required`/`aria-invalid`), texto de 10 a 2000 caracteres con contador, aviso de éxito a nivel de página. Sin fotos por ahora.
+- **Server action** `submitReviewAction`: `hasLocale`, sesión de Clerk, Zod (`trim` en el servidor: una reseña de solo espacios ya no pasa; `photos` no se acepta), errores tipados a códigos estables (un doble envío por `P2002` devuelve `ALREADY_REVIEWED`), `revalidatePath` de `mis-reservas` y de la ficha. La nota pública la recalcula el trigger de la migración 9a.
+- **E2E escrito, no ejecutado**: no hay cliente que pueda iniciar sesión en Clerk (ver `TODO.md`). `playwright.config.ts` admite `E2E_PORT` y `next.config.ts` un `distDir` propio para no chocar con otro `next dev`; `.next-e2e-*` excluido de tsc, eslint y git.
+- **1159 tests** (eran 1109), `typecheck`, `lint` y `build` limpios, paridad de i18n en los 4 idiomas.
+
+---
 ### 2026-10-27 (6) — Primera alta Express y prueba de cobro de punta a punta
 
 - **El dev completó el alta Express en modo test** desde `/panel/centro` (en `yaiwell2.vercel.app`) para **Studio Aura**: `acct_1UV8OuK40YlOLz1h`, `type: express`, `business_type: individual`, alta enviada, `charges_enabled` y `payouts_enabled`, `transfers` y `card_payments` activas, sin requisitos ni `disabled_reason`.

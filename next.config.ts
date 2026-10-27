@@ -3,6 +3,10 @@ import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 const nextConfig: NextConfig = {
+  // Los E2E con `E2E_PORT` distinto de 3000 usan su propio directorio de
+  // build: Next 16 impide dos `next dev` sobre el mismo `.next` (lock).
+  // Sin la variable, el comportamiento es el de siempre.
+  distDir: process.env.NEXT_DIST_DIR || '.next',
   // En Fase 0 las fotos de proveedores y fondos vienen de Unsplash. Registramos
   // el hostname para que next/image pueda optimizarlas y evitemos el escape
   // `unoptimized` (audit 2026-05-27 §D.1). En Fase 1 estas URLs serán

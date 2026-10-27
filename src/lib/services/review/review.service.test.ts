@@ -7,7 +7,8 @@
  * unicidad y autorización del reply.
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Prisma } from '@prisma/client';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ZodError } from 'zod';
 
 vi.mock('@/lib/db/prisma', () => ({
@@ -211,6 +212,75 @@ describe('createReview', () => {
     await expect(createReview({ ...validInput, text: 'corto' }, 'client-1')).rejects.toBeInstanceOf(
       ZodError,
     );
+  });
+});
+
+describe('createReview — límites y concurrencia', () => {
+  const COMPLETED_AT = new Date('2026-10-01T10:00:00.000Z');
+  const WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
+  function completedBookingAt(completedAt: Date) {
+    return { ...buildBooking(), completedAt };
+  }
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it('acepta a los 30 días exactos desde completedAt', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(COMPLETED_AT.getTime() + WINDOW_MS));
+    bookingFindUnique.mockResolvedValueOnce(completedBookingAt(COMPLETED_AT) as never);
+    reviewFindUnique.mockResolvedValueOnce(null);
+    reviewCreate.mockResolvedValueOnce({ id: 'review-30' } as never);
+
+    await expect(createReview(validInput, 'client-1')).resolves.toEqual({ id: 'review-30' });
+  });
+
+  it('rechaza a los 30 días + 1 ms desde completedAt', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date(COMPLETED_AT.getTime() + WINDOW_MS + 1));
+    bookingFindUnique.mockResolvedValueOnce(completedBookingAt(COMPLETED_AT) as never);
+    reviewFindUnique.mockResolvedValueOnce(null);
+
+    await expect(createReview(validInput, 'client-1')).rejects.toBeInstanceOf(
+      ReviewWindowExpiredError,
+    );
+    expect(reviewCreate).not.toHaveBeenCalled();
+  });
+
+  it('rechaza un texto de solo espacios con ZodError', async () => {
+    await expect(
+      createReview({ ...validInput, text: ' '.repeat(20) }, 'client-1'),
+    ).rejects.toBeInstanceOf(ZodError);
+    expect(bookingFindUnique).not.toHaveBeenCalled();
+  });
+
+  it('convierte el P2002 de un doble envío en ReviewAlreadyExistsError', async () => {
+    bookingFindUnique.mockResolvedValueOnce(buildBooking() as never);
+    reviewFindUnique.mockResolvedValueOnce(null);
+    reviewCreate.mockRejectedValueOnce(
+      new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+        code: 'P2002',
+        clientVersion: 'test',
+      }),
+    );
+
+    await expect(createReview(validInput, 'client-1')).rejects.toBeInstanceOf(
+      ReviewAlreadyExistsError,
+    );
+  });
+
+  it('relanza otros errores de Prisma tal cual', async () => {
+    const other = new Prisma.PrismaClientKnownRequestError('FK failed', {
+      code: 'P2003',
+      clientVersion: 'test',
+    });
+    bookingFindUnique.mockResolvedValueOnce(buildBooking() as never);
+    reviewFindUnique.mockResolvedValueOnce(null);
+    reviewCreate.mockRejectedValueOnce(other);
+
+    await expect(createReview(validInput, 'client-1')).rejects.toBe(other);
   });
 });
 

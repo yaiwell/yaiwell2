@@ -807,7 +807,51 @@
       "viewDetail": "Veure detall",
       "cancelSupportHint": "Necessites cancel·lar? Escriu-nos i ho gestionem amb tu.",
       "lastMinuteHint": "Reserva d'última hora: no admet cancel·lació. Si el centre no et pot atendre, escriu-nos.",
-      "review": "Valorar"
+      "review": "Valorar",
+      "reviewWindowClosed": "Termini de valoració tancat"
+    },
+    "existingReview": {
+      "label": "La teva valoració:",
+      "ratingAria": "{rating} de 5 estrelles",
+      "showMore": "Veure més",
+      "showLess": "Veure menys"
+    },
+    "reviewForm": {
+      "title": "Valora la teva experiència",
+      "description": "{service} a {provider}. La teva opinió ajuda altres persones a triar.",
+      "close": "Tancar",
+      "cancel": "Cancel·lar",
+      "ratingLegend": "Puntuació",
+      "ratingPrompt": "Tria d’1 a 5 estrelles",
+      "ratingOption": "{count, plural, one {# estrella} other {# estrelles}}: {label}",
+      "ratingLabels": {
+        "1": "Molt malament",
+        "2": "Millorable",
+        "3": "Correcte",
+        "4": "Molt bé",
+        "5": "Excel·lent"
+      },
+      "textLabel": "Explica’ns com va anar",
+      "textPlaceholder": "Què et va agradar? Què milloraries?",
+      "textHint": "Mínim {min} caràcters.",
+      "counter": "{count} / {max}",
+      "submit": "Publicar la valoració",
+      "submitting": "Publicant…",
+      "success": "Gràcies! La teva valoració ja es veu a la fitxa del centre.",
+      "dismiss": "Tancar l’avís",
+      "fieldErrors": {
+        "RATING_REQUIRED": "Tria una puntuació d’1 a 5 estrelles.",
+        "TEXT_TOO_SHORT": "Escriu almenys {min} caràcters.",
+        "TEXT_TOO_LONG": "El text no pot superar els {max} caràcters."
+      },
+      "errors": {
+        "NOT_COMPLETED": "Aquesta reserva encara no està marcada com a finalitzada, així que encara no es pot valorar.",
+        "WINDOW_EXPIRED": "El termini de 30 dies per valorar aquesta reserva ja ha acabat.",
+        "ALREADY_REVIEWED": "Aquesta reserva ja té una valoració.",
+        "FORBIDDEN": "No es pot valorar aquesta reserva des d’aquest compte. Comprova que has entrat amb el compte amb què vas reservar.",
+        "VALIDATION": "Revisa la puntuació i el text i torna-ho a provar.",
+        "INTERNAL": "No hem pogut publicar la valoració. Torna-ho a provar d’aquí a uns minuts."
+      }
     }
   },
   "adminArea": {

@@ -12,6 +12,8 @@
  * a status HTTP o copy localizado sin parsear strings.
  */
 
+import { Prisma } from '@prisma/client';
+
 import { reviewRepository } from './review.repository';
 import { createReviewSchema, replyToReviewSchema } from './review.validation';
 import {
@@ -23,15 +25,10 @@ import {
   UnauthorizedReplyError,
   UnauthorizedReviewerError,
 } from './review.errors';
+import { isWithinReviewWindow } from './review.window';
 
-/**
- * Ventana en días desde `completedAt` durante la que se permite valorar.
- * Configurable a nivel de plataforma; en futuras versiones podría ser
- * por plan de suscripción (ver TODO.md).
- */
-export const REVIEW_WINDOW_DAYS = 30;
-
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
+// Se reexporta para no romper a quien ya lo importaba desde el service.
+export { REVIEW_WINDOW_DAYS } from './review.window';
 
 /**
  * Crea una valoración sobre un booking completado.
@@ -48,7 +45,8 @@ const MS_PER_DAY = 24 * 60 * 60 * 1000;
  * @throws UnauthorizedReviewerError si el author no es el cliente del booking.
  * @throws BookingNotCompletedError si el booking no está en estado `completed`.
  * @throws ReviewWindowExpiredError si han pasado más de 30 días desde `completedAt`.
- * @throws ReviewAlreadyExistsError si ya existe una reseña para ese booking.
+ * @throws ReviewAlreadyExistsError si ya existe una reseña para ese booking
+ *   (también si otro envío simultáneo la crea antes: P2002).
  */
 export async function createReview(input: unknown, authorId: string) {
   const data = createReviewSchema.parse(input);
@@ -71,9 +69,9 @@ export async function createReview(input: unknown, authorId: string) {
 
   // Ventana de 30 días desde que el profesional marcó la reserva como
   // completada. Pasado ese plazo bloqueamos para evitar reseñas con sesgo
-  // de memoria muy posterior al servicio.
-  const ageMs = Date.now() - booking.completedAt.getTime();
-  if (ageMs > REVIEW_WINDOW_DAYS * MS_PER_DAY) {
+  // de memoria muy posterior al servicio. La misma función decide si
+  // `/mis-reservas` ofrece el CTA «Valorar».
+  if (!isWithinReviewWindow(booking.completedAt, new Date())) {
     throw new ReviewWindowExpiredError();
   }
 
@@ -84,14 +82,24 @@ export async function createReview(input: unknown, authorId: string) {
     throw new ReviewAlreadyExistsError();
   }
 
-  return reviewRepository.createReview({
-    bookingId: data.bookingId,
-    providerId: booking.providerId,
-    authorId,
-    rating: data.rating,
-    text: data.text,
-    photos: data.photos ?? [],
-  });
+  try {
+    return await reviewRepository.createReview({
+      bookingId: data.bookingId,
+      providerId: booking.providerId,
+      authorId,
+      rating: data.rating,
+      text: data.text,
+      photos: data.photos ?? [],
+    });
+  } catch (err) {
+    // Doble envío concurrente: los dos pasan la comprobación de arriba y
+    // el segundo choca con el @unique de `bookingId` (P2002). Lo tratamos
+    // como el duplicado que es, no como un fallo interno.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      throw new ReviewAlreadyExistsError();
+    }
+    throw err;
+  }
 }
 
 /**

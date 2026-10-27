@@ -9,4 +9,8 @@
  */
 
 export { getCustomerBookings } from './customer-bookings.service';
-export type { BookingStatus, CustomerBookingView } from './customer-bookings.types';
+export type {
+  BookingStatus,
+  CustomerBookingReview,
+  CustomerBookingView,
+} from './customer-bookings.types';

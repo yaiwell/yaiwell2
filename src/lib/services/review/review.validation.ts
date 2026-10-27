@@ -12,7 +12,8 @@ import { z } from 'zod';
  * Validación de entrada para crear una valoración.
  *
  * - `rating` debe ser entero entre 1 y 5 (escala UI de estrellas).
- * - `text` mínimo 10 caracteres para evitar reseñas vacías o "ok".
+ * - `text` se recorta (`trim`) antes de medir: un texto de solo espacios
+ *   no cuenta como reseña. Mínimo 10 caracteres para evitar "ok".
  * - `text` máximo 2000 caracteres para que quepa en el card sin
  *   romper layout y para frenar spam masivo.
  * - `photos` máximo 5 URLs (mismo límite que se documenta en el modelo).
@@ -20,7 +21,7 @@ import { z } from 'zod';
 export const createReviewSchema = z.object({
   bookingId: z.string().uuid(),
   rating: z.number().int().min(1).max(5),
-  text: z.string().min(10).max(2000),
+  text: z.string().trim().min(10).max(2000),
   photos: z.array(z.string().url()).max(5).optional(),
 });
 

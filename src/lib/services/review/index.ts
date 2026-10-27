@@ -6,7 +6,8 @@
  * (mover código entre archivos) sin tocar a los consumidores.
  */
 
-export { createReview, replyToReview, REVIEW_WINDOW_DAYS } from './review.service';
+export { createReview, replyToReview } from './review.service';
+export { REVIEW_WINDOW_DAYS, isWithinReviewWindow } from './review.window';
 export { reviewRepository } from './review.repository';
 export { createReviewSchema, replyToReviewSchema } from './review.validation';
 export {

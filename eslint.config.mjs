@@ -77,6 +77,8 @@ const eslintConfig = defineConfig([
   // Sobrescribe los ignores por defecto de eslint-config-next.
   globalIgnores([
     '.next/**',
+    // Builds de los E2E con `E2E_PORT` (ver playwright.config.ts).
+    '.next-e2e-*/**',
     '.claude/**',
     'out/**',
     'build/**',

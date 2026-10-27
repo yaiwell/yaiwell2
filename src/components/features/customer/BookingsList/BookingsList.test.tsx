@@ -48,7 +48,15 @@ function buildBooking(overrides: Partial<CustomerBookingView> = {}): CustomerBoo
       overrides.providerPhoto === undefined
         ? 'https://example.com/photo.jpg'
         : overrides.providerPhoto,
+    completedAt: overrides.completedAt ?? null,
     hasReview: overrides.hasReview ?? false,
+    review: overrides.review ?? null,
+    // Por defecto replica la regla del servicio para una reserva recién
+    // completada (dentro de plazo); los tests de plazo lo fijan a mano.
+    canReview:
+      overrides.canReview ??
+      ((overrides.status ?? 'confirmed') === 'completed' && !overrides.hasReview),
+    reviewWindowClosed: overrides.reviewWindowClosed ?? false,
     notes: overrides.notes,
   };
 }
@@ -224,6 +232,21 @@ describe('splitBookings', () => {
     expect(upcoming).toHaveLength(0);
     expect(pendingReview.map((b) => b.id)).toEqual(['bkg-sin']);
     expect(past.map((b) => b.id)).toEqual(['bkg-con']);
+  });
+
+  it('manda al historial una completada sin review fuera de plazo (canReview false)', () => {
+    const expired = buildBooking({
+      id: 'bkg-expired',
+      status: 'completed',
+      startAt: inHours(-24 * 40),
+      canReview: false,
+      reviewWindowClosed: true,
+    });
+
+    const { pendingReview, past } = splitBookings([expired], NOW);
+
+    expect(pendingReview).toHaveLength(0);
+    expect(past.map((b) => b.id)).toEqual(['bkg-expired']);
   });
 
   it('devuelve los tres grupos vacíos si no hay reservas', () => {

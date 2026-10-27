@@ -14,7 +14,8 @@ import type { CustomerBookingView } from '@/lib/services/customer-bookings';
  *
  * - `upcoming`: próximas reservas, muestra el aviso de cancelación.
  * - `past`: historial, no muestra acciones de cambio.
- * - `pendingReview`: pasada con reseña pendiente, muestra CTA "Valorar".
+ * - `pendingReview`: sección de valoraciones pendientes. El CTA "Valorar"
+ *   no depende de la variante sino de `booking.canReview`.
  */
 export type BookingCardVariant = 'upcoming' | 'past' | 'pendingReview';
 

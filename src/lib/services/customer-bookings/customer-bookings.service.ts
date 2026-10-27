@@ -3,6 +3,7 @@ import 'server-only';
 import type { LocalizedText } from '@/types/domain';
 
 import { customerBookingsRepository } from './customer-bookings.repository';
+import { resolveReviewState } from './customer-bookings.review-state';
 import type { CustomerBookingView } from './customer-bookings.types';
 
 /**
@@ -16,10 +17,17 @@ import type { CustomerBookingView } from './customer-bookings.types';
  * un orden estable de partida; la partición en próximas / pendientes de
  * valorar / historial reordena cada grupo por su cuenta.
  *
+ * `canReview` se calcula aquí, una sola vez y con el reloj del servidor,
+ * para que la UI no reimplemente la regla de valoración (§4.bis).
+ *
  * @param clientId — `User.id` del cliente autenticado.
+ * @param now — instante de referencia para la ventana de valoración.
  * @returns las reservas del cliente, sin ninguna de otro.
  */
-export async function getCustomerBookings(clientId: string): Promise<CustomerBookingView[]> {
+export async function getCustomerBookings(
+  clientId: string,
+  now: Date = new Date(),
+): Promise<CustomerBookingView[]> {
   const records = await customerBookingsRepository.findByClientId(clientId);
 
   return records.map((record) => ({
@@ -42,7 +50,13 @@ export async function getCustomerBookings(clientId: string): Promise<CustomerBoo
     // Un proveedor sin fotos devuelve `[]`: lo normalizamos a `null`
     // para que la card pueda decidir no renderizar el `<img>`.
     providerPhoto: record.provider.photos[0] ?? null,
+    completedAt: record.completedAt,
     hasReview: record.review !== null,
+    review: record.review,
+    ...resolveReviewState(
+      { status: record.status, completedAt: record.completedAt, hasReview: record.review !== null },
+      now,
+    ),
     // Prisma devuelve `null` para las columnas opcionales vacías; la
     // vista usa `undefined` para poder hacer `booking.notes ? ...`.
     notes: record.notes ?? undefined,

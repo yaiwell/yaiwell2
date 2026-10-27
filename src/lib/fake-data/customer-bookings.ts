@@ -56,6 +56,8 @@ function buildBooking(args: {
 
   const startAt = new Date(REFERENCE_NOW.getTime() + args.offsetHours * 60 * 60 * 1000);
   const endAt = new Date(startAt.getTime() + service.durationMinutes * 60 * 1000);
+  const isCompleted = args.status === 'completed';
+  const hasReview = args.hasReview ?? false;
 
   return {
     id: args.id,
@@ -73,7 +75,13 @@ function buildBooking(args: {
     providerSlug: provider.slug,
     providerAddress: provider.address,
     providerPhoto: provider.photos[0] ?? null,
-    hasReview: args.hasReview ?? false,
+    // Fixture: las completadas terminan a su hora y, respecto a
+    // `REFERENCE_NOW`, todas caen dentro de la ventana de 30 días.
+    completedAt: isCompleted ? endAt : null,
+    hasReview,
+    review: hasReview ? { rating: 5, text: 'Muy buena experiencia, repetiré.' } : null,
+    canReview: isCompleted && !hasReview,
+    reviewWindowClosed: false,
     notes: args.notes,
   };
 }

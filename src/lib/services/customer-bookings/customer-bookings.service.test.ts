@@ -17,6 +17,7 @@ vi.mock('@/lib/db/prisma', () => ({
 
 import { prisma } from '@/lib/db/prisma';
 
+import { resolveReviewState } from './customer-bookings.review-state';
 import { getCustomerBookings } from './customer-bookings.service';
 
 const mockedFindMany = vi.mocked(prisma.booking.findMany);
@@ -34,6 +35,7 @@ function bookingRecord(overrides: Record<string, unknown> = {}) {
     startAt: new Date('2026-07-15T08:00:00.000Z'),
     endAt: new Date('2026-07-15T09:00:00.000Z'),
     createdAt: new Date('2026-07-10T08:00:00.000Z'),
+    completedAt: null,
     priceCents: 4500,
     notes: null,
     serviceId: 'svc-1',
@@ -132,7 +134,11 @@ describe('getCustomerBookings', () => {
 
   it('marca hasReview según exista o no la relación review', async () => {
     mockedFindMany.mockResolvedValueOnce([
-      bookingRecord({ id: 'bkg-con', status: 'completed', review: { id: 'rev-1' } }),
+      bookingRecord({
+        id: 'bkg-con',
+        status: 'completed',
+        review: { rating: 4, text: 'Muy buen trato.' },
+      }),
       bookingRecord({ id: 'bkg-sin', status: 'completed', review: null }),
     ] as never);
 
@@ -148,5 +154,90 @@ describe('getCustomerBookings', () => {
     const [booking] = await getCustomerBookings('user-42');
 
     expect(booking.notes).toBeUndefined();
+  });
+});
+
+/**
+ * `canReview` replica la regla de `createReview` (§4.bis): `completed`
+ * con `completedAt`, dentro de 30 días y sin reseña. Se calcula aquí y
+ * no en la UI, así que es aquí donde se fijan los casos límite.
+ */
+describe('resolveReviewState / canReview', () => {
+  const NOW = new Date('2026-10-27T12:00:00.000Z');
+  const DAY = 24 * 60 * 60 * 1000;
+  const daysAgo = (d: number) => new Date(NOW.getTime() - d * DAY);
+
+  it('permite valorar una completed dentro de plazo y sin reseña', () => {
+    expect(
+      resolveReviewState({ status: 'completed', completedAt: daysAgo(29), hasReview: false }, NOW),
+    ).toEqual({ canReview: true, reviewWindowClosed: false });
+  });
+
+  it('acepta justo en el límite de 30 días', () => {
+    expect(
+      resolveReviewState({ status: 'completed', completedAt: daysAgo(30), hasReview: false }, NOW)
+        .canReview,
+    ).toBe(true);
+  });
+
+  it('cierra el plazo pasados 30 días', () => {
+    expect(
+      resolveReviewState(
+        { status: 'completed', completedAt: new Date(daysAgo(30).getTime() - 1), hasReview: false },
+        NOW,
+      ),
+    ).toEqual({ canReview: false, reviewWindowClosed: true });
+  });
+
+  it('no permite valorar dos veces (y no habla de plazo)', () => {
+    expect(
+      resolveReviewState({ status: 'completed', completedAt: daysAgo(2), hasReview: true }, NOW),
+    ).toEqual({ canReview: false, reviewWindowClosed: false });
+  });
+
+  it('no permite valorar una completed sin completedAt', () => {
+    expect(
+      resolveReviewState({ status: 'completed', completedAt: null, hasReview: false }, NOW)
+        .canReview,
+    ).toBe(false);
+  });
+
+  it.each(['pending', 'confirmed', 'cancelled', 'refunded'] as const)(
+    'no permite valorar una reserva %s',
+    (status) => {
+      // `refunded` puede conservar `completedAt`: manda el estado.
+      expect(
+        resolveReviewState({ status, completedAt: daysAgo(1), hasReview: false }, NOW),
+      ).toEqual({ canReview: false, reviewWindowClosed: false });
+    },
+  );
+
+  it('getCustomerBookings expone canReview, completedAt y la reseña propia', async () => {
+    mockedFindMany.mockResolvedValueOnce([
+      bookingRecord({ id: 'bkg-ok', status: 'completed', completedAt: daysAgo(3) }),
+      bookingRecord({ id: 'bkg-old', status: 'completed', completedAt: daysAgo(31) }),
+      bookingRecord({
+        id: 'bkg-done',
+        status: 'completed',
+        completedAt: daysAgo(3),
+        review: { rating: 5, text: 'Perfecto, repetiré.' },
+      }),
+    ] as never);
+
+    const result = await getCustomerBookings('user-42', NOW);
+    const byId = (id: string) => result.find((b) => b.id === id);
+
+    expect(byId('bkg-ok')).toMatchObject({
+      canReview: true,
+      reviewWindowClosed: false,
+      completedAt: daysAgo(3),
+      review: null,
+    });
+    expect(byId('bkg-old')).toMatchObject({ canReview: false, reviewWindowClosed: true });
+    expect(byId('bkg-done')).toMatchObject({
+      canReview: false,
+      hasReview: true,
+      review: { rating: 5, text: 'Perfecto, repetiré.' },
+    });
   });
 });

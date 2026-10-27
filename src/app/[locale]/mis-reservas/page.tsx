@@ -3,7 +3,11 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { hasLocale } from 'next-intl';
 
-import { BookingsList, splitBookings } from '@/components/features/customer';
+import {
+  BookingsList,
+  ReviewFeedbackProvider,
+  splitBookings,
+} from '@/components/features/customer';
 import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { getCustomerBookings } from '@/lib/services/customer-bookings';
@@ -27,9 +31,10 @@ interface CustomerBookingsPageProps {
  * filtra por `clientId` en la propia query: una reserva de otro usuario
  * no llega nunca hasta aquí.
  *
- * La regla de §4.bis sobre "solo se puede valorar tras `completed`"
- * se aplica en `splitBookings`: la sección de "valoraciones pendientes"
- * solo recoge bookings con `status === 'completed' && !hasReview`.
+ * La regla de §4.bis sobre valoraciones (`completed`, 30 días, sin
+ * reseña previa) la resuelve `getCustomerBookings` en `canReview`, con
+ * el mismo `now` que usa `splitBookings`; la sección de "valoraciones
+ * pendientes" solo recoge reservas con `canReview`.
  */
 export default async function CustomerBookingsPage({ params }: CustomerBookingsPageProps) {
   const { locale } = await params;
@@ -55,7 +60,7 @@ export default async function CustomerBookingsPage({ params }: CustomerBookingsP
 
   const t = await getTranslations('customerArea');
   const now = new Date();
-  const bookings = await getCustomerBookings(user.id);
+  const bookings = await getCustomerBookings(user.id, now);
   const { upcoming, past, pendingReview } = splitBookings(bookings, now);
 
   return (
@@ -67,7 +72,12 @@ export default async function CustomerBookingsPage({ params }: CustomerBookingsP
         <p className="text-muted-foreground max-w-xl text-sm">{t('page.subtitle')}</p>
       </header>
 
-      <BookingsList upcoming={upcoming} past={past} pendingReview={pendingReview} />
+      {/* El aviso de "valoración publicada" vive por encima del listado:
+          al revalidar, la card valorada cambia de sección y su diálogo
+          se desmonta, pero este estado se conserva. */}
+      <ReviewFeedbackProvider>
+        <BookingsList upcoming={upcoming} past={past} pendingReview={pendingReview} />
+      </ReviewFeedbackProvider>
     </div>
   );
 }

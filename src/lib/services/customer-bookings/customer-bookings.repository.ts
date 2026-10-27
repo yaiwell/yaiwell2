@@ -16,8 +16,8 @@ export const customerBookingsRepository = {
    * por reserva: la página pinta las tres secciones a la vez, así que
    * un cliente con 40 reservas generaría 120 viajes extra a BD.
    *
-   * `review` se pide solo como `{ id }` — únicamente interesa saber si
-   * existe, no su contenido.
+   * `review` trae solo `rating` y `text`: la card muestra la valoración
+   * propia del cliente, sin fotos ni respuesta del centro.
    *
    * @param clientId — `User.id` del cliente autenticado. El filtro por
    *   `clientId` es la frontera de seguridad de esta pantalla.
@@ -31,6 +31,7 @@ export const customerBookingsRepository = {
         startAt: true,
         endAt: true,
         createdAt: true,
+        completedAt: true,
         priceCents: true,
         notes: true,
         serviceId: true,
@@ -45,7 +46,7 @@ export const customerBookingsRepository = {
             photos: true,
           },
         },
-        review: { select: { id: true } },
+        review: { select: { rating: true, text: true } },
       },
       orderBy: { startAt: 'desc' },
     });

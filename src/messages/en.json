@@ -807,7 +807,51 @@
       "viewDetail": "View details",
       "cancelSupportHint": "Need to cancel? Get in touch and we will sort it out with you.",
       "lastMinuteHint": "Last-minute booking: it cannot be cancelled. If the centre cannot see you, write to us.",
-      "review": "Review"
+      "review": "Review",
+      "reviewWindowClosed": "Review period closed"
+    },
+    "existingReview": {
+      "label": "Your review:",
+      "ratingAria": "{rating} out of 5 stars",
+      "showMore": "Show more",
+      "showLess": "Show less"
+    },
+    "reviewForm": {
+      "title": "Rate your experience",
+      "description": "{service} at {provider}. Your feedback helps others choose.",
+      "close": "Close",
+      "cancel": "Cancel",
+      "ratingLegend": "Rating",
+      "ratingPrompt": "Choose 1 to 5 stars",
+      "ratingOption": "{count, plural, one {# star} other {# stars}}: {label}",
+      "ratingLabels": {
+        "1": "Very poor",
+        "2": "Could be better",
+        "3": "Okay",
+        "4": "Very good",
+        "5": "Excellent"
+      },
+      "textLabel": "Tell us how it went",
+      "textPlaceholder": "What did you like? What could be improved?",
+      "textHint": "At least {min} characters.",
+      "counter": "{count} / {max}",
+      "submit": "Post review",
+      "submitting": "Posting…",
+      "success": "Thank you! Your review is now visible on the venue’s page.",
+      "dismiss": "Dismiss notice",
+      "fieldErrors": {
+        "RATING_REQUIRED": "Choose a rating from 1 to 5 stars.",
+        "TEXT_TOO_SHORT": "Write at least {min} characters.",
+        "TEXT_TOO_LONG": "The text can’t be longer than {max} characters."
+      },
+      "errors": {
+        "NOT_COMPLETED": "This booking hasn’t been marked as finished yet, so it can’t be reviewed.",
+        "WINDOW_EXPIRED": "The 30-day period to review this booking has ended.",
+        "ALREADY_REVIEWED": "This booking already has a review.",
+        "FORBIDDEN": "This booking can’t be reviewed from this account. Check that you’re signed in with the account you booked with.",
+        "VALIDATION": "Check the rating and text and try again.",
+        "INTERNAL": "We couldn’t post the review. Please try again in a few minutes."
+      }
     }
   },
   "adminArea": {
