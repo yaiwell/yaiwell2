@@ -8,6 +8,13 @@
 
 ## 2026-10-27
 
+### 2026-10-27 (6) — Primera alta Express y prueba de cobro de punta a punta
+
+- **El dev completó el alta Express en modo test** desde `/panel/centro` (en `yaiwell2.vercel.app`) para **Studio Aura**: `acct_1UV8OuK40YlOLz1h`, `type: express`, `business_type: individual`, alta enviada, `charges_enabled` y `payouts_enabled`, `transfers` y `card_payments` activas, sin requisitos ni `disabled_reason`.
+- **Prueba con el código real** (script temporal, borrado) contra BD de producción, webhook de `yaiwell2.vercel.app` y esa cuenta: hueco real a +3 h → `createBookingCheckout` (18 €, `isLastMinute: false`) → cobro de test → webhook → **`confirmed`**; cargo con destino a la cuenta Express, transferencia creada y comisión de 2,16 €. `cancelBookingByProviderWithRefund` → `refund: issued` → `charge.refunded` → **`refunded`** con `stripeRefundId` y `refundedAt`. En Stripe: **reembolso 18/18 €, transferencia revertida 18/18 € y comisión devuelta 2,16/2,16 €**. Reserva de prueba borrada.
+- Studio Aura queda como centro de test operativo para probar reservas desde el navegador con la tarjeta 4242.
+
+---
 ### 2026-10-27 (5) — Alta de Stripe Connect: autónomo o empresa, y estados claros en /panel/centro
 
 P12/P15 con `stripe-payments` → `business-rules-auditor` + `conventions-reviewer` en paralelo → arreglos.
