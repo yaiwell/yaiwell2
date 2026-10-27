@@ -16,14 +16,14 @@ interface StripeReturnPageProps {
  * vuelve a consultar el estado a Stripe y muestra el badge actualizado
  * ("Pagos habilitados", "Onboarding pendiente", etc.).
  *
- * Mantenemos esta ruta separada (en vez de redirigir directo al panel
- * desde Stripe) por dos motivos:
- *  1. Stripe exige una URL fija configurada en su dashboard; cambiar
- *     `/panel/centro` por cualquier otra ruta del panel requeriría
- *     reconfiguración. Este endpoint es una indirección estable.
- *  2. Permite añadir más adelante side-effects locales (revalidate
- *     extras, métrica de conversión de onboarding, etc.) sin tocar
- *     la URL pública.
+ * Volver aquí NO significa que el alta esté completa (el usuario puede
+ * salir a medias): por eso no mostramos "¡listo!" a ciegas, sino que el
+ * panel vuelve a leer el estado real de Stripe y elige el aviso.
+ *
+ * Mantenemos esta ruta separada (en vez de apuntar el `return_url`
+ * directamente al panel) porque es una indirección estable: permite
+ * añadir side-effects locales (métrica de conversión del alta, etc.)
+ * sin cambiar la URL que generan los AccountLinks.
  */
 export default async function StripeReturnPage({ params }: StripeReturnPageProps) {
   const { locale } = await params;

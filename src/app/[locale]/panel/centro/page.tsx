@@ -10,8 +10,8 @@ import { prisma } from '@/lib/db/prisma';
 import type { WeeklySchedule } from '@/lib/services/availability';
 import {
   getProviderPaymentsStatus,
+  NO_CONNECT_ACCOUNT_STATUS,
   StripeOperationError,
-  type ConnectAccountStatus,
 } from '@/lib/services/payments';
 import {
   getProviderSchedule,
@@ -35,20 +35,6 @@ const EMPTY_SCHEDULE: WeeklySchedule = {
   friday: [],
   saturday: [],
   sunday: [],
-};
-
-/**
- * Estado de pagos por defecto cuando Stripe no responde. Permite que
- * el bloque renderice como "desconectado" con un banner de error y un
- * CTA "Reintentar" en lugar de tumbar toda la página por un fallo de
- * la API externa.
- */
-const FAILED_PAYMENTS_STATUS: ConnectAccountStatus = {
-  exists: false,
-  detailsSubmitted: false,
-  chargesEnabled: false,
-  payoutsEnabled: false,
-  hasPendingRequirements: false,
 };
 
 interface PanelSettingsPageProps {
@@ -107,10 +93,12 @@ export default async function PanelSettingsPage({ params, searchParams }: PanelS
       .then((status) => ({ ok: true as const, status }))
       .catch((err) => {
         // Stripe puede fallar por outage, key mal configurada o cuenta
-        // suspendida. Pintamos el bloque como "desconectado" con banner
-        // de error en vez de tumbar la página entera.
+        // borrada. La tarjeta pinta solo el aviso y "Actualizar estado"
+        // (sin CTA de alta, que podría crear otra cuenta) en vez de
+        // tumbar la página entera.
         if (err instanceof StripeOperationError) {
-          return { ok: false as const, status: FAILED_PAYMENTS_STATUS };
+          console.error('[panel/centro] payments status failed:', err.cause ?? err);
+          return { ok: false as const, status: NO_CONNECT_ACCOUNT_STATUS };
         }
         // Otros errores (provider no encontrado, etc.) sí los propagamos
         // — son señal de inconsistencia y conviene verlos en Sentry.

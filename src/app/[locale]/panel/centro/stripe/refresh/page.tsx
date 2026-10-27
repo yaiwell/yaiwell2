@@ -4,22 +4,27 @@ import { setRequestLocale } from 'next-intl/server';
 
 import { routing } from '@/i18n/routing';
 import { requireCurrentProvider } from '@/lib/auth/server';
-import { startOnboardingFlow, StripeOperationError } from '@/lib/services/payments';
+import { SITE_URL } from '@/lib/seo/site-url';
+import {
+  buildConnectReturnUrls,
+  continueOnboardingFlow,
+  StripeOperationError,
+} from '@/lib/services/payments';
 
 interface StripeRefreshPageProps {
   params: Promise<{ locale: string }>;
 }
 
 /**
- * Endpoint de refresh para el AccountLink de Stripe.
+ * `refresh_url` del AccountLink de Stripe.
  *
- * Stripe redirige aquí cuando la URL temporal del onboarding ha
- * caducado (~5 min de TTL) o el usuario abandonó y volvió. Generamos
- * un AccountLink nuevo y le redirigimos al onboarding otra vez sin
- * pasar por el botón manual del panel.
+ * Stripe redirige aquí cuando el enlace ha caducado, ya se usó o el
+ * usuario recargó la página del formulario. Generamos un AccountLink
+ * nuevo para la cuenta existente y le devolvemos al formulario sin
+ * pasar por el panel.
  *
- * Si la generación falla, caemos al `/panel/centro` con `stripe=refresh-failed`
- * para que la UI muestre un banner informando al usuario.
+ * Si falla (cuenta inexistente, cuenta Custom de pruebas, Stripe caído)
+ * volvemos a `/panel/centro?stripe=refresh-failed` para avisarle.
  */
 export default async function StripeRefreshPage({ params }: StripeRefreshPageProps) {
   const { locale } = await params;
@@ -29,33 +34,22 @@ export default async function StripeRefreshPage({ params }: StripeRefreshPagePro
   }
   setRequestLocale(locale);
 
-  // Reusamos el guard del panel — sólo proveedores autenticados pueden
-  // pedir un onboarding refresh para su propia cuenta.
+  // Solo el proveedor autenticado puede regenerar el enlace de su cuenta.
   const { id: providerId } = await requireCurrentProvider(locale);
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000';
-  const returnUrl = `${appUrl}/${locale}/panel/centro/stripe/return`;
-  const refreshUrl = `${appUrl}/${locale}/panel/centro/stripe/refresh`;
-
+  // El redirect va fuera del try: `redirect()` lanza NEXT_REDIRECT y no
+  // queremos tratarlo como un fallo.
+  let url: string | null = null;
   try {
-    const link = await startOnboardingFlow(providerId, { returnUrl, refreshUrl });
-    redirect(link.url);
+    const link = await continueOnboardingFlow(providerId, buildConnectReturnUrls(SITE_URL, locale));
+    url = link.url;
   } catch (err) {
-    // `redirect()` lanza NEXT_REDIRECT que NO debemos capturar.
-    if (
-      typeof err === 'object' &&
-      err !== null &&
-      'digest' in err &&
-      typeof (err as { digest?: string }).digest === 'string' &&
-      (err as { digest: string }).digest.startsWith('NEXT_REDIRECT')
-    ) {
-      throw err;
-    }
     if (err instanceof StripeOperationError) {
       console.error('[panel/centro/stripe/refresh] failed:', err.cause ?? err);
     } else {
-      console.error('[panel/centro/stripe/refresh] unexpected:', err);
+      console.error('[panel/centro/stripe/refresh] not refreshable:', err);
     }
-    redirect(`/${locale}/panel/centro?stripe=refresh-failed`);
   }
+
+  redirect(url ?? `/${locale}/panel/centro?stripe=refresh-failed`);
 }

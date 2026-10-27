@@ -606,27 +606,64 @@
     },
     "payments": {
       "title": "Payments",
-      "subtitle": "Connect your Stripe account to start taking bookings with payment. We charge on your behalf and keep the commission of your active plan.",
+      "subtitle": "Connect your Stripe account to start taking paid bookings. Payments are charged on your behalf and we keep the commission of your active plan.",
       "status": {
-        "enabled": "Payments enabled",
-        "pending": "Onboarding pending",
-        "disconnected": "Not connected"
+        "active": "Payments active",
+        "payoutsPending": "Charges active",
+        "inReview": "Under review",
+        "requirementsDue": "Details needed",
+        "onboardingIncomplete": "Setup not finished",
+        "disconnected": "Not connected",
+        "disabled": "Account disabled"
       },
       "description": {
-        "enabled": "Your Stripe account is active. You can take payments and payouts go to your bank account automatically.",
-        "pending": "Stripe needs more information before enabling your payouts. Pick up onboarding when you can.",
-        "disconnected": "You need a connected Stripe account to take bookings with payment. Onboarding takes a few minutes."
+        "active": "Your Stripe account is active: you can take paid bookings and the money reaches your bank automatically.",
+        "payoutsPending": "You can already take paid bookings. Payouts to your bank will be switched on once Stripe finishes verifying your bank account; until then the money stays in your Stripe balance.",
+        "inReview": "You have sent your details and Stripe is reviewing them. It usually takes a few minutes; refresh the status again shortly.",
+        "requirementsDue": "Stripe needs a few more details to keep your charges and payouts active. Complete them as soon as possible so you can keep getting paid.",
+        "onboardingIncomplete": "You started setting up Stripe but haven't finished yet. Pick up where you left off; you won't have to repeat what you already filled in.",
+        "disconnected": "You need to connect a Stripe account to accept paid bookings. Setup takes a few minutes.",
+        "unavailable": "We can't show your payment status right now.",
+        "disabled": "Stripe has disabled your account and you can't take paid bookings right now. This can't be fixed from here: email us at hola@yaiwell.com and we'll look into it with you."
+      },
+      "businessType": {
+        "legend": "How will you get paid?",
+        "current": "Account type: {type}",
+        "other": "Other",
+        "individual": {
+          "label": "Self-employed",
+          "hint": "Stripe will ask for your Spanish ID (DNI or NIE) and the IBAN of your personal account."
+        },
+        "company": {
+          "label": "Company",
+          "hint": "Stripe will ask for the company's tax ID (CIF), directors, beneficial owners and the company's IBAN."
+        }
       },
       "cta": {
         "connect": "Connect with Stripe",
-        "continue": "Continue onboarding",
+        "continue": "Continue setup",
+        "completeData": "Complete details",
+        "dashboard": "Open my Stripe dashboard",
         "refresh": "Refresh status"
       },
       "notices": {
-        "returnEnabled": "Done — Stripe has confirmed your account is enabled for payments.",
-        "returnPending": "You're back from onboarding but Stripe still needs to finish verifying your details. Come back in a few minutes and refresh the status.",
-        "refreshFailed": "We couldn't regenerate the Stripe link. Try again from the \"Connect with Stripe\" button.",
-        "fetchFailed": "We couldn't check the status of your Stripe account. Please try again in a few seconds."
+        "returnEnabled": "All set! Stripe has confirmed that your account is active.",
+        "returnPending": "You're back from Stripe. They're finishing verifying your details: come back in a few minutes to refresh the status.",
+        "returnIncomplete": "You're back from Stripe without finishing setup. You can continue whenever you like with the button below.",
+        "refreshFailed": "We couldn't create a new Stripe link. Please try again with the button below.",
+        "fetchFailed": "We couldn't check the status of your Stripe account. Please try again in a few seconds.",
+        "managedBySupport": "This Stripe account is managed by the Yaiwell team. For any changes, email us at hola@yaiwell.com.",
+        "changeType": "Picked the wrong option between self-employed and company? Email us at hola@yaiwell.com before finishing setup and we will help you change it."
+      },
+      "errors": {
+        "INVALID_INPUT": "Choose whether you get paid as self-employed or as a company.",
+        "PROVIDER_NOT_FOUND": "We couldn't find your business. Please sign in again.",
+        "NOT_CONNECTED": "You don't have a Stripe account yet. Connect one first.",
+        "NOT_EXPRESS": "This Stripe account is managed by the Yaiwell team. Email us for any changes.",
+        "DASHBOARD_UNAVAILABLE": "Your Stripe dashboard will be available once you finish setup.",
+        "STRIPE_FAILED": "Stripe didn't respond. Please try again in a few seconds.",
+        "INTERNAL": "Something went wrong. Please try again.",
+        "ALREADY_CONNECTED": "A Stripe account already exists as \"{type}\". If you need to change it, email us at hola@yaiwell.com."
       }
     }
   },

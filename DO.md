@@ -8,6 +8,17 @@
 
 ## 2026-10-27
 
+### 2026-10-27 (5) — Alta de Stripe Connect: autónomo o empresa, y estados claros en /panel/centro
+
+P12/P15 con `stripe-payments` → `business-rules-auditor` + `conventions-reviewer` en paralelo → arreglos.
+
+- **Antes del alta se elige «Autónomo» o «Empresa / sociedad»** (radios accesibles, mismo peso, ninguno marcado). El tipo va a Stripe como `business_type`; antes estaba fijo en `individual` y una S.L. no podía darse de alta. Verificado en Stripe test: el tipo **no se puede cambiar por API tras el primer AccountLink**, así que el cambio va por soporte (aviso en la tarjeta) y si una segunda pestaña elige otro tipo se responde `ALREADY_CONNECTED` en vez de ignorarlo.
+- **Tarjeta de pagos con 8 estados**: sin conectar, alta sin terminar (nuevo AccountLink), faltan datos, cobros activos sin pagos al banco, en revisión, activa, deshabilitada por Stripe (remite a soporte) y no disponible. Tipo de cuenta visible; «Ver mi panel de Stripe» solo en Express con alta enviada; cuentas Custom sin acciones que fallen. Colores con tokens `status-*`. Textos en 4 idiomas.
+- **Robustez**: `locale` validado en las 4 actions; escritura condicional `stripeAccountId IS NULL AND deletedAt IS NULL` contra el doble clic, borrando solo la cuenta recién creada si se pierde la carrera o falla la BD; URLs de vuelta desde `SITE_URL`.
+- **Prueba real en Stripe test** con el código real: cuentas `company` e `individual` creadas, AccountLink obtenido, estado leído y cuentas borradas. **Incidente**: un barrido de limpieza por metadata borró la cuenta Custom de test de Studio Aura; se desenlazó en BD (`stripeAccountId = NULL`) y la lección quedó en la memoria del agente (borrar solo ids creados en la misma ejecución). Hoy ningún centro tiene cuenta: la primera Express la crea el dev desde el panel.
+- **1109 tests** (eran 1046), `typecheck`, `lint` y `build` limpios.
+
+---
 ### 2026-10-27 (4) — P0 de la auditoría de diseño: contraste y valoraciones reales
 
 Implementación en paralelo (dos agentes, ficheros disjuntos) → `db-migration-guard` + `conventions-reviewer` + `business-rules-auditor` en paralelo → arreglos.

@@ -35,15 +35,21 @@ export const paymentsRepository = {
   },
 
   /**
-   * Persiste el `stripeAccountId` recién creado por Stripe. Update
-   * atómico — Stripe es idempotente para `accounts.create` solo si
-   * pasas `idempotencyKey`, pero como llamamos solo cuando no había
-   * cuenta previa, no hace falta.
+   * Persiste el `stripeAccountId` recién creado solo si el provider aún
+   * no tiene uno. El `WHERE stripeAccountId IS NULL` hace la escritura
+   * atómica: con un doble clic, solo la primera petición gana.
+   *
+   * No usamos `idempotencyKey` en Stripe porque la clave vive 24 h: tras
+   * borrar una cuenta por soporte, recrearla devolvería la ya borrada.
+   *
+   * @returns `true` si escribió; `false` si otra petición ganó la carrera.
    */
-  async setStripeAccountId(providerId: string, stripeAccountId: string): Promise<void> {
-    await prisma.provider.update({
-      where: { id: providerId },
+  async setStripeAccountIdIfEmpty(providerId: string, stripeAccountId: string): Promise<boolean> {
+    const { count } = await prisma.provider.updateMany({
+      // `deletedAt: null`: nunca enlazamos una cuenta a un centro borrado.
+      where: { id: providerId, deletedAt: null, stripeAccountId: null },
       data: { stripeAccountId },
     });
+    return count > 0;
   },
 };

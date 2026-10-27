@@ -606,27 +606,64 @@
     },
     "payments": {
       "title": "Zahlungen",
-      "subtitle": "Verbinde dein Stripe-Konto, um Buchungen mit Zahlung anzunehmen. Wir wickeln die Zahlung in deinem Namen ab und behalten die Provision deines aktiven Tarifs ein.",
+      "subtitle": "Verbinde dein Stripe-Konto, um bezahlte Buchungen anzunehmen. Die Zahlung wird in deinem Namen eingezogen und wir behalten die Provision deines aktiven Tarifs ein.",
       "status": {
-        "enabled": "Zahlungen aktiviert",
-        "pending": "Onboarding ausstehend",
-        "disconnected": "Nicht verbunden"
+        "active": "Zahlungen aktiv",
+        "payoutsPending": "Zahlungseingang aktiv",
+        "inReview": "In Prüfung",
+        "requirementsDue": "Angaben fehlen",
+        "onboardingIncomplete": "Einrichtung nicht abgeschlossen",
+        "disconnected": "Nicht verbunden",
+        "disabled": "Konto deaktiviert"
       },
       "description": {
-        "enabled": "Dein Stripe-Konto ist aktiv. Du kannst Zahlungen empfangen und Auszahlungen gehen automatisch auf dein Bankkonto.",
-        "pending": "Stripe benötigt weitere Informationen, bevor deine Auszahlungen aktiviert werden. Setze das Onboarding fort, wenn du kannst.",
-        "disconnected": "Du brauchst ein verbundenes Stripe-Konto, um Buchungen mit Zahlung anzunehmen. Das Onboarding dauert ein paar Minuten."
+        "active": "Dein Stripe-Konto ist aktiv: Du kannst bezahlte Buchungen annehmen und das Geld geht automatisch auf dein Bankkonto.",
+        "payoutsPending": "Du kannst bereits bezahlte Buchungen annehmen. Auszahlungen auf dein Bankkonto werden aktiviert, sobald Stripe dein Bankkonto geprüft hat; bis dahin bleibt das Geld in deinem Stripe-Guthaben.",
+        "inReview": "Du hast deine Angaben gesendet und Stripe prüft sie gerade. Das dauert meist nur ein paar Minuten; aktualisiere den Status gleich noch einmal.",
+        "requirementsDue": "Stripe braucht noch ein paar Angaben, damit Zahlungseingänge und Auszahlungen aktiv bleiben. Ergänze sie möglichst bald, damit du weiter Geld erhältst.",
+        "onboardingIncomplete": "Du hast die Einrichtung bei Stripe begonnen, aber noch nicht abgeschlossen. Mach dort weiter, wo du aufgehört hast; Bereits Ausgefülltes musst du nicht wiederholen.",
+        "disconnected": "Du musst ein Stripe-Konto verbinden, um bezahlte Buchungen anzunehmen. Die Einrichtung dauert nur wenige Minuten.",
+        "unavailable": "Wir können den Status deiner Zahlungen gerade nicht anzeigen.",
+        "disabled": "Stripe hat dein Konto deaktiviert und du kannst gerade keine bezahlten Buchungen annehmen. Das lässt sich hier nicht beheben: Schreib uns an hola@yaiwell.com und wir klären es gemeinsam mit dir."
+      },
+      "businessType": {
+        "legend": "Wie möchtest du Zahlungen erhalten?",
+        "current": "Kontotyp: {type}",
+        "other": "Sonstiges",
+        "individual": {
+          "label": "Selbstständig",
+          "hint": "Stripe fragt nach deinem spanischen Ausweis (DNI oder NIE) und der IBAN deines Privatkontos."
+        },
+        "company": {
+          "label": "Unternehmen / Gesellschaft",
+          "hint": "Stripe fragt nach der Steuernummer (CIF), den Geschäftsführern, den wirtschaftlich Berechtigten und der IBAN der Gesellschaft."
+        }
       },
       "cta": {
         "connect": "Mit Stripe verbinden",
-        "continue": "Onboarding fortsetzen",
+        "continue": "Einrichtung fortsetzen",
+        "completeData": "Angaben ergänzen",
+        "dashboard": "Mein Stripe-Dashboard öffnen",
         "refresh": "Status aktualisieren"
       },
       "notices": {
-        "returnEnabled": "Fertig — Stripe hat bestätigt, dass dein Konto für Zahlungen aktiviert ist.",
-        "returnPending": "Du bist vom Onboarding zurück, aber Stripe muss deine Daten noch überprüfen. Komm in ein paar Minuten zurück und aktualisiere den Status.",
-        "refreshFailed": "Wir konnten den Stripe-Link nicht neu erzeugen. Versuche es erneut über die Schaltfläche \"Mit Stripe verbinden\".",
-        "fetchFailed": "Wir konnten den Status deines Stripe-Kontos nicht abfragen. Bitte in ein paar Sekunden erneut versuchen."
+        "returnEnabled": "Fertig! Stripe hat bestätigt, dass dein Konto aktiv ist.",
+        "returnPending": "Du bist von Stripe zurück. Deine Angaben werden noch geprüft: Aktualisiere den Status in ein paar Minuten.",
+        "returnIncomplete": "Du bist von Stripe zurück, ohne die Einrichtung abzuschließen. Du kannst jederzeit über die Schaltfläche unten weitermachen.",
+        "refreshFailed": "Wir konnten keinen neuen Stripe-Link erstellen. Versuche es bitte noch einmal über die Schaltfläche unten.",
+        "fetchFailed": "Wir konnten den Status deines Stripe-Kontos nicht abrufen. Versuche es in ein paar Sekunden noch einmal.",
+        "managedBySupport": "Dieses Stripe-Konto wird vom Yaiwell-Team verwaltet. Für Änderungen schreib uns an hola@yaiwell.com.",
+        "changeType": "Falsch zwischen selbstständig und Unternehmen gewählt? Schreib uns vor Abschluss der Einrichtung an hola@yaiwell.com und wir helfen dir, es zu ändern."
+      },
+      "errors": {
+        "INVALID_INPUT": "Wähle, ob du Zahlungen selbstständig oder als Unternehmen erhalten möchtest.",
+        "PROVIDER_NOT_FOUND": "Wir finden dein Geschäft nicht. Bitte melde dich erneut an.",
+        "NOT_CONNECTED": "Du hast noch kein Stripe-Konto. Verbinde zuerst eines.",
+        "NOT_EXPRESS": "Dieses Stripe-Konto wird vom Yaiwell-Team verwaltet. Schreib uns für Änderungen.",
+        "DASHBOARD_UNAVAILABLE": "Dein Stripe-Dashboard ist verfügbar, sobald du die Einrichtung abgeschlossen hast.",
+        "STRIPE_FAILED": "Stripe hat nicht geantwortet. Versuche es in ein paar Sekunden noch einmal.",
+        "INTERNAL": "Etwas ist schiefgelaufen. Bitte versuche es noch einmal.",
+        "ALREADY_CONNECTED": "Es gibt bereits ein Stripe-Konto als „{type}“. Wenn du es ändern musst, schreib uns an hola@yaiwell.com."
       }
     }
   },

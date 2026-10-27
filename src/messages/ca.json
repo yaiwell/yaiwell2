@@ -606,27 +606,64 @@
     },
     "payments": {
       "title": "Pagaments",
-      "subtitle": "Connecta el teu compte de Stripe per començar a cobrar reserves. El cobrament es fa en el teu nom i nosaltres retenim la comissió del pla que tinguis actiu.",
+      "subtitle": "Connecta el teu compte de Stripe per començar a cobrar reserves. El cobrament es fa en nom teu i nosaltres retenim la comissió del pla que tinguis actiu.",
       "status": {
-        "enabled": "Pagaments habilitats",
-        "pending": "Onboarding pendent",
-        "disconnected": "Sense connectar"
+        "active": "Pagaments actius",
+        "payoutsPending": "Cobraments actius",
+        "inReview": "En revisió",
+        "requirementsDue": "Falten dades",
+        "onboardingIncomplete": "Alta sense acabar",
+        "disconnected": "Sense connectar",
+        "disabled": "Compte deshabilitat"
       },
       "description": {
-        "enabled": "El teu compte Stripe està actiu. Pots rebre cobraments i els pagaments es transfereixen automàticament al teu compte bancari.",
-        "pending": "Stripe necessita més informació abans d'habilitar els teus cobraments. Continua l'onboarding quan puguis.",
-        "disconnected": "Necessites connectar un compte Stripe per acceptar reserves amb pagament. L'alta triga uns minuts."
+        "active": "El teu compte de Stripe està actiu: pots cobrar reserves i els diners arriben al teu banc de manera automàtica.",
+        "payoutsPending": "Ja pots cobrar reserves. Els pagaments al teu banc s'activaran quan Stripe acabi de verificar el teu compte bancari; fins aleshores els diners es queden guardats al teu saldo de Stripe.",
+        "inReview": "Has enviat les teves dades i Stripe les està revisant. Sol trigar uns minuts; torna a actualitzar l'estat d'aquí a una estona.",
+        "requirementsDue": "Stripe necessita algunes dades més per mantenir actius els teus cobraments i pagaments. Completa-les com més aviat millor per no quedar-te sense cobrar.",
+        "onboardingIncomplete": "Vas començar l'alta a Stripe però encara no l'has acabada. Continua on ho vas deixar; no hauràs de repetir el que ja vas omplir.",
+        "disconnected": "Necessites connectar un compte de Stripe per acceptar reserves amb pagament. L'alta triga uns minuts.",
+        "unavailable": "Ara mateix no podem mostrar l'estat dels teus pagaments.",
+        "disabled": "Stripe ha deshabilitat el teu compte i ara mateix no pots cobrar reserves. No es resol des d'aquí: escriu-nos a hola@yaiwell.com i ho revisem amb tu."
+      },
+      "businessType": {
+        "legend": "Com cobraràs?",
+        "current": "Tipus de compte: {type}",
+        "other": "Altre",
+        "individual": {
+          "label": "Autònom",
+          "hint": "Stripe et demanarà el DNI o NIE i l'IBAN del teu compte personal."
+        },
+        "company": {
+          "label": "Empresa / societat",
+          "hint": "Stripe et demanarà el CIF, els administradors, els titulars reals i l'IBAN de la societat."
+        }
       },
       "cta": {
         "connect": "Connectar amb Stripe",
-        "continue": "Continuar onboarding",
-        "refresh": "Actualitzar estat"
+        "continue": "Continuar l'alta",
+        "completeData": "Completar dades",
+        "dashboard": "Veure el meu panell de Stripe",
+        "refresh": "Actualitzar l'estat"
       },
       "notices": {
-        "returnEnabled": "Llest! Stripe ens ha confirmat que el teu compte està habilitat per cobrar.",
-        "returnPending": "Has tornat de l'onboarding però Stripe encara ha d'acabar de verificar les dades. Torna en uns minuts a actualitzar l'estat.",
-        "refreshFailed": "No hem pogut regenerar l'enllaç de Stripe. Prova-ho des del botó \"Connectar amb Stripe\" un altre cop.",
-        "fetchFailed": "No hem pogut consultar l'estat del teu compte Stripe. Torna-ho a provar en uns segons."
+        "returnEnabled": "Fet! Stripe ens ha confirmat que el teu compte està actiu.",
+        "returnPending": "Has tornat de Stripe. Estan acabant de verificar les teves dades: torna d'aquí a uns minuts a actualitzar l'estat.",
+        "returnIncomplete": "Has tornat de Stripe sense acabar l'alta. Pots continuar quan vulguis des del botó de sota.",
+        "refreshFailed": "No hem pogut generar un enllaç nou de Stripe. Torna-ho a provar des del botó de sota.",
+        "fetchFailed": "No hem pogut consultar l'estat del teu compte de Stripe. Torna-ho a provar d'aquí a uns segons.",
+        "managedBySupport": "Aquest compte de Stripe el gestiona l'equip de Yaiwell. Per a qualsevol canvi, escriu-nos a hola@yaiwell.com.",
+        "changeType": "Has triat malament entre autònom i empresa? Escriu-nos a hola@yaiwell.com abans d'acabar l'alta i t'ajudem a canviar-ho."
+      },
+      "errors": {
+        "INVALID_INPUT": "Tria si cobres com a autònom o com a empresa.",
+        "PROVIDER_NOT_FOUND": "No trobem el teu centre. Torna a iniciar la sessió.",
+        "NOT_CONNECTED": "Encara no tens compte de Stripe. Connecta'l primer.",
+        "NOT_EXPRESS": "Aquest compte de Stripe el gestiona l'equip de Yaiwell. Escriu-nos per a qualsevol canvi.",
+        "DASHBOARD_UNAVAILABLE": "El teu panell de Stripe estarà disponible quan acabis l'alta.",
+        "STRIPE_FAILED": "Stripe no ha respost. Torna-ho a provar d'aquí a uns segons.",
+        "INTERNAL": "Alguna cosa ha fallat. Torna-ho a provar.",
+        "ALREADY_CONNECTED": "Ja hi ha un compte de Stripe creat com a «{type}». Si necessites canviar-lo, escriu-nos a hola@yaiwell.com."
       }
     }
   },

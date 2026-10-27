@@ -608,25 +608,62 @@
       "title": "Pagos",
       "subtitle": "Conecta tu cuenta de Stripe para empezar a cobrar reservas. El cobro se hace en tu nombre y nosotros retenemos la comisión del plan que tengas activo.",
       "status": {
-        "enabled": "Pagos habilitados",
-        "pending": "Onboarding pendiente",
-        "disconnected": "Sin conectar"
+        "active": "Pagos activos",
+        "payoutsPending": "Cobros activos",
+        "inReview": "En revisión",
+        "requirementsDue": "Faltan datos",
+        "onboardingIncomplete": "Alta sin terminar",
+        "disconnected": "Sin conectar",
+        "disabled": "Cuenta deshabilitada"
       },
       "description": {
-        "enabled": "Tu cuenta Stripe está activa. Puedes recibir cobros y los pagos se transfieren a tu cuenta bancaria de forma automática.",
-        "pending": "Stripe necesita más información antes de habilitar tus cobros. Continúa el onboarding cuando puedas.",
-        "disconnected": "Necesitas conectar una cuenta Stripe para aceptar reservas con pago. El alta tarda unos minutos."
+        "active": "Tu cuenta de Stripe está activa: puedes cobrar reservas y el dinero llega a tu banco de forma automática.",
+        "payoutsPending": "Ya puedes cobrar reservas. Los pagos a tu banco se activarán cuando Stripe termine de verificar tu cuenta bancaria; hasta entonces el dinero se queda guardado en tu saldo de Stripe.",
+        "inReview": "Has enviado tus datos y Stripe los está revisando. Suele tardar unos minutos; vuelve a actualizar el estado en un rato.",
+        "requirementsDue": "Stripe necesita algunos datos más para mantener tus cobros y pagos activos. Complétalos cuanto antes para no quedarte sin cobrar.",
+        "onboardingIncomplete": "Empezaste el alta en Stripe pero aún no la has terminado. Continúa donde lo dejaste; no tendrás que repetir lo que ya rellenaste.",
+        "disconnected": "Necesitas conectar una cuenta de Stripe para aceptar reservas con pago. El alta tarda unos minutos.",
+        "unavailable": "Ahora mismo no podemos mostrar el estado de tus pagos.",
+        "disabled": "Stripe ha deshabilitado tu cuenta y ahora mismo no puedes cobrar reservas. No se arregla desde aquí: escríbenos a hola@yaiwell.com y lo revisamos contigo."
+      },
+      "businessType": {
+        "legend": "¿Cómo vas a cobrar?",
+        "current": "Tipo de cuenta: {type}",
+        "other": "Otro",
+        "individual": {
+          "label": "Autónomo",
+          "hint": "Stripe te pedirá tu DNI o NIE y el IBAN de tu cuenta personal."
+        },
+        "company": {
+          "label": "Empresa / sociedad",
+          "hint": "Stripe te pedirá el CIF, los administradores, los titulares reales y el IBAN de la sociedad."
+        }
       },
       "cta": {
         "connect": "Conectar con Stripe",
-        "continue": "Continuar onboarding",
+        "continue": "Continuar el alta",
+        "completeData": "Completar datos",
+        "dashboard": "Ver mi panel de Stripe",
         "refresh": "Actualizar estado"
       },
       "notices": {
-        "returnEnabled": "¡Listo! Stripe nos ha confirmado que tu cuenta está habilitada para cobrar.",
-        "returnPending": "Has vuelto del onboarding pero Stripe todavía tiene que terminar de verificar los datos. Vuelve en unos minutos a actualizar el estado.",
-        "refreshFailed": "No hemos podido regenerar el enlace de Stripe. Inténtalo desde el botón \"Conectar con Stripe\" otra vez.",
-        "fetchFailed": "No hemos podido consultar el estado de tu cuenta Stripe. Inténtalo de nuevo en unos segundos."
+        "returnEnabled": "¡Listo! Stripe nos ha confirmado que tu cuenta está activa.",
+        "returnPending": "Has vuelto de Stripe. Están terminando de verificar tus datos: vuelve en unos minutos a actualizar el estado.",
+        "returnIncomplete": "Has vuelto de Stripe sin terminar el alta. Puedes continuar cuando quieras desde el botón de abajo.",
+        "refreshFailed": "No hemos podido generar un enlace nuevo de Stripe. Inténtalo otra vez desde el botón de abajo.",
+        "fetchFailed": "No hemos podido consultar el estado de tu cuenta de Stripe. Inténtalo de nuevo en unos segundos.",
+        "managedBySupport": "Esta cuenta de Stripe la gestiona el equipo de Yaiwell. Para cualquier cambio, escríbenos a hola@yaiwell.com.",
+        "changeType": "¿Elegiste mal entre autónomo y empresa? Escríbenos a hola@yaiwell.com antes de terminar el alta y te ayudamos a cambiarlo."
+      },
+      "errors": {
+        "INVALID_INPUT": "Elige si cobras como autónomo o como empresa.",
+        "PROVIDER_NOT_FOUND": "No encontramos tu centro. Vuelve a iniciar sesión.",
+        "NOT_CONNECTED": "Todavía no tienes cuenta de Stripe. Conéctala primero.",
+        "NOT_EXPRESS": "Esta cuenta de Stripe la gestiona el equipo de Yaiwell. Escríbenos para cualquier cambio.",
+        "DASHBOARD_UNAVAILABLE": "Tu panel de Stripe estará disponible cuando termines el alta.",
+        "STRIPE_FAILED": "Stripe no ha respondido. Inténtalo de nuevo en unos segundos.",
+        "INTERNAL": "Algo ha fallado. Inténtalo de nuevo.",
+        "ALREADY_CONNECTED": "Ya hay una cuenta de Stripe creada como «{type}». Si necesitas cambiarla, escríbenos a hola@yaiwell.com."
       }
     }
   },

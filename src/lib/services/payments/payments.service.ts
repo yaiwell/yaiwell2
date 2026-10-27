@@ -5,38 +5,63 @@ import type Stripe from 'stripe';
 import { getStripeClient } from '@/lib/integrations/stripe';
 
 import {
+  InvalidConnectBusinessTypeError,
   ProviderForPaymentsNotFoundError,
+  StripeAccountAlreadyConnectedError,
   StripeAccountNotConnectedError,
+  StripeAccountNotExpressError,
   StripeOperationError,
 } from './payments.errors';
+import { deleteOrphanAccount, resolveLostCreationRace } from './payments.orphans';
 import { paymentsRepository } from './payments.repository';
-import type { ConnectAccountStatus, ConnectOnboardingLink } from './payments.types';
+import { getConnectAccountStatus } from './payments.status';
+import type {
+  ConnectAccountStatus,
+  ConnectBusinessType,
+  ConnectOnboardingLink,
+  ConnectReturnUrls,
+} from './payments.types';
+import { connectBusinessTypeSchema } from './payments.validation';
 
 /**
- * Service del dominio `payments` (Stripe Connect).
+ * Service de alta en Stripe Connect (cuentas Express).
  *
- * Cubre el onboarding del Provider a una cuenta Express:
- *  - `ensureConnectAccount`: idempotente — si ya hay `stripeAccountId`,
- *    lo devuelve; si no, crea la cuenta en Stripe y la persiste.
- *  - `createOnboardingLink`: genera un Account Link de un solo uso
- *    (URL temporal de Stripe) al que redirigimos al usuario.
- *  - `getConnectAccountStatus`: consulta Stripe bajo demanda — no
- *    cacheamos el estado para no quedarnos desincronizados de la
- *    realidad de la cuenta.
+ *  - `ensureConnectAccount`: idempotente. Si ya hay `stripeAccountId` lo
+ *    devuelve; si no, crea la cuenta con la forma jurídica elegida.
+ *  - `createOnboardingLink`: AccountLink de un solo uso al formulario
+ *    alojado por Stripe.
+ *  - `startOnboardingFlow`: primera alta (crear cuenta + enlace).
+ *  - `continueOnboardingFlow`: alta a medias o requisitos pendientes.
  *
- * El cliente Stripe se inicializa de forma perezosa en `getStripeClient`,
- * así que importar este módulo no requiere `STRIPE_SECRET_KEY` en el
- * momento del bundle.
+ * Sobre cambiar la forma jurídica: la API de Stripe solo permite
+ * actualizar `business_type` de una cuenta Express hasta que se crea el
+ * primer AccountLink (https://docs.stripe.com/api/accounts/update, campo
+ * `business_type`; para Custom sí se podría). Como creamos el enlace
+ * justo después de la cuenta, en la práctica queda fijada al crearla y
+ * no ofrecemos "cambiar tipo"; el cambio se hace por soporte borrando la
+ * cuenta sin actividad y creando otra.
  */
 
 /**
  * Obtiene o crea la cuenta Stripe Connect (Express) del provider.
  *
- * @returns el `stripeAccountId` (existente o recién creado).
+ * Si la cuenta ya existe se devuelve tal cual y `businessType` se
+ * ignora; quien necesite respetar la elección del usuario debe usar
+ * `startOnboardingFlow`, que rechaza un tipo distinto.
+ *
+ * @throws InvalidConnectBusinessTypeError — si el tipo no es válido.
  * @throws ProviderForPaymentsNotFoundError — si el provider no existe.
  * @throws StripeOperationError — si Stripe rechaza la creación.
  */
-export async function ensureConnectAccount(providerId: string): Promise<string> {
+export async function ensureConnectAccount(
+  providerId: string,
+  businessType: ConnectBusinessType,
+): Promise<string> {
+  const parsed = connectBusinessTypeSchema.safeParse(businessType);
+  if (!parsed.success) {
+    throw new InvalidConnectBusinessTypeError();
+  }
+
   const provider = await paymentsRepository.findProviderForPayments(providerId);
   if (!provider) {
     throw new ProviderForPaymentsNotFoundError();
@@ -45,54 +70,60 @@ export async function ensureConnectAccount(providerId: string): Promise<string> 
     return provider.stripeAccountId;
   }
 
-  const stripe = getStripeClient();
   let account: Stripe.Account;
   try {
-    // `controller` con `losses.payments = 'application'` indica que la
-    // plataforma asume las pérdidas (refunds, chargebacks). `fees.payer
-    // = 'application'` indica que las fees de Stripe las paga la
-    // plataforma. Ambas son la configuración estándar para marketplaces.
-    account = await stripe.accounts.create({
+    // Express + ES: Stripe aloja el KYC y el proveedor tiene su propio
+    // dashboard ligero. Fijar `business_type` aquí hace que el formulario
+    // pida directamente los datos de autónomo o de sociedad.
+    account = await getStripeClient().accounts.create({
       type: 'express',
       country: 'ES',
       email: provider.ownerEmail,
+      business_type: parsed.data,
       capabilities: {
         card_payments: { requested: true },
         transfers: { requested: true },
       },
-      business_type: 'individual',
-      metadata: {
-        providerId: provider.id,
-      },
+      metadata: { providerId: provider.id },
     });
   } catch (err) {
     throw new StripeOperationError('No se pudo crear la cuenta Stripe Connect.', err);
   }
 
-  await paymentsRepository.setStripeAccountId(provider.id, account.id);
-  return account.id;
+  let saved: boolean;
+  try {
+    saved = await paymentsRepository.setStripeAccountIdIfEmpty(provider.id, account.id);
+  } catch (err) {
+    // La cuenta existe en Stripe pero no quedó enlazada: la borramos para
+    // no dejar huérfanas y propagamos el fallo original.
+    await deleteOrphanAccount(provider.id, account.id);
+    throw err;
+  }
+  if (saved) {
+    return account.id;
+  }
+  return resolveLostCreationRace(provider.id, account.id);
 }
 
 /**
- * Crea un Account Link de Stripe para que el usuario complete el
- * onboarding (KYC, datos bancarios, TOS). Los URLs `returnUrl` y
- * `refreshUrl` los compone el caller a partir del locale activo.
+ * Crea un AccountLink para que el usuario complete o actualice el alta
+ * (KYC, datos bancarios, términos). Sirve igual para la primera vez que
+ * para requisitos nuevos tras el alta: Stripe solo pide lo pendiente.
  *
- * El link es de un solo uso y expira en ~5 minutos: no lo cacheamos.
+ * El enlace es de un solo uso y caduca en minutos: no lo cacheamos.
  *
  * @throws StripeOperationError — si Stripe rechaza la creación.
  */
 export async function createOnboardingLink(
   stripeAccountId: string,
-  options: { returnUrl: string; refreshUrl: string },
+  urls: ConnectReturnUrls,
 ): Promise<ConnectOnboardingLink> {
-  const stripe = getStripeClient();
   let link: Stripe.AccountLink;
   try {
-    link = await stripe.accountLinks.create({
+    link = await getStripeClient().accountLinks.create({
       account: stripeAccountId,
-      refresh_url: options.refreshUrl,
-      return_url: options.returnUrl,
+      refresh_url: urls.refreshUrl,
+      return_url: urls.returnUrl,
       type: 'account_onboarding',
     });
   } catch (err) {
@@ -101,75 +132,68 @@ export async function createOnboardingLink(
   return { url: link.url, expiresAt: link.expires_at };
 }
 
-/**
- * Consulta el estado de habilitación de una cuenta conectada.
- *
- * @throws StripeOperationError — si Stripe rechaza la lectura.
- */
-export async function getConnectAccountStatus(
+/** Enlace para una cuenta existente; solo Express usa el formulario alojado. */
+function linkForExistingAccount(
   stripeAccountId: string,
-): Promise<ConnectAccountStatus> {
-  const stripe = getStripeClient();
-  let account: Stripe.Account;
-  try {
-    account = await stripe.accounts.retrieve(stripeAccountId);
-  } catch (err) {
-    throw new StripeOperationError('No se pudo consultar el estado de la cuenta Stripe.', err);
+  status: ConnectAccountStatus,
+  urls: ConnectReturnUrls,
+): Promise<ConnectOnboardingLink> {
+  if (status.dashboardType !== 'express') {
+    throw new StripeAccountNotExpressError();
   }
-
-  const pendingRequirements =
-    (account.requirements?.currently_due ?? []).length > 0 ||
-    (account.requirements?.past_due ?? []).length > 0;
-
-  return {
-    exists: true,
-    detailsSubmitted: account.details_submitted ?? false,
-    chargesEnabled: account.charges_enabled ?? false,
-    payoutsEnabled: account.payouts_enabled ?? false,
-    hasPendingRequirements: pendingRequirements,
-  };
+  return createOnboardingLink(stripeAccountId, urls);
 }
 
 /**
- * Devuelve el estado de pagos del provider en un solo lookup combinado.
+ * Primera alta: crea la cuenta con la forma jurídica elegida y devuelve
+ * el enlace al formulario de Stripe.
  *
- * Composición usada por la UI del panel: lee el `stripeAccountId` y, si
- * existe, consulta Stripe; si no, devuelve `{exists: false, ...}` para
- * que la UI pinte el CTA "Conectar con Stripe".
+ * Si el proveedor ya tenía cuenta (otra pestaña, doble clic) seguimos
+ * con ella solo si el tipo coincide; si no, no ignoramos en silencio la
+ * elección del usuario y lanzamos `StripeAccountAlreadyConnectedError`.
+ *
+ * @throws InvalidConnectBusinessTypeError | ProviderForPaymentsNotFoundError
+ *   | StripeAccountAlreadyConnectedError | StripeAccountNotExpressError
+ *   | StripeOperationError
+ */
+export async function startOnboardingFlow(
+  providerId: string,
+  businessType: ConnectBusinessType,
+  urls: ConnectReturnUrls,
+): Promise<ConnectOnboardingLink> {
+  const provider = await paymentsRepository.findProviderForPayments(providerId);
+  if (provider?.stripeAccountId) {
+    const status = await getConnectAccountStatus(provider.stripeAccountId);
+    if (status.businessType !== null && status.businessType !== businessType) {
+      throw new StripeAccountAlreadyConnectedError(status.businessType);
+    }
+    return linkForExistingAccount(provider.stripeAccountId, status, urls);
+  }
+  const stripeAccountId = await ensureConnectAccount(providerId, businessType);
+  return createOnboardingLink(stripeAccountId, urls);
+}
+
+/**
+ * Alta a medias o requisitos pendientes: genera un AccountLink nuevo
+ * para la cuenta existente. Lo usan el botón "Continuar el alta" y la
+ * página `stripe/refresh` cuando el enlace anterior caducó.
  *
  * @throws ProviderForPaymentsNotFoundError — si el provider no existe.
+ * @throws StripeAccountNotConnectedError — si aún no tiene cuenta.
+ * @throws StripeAccountNotExpressError — si la cuenta no es Express.
+ * @throws StripeOperationError — si Stripe falla.
  */
-export async function getProviderPaymentsStatus(providerId: string): Promise<ConnectAccountStatus> {
+export async function continueOnboardingFlow(
+  providerId: string,
+  urls: ConnectReturnUrls,
+): Promise<ConnectOnboardingLink> {
   const provider = await paymentsRepository.findProviderForPayments(providerId);
   if (!provider) {
     throw new ProviderForPaymentsNotFoundError();
   }
   if (!provider.stripeAccountId) {
-    return {
-      exists: false,
-      detailsSubmitted: false,
-      chargesEnabled: false,
-      payoutsEnabled: false,
-      hasPendingRequirements: false,
-    };
-  }
-  return getConnectAccountStatus(provider.stripeAccountId);
-}
-
-/**
- * Atajo: para que la action no tenga que mezclar lookup + ensure +
- * link, expone el flujo completo "dame URL de onboarding del provider".
- *
- * @throws StripeAccountNotConnectedError — nunca lanza (es defensivo
- *   por si el lookup falla por una carrera).
- */
-export async function startOnboardingFlow(
-  providerId: string,
-  options: { returnUrl: string; refreshUrl: string },
-): Promise<ConnectOnboardingLink> {
-  const stripeAccountId = await ensureConnectAccount(providerId);
-  if (!stripeAccountId) {
     throw new StripeAccountNotConnectedError();
   }
-  return createOnboardingLink(stripeAccountId, options);
+  const status = await getConnectAccountStatus(provider.stripeAccountId);
+  return linkForExistingAccount(provider.stripeAccountId, status, urls);
 }
