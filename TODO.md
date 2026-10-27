@@ -228,7 +228,7 @@
   - [ ] Validar con abogado si la excepción al desistimiento (art. 16(l) Directiva 2011/83/UE) cubre peluquería y estética; el aviso previo al pago es obligatorio igualmente.
 - [ ] **Estado vacío del panel de valoraciones**: con 0 reseñas dice «No hay valoraciones que coincidan con los filtros» aunque no haya filtros. Clave nueva en los 4 idiomas.
 - [ ] **Invariantes de reseñas en BD** (auditoría 2026-10-27, P2): `CHECK (rating BETWEEN 1 AND 5)` en `reviews` (hoy solo lo valida Zod) y FK compuesta `reviews("bookingId","providerId") → bookings(id,"providerId")` para que la BD garantice que una reseña es del mismo centro que su reserva. Con eso sobran las defensas de `getRatingDisplay` y el join del trigger. P13.
-- [ ] **Fotos en las reseñas** (necesitan storage): TODO en la action y el formulario de valorar. Contrastes de `CategoryGrid` e iconos sage/butter decorativos van con los P1/P2 de diseño.
+- [ ] Contrastes de `CategoryGrid` e iconos sage/butter decorativos (van con los P1/P2 de diseño). Las fotos en reseñas se descartan (decisión del dev, 2026-10-27).
 - [ ] **Warning de hidratación en `<html style="color-scheme">`** (visto en el E2E de valorar, 2026-10-27): mismatch SSR/cliente del script de tema. No rompe nada; revisar con `suppressHydrationWarning` o moviendo el estilo al script.
 - [ ] **Agentes de la ola 3** (`.claude/agents/`): `seo-perf-auditor` (Lighthouse, bundle, caché). Los de la ola 2 (`e2e-tester`, `release-verifier`) y `design-auditor` se crearon el 2026-10-27. `i18n-guardian` se descarta de momento: `conventions-reviewer` ya comprueba la paridad de claves en cada diff.
 - [ ] **Activar la protección de `main` en GitHub** para que el CI sea obligatorio antes de mergear un PR (configuración del repo, la hace el dev).

@@ -49,10 +49,9 @@ export interface SubmitReviewActionInput {
 /**
  * Schema del borde: el de dominio sin `photos`.
  *
- * TODO(fotos): las fotos de reseña necesitan Supabase Storage (subida,
- * moderación y límites de tamaño). Hasta entonces la action no acepta
- * `photos`, aunque `createReviewSchema` lo permita, para que nadie pueda
- * colar URLs arbitrarias con un POST directo.
+ * Las reseñas no llevan fotos (decisión de producto del 2026-10-27): la
+ * action no acepta `photos`, aunque `createReviewSchema` lo permita, para
+ * que nadie pueda colar URLs arbitrarias con un POST directo.
  */
 const submitReviewSchema = createReviewSchema.omit({ photos: true });
 

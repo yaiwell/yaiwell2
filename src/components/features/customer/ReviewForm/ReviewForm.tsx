@@ -15,9 +15,8 @@ import { StarRatingInput } from './StarRatingInput';
  * Formulario de valoración de una reserva completada: estrellas 1-5 y
  * texto de 10 a 2000 caracteres.
  *
- * Sin fotos en esta versión.
- * TODO(fotos): añadir subida cuando exista Supabase Storage para reseñas
- * (la action ya rechaza `photos` hasta entonces).
+ * Sin fotos: el producto las descarta (decisión del 2026-10-27) y la
+ * action rechaza `photos`.
  *
  * La lógica vive en `useReviewForm`; aquí solo se compone la UI.
  */
