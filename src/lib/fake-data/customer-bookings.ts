@@ -62,6 +62,8 @@ function buildBooking(args: {
     status: args.status,
     startAt,
     endAt,
+    // Una semana antes del inicio: la demo no tiene reservas de última hora.
+    createdAt: new Date(startAt.getTime() - 7 * 24 * 60 * 60 * 1000),
     priceCents: service.priceCents,
     serviceId: service.id,
     serviceName: service.name,

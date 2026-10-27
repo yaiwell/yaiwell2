@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { createBookingCheckoutAction } from '@/app/[locale]/centro/[slugWithId]/reservar/actions';
 
+import { creatingCheckout, readyCheckout } from './BookingFlow.checkout';
 import { clearBookingDraft } from './BookingFlow.draft';
 import { useBookingDraft } from './BookingFlow.persistence';
 import { useBookingPaymentStatus } from './BookingFlow.status';
@@ -93,8 +94,9 @@ export function useBookingFlow(args: { serviceId: string }) {
     // Escribimos también la ref: el estado de React no se refleja hasta
     // el siguiente render y un doble disparo en el mismo tick crearía
     // dos reservas para el mismo hueco.
-    checkoutRef.current = { status: 'creating' };
-    setCheckout({ status: 'creating' });
+    const creating = creatingCheckout(draft.slotStartIso);
+    checkoutRef.current = creating;
+    setCheckout(creating);
 
     const result = await createBookingCheckoutAction({
       serviceId,
@@ -115,11 +117,7 @@ export function useBookingFlow(args: { serviceId: string }) {
       slotStartIso: result.slotStartIso,
       slotEndIso: result.slotEndIso,
     }));
-    setCheckout({
-      status: 'ready',
-      clientSecret: result.clientSecret,
-      amountCents: result.amountCents,
-    });
+    setCheckout(readyCheckout(result, creating.estimatedLastMinute));
   }, [serviceId, draft.slotStartIso, draft.notes, setDraft]);
 
   const goNext = useCallback(() => {

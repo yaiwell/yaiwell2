@@ -69,7 +69,7 @@ const PROFESSIONAL_ID = 'ab12cd34-5678-4e90-b123-456789abcdef';
 const CLIENT_ID = 'c1d2e3f4-5678-4a9b-8c7d-6e5f4a3b2c1d';
 const STRIPE_ACCOUNT_ID = 'acct_1Nxxxx';
 
-/** Slot suficientemente lejano para no chocar con la regla de 2 h. */
+/** Slot lejano: ni choca con la antelación mínima ni es de última hora. */
 const SLOT_START = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
 
 const BOOKING = {
@@ -80,6 +80,7 @@ const BOOKING = {
   commissionCents: 360,
   startAt: new Date(SLOT_START),
   endAt: new Date(new Date(SLOT_START).getTime() + 60 * 60 * 1000),
+  createdAt: new Date(),
 };
 
 function validInput(overrides: Record<string, unknown> = {}) {
@@ -124,6 +125,7 @@ describe('createBookingCheckout', () => {
       amountCents: 4500,
       slotStartIso: BOOKING.startAt.toISOString(),
       slotEndIso: BOOKING.endAt.toISOString(),
+      isLastMinute: false,
     });
   });
 

@@ -2,12 +2,13 @@
 
 import { useTranslations } from 'next-intl';
 
-import { SlotButton } from './SlotButton';
 import { SlotGridSkeleton } from './SlotGridSkeleton';
-import { formatSlotTime, splitSlotsByDayPart, useSlotPicker } from './SlotPicker.logic';
+import { groupSlots } from './SlotPicker.groups';
+import { useSlotPicker } from './SlotPicker.logic';
 import { slotPickerStyles as s } from './SlotPicker.styles';
 import type { SlotPickerProps } from './SlotPicker.types';
 import { SlotPickerError } from './SlotPickerError';
+import { SlotSection } from './SlotSection';
 
 /**
  * Selector de slot para reservar un servicio.
@@ -33,7 +34,7 @@ export function SlotPicker({
 }: SlotPickerProps) {
   const t = useTranslations('booking.slotPicker');
 
-  const { dayTabs, setSelectedDay, slots, isLoading, isError, isNotBookable, refetch } =
+  const { dayTabs, setSelectedDay, slots, clock, isLoading, isError, isNotBookable, refetch } =
     useSlotPicker({
       providerId,
       serviceId,
@@ -42,7 +43,9 @@ export function SlotPicker({
       now,
     });
 
-  const { morning, afternoon } = splitSlotsByDayPart(slots);
+  const groups = groupSlots(slots, clock);
+  const hasLastMinute = groups.lastMinute.length > 0;
+  const sectionProps = { selectedStartIso, locale, onSelect };
 
   return (
     <div className={s.root} data-component="booking-slot-picker">
@@ -89,39 +92,27 @@ export function SlotPicker({
         </div>
       ) : (
         <>
-          <p className={s.sectionTitle}>{t('morning')}</p>
-          {morning.length === 0 ? (
-            <p className={s.sectionEmpty}>{t('noMorningSlots')}</p>
-          ) : (
-            <div className={s.slotGrid}>
-              {morning.map((slot) => (
-                <SlotButton
-                  key={slot.startAtIso}
-                  label={formatSlotTime(slot, locale)}
-                  available={slot.available}
-                  selected={slot.startAtIso === selectedStartIso}
-                  onClick={() => onSelect(slot)}
-                />
-              ))}
-            </div>
-          )}
-
-          <p className={s.sectionTitle}>{t('afternoon')}</p>
-          {afternoon.length === 0 ? (
-            <p className={s.sectionEmpty}>{t('noAfternoonSlots')}</p>
-          ) : (
-            <div className={s.slotGrid}>
-              {afternoon.map((slot) => (
-                <SlotButton
-                  key={slot.startAtIso}
-                  label={formatSlotTime(slot, locale)}
-                  available={slot.available}
-                  selected={slot.startAtIso === selectedStartIso}
-                  onClick={() => onSelect(slot)}
-                />
-              ))}
-            </div>
-          )}
+          {/* Última hora primero: es lo más inmediato y tiene condiciones
+              propias (pago al reservar, sin cancelación). */}
+          <SlotSection
+            lastMinute
+            title={t('lastMinuteGroup')}
+            emptyText={null}
+            slots={groups.lastMinute}
+            {...sectionProps}
+          />
+          <SlotSection
+            title={t('morning')}
+            emptyText={hasLastMinute ? null : t('noMorningSlots')}
+            slots={groups.morning}
+            {...sectionProps}
+          />
+          <SlotSection
+            title={t('afternoon')}
+            emptyText={hasLastMinute ? null : t('noAfternoonSlots')}
+            slots={groups.afternoon}
+            {...sectionProps}
+          />
         </>
       )}
     </div>

@@ -63,20 +63,22 @@ function run(params: {
 }
 
 describe('computeProviderAvailability — umbrales', () => {
-  it('marca available_now cuando el hueco está a 10 minutos', () => {
-    // 07:50Z = 09:50 Madrid; primer slot a las 10:00 Madrid (08:00Z).
-    const result = run({ now: '2026-07-27T07:50:00.000Z', bundles: [bundle()] });
+  // Solo cuentan los huecos reservables (≥ 30 min vista, antelación
+  // mínima de reserva). El verde cubre [30, 45] min y el ámbar hasta 60.
+  it('marca available_now cuando el hueco está justo a 30 minutos', () => {
+    // 07:30Z = 09:30 Madrid; primer slot a las 10:00 Madrid (08:00Z).
+    const result = run({ now: '2026-07-27T07:30:00.000Z', bundles: [bundle()] });
     expect(result?.status).toBe('available_now');
     expect(result?.nextSlot?.startAt.toISOString()).toBe('2026-07-27T08:00:00.000Z');
   });
 
-  it('incluye el borde exacto de 15 minutos en available_now', () => {
-    const result = run({ now: '2026-07-27T07:45:00.000Z', bundles: [bundle()] });
+  it('incluye el borde exacto de 45 minutos en available_now', () => {
+    const result = run({ now: '2026-07-27T07:15:00.000Z', bundles: [bundle()] });
     expect(result?.status).toBe('available_now');
   });
 
-  it('pasa a available_soon justo por encima de 15 minutos', () => {
-    const result = run({ now: '2026-07-27T07:44:00.000Z', bundles: [bundle()] });
+  it('pasa a available_soon justo por encima de 45 minutos', () => {
+    const result = run({ now: '2026-07-27T07:14:00.000Z', bundles: [bundle()] });
     expect(result?.status).toBe('available_soon');
   });
 
@@ -88,6 +90,35 @@ describe('computeProviderAvailability — umbrales', () => {
   it('pasa a busy justo por encima de 60 minutos', () => {
     const result = run({ now: '2026-07-27T06:59:00.000Z', bundles: [bundle()] });
     expect(result?.status).toBe('busy');
+  });
+});
+
+describe('computeProviderAvailability — antelación mínima', () => {
+  it('ignora un hueco a 15 minutos: no se puede reservar', () => {
+    // 07:45Z: el slot de 08:00Z está a 15 min. El siguiente reservable
+    // es el de 09:00Z (75 min), fuera de la ventana de "ahora".
+    const result = run({ now: '2026-07-27T07:45:00.000Z', bundles: [bundle()] });
+    expect(result?.status).toBe('busy');
+    expect(result?.nextSlot?.startAt.toISOString()).toBe('2026-07-27T09:00:00.000Z');
+  });
+
+  it('ignora el hueco a 29 minutos y cuenta el siguiente', () => {
+    const result = run({ now: '2026-07-27T07:31:00.000Z', bundles: [bundle()] });
+    expect(result?.nextSlot?.startAt.toISOString()).toBe('2026-07-27T09:00:00.000Z');
+  });
+
+  it('respeta un bookableFrom explícito posterior al now redondeado', () => {
+    // Simula el service: now redondeado a 07:30Z pero el instante real
+    // es 07:31Z, así que el slot de 08:00Z ya no es reservable.
+    const map = computeProviderAvailability({
+      now: new Date('2026-07-27T07:30:00.000Z'),
+      bookableFrom: new Date('2026-07-27T08:01:00.000Z'),
+      providerIds: [PROVIDER_ID],
+      bundles: [bundle()],
+      bookingsByProfessional: new Map(),
+      timezone: MADRID,
+    });
+    expect(map.get(PROVIDER_ID)?.nextSlot?.startAt.toISOString()).toBe('2026-07-27T09:00:00.000Z');
   });
 });
 
@@ -145,7 +176,7 @@ describe('computeProviderAvailability — centros con varios profesionales', () 
       ],
     ]);
     const result = run({
-      now: '2026-07-27T07:50:00.000Z',
+      now: '2026-07-27T07:30:00.000Z',
       bundles: [
         bundle({ professionalId: 'prof-ocupado' }),
         bundle({ professionalId: 'prof-libre' }),

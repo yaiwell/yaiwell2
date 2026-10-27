@@ -35,6 +35,7 @@ function buildBooking(overrides: Partial<CustomerBookingView> = {}): CustomerBoo
     status: overrides.status ?? 'confirmed',
     startAt: overrides.startAt ?? inHours(5),
     endAt: overrides.endAt ?? inHours(6),
+    createdAt: overrides.createdAt ?? inHours(-48),
     priceCents: overrides.priceCents ?? 4500,
     serviceId: overrides.serviceId ?? 'svc-x',
     serviceName: overrides.serviceName ?? { es: 'Masaje relax', ca: 'Massatge relax' },

@@ -7,6 +7,7 @@ import {
   ServiceNotFoundError,
   ServicePausedError,
   SlotUnavailableError,
+  isBookingTooSoonError,
 } from '@/lib/services/booking';
 import {
   PaymentIntentCreationError,
@@ -41,6 +42,7 @@ export type CheckoutErrorCode =
   | 'VALIDATION'
   | 'SERVICE_UNAVAILABLE'
   | 'SLOT_UNAVAILABLE'
+  | 'SLOT_TOO_SOON'
   | 'PROVIDER_NOT_CHARGEABLE'
   | 'PAYMENT_FAILED'
   | 'INTERNAL';
@@ -60,6 +62,11 @@ export type CheckoutActionState =
       amountCents: number;
       slotStartIso: string;
       slotEndIso: string;
+      /**
+       * Reserva de última hora según el reloj del servidor: la UI del
+       * paso de pago usa este valor, no su propia estimación.
+       */
+      isLastMinute: boolean;
     }
   | { ok: false; code: CheckoutErrorCode };
 
@@ -109,6 +116,7 @@ export async function createBookingCheckoutAction(
       amountCents: session.amountCents,
       slotStartIso: session.slotStartIso,
       slotEndIso: session.slotEndIso,
+      isLastMinute: session.isLastMinute,
     };
   } catch (error) {
     return { ok: false, code: mapCheckoutError(error) };
@@ -195,6 +203,13 @@ export async function getBookingStatusAction(input: unknown): Promise<BookingSta
  * y para poder testear el mapeo sin montar sesión de Clerk.
  */
 function mapCheckoutError(error: unknown): CheckoutErrorCode {
+  // Va antes del ZodError genérico: el hueco ha dejado de respetar la
+  // antelación mínima mientras el usuario rellenaba el flujo. No es un
+  // input roto, y la acción útil es la misma que con SLOT_UNAVAILABLE:
+  // elegir otra hora.
+  if (isBookingTooSoonError(error)) {
+    return 'SLOT_TOO_SOON';
+  }
   if (error instanceof ZodError) {
     return 'VALIDATION';
   }

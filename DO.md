@@ -8,6 +8,18 @@
 
 ## 2026-10-27
 
+### 2026-10-27 (3) — Reserva con 30 min de antelación y reservas de última hora
+
+El dev vio que el selector ofrecía las 10:00 a las 9:00 y el servidor lo rechazaba: la antelación mínima (2 h) no la aplicaba el motor de huecos, y «Disponible ahora» anunciaba huecos imposibles de comprar. Decisión de producto (CLAUDE.md §4.bis): **mínimo 30 min**; **menos de 2 h = última hora, pago online sin reembolso**; con margen, pago en el local en el futuro. Orquestación P15: implementador → `business-rules-auditor` + `conventions-reviewer` + `e2e-tester` en paralelo → dos rondas de arreglos → re-auditoría (apto).
+
+- **Una sola constante** (`MIN_BOOKING_LEAD_TIME_MS`, límite inclusivo) para el Zod de `createBooking`, el motor (`getAvailableSlots`), «Disponible ahora» (ventana real 30–60 min, verde hasta 45) e `isSlotStillBookable` en cliente. El selector filtra además con un reloj que avanza cada 30 s; si un hueco caduca durante el flujo, el servidor responde `SLOT_TOO_SOON` con mensaje traducido y «Elegir otro hueco».
+- **Última hora la decide el servidor** (`isLastMinuteAtCreation(startAt, createdAt)` en `createBookingCheckout`), no el reloj del móvil. El paso de pago usa ese valor (`PaymentPolicyNote`, «No reembolsable» junto al botón) y avisa si difiere de la estimación congelada al lanzar el checkout.
+- **Política de cancelación dinámica**: con margen, «Cancelación gratuita hasta el {inicio − 2 h}: escríbenos y la tramitamos» (en hora de Madrid aunque el navegador esté en Londres; «plazo pasado» si vence mientras paga); en última hora, aviso neutro con icono de rayo. Selector con grupo «En las próximas 2 h». Landing, `/entrar` y `BookingCard` del cliente reescritos para no prometer cancelaciones o reembolsos que el sistema no hace por sí solo.
+- La cancelación del proveedor usa ahora `canCancelBooking` (el límite de 2 h vive en un sitio), con test a 2h00 y 1h59m59s.
+- **1014 tests** (eran 965), `typecheck`, `lint` y `build` limpios, 1015 claves en los 4 idiomas. E2E nuevo `tests/e2e/booking-slots-coherence.spec.ts` (solo lectura) escrito pero **sin ejecutar todavía**: el dev server local no llegaba a la BD por el transaction pooler. `DATABASE_URL` de `.env.local` pasa al session pooler (5432); Vercel no cambia.
+- Pendiente (en `TODO.md`): reembolso por incidencia del centro desde `/admin` (hoy procedimiento manual de soporte), pago a punto de empezar, margen de «Disponible ahora», pago en el local, cancelación del cliente.
+
+---
 ### 2026-10-27 (2) — Prueba completa de cobro con Stripe Connect y cancelación del proveedor
 
 - **Cuenta conectada de test** para Studio Aura (`acct_1UV5ErGTznGuMsBl`): Custom, creada por API con los valores de prueba publicados por Stripe (identidad `address_full_match`, nacimiento 1901, IBAN de test español). `charges_enabled` y `transfers: active` al momento. Se deja enlazada para poder probar desde el navegador con la tarjeta 4242.

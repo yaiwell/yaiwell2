@@ -24,6 +24,11 @@ export interface CustomerBookingView {
   status: BookingStatus;
   startAt: Date;
   endAt: Date;
+  /**
+   * Momento en que se creó la reserva. Con `startAt` decide si fue de
+   * última hora (< 2 h), que cambia lo que la card dice sobre cancelar.
+   */
+  createdAt: Date;
   priceCents: number;
   serviceId: string;
   /**

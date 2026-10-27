@@ -144,8 +144,8 @@
           "body": "Solo profesionales verificados a mano por nuestro equipo. Calidad antes que cantidad."
         },
         "2": {
-          "title": "Sin compromiso",
-          "body": "Cancela hasta 2 horas antes sin penalización. Flexibilidad de verdad."
+          "title": "Reglas claras",
+          "body": "Cancela gratis hasta 2 h antes escribiéndonos. Para última hora, pago seguro al momento y, si el centro no puede atenderte, reembolso total a través de soporte."
         }
       }
     },
@@ -660,7 +660,8 @@
       "errorSubtitle": "Ha fallado la conexión con la agenda del centro. No significa que no haya hueco: vuelve a intentarlo.",
       "notBookableTitle": "Este servicio aún no admite reserva online",
       "notBookableSubtitle": "El centro todavía no ha configurado su agenda. Puedes elegir otro servicio o volver más adelante.",
-      "retry": "Reintentar"
+      "retry": "Reintentar",
+      "lastMinuteGroup": "En las próximas 2 h · pago al reservar, sin cancelación"
     },
     "summary": {
       "serviceLabel": "Servicio",
@@ -676,9 +677,14 @@
     },
     "policy": {
       "title": "Política breve",
-      "clientCancel": "Puedes cancelar gratis hasta 2h antes del inicio del servicio.",
+      "cancelUntil": "Cancelación gratuita hasta el {deadline}: escríbenos y la tramitamos.",
+      "cancelWindowPassed": "El plazo de cancelación gratuita ya ha pasado.",
       "providerCancel": "El centro también puede cancelar hasta 2h antes; en ese caso recibirás un reembolso íntegro automático.",
-      "compactNote": "Cancelación gratuita hasta 2h antes del servicio, tanto para ti como para el centro."
+      "compactNote": "Cancelación gratuita hasta 2 h antes del servicio: escríbenos y la tramitamos. Si reservas con menos de 2 h, se paga al momento y no admite cancelación."
+    },
+    "lastMinute": {
+      "policy": "Esta reserva empieza en menos de 2 h: se paga ahora y no admite cancelación ni reembolso. Si el centro no puede atenderte, escríbenos y te devolvemos el 100 %.",
+      "nonRefundable": "No reembolsable"
     },
     "payment": {
       "totalLabel": "Total a pagar",
@@ -686,6 +692,7 @@
       "processing": "Procesando…",
       "genericError": "No hemos podido completar el pago. Revisa los datos de la tarjeta o prueba con otra.",
       "secureNote": "Pago seguro procesado por Stripe. Yaiwell no guarda los datos de tu tarjeta.",
+      "conditionsChanged": "Hemos revisado la hora de tu reserva y sus condiciones han cambiado. Revísalas antes de pagar.",
       "unavailableTitle": "Pagos no disponibles",
       "unavailableBody": "La pasarela de pago no está configurada en este entorno. Inténtalo de nuevo más tarde."
     },
@@ -709,6 +716,7 @@
       "errorUnauthenticated": "Necesitas iniciar sesión para completar la reserva.",
       "errorServiceUnavailable": "Este servicio ya no está disponible para reservar.",
       "errorSlotUnavailable": "Alguien acaba de reservar este hueco. Elige otra hora.",
+      "errorSlotTooSoon": "Este hueco ya no se puede reservar: empieza en menos de 30 minutos. Elige otra hora.",
       "errorProviderNotChargeable": "Este centro todavía no acepta pagos online. Ponte en contacto con él directamente.",
       "errorPaymentFailed": "No hemos podido conectar con la pasarela de pago. Vuelve a intentarlo en unos segundos.",
       "errorGeneric": "Algo ha ido mal. Vuelve a intentarlo en unos segundos.",
@@ -759,6 +767,7 @@
     "actions": {
       "viewDetail": "Ver detalle",
       "cancelSupportHint": "¿Necesitas cancelar? Escríbenos y lo gestionamos contigo.",
+      "lastMinuteHint": "Reserva de última hora: no admite cancelación. Si el centro no puede atenderte, escríbenos.",
       "review": "Valorar"
     }
   },
@@ -1062,7 +1071,7 @@
       "title": "Tu agenda contigo a todas partes.",
       "subtitle": "Reserva al instante, gestiona tus citas y descubre profesionales cerca de ti.",
       "bullet1": "Disponibilidad real, sin llamadas ni esperas.",
-      "bullet2": "Cancelación gratuita hasta 2 h antes."
+      "bullet2": "Reglas claras: cancela gratis hasta 2 h antes escribiéndonos. Para última hora, pago seguro al momento y, si el centro no puede atenderte, reembolso total a través de soporte."
     },
     "tabs": {
       "ariaLabel": "Elige tipo de cuenta",

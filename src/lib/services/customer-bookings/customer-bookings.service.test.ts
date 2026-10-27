@@ -33,6 +33,7 @@ function bookingRecord(overrides: Record<string, unknown> = {}) {
     status: 'confirmed',
     startAt: new Date('2026-07-15T08:00:00.000Z'),
     endAt: new Date('2026-07-15T09:00:00.000Z'),
+    createdAt: new Date('2026-07-10T08:00:00.000Z'),
     priceCents: 4500,
     notes: null,
     serviceId: 'svc-1',

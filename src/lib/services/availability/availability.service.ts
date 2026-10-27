@@ -1,3 +1,5 @@
+import { getEarliestBookableStart } from '@/lib/utils/booking-lead-time';
+
 import { computeAvailableSlots, getUtcDayBounds, isSlotFree } from './availability.calc';
 import { BUSINESS_TIMEZONE } from './availability.constants';
 import {
@@ -49,12 +51,22 @@ async function loadValidatedSchedule(
  * `bufferMinutes` del profesional y duración del servicio para devolver
  * la lista final de slots libres, ordenados ascendentemente.
  *
+ * Solo devuelve huecos **reservables**: descarta los que empiezan antes
+ * de `now + MIN_BOOKING_LEAD_TIME_MS` (30 min). Es la misma constante
+ * que aplica `createBookingSchema`, así que el selector nunca ofrece una
+ * hora que el servidor rechazaría al reservar (bug histórico: con la
+ * antelación solo en la validación, el selector enseñaba horas a 1 h
+ * vista que luego no se podían comprar).
+ *
  * Las fechas se manejan en UTC: el caller es responsable de convertir
  * a la zona horaria del centro si necesita renderizarlas.
  *
+ * @param input — `{ professionalId, date, serviceDurationMinutes }`, validado con Zod.
+ * @param now — instante de referencia para la antelación mínima;
+ *   inyectable para tests.
  * @throws ProfessionalNotFoundError, InvalidScheduleError.
  */
-export async function getAvailableSlots(input: unknown): Promise<Slot[]> {
+export async function getAvailableSlots(input: unknown, now: Date = new Date()): Promise<Slot[]> {
   // 1. Validamos input en el borde — defensa frente a callers ajenos.
   const data = getAvailableSlotsSchema.parse(input);
 
@@ -72,7 +84,7 @@ export async function getAvailableSlots(input: unknown): Promise<Slot[]> {
   // 4. Delegamos el cálculo en la función pura para mantener el service
   //    como simple orquestador. Pasamos la zona horaria del negocio para
   //    que los `HH:mm` del schedule se interpreten en Madrid (no UTC).
-  return computeAvailableSlots({
+  const slots = computeAvailableSlots({
     date: data.date,
     schedule,
     bufferMinutes,
@@ -80,6 +92,12 @@ export async function getAvailableSlots(input: unknown): Promise<Slot[]> {
     bookings,
     timezone: BUSINESS_TIMEZONE,
   });
+
+  // 5. Quitamos lo que ya no se puede reservar. El motor puro devuelve
+  //    el día entero (incluido lo pasado) a propósito: el corte depende
+  //    de `now`, que es una regla de negocio y no de cálculo de agenda.
+  const earliestMs = getEarliestBookableStart(now).getTime();
+  return slots.filter((slot) => slot.startAt.getTime() >= earliestMs);
 }
 
 /**
@@ -133,10 +151,16 @@ export async function isSlotAvailable(
  * @throws ServiceForAvailabilityNotFoundError — si el service no existe,
  *   está pausado o el provider no tiene Professional al que ofrecer
  *   slots todavía.
+ * @param now — instante de referencia para la antelación mínima;
+ *   inyectable para tests.
  * @throws InvalidScheduleError, ProfessionalNotFoundError — propagados
  *   desde `getAvailableSlots`.
  */
-export async function getSlotsForService(serviceId: string, date: Date): Promise<Slot[]> {
+export async function getSlotsForService(
+  serviceId: string,
+  date: Date,
+  now: Date = new Date(),
+): Promise<Slot[]> {
   const service = await availabilityRepository.findServiceForAvailability(serviceId);
   if (!service) {
     throw new ServiceForAvailabilityNotFoundError();
@@ -153,9 +177,12 @@ export async function getSlotsForService(serviceId: string, date: Date): Promise
     );
   }
 
-  return getAvailableSlots({
-    professionalId,
-    date,
-    serviceDurationMinutes: service.durationMinutes,
-  });
+  return getAvailableSlots(
+    {
+      professionalId,
+      date,
+      serviceDurationMinutes: service.durationMinutes,
+    },
+    now,
+  );
 }

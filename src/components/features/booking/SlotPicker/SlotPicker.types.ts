@@ -38,3 +38,18 @@ export interface DayTab {
   /** `true` si es el día actual del usuario. */
   isToday: boolean;
 }
+
+/**
+ * Props de un bloque de huecos (Mañana, Tarde o "En las próximas 2 h").
+ */
+export interface SlotSectionProps {
+  title: string;
+  /** Texto si no hay huecos; `null` para no pintar el bloque vacío. */
+  emptyText: string | null;
+  slots: BookingSlot[];
+  selectedStartIso: string | null;
+  locale: SlotPickerLocale;
+  onSelect: (slot: BookingSlot) => void;
+  /** Grupo de última hora: añade el icono de rayo al título. */
+  lastMinute?: boolean;
+}

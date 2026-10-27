@@ -144,8 +144,8 @@
           "body": "Only professionals hand-verified by our team. Quality before quantity."
         },
         "2": {
-          "title": "No strings attached",
-          "body": "Cancel up to 2 hours beforehand with no penalty. True flexibility."
+          "title": "Clear rules",
+          "body": "Cancel for free up to 2 h beforehand by writing to us. For last-minute bookings, secure payment on the spot and, if the centre cannot see you, a full refund through support."
         }
       }
     },
@@ -660,7 +660,8 @@
       "errorSubtitle": "The connection with the venue’s calendar failed. It does not mean there are no times available — please try again.",
       "notBookableTitle": "This service cannot be booked online yet",
       "notBookableSubtitle": "The venue has not set up its calendar yet. You can choose another service or come back later.",
-      "retry": "Try again"
+      "retry": "Try again",
+      "lastMinuteGroup": "In the next 2 h · pay when booking, no cancellation"
     },
     "summary": {
       "serviceLabel": "Service",
@@ -676,9 +677,14 @@
     },
     "policy": {
       "title": "Quick policy",
-      "clientCancel": "You can cancel for free up to 2 hours before the service starts.",
+      "cancelUntil": "Free cancellation until {deadline}: write to us and we'll handle it.",
+      "cancelWindowPassed": "The free cancellation period has already ended.",
       "providerCancel": "The centre can also cancel up to 2 hours beforehand; if so, you'll get a full automatic refund.",
-      "compactNote": "Free cancellation up to 2 hours before the service, both for you and the centre."
+      "compactNote": "Free cancellation up to 2 h before the service: write to us and we'll handle it. If you book less than 2 h ahead, you pay on the spot and it cannot be cancelled."
+    },
+    "lastMinute": {
+      "policy": "This booking starts in less than 2 h: you pay now and it cannot be cancelled or refunded. If the centre cannot see you, write to us and we'll refund 100%.",
+      "nonRefundable": "Non-refundable"
     },
     "payment": {
       "totalLabel": "Total to pay",
@@ -686,6 +692,7 @@
       "processing": "Processing…",
       "genericError": "We couldn't complete the payment. Check your card details or try another one.",
       "secureNote": "Secure payment processed by Stripe. Yaiwell never stores your card details.",
+      "conditionsChanged": "We've checked the time of your booking and its conditions have changed. Please review them before paying.",
       "unavailableTitle": "Payments unavailable",
       "unavailableBody": "The payment gateway is not configured in this environment. Please try again later."
     },
@@ -709,6 +716,7 @@
       "errorUnauthenticated": "You need to sign in to complete the booking.",
       "errorServiceUnavailable": "This service is no longer available to book.",
       "errorSlotUnavailable": "Someone just booked this slot. Please pick another time.",
+      "errorSlotTooSoon": "This slot can no longer be booked: it starts in less than 30 minutes. Please pick another time.",
       "errorProviderNotChargeable": "This centre doesn't accept online payments yet. Please contact them directly.",
       "errorPaymentFailed": "We couldn't reach the payment gateway. Please try again in a moment.",
       "errorGeneric": "Something went wrong. Please try again in a moment.",
@@ -759,6 +767,7 @@
     "actions": {
       "viewDetail": "View details",
       "cancelSupportHint": "Need to cancel? Get in touch and we will sort it out with you.",
+      "lastMinuteHint": "Last-minute booking: it cannot be cancelled. If the centre cannot see you, write to us.",
       "review": "Review"
     }
   },
@@ -1062,7 +1071,7 @@
       "title": "Your diary, wherever you go.",
       "subtitle": "Book instantly, manage your appointments and discover professionals near you.",
       "bullet1": "Real availability, no calls and no waiting.",
-      "bullet2": "Free cancellation up to 2 h beforehand."
+      "bullet2": "Clear rules: cancel for free up to 2 h beforehand by writing to us. For last-minute bookings, secure payment on the spot and, if the centre cannot see you, a full refund through support."
     },
     "tabs": {
       "ariaLabel": "Choose account type",

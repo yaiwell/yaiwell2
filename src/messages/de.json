@@ -144,8 +144,8 @@
           "body": "Nur Profis, die unser Team von Hand verifiziert. Qualität vor Quantität."
         },
         "2": {
-          "title": "Ohne Verpflichtung",
-          "body": "Stornierung bis 2 Stunden vorher ohne Gebühr. Echte Flexibilität."
+          "title": "Klare Regeln",
+          "body": "Kostenlos stornieren bis 2 Std. vorher – schreib uns einfach. Bei Last-Minute-Buchungen sichere Zahlung sofort und, falls das Studio dich nicht bedienen kann, volle Erstattung über den Support."
         }
       }
     },
@@ -660,7 +660,8 @@
       "errorSubtitle": "Die Verbindung zum Kalender des Studios ist fehlgeschlagen. Das heißt nicht, dass es keine Termine gibt — bitte versuche es erneut.",
       "notBookableTitle": "Dieser Service ist noch nicht online buchbar",
       "notBookableSubtitle": "Das Studio hat seinen Kalender noch nicht eingerichtet. Wähle einen anderen Service oder schau später wieder vorbei.",
-      "retry": "Erneut versuchen"
+      "retry": "Erneut versuchen",
+      "lastMinuteGroup": "In den nächsten 2 Std. · Zahlung bei Buchung, keine Stornierung"
     },
     "summary": {
       "serviceLabel": "Service",
@@ -676,9 +677,14 @@
     },
     "policy": {
       "title": "Kurze Richtlinie",
-      "clientCancel": "Du kannst bis 2 Stunden vor Servicebeginn kostenlos stornieren.",
+      "cancelUntil": "Kostenlose Stornierung bis {deadline}: Schreib uns, wir kümmern uns darum.",
+      "cancelWindowPassed": "Die Frist für die kostenlose Stornierung ist bereits abgelaufen.",
       "providerCancel": "Das Studio kann ebenfalls bis 2 Stunden vorher stornieren; in diesem Fall erhältst du automatisch die vollständige Rückerstattung.",
-      "compactNote": "Kostenlose Stornierung bis 2 Stunden vor dem Service, sowohl für dich als auch für das Studio."
+      "compactNote": "Kostenlose Stornierung bis 2 Std. vor dem Service: Schreib uns, wir kümmern uns darum. Buchst du weniger als 2 Std. vorher, zahlst du sofort und kannst nicht stornieren."
+    },
+    "lastMinute": {
+      "policy": "Diese Buchung beginnt in weniger als 2 Std.: Die Zahlung erfolgt sofort, eine Stornierung oder Erstattung ist nicht möglich. Kann das Studio dich nicht bedienen, schreib uns und wir erstatten dir 100 %.",
+      "nonRefundable": "Nicht erstattbar"
     },
     "payment": {
       "totalLabel": "Zu zahlender Gesamtbetrag",
@@ -686,6 +692,7 @@
       "processing": "Wird verarbeitet…",
       "genericError": "Die Zahlung konnte nicht abgeschlossen werden. Prüfe deine Kartendaten oder nutze eine andere Karte.",
       "secureNote": "Sichere Zahlung über Stripe. Yaiwell speichert deine Kartendaten zu keinem Zeitpunkt.",
+      "conditionsChanged": "Wir haben die Uhrzeit deiner Buchung geprüft und die Bedingungen haben sich geändert. Bitte prüfe sie vor dem Bezahlen.",
       "unavailableTitle": "Zahlungen nicht verfügbar",
       "unavailableBody": "Das Zahlungssystem ist in dieser Umgebung nicht konfiguriert. Bitte versuche es später erneut."
     },
@@ -709,6 +716,7 @@
       "errorUnauthenticated": "Du musst dich anmelden, um die Buchung abzuschließen.",
       "errorServiceUnavailable": "Dieser Service ist nicht mehr buchbar.",
       "errorSlotUnavailable": "Dieser Termin wurde gerade vergeben. Bitte wähle eine andere Uhrzeit.",
+      "errorSlotTooSoon": "Dieser Termin kann nicht mehr gebucht werden: Er beginnt in weniger als 30 Minuten. Bitte wähle eine andere Uhrzeit.",
       "errorProviderNotChargeable": "Dieses Studio akzeptiert noch keine Online-Zahlungen. Bitte nimm direkt Kontakt auf.",
       "errorPaymentFailed": "Wir konnten das Zahlungssystem nicht erreichen. Bitte versuche es in ein paar Sekunden erneut.",
       "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es in ein paar Sekunden erneut.",
@@ -759,6 +767,7 @@
     "actions": {
       "viewDetail": "Details ansehen",
       "cancelSupportHint": "Du musst absagen? Schreib uns und wir regeln es gemeinsam.",
+      "lastMinuteHint": "Last-Minute-Buchung: keine Stornierung möglich. Kann das Studio dich nicht bedienen, schreib uns.",
       "review": "Bewerten"
     }
   },
@@ -1062,7 +1071,7 @@
       "title": "Dein Kalender immer dabei.",
       "subtitle": "Buche sofort, verwalte deine Termine und entdecke Profis in deiner Nähe.",
       "bullet1": "Echte Verfügbarkeit, ohne Anrufe und ohne Wartezeit.",
-      "bullet2": "Kostenlose Stornierung bis 2 Std. vorher."
+      "bullet2": "Klare Regeln: kostenlos stornieren bis 2 Std. vorher – schreib uns einfach. Bei Last-Minute-Buchungen sichere Zahlung sofort und, falls das Studio dich nicht bedienen kann, volle Erstattung über den Support."
     },
     "tabs": {
       "ariaLabel": "Account-Typ wählen",

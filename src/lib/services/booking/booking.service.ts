@@ -13,6 +13,7 @@
  */
 
 import { prisma } from '@/lib/db/prisma';
+import { canCancelBooking } from '@/lib/utils/booking-cancellation';
 
 import {
   BookingNotCancellableError,
@@ -26,13 +27,6 @@ import {
 } from './booking.errors';
 import { bookingRepository } from './booking.repository';
 import { cancelBookingSchema, createBookingSchema } from './booking.validation';
-
-/**
- * Margen mínimo (ms) entre `now` y `startAt` para que el proveedor
- * pueda cancelar la reserva. Coincide con la antelación mínima
- * requerida al crear, en `booking.validation.ts`.
- */
-const CANCELLATION_LEAD_TIME_MS = 2 * 60 * 60 * 1000;
 
 /**
  * Crea una reserva en estado `pending`.
@@ -143,9 +137,12 @@ export async function cancelBookingByProvider(input: unknown, providerUserId: st
     throw new BookingNotCancellableError();
   }
 
-  // Verificamos la ventana de 2 horas frente a `now`.
-  const msUntilStart = booking.startAt.getTime() - Date.now();
-  if (msUntilStart < CANCELLATION_LEAD_TIME_MS) {
+  // Ventana de 2 h frente a `now` (límite incluido: a 2h00 se acepta).
+  // Delegamos en `canCancelBooking`, el mismo util que usa la UI del
+  // panel, para que el umbral viva en un solo sitio. Ya no coincide con
+  // la antelación mínima al crear (30 min): una reserva de última hora
+  // nace dentro de esta ventana y no es cancelable.
+  if (!canCancelBooking({ startAt: booking.startAt, status: booking.status }, new Date())) {
     throw new BookingTooLateToCancelError();
   }
 

@@ -21,6 +21,11 @@ export const slotPickerStyles = {
   // Encabezado de sección (Mañana / Tarde).
   sectionTitle: 'text-xs font-medium uppercase tracking-wide text-muted-foreground mt-1 first:mt-0',
   sectionEmpty: 'text-sm text-muted-foreground',
+  // Título del grupo de última hora: mismo tono neutro que el resto (es
+  // una condición, no una alerta), con icono y algo más de peso.
+  sectionTitleLastMinute:
+    'mt-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-foreground first:mt-0',
+  sectionTitleIcon: 'size-3.5 shrink-0',
 
   // Grid de slots.
   slotGrid: 'grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4',

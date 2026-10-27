@@ -27,6 +27,7 @@ export async function getCustomerBookings(clientId: string): Promise<CustomerBoo
     status: record.status,
     startAt: record.startAt,
     endAt: record.endAt,
+    createdAt: record.createdAt,
     priceCents: record.priceCents,
     serviceId: record.serviceId,
     // `Service.name` es `Json` en Prisma; el schema garantiza la forma

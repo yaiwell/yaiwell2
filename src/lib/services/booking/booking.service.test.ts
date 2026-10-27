@@ -124,7 +124,7 @@ describe('createBooking', () => {
   };
 
   it('crea la reserva en estado pending cuando no hay solapamientos', async () => {
-    // Slot a 3 h vista para superar la regla de antelación de 2 h.
+    // Slot a 3 h vista: holgado frente a la antelación mínima (30 min).
     const slotStart = new Date(Date.now() + 3 * 60 * 60 * 1000);
 
     mockPrisma.service.findUnique.mockResolvedValue(fakeService());
@@ -156,9 +156,9 @@ describe('createBooking', () => {
     expect(mockPrisma.booking.create).not.toHaveBeenCalled();
   });
 
-  it('rechaza con ZodError si el slot está a menos de 2 h vista', async () => {
-    // Solo 1 h vista: la regla de antelación mínima debe disparar.
-    const slotStart = new Date(Date.now() + 60 * 60_000);
+  it('rechaza con ZodError si el slot está a menos de 30 min vista', async () => {
+    // Solo 20 min vista: la regla de antelación mínima debe disparar.
+    const slotStart = new Date(Date.now() + 20 * 60_000);
 
     await expect(createBooking({ ...baseInput, slotStart }, 'client-1')).rejects.toBeInstanceOf(
       ZodError,

@@ -12,6 +12,7 @@ import { BookingSummary } from '../BookingSummary';
 import { SlotPicker } from '../SlotPicker';
 
 import { BookingCheckoutPanel } from './BookingCheckoutPanel';
+import { useIsLastMinuteSlot } from './BookingFlow.lastMinute';
 import { BOOKING_STEPS, useBookingFlow } from './BookingFlow.logic';
 import { bookingFlowStyles as s } from './BookingFlow.styles';
 import type { BookingFlowProps } from './BookingFlow.types';
@@ -48,6 +49,10 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
     completePayment,
     retryCheckout,
   } = useBookingFlow({ serviceId: service.id });
+
+  // Estimación de "última hora" (< 2 h) con el reloj del navegador. Vale
+  // para el resumen; en el paso de pago manda el valor del servidor.
+  const isLastMinute = useIsLastMinuteSlot(draft.slotStartIso);
 
   // `en` y `de` son opcionales en `LocalizedText`; indexar a pelo deja
   // el nombre del servicio en blanco en esos idiomas.
@@ -174,6 +179,7 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
             slotEndIso={draft.slotEndIso}
             notes={draft.notes}
             amountCents={checkout.status === 'ready' ? checkout.amountCents : null}
+            isLastMinute={isLastMinute}
             onNotesChange={(notes) => updateDraft({ notes })}
           />
         )}
@@ -191,7 +197,9 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
         )}
       </div>
 
-      {step !== 'payment' && <p className={s.policyNote}>{tPolicy('compactNote')}</p>}
+      {/* Solo en el paso del hueco: en el resumen la política ya sale
+          una vez, adaptada al hueco elegido. */}
+      {step === 'slot' && <p className={s.policyNote}>{tPolicy('compactNote')}</p>}
 
       <footer className={s.footer}>
         {stepIndex === 0 ? (

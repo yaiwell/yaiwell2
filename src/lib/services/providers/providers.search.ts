@@ -174,9 +174,10 @@ export async function searchProviders(
   const enriched = enrichProviders(filtered, availabilityByProvider, parsed.data.userLocation);
 
   // 4. Filtro post-enrichment: el toggle "Disponible ahora" deja pasar
-  //    también los ámbar. Con la ventana estricta de 15 min del verde,
-  //    filtrar solo por `available_now` vaciaría la lista; "ahora o en
-  //    la próxima hora" es literalmente la promesa del producto.
+  //    también los ámbar. Con la ventana estricta del verde (30-45 min,
+  //    lo primero reservable), filtrar solo por `available_now` vaciaría
+  //    la lista; "un hueco reservable en la próxima hora" (30-60 min) es
+  //    la promesa del producto.
   const final = parsed.data.availabilityOnly
     ? enriched.filter(
         (p) =>

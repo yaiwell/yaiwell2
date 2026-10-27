@@ -38,8 +38,11 @@ const OPEN_EVERY_DAY: WeeklySchedule = {
   sunday: [{ open: '10:00', close: '20:00' }],
 };
 
-/** 09:50 hora de Madrid (CEST) del 27 de julio de 2026. */
-const NOW = new Date('2026-07-27T07:50:00.000Z');
+/**
+ * 09:30 hora de Madrid (CEST) del 27 de julio de 2026: el slot de las
+ * 10:00 queda justo a la antelación mínima de reserva (30 min).
+ */
+const NOW = new Date('2026-07-27T07:30:00.000Z');
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -80,6 +83,45 @@ describe('getProvidersAvailability', () => {
     for (const providerId of providerIds) {
       expect(result.get(providerId)?.status).toBe('available_now');
     }
+  });
+
+  it('ignora un hueco a 15 minutos porque no se puede reservar', async () => {
+    mockedQueryRaw.mockResolvedValueOnce([
+      {
+        professionalId: 'prof-1',
+        providerId: 'prov-1',
+        schedule: OPEN_EVERY_DAY,
+        bufferMinutes: 0,
+        minServiceDurationMinutes: 60,
+      },
+    ]);
+    mockedBookingFindMany.mockResolvedValueOnce([]);
+
+    // 09:45 Madrid: el slot de las 10:00 está a 15 min.
+    const result = await getProvidersAvailability(['prov-1'], new Date('2026-07-27T07:45:00.000Z'));
+
+    expect(result.get('prov-1')?.status).toBe('busy');
+    expect(result.get('prov-1')?.nextSlot?.startAt.toISOString()).toBe('2026-07-27T09:00:00.000Z');
+  });
+
+  it('corta la antelación con el instante real, no con el redondeado', async () => {
+    mockedQueryRaw.mockResolvedValueOnce([
+      {
+        professionalId: 'prof-1',
+        providerId: 'prov-1',
+        schedule: OPEN_EVERY_DAY,
+        bufferMinutes: 0,
+        minServiceDurationMinutes: 60,
+      },
+    ]);
+    mockedBookingFindMany.mockResolvedValueOnce([]);
+
+    // 09:31 Madrid se redondea a 09:30, pero el slot de las 10:00 ya
+    // está a 29 min reales: anunciarlo sería ofrecer algo que
+    // `createBooking` rechaza.
+    const result = await getProvidersAvailability(['prov-1'], new Date('2026-07-27T07:31:00.000Z'));
+
+    expect(result.get('prov-1')?.nextSlot?.startAt.toISOString()).toBe('2026-07-27T09:00:00.000Z');
   });
 
   it('devuelve busy para los proveedores sin datos en BD', async () => {

@@ -15,6 +15,11 @@ export interface StripePaymentStepProps {
   clientSecret: string;
   amountCents: number;
   locale: AppLocale;
+  /**
+   * Reserva de última hora (empieza en menos de 2 h): se paga ahora y no
+   * admite devolución. El formulario lo avisa junto al botón de pagar.
+   */
+  isLastMinute: boolean;
   /** URL absoluta a la que Stripe devuelve al usuario tras un 3DS. */
   returnUrl: string;
   /** Se dispara cuando el pago se resuelve sin redirección. */
@@ -29,6 +34,7 @@ export interface StripePaymentStepProps {
 export interface StripePaymentFormProps {
   amountCents: number;
   locale: AppLocale;
+  isLastMinute: boolean;
   returnUrl: string;
   onSucceeded: () => void;
 }

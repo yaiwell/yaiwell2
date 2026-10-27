@@ -6,6 +6,7 @@ import { Link } from '@/i18n/navigation';
 import type { AppLocale } from '@/i18n/routing';
 import { pickLocalized } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
+import { isLastMinuteAtCreation } from '@/lib/utils/booking-last-minute';
 
 import { bookingCardStyles as s } from './BookingCard.styles';
 import type { BookingCardProps } from './BookingCard.types';
@@ -54,6 +55,9 @@ export function BookingCard({ booking, variant }: BookingCardProps) {
   // El nombre del servicio viene del dominio (`LocalizedText`) y se
   // resuelve aquí según el locale activo para evitar lookups en JSX.
   const serviceName = pickLocalized(booking.serviceName, locale as AppLocale);
+  // Reserva de última hora (creada a menos de 2 h del inicio): no admite
+  // cancelación, así que no ofrecemos "escríbenos para cancelar".
+  const isLastMinute = isLastMinuteAtCreation(booking.startAt, booking.createdAt);
   const priceFormatted = format.number(booking.priceCents / 100, {
     style: 'currency',
     currency: 'EUR',
@@ -136,7 +140,7 @@ export function BookingCard({ booking, variant }: BookingCardProps) {
                 className={s.blockedHint}
                 data-component={`customer-booking-cancel-hint-${booking.id}`}
               >
-                {t('actions.cancelSupportHint')}
+                {isLastMinute ? t('actions.lastMinuteHint') : t('actions.cancelSupportHint')}
               </span>
             ) : null}
 

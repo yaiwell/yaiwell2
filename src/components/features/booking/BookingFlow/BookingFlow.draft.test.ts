@@ -124,8 +124,8 @@ describe('restoreBookingDraft', () => {
     // que escribió sigue valiendo.
     writeRaw({
       serviceId: SERVICE_ID,
-      slotStartIso: '2026-10-05T10:30:00.000Z',
-      slotEndIso: '2026-10-05T11:30:00.000Z',
+      slotStartIso: '2026-10-05T10:20:00.000Z',
+      slotEndIso: '2026-10-05T11:20:00.000Z',
       notes: 'Alérgica al amoníaco',
     });
 

@@ -30,6 +30,7 @@ export const customerBookingsRepository = {
         status: true,
         startAt: true,
         endAt: true,
+        createdAt: true,
         priceCents: true,
         notes: true,
         serviceId: true,

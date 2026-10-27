@@ -23,5 +23,11 @@ export interface BookingSummaryProps {
    * siempre del servidor.
    */
   amountCents: number | null;
+  /**
+   * `true` si el hueco empieza en menos de 2 h (reserva de última hora):
+   * el resumen sustituye la política de "cancela gratis" por la de
+   * última hora (se paga ahora, sin cancelación ni reembolso).
+   */
+  isLastMinute: boolean;
   onNotesChange: (notes: string) => void;
 }

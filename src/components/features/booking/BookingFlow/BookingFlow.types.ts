@@ -52,8 +52,22 @@ export interface PersistedBookingDraft {
  */
 export type CheckoutState =
   | { status: 'idle' }
-  | { status: 'creating' }
-  | { status: 'ready'; clientSecret: string; amountCents: number }
+  | {
+      status: 'creating';
+      /** Estimación de "última hora" del navegador, congelada al lanzar. */
+      estimatedLastMinute: boolean;
+    }
+  | {
+      status: 'ready';
+      clientSecret: string;
+      amountCents: number;
+      /** Última hora según el servidor: manda sobre la estimación del cliente. */
+      isLastMinute: boolean;
+      /** Estimación del navegador congelada al lanzar el checkout. */
+      estimatedLastMinute: boolean;
+      /** Inicio de la reserva tal y como quedó en BD. */
+      slotStartIso: string;
+    }
   | { status: 'error'; code: CheckoutErrorCode };
 
 /**

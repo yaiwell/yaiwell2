@@ -43,6 +43,7 @@ const OK_CHECKOUT = {
   amountCents: 4500,
   slotStartIso: FUTURE_START,
   slotEndIso: FUTURE_END,
+  isLastMinute: false,
 };
 
 function renderFlow() {
@@ -167,10 +168,10 @@ describe('borrador del usuario anónimo que se va a autenticarse y vuelve', () =
 
   it('descarta el hueco caducado, conserva las notas y lo avisa', async () => {
     // Entre que se fue a registrarse y volvió se agotó la antelación
-    // mínima de 2 h para ese hueco.
+    // mínima de 30 min para ese hueco.
     seedDraft({
-      slotStartIso: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
-      slotEndIso: new Date(Date.now() + 90 * 60 * 1000).toISOString(),
+      slotStartIso: new Date(Date.now() + 20 * 60 * 1000).toISOString(),
+      slotEndIso: new Date(Date.now() + 80 * 60 * 1000).toISOString(),
       notes: 'Vengo con mi hija',
     });
 
@@ -185,8 +186,8 @@ describe('borrador del usuario anónimo que se va a autenticarse y vuelve', () =
 
   it('el aviso desaparece en cuanto elige otro hueco', async () => {
     seedDraft({
-      slotStartIso: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
-      slotEndIso: new Date(Date.now() + 90 * 60 * 1000).toISOString(),
+      slotStartIso: new Date(Date.now() + 20 * 60 * 1000).toISOString(),
+      slotEndIso: new Date(Date.now() + 80 * 60 * 1000).toISOString(),
       notes: '',
     });
     const { result } = renderFlow();

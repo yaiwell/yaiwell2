@@ -39,6 +39,7 @@ const messages = {
       retry: 'Reintentar',
       notBookableTitle: 'Este servicio aún no admite reserva online',
       notBookableSubtitle: 'El centro todavía no ha configurado su agenda.',
+      lastMinuteGroup: 'En las próximas 2 h · pago al reservar, sin cancelación',
     },
   },
 };

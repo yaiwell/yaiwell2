@@ -26,6 +26,7 @@ export function StripePaymentStep({
   clientSecret,
   amountCents,
   locale,
+  isLastMinute,
   returnUrl,
   onSucceeded,
 }: StripePaymentStepProps) {
@@ -59,6 +60,7 @@ export function StripePaymentStep({
       <StripePaymentForm
         amountCents={amountCents}
         locale={locale}
+        isLastMinute={isLastMinute}
         returnUrl={returnUrl}
         onSucceeded={onSucceeded}
       />

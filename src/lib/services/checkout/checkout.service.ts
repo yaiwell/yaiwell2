@@ -6,6 +6,7 @@ import { getStripeClient } from '@/lib/integrations/stripe';
 import { availabilityRepository } from '@/lib/services/availability';
 import { bookingRepository, createBooking, ServiceNotFoundError } from '@/lib/services/booking';
 import { getConnectAccountStatus } from '@/lib/services/payments';
+import { isLastMinuteAtCreation } from '@/lib/utils/booking-last-minute';
 
 import {
   PaymentIntentCreationError,
@@ -80,7 +81,7 @@ export async function createBookingCheckout(
 
   const destinationAccountId = await resolveChargeableAccount(service.providerId);
 
-  // `createBooking` aplica las reglas de negocio: antelación de 2 h,
+  // `createBooking` aplica las reglas de negocio: antelación mínima de 30 min,
   // servicio activo, ausencia de solapamiento, y congela precio y
   // comisión según el plan vigente del proveedor.
   const booking = await createBooking(
@@ -124,6 +125,8 @@ export async function createBookingCheckout(
     amountCents: booking.priceCents,
     slotStartIso: booking.startAt.toISOString(),
     slotEndIso: booking.endAt.toISOString(),
+    // Con el `createdAt` que ha puesto la BD, no con el reloj del cliente.
+    isLastMinute: isLastMinuteAtCreation(booking.startAt, booking.createdAt),
   };
 }
 

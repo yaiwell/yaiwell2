@@ -7,6 +7,8 @@
  * exactamente lo que pasó con la implementación fake de Fase 0.
  */
 
+import { MIN_BOOKING_LEAD_TIME_MS } from '@/lib/utils/booking-lead-time';
+
 /**
  * Zona horaria de negocio. Todos los `HH:mm` de `Professional.schedule`
  * se interpretan en esta zona, no en UTC.
@@ -18,18 +20,29 @@
 export const BUSINESS_TIMEZONE = 'Europe/Madrid';
 
 /**
- * Umbral del estado `available_now` (pin verde): un hueco que empieza
- * dentro de los próximos 15 minutos se considera "libre ahora".
+ * Margen (en minutos) del verde por encima de la antelación mínima.
+ * Un hueco que empieza en los primeros 15 minutos reservables es "libre
+ * ahora": lo antes que se puede reservar, con un pequeño colchón.
+ */
+const AVAILABLE_NOW_MARGIN_MINUTES = 15;
+
+/**
+ * Umbral del estado `available_now` (pin verde), en minutos desde ahora.
  *
- * VISION.md §"Promesa 1" define el verde como "libre ahora". 15 minutos
- * es el margen operativo mínimo para que el cliente reserve y se
- * desplace; por debajo de eso el hueco no es realmente reservable.
+ * VISION.md §"Promesa 1" define el verde como "libre ahora". Ningún
+ * hueco que empiece antes de la antelación mínima de reserva (30 min,
+ * `MIN_BOOKING_LEAD_TIME_MS`) es comprable, así que el estado solo
+ * considera huecos reservables y el verde cubre [30, 45] minutos: el
+ * primer tramo que de verdad se puede reservar. Antes era ≤ 15 min, una
+ * ventana que, con la antelación mínima, solo anunciaba huecos que
+ * `createBooking` rechazaba.
  *
  * OJO: la implementación fake de Fase 0 estiraba el verde hasta 75 min
  * (`src/lib/fake-data/availability.ts`), lo que vaciaba de significado
  * el pin verde. Ese comportamiento queda deliberadamente derogado.
  */
-export const AVAILABLE_NOW_WINDOW_MINUTES = 15;
+export const AVAILABLE_NOW_WINDOW_MINUTES =
+  MIN_BOOKING_LEAD_TIME_MS / 60_000 + AVAILABLE_NOW_MARGIN_MINUTES;
 
 /**
  * Umbral del estado `available_soon` (pin ámbar): hueco que empieza
@@ -38,6 +51,9 @@ export const AVAILABLE_NOW_WINDOW_MINUTES = 15;
  * Lo fija VISION.md §"Las 5 features del MVP" — «ámbar (libre en menos
  * de 1h)». El fake de Fase 0 usaba 90-180 min, incompatible con el copy
  * "En {minutes} min" del badge: "En 170 min" no comunica nada útil.
+ *
+ * Junto con la antelación mínima, el filtro "Disponible ahora" (verde o
+ * ámbar) equivale a un hueco reservable en [now + 30, now + 60] min.
  */
 export const AVAILABLE_SOON_WINDOW_MINUTES = 60;
 

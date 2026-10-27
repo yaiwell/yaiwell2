@@ -26,6 +26,13 @@ export interface BookingCheckoutSession {
   /** Inicio del slot ya confirmado en BD (puede diferir del pedido si hubo redondeo). */
   slotStartIso: string;
   slotEndIso: string;
+  /**
+   * Reserva de última hora (empieza a menos de 2 h de su `createdAt`):
+   * se paga ahora y no admite cancelación ni reembolso. Lo decide el
+   * servidor con su propio reloj; la UI del paso de pago usa este valor
+   * y no la estimación del navegador.
+   */
+  isLastMinute: boolean;
 }
 
 /**

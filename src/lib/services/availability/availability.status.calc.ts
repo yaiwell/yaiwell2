@@ -1,3 +1,4 @@
+import { getEarliestBookableStart } from '@/lib/utils/booking-lead-time';
 import type { ProviderAvailability } from '@/types/domain';
 
 import { computeAvailableSlots } from './availability.calc';
@@ -56,13 +57,13 @@ function statusFromMinutes(minutesUntilNext: number): ProviderAvailability['stat
  */
 function findNextSlotForProfessional(params: {
   bundle: ProfessionalScheduleBundle;
-  now: Date;
+  bookableFrom: Date;
   civilDays: readonly Date[];
   bookings: readonly Slot[];
   timezone: string;
   onInvalidSchedule?: (bundle: ProfessionalScheduleBundle, issues: unknown) => void;
 }): Slot | null {
-  const { bundle, now, civilDays, bookings, timezone, onInvalidSchedule } = params;
+  const { bundle, bookableFrom, civilDays, bookings, timezone, onInvalidSchedule } = params;
 
   // Sin servicios activos no hay nada reservable, por muy abierto que
   // esté el profesional.
@@ -90,8 +91,10 @@ function findNextSlotForProfessional(params: {
       timezone,
     });
     for (const slot of slots) {
-      // Descartamos lo que ya pasó: el motor devuelve el día entero.
-      if (slot.startAt.getTime() < now.getTime()) continue;
+      // Descartamos lo que ya no se puede reservar (pasado o dentro de
+      // la antelación mínima): el motor devuelve el día entero, y un
+      // "disponible" que el servidor rechazaría al reservar es mentir.
+      if (slot.startAt.getTime() < bookableFrom.getTime()) continue;
       if (!best || slot.startAt.getTime() < best.startAt.getTime()) {
         best = slot;
       }
@@ -120,6 +123,10 @@ function findNextSlotForProfessional(params: {
  * @param params.bookingsByProfessional — reservas activas por profesional.
  * @param params.onInvalidSchedule — callback para reportar horarios
  *   corruptos (el service lo usa para loguear a Sentry).
+ * @param params.bookableFrom — primer instante reservable. Por defecto,
+ *   `now + MIN_BOOKING_LEAD_TIME_MS`. El service lo calcula con el
+ *   instante real (sin redondear) para no anunciar un hueco que la
+ *   validación de `createBooking` ya rechazaría.
  * @returns mapa `providerId → ProviderAvailability`, con entrada para
  *   todos los `providerIds` recibidos.
  */
@@ -130,8 +137,10 @@ export function computeProviderAvailability(params: {
   bookingsByProfessional: ReadonlyMap<string, readonly Slot[]>;
   timezone: string;
   onInvalidSchedule?: (bundle: ProfessionalScheduleBundle, issues: unknown) => void;
+  bookableFrom?: Date;
 }): ProviderAvailabilityMap {
   const { now, providerIds, bundles, bookingsByProfessional, timezone, onInvalidSchedule } = params;
+  const bookableFrom = params.bookableFrom ?? getEarliestBookableStart(now);
 
   const result: ProviderAvailabilityMap = new Map();
   for (const providerId of providerIds) {
@@ -150,7 +159,7 @@ export function computeProviderAvailability(params: {
 
     const nextSlot = findNextSlotForProfessional({
       bundle,
-      now,
+      bookableFrom,
       civilDays,
       bookings: bookingsByProfessional.get(bundle.professionalId) ?? [],
       timezone,

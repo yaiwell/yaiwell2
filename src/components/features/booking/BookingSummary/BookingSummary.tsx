@@ -4,14 +4,23 @@ import { useTranslations } from 'next-intl';
 
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
-import { formatPriceCents, formatSlotDateLong, formatSlotTimeOnly } from './BookingSummary.logic';
+import { LastMinuteNotice } from '../LastMinuteNotice';
+
+import {
+  formatCancellationDeadline,
+  formatPriceCents,
+  formatSlotDateLong,
+  formatSlotTimeOnly,
+} from './BookingSummary.logic';
 import { bookingSummaryStyles as s } from './BookingSummary.styles';
 import type { BookingSummaryProps } from './BookingSummary.types';
 
 /**
  * Resumen previo al pago: muestra centro, servicio, fecha/hora, precio
- * y un campo de notas opcional. Incluye un bloque editorial con las
- * políticas básicas (cancelación a 2h por cualquiera de las partes).
+ * y un campo de notas opcional. La política de cancelación depende del
+ * hueco y aparece una sola vez: con margen, la hora exacta hasta la que
+ * se cancela gratis; de última hora (< 2 h), que no admite cancelación
+ * ni reembolso.
  *
  * Client Component porque maneja el `textarea` de notas controlado por
  * el orquestador padre. El resto del contenido es puramente derivado de
@@ -25,6 +34,7 @@ export function BookingSummary({
   slotEndIso,
   notes,
   amountCents,
+  isLastMinute,
   onNotesChange,
 }: BookingSummaryProps) {
   const t = useTranslations('booking.summary');
@@ -105,13 +115,21 @@ export function BookingSummary({
         />
       </div>
 
-      <section className={s.policyBlock} aria-labelledby="booking-summary-policy">
-        <h4 className={s.policyTitle} id="booking-summary-policy">
-          {tPolicy('title')}
-        </h4>
-        <p>{tPolicy('clientCancel')}</p>
-        <p>{tPolicy('providerCancel')}</p>
-      </section>
+      {isLastMinute ? (
+        <LastMinuteNotice />
+      ) : (
+        <section className={s.policyBlock} aria-labelledby="booking-summary-policy">
+          <h4 className={s.policyTitle} id="booking-summary-policy">
+            {tPolicy('title')}
+          </h4>
+          <p data-component="booking-summary-cancel-until">
+            {tPolicy('cancelUntil', {
+              deadline: formatCancellationDeadline(slotStartIso, locale),
+            })}
+          </p>
+          <p>{tPolicy('providerCancel')}</p>
+        </section>
+      )}
     </div>
   );
 }

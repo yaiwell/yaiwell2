@@ -14,6 +14,7 @@ import { StripePaymentStep } from '../StripePaymentStep';
 import { stripePaymentStepStyles as s } from '../StripePaymentStep/StripePaymentStep.styles';
 
 import type { CheckoutState } from './BookingFlow.types';
+import { PaymentPolicyNote } from './PaymentPolicyNote';
 
 interface BookingCheckoutPanelProps {
   checkout: CheckoutState;
@@ -49,14 +50,25 @@ export function BookingCheckoutPanel({
   const t = useTranslations('booking.checkout');
 
   if (checkout.status === 'ready') {
+    // Manda el servidor: `checkout.isLastMinute` se calcula con su reloj
+    // y el `createdAt` real de la reserva.
     return (
-      <StripePaymentStep
-        clientSecret={checkout.clientSecret}
-        amountCents={checkout.amountCents}
-        locale={locale}
-        returnUrl={returnUrl}
-        onSucceeded={onSucceeded}
-      />
+      <>
+        <PaymentPolicyNote
+          isLastMinute={checkout.isLastMinute}
+          changed={checkout.isLastMinute !== checkout.estimatedLastMinute}
+          slotStartIso={checkout.slotStartIso}
+          locale={locale}
+        />
+        <StripePaymentStep
+          clientSecret={checkout.clientSecret}
+          amountCents={checkout.amountCents}
+          locale={locale}
+          isLastMinute={checkout.isLastMinute}
+          returnUrl={returnUrl}
+          onSucceeded={onSucceeded}
+        />
+      </>
     );
   }
 
@@ -89,9 +101,10 @@ export function BookingCheckoutPanel({
               {t('signIn')}
             </Link>
           </>
-        ) : checkout.code === 'SLOT_UNAVAILABLE' ? (
+        ) : checkout.code === 'SLOT_UNAVAILABLE' || checkout.code === 'SLOT_TOO_SOON' ? (
           // Reintentar el mismo hueco fallaría siempre: otro cliente se
-          // lo ha quedado. La única acción útil es elegir otro.
+          // lo ha quedado o ya no respeta la antelación mínima. La única
+          // acción útil es elegir otro.
           <button
             type="button"
             onClick={onChooseAnotherSlot}
@@ -139,6 +152,8 @@ function resolveErrorMessage(
       return t('errorServiceUnavailable');
     case 'SLOT_UNAVAILABLE':
       return t('errorSlotUnavailable');
+    case 'SLOT_TOO_SOON':
+      return t('errorSlotTooSoon');
     case 'PROVIDER_NOT_CHARGEABLE':
       return t('errorProviderNotChargeable');
     case 'PAYMENT_FAILED':

@@ -28,6 +28,8 @@ export {
   UnauthorizedCancellationError,
 } from './booking.errors';
 
+export { BOOKING_TOO_SOON_ISSUE_CODE, isBookingTooSoonError } from './booking.validation';
+
 export { BookingStatus } from './booking.types';
 export type {
   BookingSummary,

@@ -14,7 +14,7 @@ export const createBookingCheckoutSchema = z.object({
   /**
    * Instante de inicio en ISO 8601 con zona (lo que produce
    * `Date.toISOString()` en el SlotPicker). La regla de antelación
-   * mínima de 2 h la aplica `createBookingSchema` aguas abajo; aquí
+   * mínima de 30 min la aplica `createBookingSchema` aguas abajo; aquí
    * sólo garantizamos que es una fecha parseable.
    */
   slotStartIso: z.string().datetime(),

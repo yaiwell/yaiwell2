@@ -35,6 +35,7 @@ const OK_RESULT = {
   amountCents: 4500,
   slotStartIso: SLOT_START,
   slotEndIso: SLOT_END,
+  isLastMinute: false,
 };
 
 function renderFlow() {
@@ -134,6 +135,11 @@ describe('useBookingFlow', () => {
       status: 'ready',
       clientSecret: 'pi_123_secret_abc',
       amountCents: 4500,
+      isLastMinute: false,
+      // Depende del reloj real frente a SLOT_START; se prueba con `now`
+      // fijo en BookingFlow.checkout.test.ts.
+      estimatedLastMinute: expect.any(Boolean),
+      slotStartIso: SLOT_START,
     });
   });
 

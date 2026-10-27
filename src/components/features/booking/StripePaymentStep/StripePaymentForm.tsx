@@ -5,10 +5,14 @@ import { ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { formatPriceCents } from '../BookingSummary/BookingSummary.logic';
+import { LastMinuteNotice } from '../LastMinuteNotice';
 
 import { useStripePaymentForm } from './StripePaymentStep.logic';
 import { stripePaymentStepStyles as s } from './StripePaymentStep.styles';
 import type { StripePaymentFormProps } from './StripePaymentStep.types';
+
+/** Id del aviso de última hora, referenciado por el botón de pagar. */
+const LAST_MINUTE_NOTICE_ID = 'booking-payment-last-minute-notice';
 
 /**
  * Formulario de pago propiamente dicho.
@@ -20,6 +24,7 @@ import type { StripePaymentFormProps } from './StripePaymentStep.types';
 export function StripePaymentForm({
   amountCents,
   locale,
+  isLastMinute,
   returnUrl,
   onSucceeded,
 }: StripePaymentFormProps) {
@@ -46,11 +51,16 @@ export function StripePaymentForm({
         </p>
       )}
 
+      {/* Pegado al botón: es la última oportunidad de leerlo antes de
+          pagar. La versión larga ya se leyó en el resumen. */}
+      {isLastMinute && <LastMinuteNotice variant="compact" id={LAST_MINUTE_NOTICE_ID} />}
+
       <button
         type="submit"
         className={s.payButton}
         disabled={!isReady || isProcessing}
         aria-busy={isProcessing}
+        aria-describedby={isLastMinute ? LAST_MINUTE_NOTICE_ID : undefined}
         data-component="booking-stripe-payment-submit"
       >
         {isProcessing && <span className={s.payButtonSpinner} aria-hidden />}

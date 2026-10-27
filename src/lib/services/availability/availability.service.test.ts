@@ -62,6 +62,14 @@ const PROFESSIONAL_ID = '11111111-1111-4111-8111-111111111111';
 const MONDAY_UTC = new Date(Date.UTC(2026, 5, 1, 0, 0, 0, 0));
 
 /**
+ * "Ahora" de referencia: la víspera del lunes de los tests. Así la
+ * antelación mínima de reserva no recorta ningún hueco y los tests se
+ * centran en el troceado. Los cortes por antelación se prueban en
+ * `availability.service.leadtime.test.ts`.
+ */
+const DAY_BEFORE = new Date(Date.UTC(2026, 4, 31, 12, 0, 0, 0));
+
+/**
  * Formatea un `Date` (instante UTC) a `HH:mm` en Europe/Madrid.
  * Para junio: aplica CEST (+02:00), así un slot que el motor sitúa a
  * 08:00 UTC se lee aquí como '10:00' — coincide con el schedule.
@@ -102,11 +110,14 @@ describe('getAvailableSlots', () => {
     } as unknown as Awaited<ReturnType<typeof prisma.professional.findFirst>>);
     mockedBookingFindMany.mockResolvedValueOnce([]);
 
-    const slots = await getAvailableSlots({
-      professionalId: PROFESSIONAL_ID,
-      date: MONDAY_UTC,
-      serviceDurationMinutes: 60,
-    });
+    const slots = await getAvailableSlots(
+      {
+        professionalId: PROFESSIONAL_ID,
+        date: MONDAY_UTC,
+        serviceDurationMinutes: 60,
+      },
+      DAY_BEFORE,
+    );
 
     // Bloque 10:00-20:00 Madrid = 600 minutos. Paso = 75 (60 servicio + 15 buffer).
     // Inicios válidos: 10:00, 11:15, 12:30, 13:45, 15:00, 16:15, 17:30, 18:45.
@@ -137,11 +148,14 @@ describe('getAvailableSlots', () => {
       },
     ] as unknown as Awaited<ReturnType<typeof prisma.booking.findMany>>);
 
-    const slots = await getAvailableSlots({
-      professionalId: PROFESSIONAL_ID,
-      date: MONDAY_UTC,
-      serviceDurationMinutes: 60,
-    });
+    const slots = await getAvailableSlots(
+      {
+        professionalId: PROFESSIONAL_ID,
+        date: MONDAY_UTC,
+        serviceDurationMinutes: 60,
+      },
+      DAY_BEFORE,
+    );
 
     const startsHHmm = slots.map((s) => toMadridHHmm(s.startAt));
     // El slot candidato a 13:45 termina a 14:45 → solapa con [14:00, 15:00).
@@ -167,11 +181,14 @@ describe('getAvailableSlots', () => {
     } as unknown as Awaited<ReturnType<typeof prisma.professional.findFirst>>);
     mockedBookingFindMany.mockResolvedValueOnce([]);
 
-    const slots = await getAvailableSlots({
-      professionalId: PROFESSIONAL_ID,
-      date: MONDAY_UTC,
-      serviceDurationMinutes: 60,
-    });
+    const slots = await getAvailableSlots(
+      {
+        professionalId: PROFESSIONAL_ID,
+        date: MONDAY_UTC,
+        serviceDurationMinutes: 60,
+      },
+      DAY_BEFORE,
+    );
 
     const startsHHmm = slots.map((s) => toMadridHHmm(s.startAt));
     // Ningún slot debe empezar entre 14:00 (inclusive) y 17:00 (exclusivo).
@@ -195,11 +212,14 @@ describe('getAvailableSlots', () => {
 
     // 2026-06-06 cae en sábado, día cerrado en el horario base.
     const saturday = new Date(Date.UTC(2026, 5, 6, 0, 0, 0, 0));
-    const slots = await getAvailableSlots({
-      professionalId: PROFESSIONAL_ID,
-      date: saturday,
-      serviceDurationMinutes: 60,
-    });
+    const slots = await getAvailableSlots(
+      {
+        professionalId: PROFESSIONAL_ID,
+        date: saturday,
+        serviceDurationMinutes: 60,
+      },
+      DAY_BEFORE,
+    );
 
     expect(slots).toEqual([]);
   });
@@ -216,11 +236,14 @@ describe('getAvailableSlots', () => {
     } as unknown as Awaited<ReturnType<typeof prisma.professional.findFirst>>);
     mockedBookingFindMany.mockResolvedValueOnce([]);
 
-    const slots = await getAvailableSlots({
-      professionalId: PROFESSIONAL_ID,
-      date: MONDAY_UTC,
-      serviceDurationMinutes: 60,
-    });
+    const slots = await getAvailableSlots(
+      {
+        professionalId: PROFESSIONAL_ID,
+        date: MONDAY_UTC,
+        serviceDurationMinutes: 60,
+      },
+      DAY_BEFORE,
+    );
 
     expect(slots).toEqual([]);
   });

@@ -13,7 +13,10 @@ import {
   type BookingSlot,
 } from '@/lib/services/availability/availability.client';
 import { toIntlLocale } from '@/lib/i18n';
+import { isSlotStillBookable } from '@/lib/utils/booking-lead-time';
 import { buildUpcomingDays, getDateKey } from '@/lib/utils/calendar-days';
+
+import { useTickingNow } from '../shared/useTickingNow';
 
 import type { DayTab, SlotPickerLocale } from './SlotPicker.types';
 
@@ -205,13 +208,25 @@ export function useSlotPicker(args: {
     // miente.
   });
 
+  // El servidor filtra la antelación mínima al responder, pero la
+  // respuesta se cachea 60 s y el usuario puede quedarse mirando: con un
+  // reloj que avanza descartamos en cliente los huecos que caducan
+  // mientras tanto, con la misma regla que valida el servidor.
+  const clock = useTickingNow(args.now);
+  const slots = useMemo(
+    () => (query.data ?? []).filter((slot) => isSlotStillBookable(slot.startAtIso, clock)),
+    [query.data, clock],
+  );
+
   return {
     now,
+    /** "Ahora" que avanza: para agrupar los huecos de última hora. */
+    clock,
     dayTabs,
     selectedDay,
     selectedDayKey: dateKey,
     setSelectedDay,
-    slots: query.data ?? [],
+    slots,
     isLoading: query.isPending,
     isError: query.isError,
     /** El servicio no admite reserva online (404): sin reintento posible. */

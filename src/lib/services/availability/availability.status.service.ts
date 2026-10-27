@@ -1,3 +1,5 @@
+import { getEarliestBookableStart } from '@/lib/utils/booking-lead-time';
+
 import {
   AVAILABILITY_BUCKET_MINUTES,
   AVAILABLE_SOON_WINDOW_MINUTES,
@@ -42,8 +44,14 @@ const BOOKINGS_LOOKAHEAD_MS = 48 * 60 * 60 * 1000;
  * ficha de servicio, que devuelve lista vacía en vez de un 500.
  *
  * @param providerIds — proveedores a evaluar. Lista vacía no toca BD.
+ * Solo cuenta huecos reservables: los que empiezan a partir de
+ * `now + MIN_BOOKING_LEAD_TIME_MS` (30 min). Con la ventana de 60 min
+ * del ámbar, "Disponible ahora" equivale a un hueco que empieza en
+ * [now + 30 min, now + 60 min].
+ *
  * @param now — instante de referencia; por defecto, el actual. Se
- *   redondea a bloques de 5 min para que el render sea determinista.
+ *   redondea a bloques de 5 min para que los umbrales de estado sean
+ *   deterministas; el corte de antelación usa el valor sin redondear.
  * @returns mapa `providerId → ProviderAvailability` con entrada para
  *   todos los ids recibidos.
  */
@@ -93,6 +101,10 @@ export async function getProvidersAvailability(
     bundles,
     bookingsByProfessional,
     timezone: BUSINESS_TIMEZONE,
+    // El corte de "reservable" usa el instante REAL, no el redondeado:
+    // redondear hacia abajo adelantaría el corte hasta 5 min y el
+    // listado anunciaría un hueco que `createBooking` ya rechaza.
+    bookableFrom: getEarliestBookableStart(now),
     onInvalidSchedule: (bundle, issues) => {
       console.error(
         '[availability] schedule inválido en professional %s (provider %s):',

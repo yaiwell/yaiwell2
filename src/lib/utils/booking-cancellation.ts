@@ -11,8 +11,14 @@
  * desde server components, hooks de cliente y tests sin duplicar.
  */
 
-/** Umbral mínimo, en milisegundos, para permitir cancelar (2 horas). */
-const MIN_CANCELLATION_LEAD_MS = 2 * 60 * 60 * 1000;
+/**
+ * Umbral mínimo, en milisegundos, para permitir cancelar (2 horas).
+ *
+ * Se exporta porque también fija el umbral de la reserva de última hora
+ * (`booking-last-minute.ts`): una reserva que nace ya dentro de esta
+ * ventana no tiene margen de cancelación, y por eso no admite devolución.
+ */
+export const MIN_CANCELLATION_LEAD_MS = 2 * 60 * 60 * 1000;
 
 /**
  * Estados de reserva que se consideran activos y, por tanto,
