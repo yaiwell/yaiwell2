@@ -33,6 +33,11 @@ Para ver qué ha cambiado usa solo comandos de lectura (`git diff`, `git diff --
 - Tablas nuevas con RLS (si hay migraciones, recomienda pasar también `db-migration-guard`).
 - Nada de secretos en el código ni de lógica de Stripe/Clerk en componentes.
 
+**Coherencia UI ↔ servidor**
+
+- Todo lo que la UI ofrece debe aceptarlo el servidor con las mismas reglas: huecos del selector frente a la antelación mínima de reserva (`src/lib/utils/booking-lead-time.ts`), botones de cancelar o valorar frente a sus guards del service, badges como "Disponible ahora" frente a lo que de verdad se puede comprar.
+- Una regla duplicada en dos sitios con valores distintos es un hallazgo P1 aunque hoy coincidan: debe salir de una constante compartida.
+
 **Tests**
 
 - Los casos límite exigidos tienen test: cancelar a 1h59min (rechazado) y a 2h00 (aceptado), y valorar una reserva no completada (rechazado).

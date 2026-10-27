@@ -142,6 +142,12 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
 - Al cancelar el proveedor: refund íntegro automático al cliente vía Stripe Connect, sin penalización para el cliente.
 - La cancelación por el cliente sigue una política distinta (TBD, probable full-refund hasta -2h, no-show sin refund).
 
+### Antelación mínima y reservas de última hora (decidido 2026-10-27)
+- Se puede reservar **hasta 30 minutos antes** del inicio, si hay hueco. El motor de disponibilidad no ofrece huecos por debajo de ese margen: todo lo que se muestra debe poder reservarse.
+- **Reserva de última hora** = la que empieza en menos de 2 h desde que se reserva: **pago online obligatorio en el momento y sin devolución**. La UI lo avisa antes de pagar.
+- Con más de 2 h de antelación el cliente podrá **pagar en el local** (funcionalidad pendiente, ver `TODO.md`).
+- Las constantes viven en `src/lib/utils/` y las comparten servidor y cliente.
+
 ### Implementación esperada
 - Validar ambas reglas en el `service` (`booking.service.ts` / `review.service.ts`) y en los endpoints, **no solo en UI**.
 - Errores tipados: `BookingTooLateToCancelError`, `BookingNotCompletedError`, `ReviewWindowExpiredError`.

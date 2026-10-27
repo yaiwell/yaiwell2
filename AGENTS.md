@@ -36,6 +36,9 @@ Codifican las reglas de `CLAUDE.md` en su propio prompt, así que **no hace falt
 | **stripe-payments** | Escribe código · precarga `stripe-best-practices` · memoria de proyecto | opus | Cualquier cambio en `integrations/stripe`, `services/{checkout,payments,plans}` o `/api/webhooks/stripe`: webhooks, refunds, sweeper de `pending`, Stripe Billing. | Configurar el dashboard de Stripe (lo devuelve como paso manual). |
 | **business-rules-auditor** | Solo lectura | opus | Revisión de §4.bis: cancelación ≥2h, valoraciones solo `completed` y en 30 días, auth y propiedad en endpoints, Zod en los bordes, RLS, tests de casos límite. | Revisión de estilo (eso es `conventions-reviewer`). |
 | **conventions-reviewer** | Solo lectura | sonnet | Revisión de §6.bis sobre lo tocado: separación de ficheros, comentarios en castellano, i18n en los 4 idiomas, ~250 líneas, barrels seguros para el cliente. | Reglas de negocio o seguridad. |
+| **e2e-tester** | Escribe tests (no código de producto) · memoria de proyecto | sonnet | Tests de Playwright de los flujos críticos tras tocarlos, o cuando un bug se escapó y un E2E lo habría cazado. Prioriza la coherencia UI ↔ servidor. | Arreglar el bug que encuentra (lo devuelve como hallazgo). |
+| **release-verifier** | Solo lectura + MCP Supabase | sonnet | Después de cada push a `main`: CI, deploy, endpoints críticos (cron 401, webhook 400), entregas de Stripe, advisors y cola de reembolsos. Semáforo de producción. | Redeploys o cambios de configuración. |
+| **design-auditor** | Solo lectura + web + navegador · memoria de proyecto | opus | Evaluar diseño y UX frente a criterios vigentes (2026→2027) y la marca: sistema de diseño, móvil, modo oscuro, WCAG 2.2, confianza, rendimiento percibido. P7 y antes de enseñar el producto. | Implementar el rediseño (sale como tarea aparte). |
 
 Si un agente propio cubre la tarea, **se usa en lugar de Explore/general-purpose con prompt largo**. Si aparece una necesidad recurrente que ninguno cubre, crear el agente aquí (ver §6) en vez de copiar prompts de playbook en playbook.
 
@@ -121,11 +124,9 @@ Si un agente propio cubre la tarea, **se usa en lugar de Explore/general-purpose
 
 ### P7 · Auditoría de diseño / UX (modo oscuro, accesibilidad, mobile-first)
 - **Trigger:** "revisa el modo oscuro", "audita la accesibilidad de la landing".
-- **Agentes:** **3 Explore en paralelo**, cada uno con un ángulo distinto:
-  - Color/contraste/legibilidad (sobre `globals.css` + tokens).
-  - Coherencia con shadcn/ui y estructura §6.bis.
-  - Accesibilidad (ARIA, foco, navegación teclado) y responsive (375→1440).
-- **Prompt base:** "Eres revisor de [ángulo]. Recorre [scope]. Devuelve: hallazgos con `archivo:línea`, severidad (P0/P1/P2), propuesta concreta. NO escribas código."
+- **Agentes:** **design-auditor** (evaluación global con tendencias e inspección de la web real). Si el scope es grande, añadir en paralelo **conventions-reviewer** para la estructura §6.bis de los componentes.
+- **Prompt base:** "Evalúa [scope] y guarda el informe como hallazgos priorizados. NO escribas código."
+- **Éxito:** informe en `docs/design-audit-YYYY-MM-DD.md`; las mejoras entran a `TODO.md`.
 - **Tras los hallazgos:** el orquestador prioriza, aplica los P0/P1 directamente o lanza un P3/P5 según volumen.
 
 ### P8 · Auditoría técnica (perf, seguridad, bundle, tests)
@@ -165,6 +166,16 @@ Si un agente propio cubre la tarea, **se usa en lugar de Explore/general-purpose
   2. **business-rules-auditor** revisa el resultado (refund íntegro al cancelar el proveedor, idempotencia del webhook, auth).
   3. El orquestador valida, commitea y lista al dev los pasos manuales del dashboard de Stripe.
 - **Éxito:** tests de Vitest con el SDK mockeado, `typecheck` + `test` verdes, pasos manuales documentados en `TODO.md`.
+
+### P14 · Verificación tras publicar
+- **Trigger:** cada push a `main`, o "en producción falla X".
+- **Agentes:** **release-verifier**. Si algo sale ❌ en un flujo de usuario → **e2e-tester** para reproducirlo en local y P1 para arreglarlo.
+- **Éxito:** semáforo verde o la causa del rojo localizada.
+
+### P15 · Flujo de usuario nuevo o modificado
+- **Trigger:** "cambia cómo se reserva", "añade pago en el local", cualquier cambio en búsqueda → reserva → pago → cancelación → valoración.
+- **Agentes:** implementación según P2/P3/P4 → **e2e-tester** cubre el flujo → **business-rules-auditor** + **conventions-reviewer** en paralelo → P14 tras el push.
+- **Éxito:** E2E del flujo en verde, sin hallazgos P0/P1.
 
 ### P13 · Cambio de schema / migración
 - **Trigger:** "añade la columna X", "nueva tabla", "registra la migración 7", "activa RLS en Y".
