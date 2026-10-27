@@ -8,6 +8,17 @@
 
 ## 2026-10-27
 
+### 2026-10-27 (2) — Prueba completa de cobro con Stripe Connect y cancelación del proveedor
+
+- **Cuenta conectada de test** para Studio Aura (`acct_1UV5ErGTznGuMsBl`): Custom, creada por API con los valores de prueba publicados por Stripe (identidad `address_full_match`, nacimiento 1901, IBAN de test español). `charges_enabled` y `transfers: active` al momento. Se deja enlazada para poder probar desde el navegador con la tarjeta 4242.
+- **Prueba con el código real de los servicios** (script temporal con `tsx --conditions=react-server`, ya borrado) contra la BD de producción, el webhook de `yaiwell2.vercel.app` y Stripe test:
+  - Hueco real del motor de disponibilidad → `createBookingCheckout` → reserva `pending` y PaymentIntent con destination charge (18 €, comisión 2,16 €).
+  - Cobro con `pm_card_visa` → el webhook la pasa a **`confirmed`**.
+  - `cancelBookingByProviderWithRefund` (con 2 h de margen) → `refund: issued` → `charge.refunded` → **`refunded`** con `stripeRefundId` y `refundedAt`.
+  - En Stripe: refund de 18 €, **transferencia al centro revertida entera** y **comisión de plataforma devuelta**.
+- Reserva sintética borrada al terminar; 0 reservas de prueba en BD.
+
+---
 ### 2026-10-27 — Webhook de Stripe y cron dados de alta en producción
 
 - **Destino de eventos en Stripe (modo test)**: `https://yaiwell2.vercel.app/api/webhooks/stripe`, eventos de "Tu cuenta", carga snapshot, suscrito a `payment_intent.succeeded`, `payment_intent.payment_failed`, `charge.refunded` y `charge.refund.updated`. Versión `2026-09-30.endive`: el dashboard ya no ofrece la `dahlia` del SDK (alineación anotada en `TODO.md`).
