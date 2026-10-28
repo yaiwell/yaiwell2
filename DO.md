@@ -8,6 +8,21 @@
 
 ## 2026-10-28
 
+### 2026-10-28 — Correos transaccionales con Resend
+
+P3 + P10 (`conventions-reviewer` y `business-rules-auditor` en paralelo; sus P1 y casi todos los P2 aplicados).
+
+- **Seis avisos** en el idioma de quien los recibe (`users.locale`), hora de Madrid y textos en `src/messages/emails/{es,ca,en,de}.json` (aparte de los de la web para no mandarlos al navegador):
+  - Recibo al cliente y aviso de reserva nueva al centro cuando el webhook confirma el pago. Incluye el descuento con el precio habitual; el centro ve el nombre y las notas del cliente, nunca su email.
+  - Cancelación por el centro con el estado del reembolso: emitido, en trámite o «si llegaste a pagar» cuando Stripe no confirmó si hubo cobro (`paymentUncertain`).
+  - Pago tardío que pierde la franja: aviso de que no hay cita y de que el dinero vuelve (`lateRefund` en el resultado del webhook; una reentrega no repite el correo).
+  - Invitación a valorar al marcar la cita como finalizada (ventana de `REVIEW_WINDOW_DAYS`).
+  - Negocio aprobado o rechazado desde `/admin`, con el motivo.
+- **Módulo `lib/services/notifications/`**: plantillas puras (contenido → HTML con estilos en línea y texto plano), repositorio de solo lectura, envío que nunca lanza y se programa con `after()` tras responder, comprobación del estado de la reserva al enviar y clave de idempotencia de Resend por aviso.
+- No escribe a direcciones de prueba (`+clerk_test`, `example.com`, `.local`, `.test`…).
+- `sendEmail` acepta `idempotencyKey` y trata `EMAIL_FROM_DEFAULT` vacío como ausente (en `.env.local` estaba vacío y habría mandado `from: ''`).
+- 1373 tests unitarios (nuevos de plantillas, servicio, paridad de claves, acciones del calendario y webhook).
+
 ### 2026-10-28 — Huecos con descuento: avisos, confirmación, filtro en móvil y mínimo de Stripe
 
 - **Descuento perdido**: si entre elegir el hueco y crear la reserva la oferta se retira, caduca, se vende o cambia de tramo, el pago avisa («El descuento de este hueco ya no está disponible / ha cambiado…») con el importe del servidor.

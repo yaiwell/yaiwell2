@@ -34,6 +34,12 @@ export interface EmailMessage {
    * inyecta nada por defecto.
    */
   headers?: Record<string, string>;
+  /**
+   * Clave de idempotencia de Resend (válida 24 h). Los avisos que nacen
+   * de webhooks la necesitan: Stripe reentrega eventos y sin ella el
+   * cliente recibiría el mismo correo dos veces.
+   */
+  idempotencyKey?: string;
 }
 
 export interface SendEmailResult {

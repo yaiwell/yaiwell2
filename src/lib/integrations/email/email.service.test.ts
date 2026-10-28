@@ -156,4 +156,22 @@ describe('sendEmail', () => {
       }),
     );
   });
+  it('pasa la clave de idempotencia como opción de la petición', async () => {
+    sendMock.mockResolvedValue({ data: { id: 'em_2' }, error: null });
+
+    await sendEmail({ to: ['a@b.com'], subject: 'Hola', text: 'plano', idempotencyKey: 'k/1' });
+
+    expect(sendMock).toHaveBeenCalledWith(expect.anything(), { idempotencyKey: 'k/1' });
+  });
+  it('trata EMAIL_FROM_DEFAULT vacío como ausente', async () => {
+    vi.stubEnv('EMAIL_FROM_DEFAULT', '');
+    sendMock.mockResolvedValue({ data: { id: 'em_3' }, error: null });
+
+    await sendEmail({ to: ['a@b.com'], subject: 'Hola', text: 'plano' });
+
+    expect(sendMock).toHaveBeenCalledWith(
+      expect.objectContaining({ from: 'Yaiwell <noreply@yaiwell.com>' }),
+    );
+    vi.unstubAllEnvs();
+  });
 });

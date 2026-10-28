@@ -6,6 +6,11 @@ import { redirect } from 'next/navigation';
 import type { AppLocale } from '@/i18n/routing';
 import { requireRole } from '@/lib/auth/server';
 import {
+  notifyProviderApproved,
+  notifyProviderRejected,
+  scheduleNotification,
+} from '@/lib/services/notifications';
+import {
   approveProvider,
   InvalidVerificationStatusError,
   ProviderNotFoundForVerificationError,
@@ -68,6 +73,9 @@ export async function approveProviderAction(
     return { ok: false, code: 'INTERNAL' };
   }
 
+  // El correo sale tras responder; si falla, la aprobación ya está hecha.
+  scheduleNotification(() => notifyProviderApproved(providerId));
+
   // Invalida caches y vuelve a la cola — la UI tras éxito ya no
   // verá este provider en pending.
   revalidatePath(`/${locale}/admin`);
@@ -109,6 +117,8 @@ export async function rejectProviderAction(
     console.error('[admin/verificaciones] rejectProviderAction error:', err);
     return { ok: false, code: 'INTERNAL' };
   }
+
+  scheduleNotification(() => notifyProviderRejected(providerId, notes.trim()));
 
   revalidatePath(`/${locale}/admin`);
   revalidatePath(`/${locale}/admin/verificaciones/${providerId}`);

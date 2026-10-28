@@ -68,6 +68,20 @@ vi.mock('@/lib/services/checkout', () => ({
   MissingBookingReferenceError: MissingRefStub,
 }));
 
+const { scheduleMock, notifyConfirmedMock, notifyLateRefundMock } = vi.hoisted(() => ({
+  scheduleMock: vi.fn((task: () => Promise<void>) => void task()),
+  notifyConfirmedMock: vi.fn(async () => {}),
+  notifyLateRefundMock: vi.fn(async () => {}),
+}));
+
+// `after()` solo existe dentro de una petición real: lo sustituimos por
+// una ejecución inmediata para comprobar qué aviso se programa.
+vi.mock('@/lib/services/notifications', () => ({
+  scheduleNotification: scheduleMock,
+  notifyBookingConfirmed: notifyConfirmedMock,
+  notifyLatePaymentRefunded: notifyLateRefundMock,
+}));
+
 import { POST } from './route';
 
 /**
@@ -150,6 +164,42 @@ describe('POST /api/webhooks/stripe', () => {
       bookingId: 'bk-1',
       status: 'confirmed',
     });
+  });
+
+  it('avisa por email solo cuando la reserva pasa a confirmed', async () => {
+    verifyMock.mockReturnValue({
+      type: 'payment_intent.succeeded',
+      created: 1_790_000_000,
+      data: { object: { id: 'pi_test', metadata: { bookingId: 'bk-1' } } },
+    });
+    confirmMock.mockResolvedValue({ bookingId: 'bk-1', changed: true, status: 'confirmed' });
+    await POST(buildRequest());
+    expect(notifyConfirmedMock).toHaveBeenCalledWith('bk-1');
+
+    // Reentrega del mismo evento: sin cambio de estado, sin segundo correo.
+    notifyConfirmedMock.mockClear();
+    confirmMock.mockResolvedValue({ bookingId: 'bk-1', changed: false, status: 'confirmed' });
+    await POST(buildRequest());
+    expect(notifyConfirmedMock).not.toHaveBeenCalled();
+  });
+
+  it('avisa del reembolso de un pago tardío y no del recibo', async () => {
+    verifyMock.mockReturnValue({
+      type: 'payment_intent.succeeded',
+      created: 1_790_000_000,
+      data: { object: { id: 'pi_test', metadata: { bookingId: 'bk-1' } } },
+    });
+    confirmMock.mockResolvedValue({
+      bookingId: 'bk-1',
+      changed: true,
+      status: 'cancelled',
+      lateRefund: 'issued',
+    });
+
+    await POST(buildRequest());
+
+    expect(notifyLateRefundMock).toHaveBeenCalledWith('bk-1', 'issued');
+    expect(notifyConfirmedMock).not.toHaveBeenCalled();
   });
 
   it('cancela la reserva ante payment_intent.payment_failed', async () => {

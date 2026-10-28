@@ -1,0 +1,63 @@
+{
+  "common": {
+    "greeting": "Hi {name},",
+    "greetingNoName": "Hi,",
+    "signature": "The Yaiwell team",
+    "footer": "You are receiving this email because you have a Yaiwell account. This is an automated message: please do not reply.",
+    "serviceLabel": "Service",
+    "whenLabel": "When",
+    "whereLabel": "Where",
+    "professionalLabel": "Professional",
+    "clientLabel": "Client",
+    "notesLabel": "Client notes",
+    "paidLabel": "Total paid",
+    "discountNote": "{pct}% discount applied (usual price {original})"
+  },
+  "bookingConfirmed": {
+    "subject": "Booking confirmed at {provider}",
+    "heading": "Your booking is confirmed",
+    "intro": "We have received your payment. {provider} is expecting you.",
+    "cta": "View my bookings"
+  },
+  "providerNewBooking": {
+    "subject": "New booking: {service}, {when}",
+    "heading": "You have a new booking",
+    "intro": "{client} has booked and paid online.",
+    "cta": "Open the calendar"
+  },
+  "bookingCancelled": {
+    "subject": "{provider} has cancelled your booking",
+    "heading": "Your booking has been cancelled",
+    "intro": "{provider} can no longer see you at this time and has cancelled the booking.",
+    "refundIssued": "We are refunding 100% of the amount ({amount}). Depending on your bank, it may take 5 to 10 days to appear.",
+    "refundPending": "We are refunding 100% of the amount ({amount}). The refund is being processed and we will let you know if we need anything from you.",
+    "refundUncertain": "If you were charged, we will refund 100% of the amount ({amount}). We are checking the payment and will let you know if we need anything from you.",
+    "cta": "Find another time"
+  },
+  "latePaymentRefunded": {
+    "subject": "We couldn't confirm your booking at {provider}",
+    "heading": "Your booking was not confirmed",
+    "intro": "Your payment arrived after that time was no longer available at {provider}, so we couldn't confirm the booking.",
+    "cta": "Find another time"
+  },
+  "reviewInvite": {
+    "subject": "How was {provider}?",
+    "heading": "How was your appointment?",
+    "intro": "{provider} has marked your {service} appointment as completed. Your review helps others choose.",
+    "window": "You can leave a review for the next {days} days.",
+    "cta": "Review my appointment"
+  },
+  "providerApproved": {
+    "subject": "{provider} is now live on Yaiwell",
+    "heading": "You're on Yaiwell",
+    "intro": "We have reviewed {provider} and it now appears in search results. Your services can be booked from now on.",
+    "cta": "Go to my dashboard"
+  },
+  "providerRejected": {
+    "subject": "We need to review some details of {provider}",
+    "heading": "Your application needs changes",
+    "intro": "We have reviewed {provider} and cannot publish it yet. This is the reason:",
+    "next": "Update your details from your dashboard and we will review it again.",
+    "cta": "Go to my dashboard"
+  }
+}

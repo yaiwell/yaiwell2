@@ -39,7 +39,9 @@ export async function sendEmail(message: EmailMessage): Promise<SendEmailResult>
     throw new EmailValidationError('El email necesita cuerpo HTML o texto plano.');
   }
 
-  const from = message.from ?? process.env.EMAIL_FROM_DEFAULT ?? FALLBACK_FROM;
+  // `||` y no `??`: una variable definida pero vacía (`EMAIL_FROM_DEFAULT=`
+  // en `.env.local`) debe caer al remitente por defecto, no mandar `from: ''`.
+  const from = message.from || process.env.EMAIL_FROM_DEFAULT || FALLBACK_FROM;
   const client = getEmailClient();
 
   // El SDK de Resend tiene una unión discriminada por cuerpo (`html` |
@@ -58,7 +60,9 @@ export async function sendEmail(message: EmailMessage): Promise<SendEmailResult>
     headers: message.headers,
   } as CreateEmailOptions;
 
-  const { data, error } = await client.emails.send(payload);
+  const { data, error } = message.idempotencyKey
+    ? await client.emails.send(payload, { idempotencyKey: message.idempotencyKey })
+    : await client.emails.send(payload);
 
   if (error) {
     // No propagamos el `message` (que puede incluir fragmentos del

@@ -1,0 +1,63 @@
+{
+  "common": {
+    "greeting": "Hola, {name}:",
+    "greetingNoName": "Hola:",
+    "signature": "El equipo de Yaiwell",
+    "footer": "Recibes este correo porque tienes una cuenta en Yaiwell. Es un aviso automático: no respondas a este mensaje.",
+    "serviceLabel": "Servicio",
+    "whenLabel": "Cuándo",
+    "whereLabel": "Dónde",
+    "professionalLabel": "Profesional",
+    "clientLabel": "Cliente",
+    "notesLabel": "Notas del cliente",
+    "paidLabel": "Total pagado",
+    "discountNote": "Descuento del {pct} % aplicado (precio habitual {original})"
+  },
+  "bookingConfirmed": {
+    "subject": "Reserva confirmada en {provider}",
+    "heading": "Tu reserva está confirmada",
+    "intro": "Hemos recibido el pago. Te esperan en {provider}.",
+    "cta": "Ver mis reservas"
+  },
+  "providerNewBooking": {
+    "subject": "Nueva reserva: {service}, {when}",
+    "heading": "Tienes una reserva nueva",
+    "intro": "{client} ha reservado y pagado online.",
+    "cta": "Abrir el calendario"
+  },
+  "bookingCancelled": {
+    "subject": "{provider} ha cancelado tu reserva",
+    "heading": "Tu reserva se ha cancelado",
+    "intro": "{provider} no puede atenderte en esta franja y ha cancelado la reserva.",
+    "refundIssued": "Te devolvemos el 100 % del importe ({amount}). Según tu banco, puede tardar de 5 a 10 días en aparecer.",
+    "refundPending": "Te devolvemos el 100 % del importe ({amount}). Estamos tramitando la devolución y te avisaremos si necesitamos algo de ti.",
+    "refundUncertain": "Si llegaste a pagar, te devolveremos el 100 % del importe ({amount}). Estamos comprobando el pago y te avisaremos si necesitamos algo de ti.",
+    "cta": "Buscar otra hora"
+  },
+  "latePaymentRefunded": {
+    "subject": "No hemos podido confirmar tu reserva en {provider}",
+    "heading": "Tu reserva no se ha confirmado",
+    "intro": "Tu pago llegó cuando esa hora ya no estaba disponible en {provider}, así que no hemos podido confirmar la reserva.",
+    "cta": "Buscar otra hora"
+  },
+  "reviewInvite": {
+    "subject": "¿Qué tal en {provider}?",
+    "heading": "¿Qué tal tu cita?",
+    "intro": "{provider} ha marcado tu cita de {service} como finalizada. Tu valoración ayuda a otras personas a elegir.",
+    "window": "Puedes valorarla durante los próximos {days} días.",
+    "cta": "Valorar mi cita"
+  },
+  "providerApproved": {
+    "subject": "{provider} ya está publicado en Yaiwell",
+    "heading": "Ya estás en Yaiwell",
+    "intro": "Hemos revisado {provider} y ya aparece en las búsquedas. Desde ahora se pueden reservar tus servicios.",
+    "cta": "Ir a mi panel"
+  },
+  "providerRejected": {
+    "subject": "Necesitamos revisar algunos datos de {provider}",
+    "heading": "Tu solicitud necesita cambios",
+    "intro": "Hemos revisado {provider} y por ahora no podemos publicarlo. Este es el motivo:",
+    "next": "Corrige los datos desde tu panel y volveremos a revisarlo.",
+    "cta": "Ir a mi panel"
+  }
+}

@@ -137,7 +137,12 @@ describe('settlePaymentOnPendingBooking', () => {
     expect(repoMock.confirmIfPending).not.toHaveBeenCalled();
     expect(repoMock.cancelIfPending).toHaveBeenCalledWith('bk-1', NOW);
     expect(refundedInside).toBe(false);
-    expect(result).toEqual({ bookingId: 'bk-1', changed: true, status: 'cancelled' });
+    expect(result).toEqual({
+      bookingId: 'bk-1',
+      changed: true,
+      status: 'cancelled',
+      lateRefund: 'issued',
+    });
   });
 
   it('con la retención vencida, si la confirmación bajo bloqueo no aplica sigue el estado real', async () => {
@@ -149,7 +154,12 @@ describe('settlePaymentOnPendingBooking', () => {
     expect(repoMock.confirmIfPending).toHaveBeenCalledWith('bk-1', txMock);
     expect(repoMock.cancelIfPending).not.toHaveBeenCalled();
     expect(issueMock.issueBookingRefund).toHaveBeenCalledWith('bk-1', 'pi_123');
-    expect(result).toEqual({ bookingId: 'bk-1', changed: false, status: 'cancelled' });
+    expect(result).toEqual({
+      bookingId: 'bk-1',
+      changed: false,
+      status: 'cancelled',
+      lateRefund: 'issued',
+    });
   });
 
   it('cancela y reembolsa si otra reserva cogió la franja', async () => {
@@ -162,7 +172,12 @@ describe('settlePaymentOnPendingBooking', () => {
     expect(issueMock.issueBookingRefund).toHaveBeenCalledWith('bk-1', 'pi_123', { now: NOW });
     // Pagó tarde de verdad: no es incidencia para soporte.
     expect(warnMock.reportCheckoutWarning).not.toHaveBeenCalled();
-    expect(result).toEqual({ bookingId: 'bk-1', changed: true, status: 'cancelled' });
+    expect(result).toEqual({
+      bookingId: 'bk-1',
+      changed: true,
+      status: 'cancelled',
+      lateRefund: 'issued',
+    });
   });
 
   it('cancela y reembolsa si la franja ya empezó, aunque esté libre', async () => {
@@ -209,7 +224,25 @@ describe('settlePaymentOnPendingBooking', () => {
     const result = await settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK);
 
     expect(issueMock.issueBookingRefund).toHaveBeenCalledWith('bk-1', 'pi_123');
-    expect(result).toEqual({ bookingId: 'bk-1', changed: false, status: 'cancelled' });
+    expect(result).toEqual({
+      bookingId: 'bk-1',
+      changed: false,
+      status: 'cancelled',
+      lateRefund: 'issued',
+    });
+  });
+
+  it('una reentrega con el reembolso ya hecho no vuelve a pedir aviso', async () => {
+    repoMock.confirmIfPending.mockResolvedValue(false);
+    repoMock.findCheckoutRow.mockResolvedValue(row({ status: 'cancelled' }));
+    issueMock.issueBookingRefund.mockResolvedValue({
+      outcome: 'already_refunded',
+      stripeRefundId: null,
+    });
+
+    const result = await settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK);
+
+    expect(result).not.toHaveProperty('lateRefund');
   });
 
   it('si otra entrega ya la confirmó, no hace nada', async () => {

@@ -1,0 +1,63 @@
+{
+  "common": {
+    "greeting": "Hallo {name},",
+    "greetingNoName": "Hallo,",
+    "signature": "Dein Yaiwell-Team",
+    "footer": "Du erhältst diese E-Mail, weil du ein Yaiwell-Konto hast. Dies ist eine automatische Nachricht: Bitte antworte nicht darauf.",
+    "serviceLabel": "Leistung",
+    "whenLabel": "Wann",
+    "whereLabel": "Wo",
+    "professionalLabel": "Fachkraft",
+    "clientLabel": "Kundschaft",
+    "notesLabel": "Anmerkungen",
+    "paidLabel": "Bezahlt",
+    "discountNote": "{pct} % Rabatt angewendet (regulärer Preis {original})"
+  },
+  "bookingConfirmed": {
+    "subject": "Buchung bei {provider} bestätigt",
+    "heading": "Deine Buchung ist bestätigt",
+    "intro": "Wir haben deine Zahlung erhalten. {provider} erwartet dich.",
+    "cta": "Meine Buchungen ansehen"
+  },
+  "providerNewBooking": {
+    "subject": "Neue Buchung: {service}, {when}",
+    "heading": "Du hast eine neue Buchung",
+    "intro": "{client} hat online gebucht und bezahlt.",
+    "cta": "Kalender öffnen"
+  },
+  "bookingCancelled": {
+    "subject": "{provider} hat deine Buchung storniert",
+    "heading": "Deine Buchung wurde storniert",
+    "intro": "{provider} kann dich zu diesem Termin nicht empfangen und hat die Buchung storniert.",
+    "refundIssued": "Wir erstatten 100 % des Betrags ({amount}). Je nach Bank kann es 5 bis 10 Tage dauern, bis er sichtbar ist.",
+    "refundPending": "Wir erstatten 100 % des Betrags ({amount}). Die Erstattung wird bearbeitet; wir melden uns, falls wir etwas von dir brauchen.",
+    "refundUncertain": "Falls du schon bezahlt hast, erstatten wir 100 % des Betrags ({amount}). Wir prüfen die Zahlung und melden uns, falls wir etwas von dir brauchen.",
+    "cta": "Anderen Termin finden"
+  },
+  "latePaymentRefunded": {
+    "subject": "Wir konnten deine Buchung bei {provider} nicht bestätigen",
+    "heading": "Deine Buchung wurde nicht bestätigt",
+    "intro": "Deine Zahlung kam an, als dieser Termin bei {provider} nicht mehr frei war. Deshalb konnten wir die Buchung nicht bestätigen.",
+    "cta": "Anderen Termin finden"
+  },
+  "reviewInvite": {
+    "subject": "Wie war es bei {provider}?",
+    "heading": "Wie war dein Termin?",
+    "intro": "{provider} hat deinen Termin für {service} als abgeschlossen markiert. Deine Bewertung hilft anderen bei der Wahl.",
+    "window": "Du kannst ihn in den nächsten {days} Tagen bewerten.",
+    "cta": "Termin bewerten"
+  },
+  "providerApproved": {
+    "subject": "{provider} ist jetzt auf Yaiwell online",
+    "heading": "Du bist auf Yaiwell",
+    "intro": "Wir haben {provider} geprüft; es erscheint jetzt in den Suchergebnissen. Ab sofort können deine Leistungen gebucht werden.",
+    "cta": "Zu meinem Dashboard"
+  },
+  "providerRejected": {
+    "subject": "Wir müssen einige Angaben von {provider} prüfen",
+    "heading": "Deine Anfrage braucht Änderungen",
+    "intro": "Wir haben {provider} geprüft und können es noch nicht veröffentlichen. Das ist der Grund:",
+    "next": "Korrigiere die Angaben in deinem Dashboard, dann prüfen wir erneut.",
+    "cta": "Zu meinem Dashboard"
+  }
+}

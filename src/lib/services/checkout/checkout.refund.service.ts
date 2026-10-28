@@ -74,7 +74,13 @@ export async function cancelBookingByProviderWithRefund(
     const outcome = await cancelPendingPaymentIntent(bookingId, paymentIntentId);
     if (outcome === 'queued') {
       // No sabemos si hubo cobro: la reserva ya está en la cola de admin.
-      return { bookingId, status: 'cancelled', refund: 'failed', stripeRefundId: null };
+      return {
+        bookingId,
+        status: 'cancelled',
+        refund: 'failed',
+        stripeRefundId: null,
+        paymentUncertain: true,
+      };
     }
     if (outcome !== 'already_paid') {
       return notApplicable(bookingId);

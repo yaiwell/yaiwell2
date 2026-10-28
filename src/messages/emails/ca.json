@@ -1,0 +1,63 @@
+{
+  "common": {
+    "greeting": "Hola, {name}:",
+    "greetingNoName": "Hola:",
+    "signature": "L'equip de Yaiwell",
+    "footer": "Reps aquest correu perquè tens un compte a Yaiwell. És un avís automàtic: no responguis aquest missatge.",
+    "serviceLabel": "Servei",
+    "whenLabel": "Quan",
+    "whereLabel": "On",
+    "professionalLabel": "Professional",
+    "clientLabel": "Client",
+    "notesLabel": "Notes del client",
+    "paidLabel": "Total pagat",
+    "discountNote": "Descompte del {pct} % aplicat (preu habitual {original})"
+  },
+  "bookingConfirmed": {
+    "subject": "Reserva confirmada a {provider}",
+    "heading": "La teva reserva està confirmada",
+    "intro": "Hem rebut el pagament. T'esperen a {provider}.",
+    "cta": "Veure les meves reserves"
+  },
+  "providerNewBooking": {
+    "subject": "Nova reserva: {service}, {when}",
+    "heading": "Tens una reserva nova",
+    "intro": "{client} ha reservat i pagat en línia.",
+    "cta": "Obrir el calendari"
+  },
+  "bookingCancelled": {
+    "subject": "{provider} ha cancel·lat la teva reserva",
+    "heading": "La teva reserva s'ha cancel·lat",
+    "intro": "{provider} no et pot atendre en aquesta franja i ha cancel·lat la reserva.",
+    "refundIssued": "Et retornem el 100 % de l'import ({amount}). Segons el teu banc, pot trigar de 5 a 10 dies a aparèixer.",
+    "refundPending": "Et retornem el 100 % de l'import ({amount}). Estem tramitant la devolució i t'avisarem si necessitem res de tu.",
+    "refundUncertain": "Si vas arribar a pagar, et retornarem el 100 % de l'import ({amount}). Estem comprovant el pagament i t'avisarem si necessitem res de tu.",
+    "cta": "Cercar una altra hora"
+  },
+  "latePaymentRefunded": {
+    "subject": "No hem pogut confirmar la teva reserva a {provider}",
+    "heading": "La teva reserva no s'ha confirmat",
+    "intro": "El teu pagament va arribar quan aquella hora ja no estava disponible a {provider}, així que no hem pogut confirmar la reserva.",
+    "cta": "Cercar una altra hora"
+  },
+  "reviewInvite": {
+    "subject": "Com ha anat a {provider}?",
+    "heading": "Com ha anat la cita?",
+    "intro": "{provider} ha marcat la teva cita de {service} com a finalitzada. La teva valoració ajuda altres persones a triar.",
+    "window": "Pots valorar-la durant els propers {days} dies.",
+    "cta": "Valorar la cita"
+  },
+  "providerApproved": {
+    "subject": "{provider} ja està publicat a Yaiwell",
+    "heading": "Ja ets a Yaiwell",
+    "intro": "Hem revisat {provider} i ja apareix a les cerques. Des d'ara es poden reservar els teus serveis.",
+    "cta": "Anar al meu panell"
+  },
+  "providerRejected": {
+    "subject": "Hem de revisar algunes dades de {provider}",
+    "heading": "La teva sol·licitud necessita canvis",
+    "intro": "Hem revisat {provider} i de moment no el podem publicar. Aquest és el motiu:",
+    "next": "Corregeix les dades des del teu panell i el tornarem a revisar.",
+    "cta": "Anar al meu panell"
+  }
+}

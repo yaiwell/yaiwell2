@@ -136,7 +136,8 @@ describe('cancelBookingByProviderWithRefund sobre una pending', () => {
       expect.any(Date),
       'pi_cancel_failed: api_connection_error',
     );
-    expect(result).toEqual({ ...NOT_APPLICABLE, refund: 'failed' });
+    // Sin saber si hubo cobro, el aviso al cliente no promete reembolso.
+    expect(result).toEqual({ ...NOT_APPLICABLE, refund: 'failed', paymentUncertain: true });
   });
 
   it('error genérico al cancelar y el intent sigue sin pagar: encola (no concluyente)', async () => {

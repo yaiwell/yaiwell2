@@ -164,7 +164,6 @@
   - [ ] **Alinear la versión de API de Stripe** (detectado 2026-10-27): el SDK está fijado a `2026-05-27.dahlia` (`stripe.client.ts`), pero el dashboard ya no ofrece esa versión al crear destinos y el webhook se creó con `2026-09-30.endive`. Hoy no rompe nada (los campos que leemos son estables), pero conviene subir el SDK y el `apiVersion` a `endive` con `/upgrade-stripe` y revisar los tipos.
   - [x] **Flujo de cobro real** (2026-08-31): módulo `lib/services/checkout/` con destination charges (`transfer_data.destination` + `application_fee_amount`), Stripe Elements en el paso de pago, webhook cableado a las 3 transiciones y página de confirmación real. Detalle en `DO.md`.
   - [ ] **Notas congeladas al abrir el checkout**: si el usuario vuelve del paso de pago al resumen y edita las notas, el cambio no llega a BD (la reserva ya existe). O se deshabilita el textarea a partir de ese punto, o se añade un `updateBookingNotes` antes de confirmar.
-  - [ ] **Recibo por email tras `payment_intent.succeeded`** (engancha con la tarea de notificaciones Resend): hoy la confirmación dice "hemos enviado los detalles a tu email" y todavía no sale ningún correo.
 - [~] Cancelación y refunds (política de 2h).
   - [x] Regla 2h en `booking.service.cancelBookingByProvider` (validada en Zod + servicio, no solo en UI) y antelación mínima 2h también en `createBooking` para que no nazcan reservas "incancelables" (2026-06-03).
   - [ ] Cliente puede cancelar (política TBD): full-refund hasta -2h, no-show sin refund (probable).
@@ -200,7 +199,14 @@
 - [ ] **Reponer el footer legal y la columna "Empresa"** cuando existan los destinos. Los textos de las 8 claves retiradas están en la entrada de `DO.md` del 2026-09-24, listos para copiar y pegar sin retraducir.
 - [ ] **`public/og-default.svg` queda huérfano** tras generar la imagen de compartición en código. Es el único asset de marca del repo, así que se conserva por si se reutiliza; borrarlo o no es decisión de diseño.
 - [ ] **Decidir qué hacer con la tabla `provider_categories`**, que queda sin uso tras derivar las categorías de los servicios (2026-09-28). Nunca tuvo una fila. O se borra del schema con una migración, o se documenta por qué se conserva.
-- [ ] Notificaciones por email (Resend).
+- [~] **Notificaciones por email (Resend)** — los 6 avisos base están hechos (2026-10-28, ver DO.md). Pendiente:
+  - [ ] **Comprobar en Vercel** (producción) `RESEND_API_KEY` y que `EMAIL_FROM_DEFAULT` esté vacía o apunte a un dominio verificado en Resend (`yaiwell.com`). Sin clave los avisos se saltan con un `warn` en los logs.
+  - [ ] **Reintento de correos fallidos**: si Resend falla, el aviso se pierde (queda en logs/Sentry). Guardar `confirmationEmailSentAt` o una tabla outbox y que el cron diario los reintente.
+  - [ ] **Aviso de reembolso completado** cuando un reembolso «en trámite» sale desde la cola de admin o llega `charge.refunded`.
+  - [ ] **Recibo con la regla de última hora**: si la reserva empezaba en menos de 2 h, recordar en el recibo que no es reembolsable (§4.bis).
+  - [ ] **Rechazo repetido con el mismo motivo** en menos de 24 h: la clave de idempotencia coincide y Resend no manda el segundo. Incluir el id de `VerificationRequest` en la clave.
+  - [ ] **Test de las acciones de `/admin/verificaciones`**: que un rechazo sin motivo no programa correo (las del calendario ya lo tienen).
+  - [ ] Recordatorio el día antes de la cita (necesita cron; en Vercel Hobby solo hay uno al día).
 - [ ] 4 planes de suscripción con Stripe Billing.
 - [ ] Onboarding de proveedor con formulario manual (jerarquía categoría → tipo → subtipo).
 - [~] **Huecos sueltos con descuento automático** (MVP hecho 2026-10-28, ver DO.md; decisiones en CLAUDE.md §4.bis). Pendiente:

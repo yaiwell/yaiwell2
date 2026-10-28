@@ -115,7 +115,12 @@ describe('confirmBookingPayment', () => {
       { payment_intent: 'pi_123', refund_application_fee: true, reverse_transfer: true },
       { idempotencyKey: 'booking_refund_bk-1' },
     );
-    expect(result).toEqual({ bookingId: 'bk-1', changed: false, status: 'cancelled' });
+    expect(result).toEqual({
+      bookingId: 'bk-1',
+      changed: false,
+      status: 'cancelled',
+      lateRefund: 'issued',
+    });
   });
 
   it('ignora un succeeded sobre una reserva ya reembolsada', async () => {

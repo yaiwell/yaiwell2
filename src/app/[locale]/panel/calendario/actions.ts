@@ -14,6 +14,13 @@ import {
 } from '@/lib/services/booking';
 import { cancelBookingByProviderWithRefund } from '@/lib/services/checkout';
 import type { RefundOutcome } from '@/lib/services/checkout';
+import {
+  notifyBookingCancelledByProvider,
+  notifyBookingCompleted,
+  scheduleNotification,
+  toCancellationRefundState,
+  type CancellationRefundState,
+} from '@/lib/services/notifications';
 
 import { resolveProviderOwner } from './provider-owner';
 
@@ -112,6 +119,8 @@ export async function completeBookingAction(
     return state;
   }
 
+  // La invitación a valorar sale tras responder; si falla, la cita sigue finalizada.
+  scheduleNotification(() => notifyBookingCompleted(bookingId));
   revalidatePath(`/${locale}/panel/calendario`);
   return { ok: true };
 }
@@ -139,9 +148,11 @@ export async function cancelBookingAction(
   }
 
   let refund: RefundOutcome;
+  let refundState: CancellationRefundState;
   try {
     const result = await cancelBookingByProviderWithRefund({ bookingId }, providerUserId);
     refund = result.refund;
+    refundState = toCancellationRefundState(result.refund, result.paymentUncertain);
   } catch (err) {
     const state = toActionCode(err);
     if (state.code === 'INTERNAL') {
@@ -151,6 +162,7 @@ export async function cancelBookingAction(
   }
 
   // La reserva ya está cancelada pase lo que pase con el reembolso.
+  scheduleNotification(() => notifyBookingCancelledByProvider(bookingId, refundState));
   revalidatePath(`/${locale}/panel/calendario`);
 
   if (refund === 'failed') {

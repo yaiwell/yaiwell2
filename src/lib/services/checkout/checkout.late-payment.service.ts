@@ -6,7 +6,7 @@ import { bookingRepository, isBookingHoldingSlot } from '@/lib/services/booking'
 import { reportCheckoutWarning } from './checkout.payment-intent';
 import { issueBookingRefund } from './checkout.refund.issue';
 import { checkoutRepository, type CheckoutBookingRow } from './checkout.repository';
-import type { BookingTransitionResult } from './checkout.types';
+import type { BookingTransitionResult, RefundOutcome } from './checkout.types';
 
 /**
  * Pagos que llegan cuando la reserva ya no los espera.
@@ -58,7 +58,7 @@ export async function refundPaymentOnCancelledBooking(
     `[checkout/late-payment] succeeded on cancelled booking; refund ${outcome}:`,
     booking.id,
   );
-  return { bookingId: booking.id, changed: false, status: 'cancelled' };
+  return { bookingId: booking.id, changed: false, status: 'cancelled', ...lateRefund(outcome) };
 }
 
 /**
@@ -181,7 +181,16 @@ async function cancelAndRefund(
   await ensurePaymentIntentAnchored(booking, paymentIntentId);
   const { outcome } = await issueBookingRefund(booking.id, paymentIntentId, { now });
   console.warn(`[checkout/late-payment] ${reason}; refund ${outcome}:`, booking.id);
-  return { bookingId: booking.id, changed: applied, status: 'cancelled' };
+  return { bookingId: booking.id, changed: applied, status: 'cancelled', ...lateRefund(outcome) };
+}
+
+/**
+ * Pista para avisar al cliente de un reembolso automático. Solo cuando
+ * el reembolso se decidió en esta entrega: `already_refunded` es una
+ * reentrega y el cliente ya fue avisado.
+ */
+function lateRefund(outcome: RefundOutcome): Pick<BookingTransitionResult, 'lateRefund'> {
+  return outcome === 'issued' || outcome === 'failed' ? { lateRefund: outcome } : {};
 }
 
 /**

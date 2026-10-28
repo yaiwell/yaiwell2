@@ -55,6 +55,12 @@ export interface BookingTransitionResult {
   changed: boolean;
   /** Estado en el que queda la reserva tras procesar el evento. */
   status: string;
+  /**
+   * Presente cuando el evento acabó en un reembolso automático emitido
+   * ahora (pago tardío sobre una franja perdida): el webhook avisa al
+   * cliente. Una reentrega (`already_refunded`) no lo trae.
+   */
+  lateRefund?: 'issued' | 'failed';
 }
 
 /**
@@ -86,6 +92,12 @@ export interface ProviderCancellationResult {
   refund: RefundOutcome;
   /** Id del refund de Stripe cuando se emitió en esta llamada. */
   stripeRefundId: string | null;
+  /**
+   * `true` cuando no sabemos si hubo cobro (Stripe falló al cancelar el
+   * intent de una `pending`): el aviso al cliente no debe prometer un
+   * reembolso que quizá no existe.
+   */
+  paymentUncertain?: boolean;
 }
 
 /**

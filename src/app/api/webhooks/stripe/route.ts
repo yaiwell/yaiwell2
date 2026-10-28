@@ -15,6 +15,11 @@ import {
   recordAsyncRefundFailure,
   refundBookingPayment,
 } from '@/lib/services/checkout';
+import {
+  notifyBookingConfirmed,
+  notifyLatePaymentRefunded,
+  scheduleNotification,
+} from '@/lib/services/notifications';
 
 /**
  * Webhook de Stripe → Yaiwell.
@@ -95,6 +100,21 @@ export async function POST(request: NextRequest) {
 
   try {
     const result = await dispatch(event);
+    // Solo la transición real a `confirmed` avisa: una reentrega del mismo
+    // evento llega con `changed: false` y no repite el correo.
+    if (
+      event.type === 'payment_intent.succeeded' &&
+      result.changed &&
+      result.status === 'confirmed'
+    ) {
+      scheduleNotification(() => notifyBookingConfirmed(result.bookingId));
+    }
+    // Pago tardío sobre una franja perdida: el reembolso se emitió en
+    // esta entrega y el cliente tiene que saber por qué no tiene cita.
+    const { lateRefund } = result;
+    if (lateRefund) {
+      scheduleNotification(() => notifyLatePaymentRefunded(result.bookingId, lateRefund));
+    }
     return NextResponse.json<WebhookResponse>(
       {
         received: true,
