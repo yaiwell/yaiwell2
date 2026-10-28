@@ -200,7 +200,8 @@
 - [ ] **`public/og-default.svg` queda huérfano** tras generar la imagen de compartición en código. Es el único asset de marca del repo, así que se conserva por si se reutiliza; borrarlo o no es decisión de diseño.
 - [ ] **Decidir qué hacer con la tabla `provider_categories`**, que queda sin uso tras derivar las categorías de los servicios (2026-09-28). Nunca tuvo una fila. O se borra del schema con una migración, o se documenta por qué se conserva.
 - [~] **Notificaciones por email (Resend)** — los 6 avisos base están hechos (2026-10-28, ver DO.md). Pendiente:
-  - [ ] **Comprobar en Vercel** (producción) `RESEND_API_KEY` y que `EMAIL_FROM_DEFAULT` esté vacía o apunte a un dominio verificado en Resend (`yaiwell.com`). Sin clave los avisos se saltan con un `warn` en los logs.
+  - [x] Variables en Vercel (producción) añadidas por el dev (2026-10-28): `RESEND_API_KEY`, `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
+  - [ ] **Confirmar el dominio verificado en Resend** (pestaña *Domains*): el remitente por defecto es `noreply@yaiwell.com`. Si el verificado es `yaiwell.app`, añadir `EMAIL_FROM_DEFAULT=Yaiwell <noreply@yaiwell.app>` en Vercel.
   - [ ] **Reintento de correos fallidos**: si Resend falla, el aviso se pierde (queda en logs/Sentry). Guardar `confirmationEmailSentAt` o una tabla outbox y que el cron diario los reintente.
   - [ ] **Aviso de reembolso completado** cuando un reembolso «en trámite» sale desde la cola de admin o llega `charge.refunded`.
   - [ ] **Recibo con la regla de última hora**: si la reserva empezaba en menos de 2 h, recordar en el recibo que no es reembolsable (§4.bis).
