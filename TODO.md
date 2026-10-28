@@ -201,7 +201,7 @@
 - [ ] **Decidir qué hacer con la tabla `provider_categories`**, que queda sin uso tras derivar las categorías de los servicios (2026-09-28). Nunca tuvo una fila. O se borra del schema con una migración, o se documenta por qué se conserva.
 - [~] **Notificaciones por email (Resend)** — los 6 avisos base están hechos (2026-10-28, ver DO.md). Pendiente:
   - [x] Variables en Vercel (producción) añadidas por el dev (2026-10-28): `RESEND_API_KEY`, `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
-  - [x] Dominio `yaiwell.com` verificado en Resend (confirmado 2026-10-28): el remitente por defecto `noreply@yaiwell.com` vale. El dev añadió también `EMAIL_FROM_DEFAULT` en Vercel; debe usar ese dominio.
+  - [x] Dominio `yaiwell.com` verificado en Resend (confirmado 2026-10-28): el remitente por defecto `noreply@yaiwell.com` vale. `EMAIL_FROM_DEFAULT` en Vercel corregida a `@yaiwell.com` (con `@yaiwell.app` Resend daba 403). Envío real probado en producción el mismo día.
   - [ ] **Reintento de correos fallidos**: si Resend falla, el aviso se pierde (queda en logs/Sentry). Guardar `confirmationEmailSentAt` o una tabla outbox y que el cron diario los reintente.
   - [ ] **Aviso de reembolso completado** cuando un reembolso «en trámite» sale desde la cola de admin o llega `charge.refunded`.
   - [ ] **Recibo con la regla de última hora**: si la reserva empezaba en menos de 2 h, recordar en el recibo que no es reembolsable (§4.bis).
