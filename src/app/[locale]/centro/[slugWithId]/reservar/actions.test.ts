@@ -96,6 +96,8 @@ describe('createBookingCheckoutAction — mapeo de errores', () => {
       bookingId: 'bk-1',
       clientSecret: 'pi_secret',
       amountCents: 4500,
+      originalPriceCents: null,
+      discountPct: null,
       slotStartIso: '2026-10-05T10:00:00.000Z',
       slotEndIso: '2026-10-05T11:00:00.000Z',
       isLastMinute: true,
@@ -104,5 +106,27 @@ describe('createBookingCheckoutAction — mapeo de errores', () => {
     const result = await createBookingCheckoutAction(INPUT);
 
     expect(result).toMatchObject({ ok: true, isLastMinute: true });
+  });
+
+  it('propaga el precio de referencia y el % de un hueco con descuento', async () => {
+    checkoutMock.createBookingCheckout.mockResolvedValue({
+      bookingId: 'bk-1',
+      clientSecret: 'pi_secret',
+      amountCents: 3600,
+      originalPriceCents: 4500,
+      discountPct: 20,
+      slotStartIso: '2026-10-05T10:00:00.000Z',
+      slotEndIso: '2026-10-05T11:00:00.000Z',
+      isLastMinute: false,
+    });
+
+    const result = await createBookingCheckoutAction(INPUT);
+
+    expect(result).toMatchObject({
+      ok: true,
+      amountCents: 3600,
+      originalPriceCents: 4500,
+      discountPct: 20,
+    });
   });
 });

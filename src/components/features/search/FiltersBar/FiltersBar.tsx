@@ -1,6 +1,6 @@
 'use client';
 
-import { Navigation, SlidersHorizontal, Zap } from 'lucide-react';
+import { Navigation, SlidersHorizontal, Sparkles, Zap } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@/lib/utils';
@@ -14,7 +14,8 @@ import type { FiltersBarProps } from './FiltersBar.types';
  * Se compone de tres bloques de izquierda a derecha:
  *  1. Chips horizontales con las categorías raíz + chip "Todas". Las
  *     categorías llegan por props desde la BD, ya localizadas.
- *  2. Toggle destacado "Solo disponibles ahora".
+ *  2. Toggles "Cerca de ti", "Solo disponibles ahora" y "Con descuento"
+ *     (huecos liberados; filtra, no reordena).
  *  3. Botón "Filtros" que abre el sheet de avanzados.
  *
  * En móvil los chips son scrollables; el toggle y el botón quedan
@@ -24,11 +25,13 @@ export function FiltersBar({
   categories,
   activeCategorySlug,
   availabilityOnly,
+  discountOnly,
   hasAdvancedFilters,
   nearMeOnly,
   nearMeRadiusKm,
   onCategoryChange,
   onAvailabilityToggle,
+  onDiscountToggle,
   onNearMeToggle,
   onOpenFiltersSheet,
 }: FiltersBarProps) {
@@ -93,6 +96,17 @@ export function FiltersBar({
         >
           <Zap className="size-4" aria-hidden />
           <span>{t('availableNowToggle')}</span>
+        </button>
+
+        <button
+          type="button"
+          aria-pressed={discountOnly}
+          onClick={() => onDiscountToggle(!discountOnly)}
+          className={cn(s.toggleOffer, discountOnly ? s.toggleOfferActive : s.toggleOfferIdle)}
+          data-component="filters-discount-toggle"
+        >
+          <Sparkles className="size-4" aria-hidden />
+          <span>{t('slotOffer.filterToggle')}</span>
         </button>
 
         <button

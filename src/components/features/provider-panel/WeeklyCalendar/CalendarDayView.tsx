@@ -20,6 +20,7 @@ interface CalendarDayViewProps extends CalendarColumnsProps {
 export function CalendarDayView({
   days,
   grouped,
+  groupedOffers,
   hours,
   locale,
   readOnly,
@@ -32,6 +33,7 @@ export function CalendarDayView({
   );
   const day = days[selected];
   const positioned = grouped[day.key];
+  const offers = groupedOffers[day.key];
 
   return (
     <div className={s.mobile} data-component="weekly-calendar-day-view">
@@ -39,6 +41,7 @@ export function CalendarDayView({
         {days.map((d, index) => {
           const isSelected = index === selected;
           const count = grouped[d.key].length;
+          const hasItems = count > 0 || groupedOffers[d.key].length > 0;
           return (
             <button
               key={d.dateKey}
@@ -58,7 +61,7 @@ export function CalendarDayView({
             >
               {t(`weekdayShort.${d.key}`)}
               <span className={`${s.tabDate} ${d.isToday ? s.tabToday : ''}`}>{d.dayOfMonth}</span>
-              <span className={count > 0 ? s.tabCount : s.tabCountEmpty} aria-hidden />
+              <span className={hasItems ? s.tabCount : s.tabCountEmpty} aria-hidden />
               {/* El recuento solo para lectores de pantalla: así el nombre
                   accesible empieza por el texto visible (WCAG 2.5.3). */}
               <span className={s.srOnly}>{t('dayView.tabCount', { count })}</span>
@@ -73,7 +76,7 @@ export function CalendarDayView({
         aria-labelledby={`calendar-day-tab-${day.dateKey}`}
         tabIndex={0}
       >
-        {positioned.length === 0 ? (
+        {positioned.length === 0 && offers.length === 0 ? (
           <p className={s.dayEmpty} data-component="weekly-calendar-day-empty">
             {t('emptyDay')}
           </p>
@@ -89,6 +92,7 @@ export function CalendarDayView({
             <div className={s.dayColumn}>
               <CalendarDayColumn
                 positioned={positioned}
+                offers={offers}
                 hours={hours}
                 locale={locale}
                 readOnly={readOnly}

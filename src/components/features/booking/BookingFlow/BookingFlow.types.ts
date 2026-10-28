@@ -61,6 +61,10 @@ export type CheckoutState =
       status: 'ready';
       clientSecret: string;
       amountCents: number;
+      /** Precio de referencia congelado en la reserva; `null` sin descuento. */
+      originalPriceCents: number | null;
+      /** % de descuento congelado en la reserva; `null` sin descuento. */
+      discountPct: number | null;
       /** Última hora según el servidor: manda sobre la estimación del cliente. */
       isLastMinute: boolean;
       /** Estimación del navegador congelada al lanzar el checkout. */
@@ -79,4 +83,9 @@ export interface BookingFlowProps {
   locale: AppLocale;
   /** Segmento `{slug}-{id}` para construir el enlace de vuelta a la ficha. */
   providerSlugWithId: string;
+  /**
+   * Hueco pedido por URL (`?slot=ISO`, validado con Zod en la página):
+   * llega desde una etiqueta de oferta y queda preseleccionado.
+   */
+  initialSlotIso?: string | null;
 }

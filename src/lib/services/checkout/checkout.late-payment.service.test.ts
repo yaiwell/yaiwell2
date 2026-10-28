@@ -3,7 +3,9 @@
  * no lo espera), llamando directamente al service.
  *
  * Caminos protegidos:
- *  - Retención vencida y franja libre → se confirma (condicional).
+ *  - Retención vencida y franja libre → se confirma (condicional) bajo
+ *    el bloqueo por profesional: lock → solape → confirmación, todo en
+ *    la misma transacción, para no competir con `createBooking`.
  *  - Retención vencida y franja ocupada → se cancela y se reembolsa.
  *  - Franja ya empezada → se cancela y se reembolsa aunque esté libre.
  *  - Pagó dentro de la retención pero el webhook llegó tarde y la franja
@@ -17,7 +19,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type * as BookingHold from '@/lib/services/booking/booking.hold';
 
-const bookingMock = vi.hoisted(() => ({ bookingRepository: { findOverlapping: vi.fn() } }));
+const bookingMock = vi.hoisted(() => ({
+  bookingRepository: { findOverlapping: vi.fn(), lockProfessional: vi.fn() },
+}));
+
+// Cliente de transacción falso: `$transaction` ejecuta el callback con él,
+// así comprobamos que lectura y escritura usan el mismo `tx`.
+const txMock = vi.hoisted(() => ({ marker: 'tx' }));
+const prismaMock = vi.hoisted(() => ({ $transaction: vi.fn() }));
+
+vi.mock('@/lib/db/prisma', () => ({ prisma: prismaMock }));
 
 vi.mock('@/lib/services/booking', async () => {
   const hold = await vi.importActual<typeof BookingHold>('@/lib/services/booking/booking.hold');
@@ -70,6 +81,7 @@ const LATE_CLOCK = { paidAt: NOW, now: NOW };
 beforeEach(() => {
   vi.clearAllMocks();
   vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+  prismaMock.$transaction.mockImplementation((fn: (tx: unknown) => unknown) => fn(txMock));
   bookingMock.bookingRepository.findOverlapping.mockResolvedValue([]);
   repoMock.confirmIfPending.mockResolvedValue(true);
   repoMock.cancelIfPending.mockResolvedValue(true);
@@ -83,9 +95,61 @@ describe('settlePaymentOnPendingBooking', () => {
 
     const result = await settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK);
 
-    expect(repoMock.confirmIfPending).toHaveBeenCalledWith('bk-1');
+    expect(repoMock.confirmIfPending).toHaveBeenCalledWith('bk-1', txMock);
     expect(issueMock.issueBookingRefund).not.toHaveBeenCalled();
     expect(result).toEqual({ bookingId: 'bk-1', changed: true, status: 'confirmed' });
+  });
+
+  it('con la retención vencida, bloquea → mira el solape → confirma en la misma transacción', async () => {
+    await settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK);
+
+    const { lockProfessional, findOverlapping } = bookingMock.bookingRepository;
+    expect(prismaMock.$transaction).toHaveBeenCalledOnce();
+    expect(lockProfessional).toHaveBeenCalledWith(txMock, 'pro-1');
+    expect(findOverlapping).toHaveBeenCalledWith('pro-1', row().startAt, row().endAt, NOW, txMock);
+    const lockAt = lockProfessional.mock.invocationCallOrder[0];
+    const overlapAt = findOverlapping.mock.invocationCallOrder[0];
+    const confirmAt = repoMock.confirmIfPending.mock.invocationCallOrder[0];
+    expect(lockAt).toBeLessThan(overlapAt);
+    expect(overlapAt).toBeLessThan(confirmAt);
+  });
+
+  it('si otra reserva ocupa la franja bajo el bloqueo, reembolsa fuera de la transacción', async () => {
+    // Simula a B creada por `createBooking` antes de que tomáramos el lock.
+    bookingMock.bookingRepository.findOverlapping.mockResolvedValue([{ id: 'bk-b' }]);
+    let insideTransaction = false;
+    prismaMock.$transaction.mockImplementation(async (fn: (tx: unknown) => unknown) => {
+      insideTransaction = true;
+      try {
+        return await fn(txMock);
+      } finally {
+        insideTransaction = false;
+      }
+    });
+    let refundedInside: boolean | undefined;
+    issueMock.issueBookingRefund.mockImplementation(async () => {
+      refundedInside = insideTransaction;
+      return { outcome: 'issued', stripeRefundId: 're_1' };
+    });
+
+    const result = await settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK);
+
+    expect(repoMock.confirmIfPending).not.toHaveBeenCalled();
+    expect(repoMock.cancelIfPending).toHaveBeenCalledWith('bk-1', NOW);
+    expect(refundedInside).toBe(false);
+    expect(result).toEqual({ bookingId: 'bk-1', changed: true, status: 'cancelled' });
+  });
+
+  it('con la retención vencida, si la confirmación bajo bloqueo no aplica sigue el estado real', async () => {
+    repoMock.confirmIfPending.mockResolvedValue(false);
+    repoMock.findCheckoutRow.mockResolvedValue(row({ status: 'cancelled' }));
+
+    const result = await settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK);
+
+    expect(repoMock.confirmIfPending).toHaveBeenCalledWith('bk-1', txMock);
+    expect(repoMock.cancelIfPending).not.toHaveBeenCalled();
+    expect(issueMock.issueBookingRefund).toHaveBeenCalledWith('bk-1', 'pi_123');
+    expect(result).toEqual({ bookingId: 'bk-1', changed: false, status: 'cancelled' });
   });
 
   it('cancela y reembolsa si otra reserva cogió la franja', async () => {
@@ -134,6 +198,7 @@ describe('settlePaymentOnPendingBooking', () => {
     await settlePaymentOnPendingBooking(fresh, 'pi_123', LATE_CLOCK);
 
     expect(bookingMock.bookingRepository.findOverlapping).not.toHaveBeenCalled();
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
     expect(repoMock.confirmIfPending).toHaveBeenCalledWith('bk-1');
   });
 

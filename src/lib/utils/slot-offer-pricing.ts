@@ -1,4 +1,5 @@
 import { MIN_BOOKING_LEAD_TIME_MS } from './booking-lead-time';
+import { LAST_MINUTE_THRESHOLD_MS } from './booking-last-minute';
 
 /**
  * Precio de los huecos liberados con descuento (CLAUDE.md §4.bis).
@@ -15,8 +16,13 @@ export const MAX_SLOT_OFFER_DISCOUNT_PCT = 50;
 /** Paso entre porcentajes admitidos (5, 10, 15…). */
 export const SLOT_OFFER_DISCOUNT_STEP_PCT = 5;
 
-/** Límites de los tramos: más de 2 h, de 1 a 2 h y menos de 1 h. */
-export const SLOT_OFFER_TIER_2H_MS = 2 * 60 * 60 * 1000;
+/**
+ * Límites de los tramos: más de 2 h, de 1 a 2 h y menos de 1 h.
+ *
+ * La frontera de 2 h es la misma que separa las reservas de última hora
+ * (sin reembolso): una sola constante para que nunca se desalineen.
+ */
+export const SLOT_OFFER_TIER_2H_MS = LAST_MINUTE_THRESHOLD_MS;
 export const SLOT_OFFER_TIER_1H_MS = 60 * 60 * 1000;
 
 /** Tramo de tiempo hasta el inicio del hueco. */

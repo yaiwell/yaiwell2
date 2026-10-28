@@ -211,6 +211,11 @@
       "youAreHere": "Ets aquí",
       "fallbackCenter": "Centre de Barcelona (estimació)"
     },
+    "slotOffer": {
+      "tag": "Hora alliberada · −{pct} % · {when}",
+      "tagAria": "Hora alliberada amb un {pct} % de descompte, {when}. Reservar aquesta hora",
+      "filterToggle": "Amb descompte"
+    },
     "nearMeChip": "A prop teu",
     "nearMeChipAria": "Filtrar a professionals en un radi de {radius} km",
     "resultsCount": "{count, plural, one {# resultat} other {# resultats}}"
@@ -231,6 +236,7 @@
       "groupLabel": "Filtres actius",
       "queryLabel": "Text: {value}",
       "availabilityLabel": "Disponibles ara",
+      "discountLabel": "Amb descompte",
       "priceLabel": "Preu {value}",
       "ratingLabel": "{value}+ estrelles",
       "clearAll": "Netejar tot",
@@ -424,6 +430,77 @@
             "notCancellable": "Aquesta reserva ja no es pot cancel·lar en el seu estat actual.",
             "refundFailed": "La reserva s’ha cancel·lat, però el reemborsament no s’ha pogut emetre. Suport ho revisarà; no cal que ho tornis a intentar.",
             "internal": "No s’ha pogut cancel·lar. Torna-ho a provar d’aquí a uns minuts."
+          }
+        }
+      },
+      "slotOffers": {
+        "releaseTitle": "Forat lliure. Vols oferir-lo amb descompte?",
+        "releaseFreeTitle": "Alliberar forat amb descompte",
+        "releaseFreeSubtitle": "{service} · {time}",
+        "description": "Tria quant rebaixar segons el temps que falti per a la cita. El preu baixa sol a mesura que s'acosta l'hora i el forat es destaca a Yaiwell per a qui busqui a prop.",
+        "rules": "En passos del 5 %, fins a un {max} %. Un tram més proper mai no pot tenir menys descompte que l'anterior.",
+        "tiersLabel": "Descompte per tram",
+        "tiers": {
+          "over2h": "Amb més de 2 h de marge",
+          "oneToTwoHours": "Entre 1 i 2 h abans",
+          "underOneHour": "En l'última hora"
+        },
+        "tierNow": "Ara",
+        "decrease": "Baixar descompte: {tier}",
+        "increase": "Pujar descompte: {tier}",
+        "pct": "{pct} %",
+        "issues": {
+          "underOneHourMin": "L'última hora necessita com a mínim un 5 % de descompte.",
+          "decreasing": "El descompte no pot baixar en acostar-se l'hora: cada tram ha d'igualar o superar l'anterior.",
+          "outOfRange": "Fes servir percentatges en passos del 5 %, del 0 al 50 %."
+        },
+        "refundFailedNotice": "La reserva està cancel·lada, però el reemborsament no s'ha pogut emetre. Suport ho revisarà; no cal que facis res més.",
+        "submit": "Oferir amb descompte",
+        "pending": "Publicant…",
+        "skip": "Ometre",
+        "successTitle": "Forat alliberat",
+        "successDescription": "Ja apareix amb descompte a Yaiwell. Pots retirar-lo des del calendari quan vulguis.",
+        "close": "Tancar",
+        "errors": {
+          "invalidInput": "Revisa els descomptes: algun tram no és vàlid.",
+          "notFound": "Aquesta reserva o oferta ja no existeix.",
+          "forbidden": "No tens permís sobre aquest forat.",
+          "notCancelled": "Només es pot alliberar el forat d'una reserva cancel·lada.",
+          "slotTaken": "Aquest forat ja no està lliure.",
+          "outsideWindow": "Aquest forat ja no es pot alliberar: comença massa aviat o fora de la finestra permesa.",
+          "alreadyExists": "Aquest forat ja està alliberat.",
+          "serviceInvalid": "Aquest servei no es pot oferir en aquest forat.",
+          "internal": "No s'ha pogut alliberar el forat. Torna-ho a provar d'aquí a uns minuts."
+        },
+        "free": {
+          "title": "Forats lliures en les pròximes 2 h",
+          "subtitle": "Si els vols omplir, pots oferir-los amb descompte. Ningú més no veu aquesta llista.",
+          "empty": "No tens forats lliures que es puguin reservar en les pròximes 2 hores.",
+          "release": "Alliberar amb descompte",
+          "releaseAriaLabel": "Alliberar amb descompte {service} a les {time}",
+          "more": "{count, plural, one {i # forat més} other {i # forats més}}"
+        },
+        "block": {
+          "label": "Forat alliberat · −{pct} %",
+          "labelNoDiscount": "Forat alliberat",
+          "ariaLabel": "{label}: {service} a les {time}",
+          "legend": "Forat alliberat"
+        },
+        "detail": {
+          "title": "Forat alliberat",
+          "description": "Dades del forat alliberat amb descompte i opció de retirar-lo.",
+          "service": "Servei",
+          "priceNow": "Preu ara",
+          "tiers": "Descompte per tram"
+        },
+        "withdraw": {
+          "button": "Retirar oferta",
+          "pending": "Retirant…",
+          "hint": "En retirar-la, el forat torna al seu preu normal.",
+          "errors": {
+            "notFound": "Aquesta oferta ja no existeix.",
+            "forbidden": "No tens permís sobre aquesta oferta.",
+            "internal": "No s'ha pogut retirar. Torna-ho a provar d'aquí a uns minuts."
           }
         }
       },
@@ -722,6 +799,13 @@
       "notBookableSubtitle": "El centre encara no ha configurat la seva agenda. Pots triar un altre servei o tornar més endavant.",
       "retry": "Torna-ho a provar",
       "lastMinuteGroup": "En les pròximes 2 h · pagament en reservar, sense cancel·lació"
+    },
+    "slotOffer": {
+      "discountBadge": "−{pct} %",
+      "slotAria": "{time}, hora alliberada amb un {pct} % de descompte: {price}",
+      "priceAria": "Preu habitual {original}; amb un {pct} % de descompte, {amount}",
+      "estimatedPriceLabel": "Preu previst",
+      "estimatedPriceHint": "L'import final es confirma en passar al pagament."
     },
     "summary": {
       "serviceLabel": "Servei",

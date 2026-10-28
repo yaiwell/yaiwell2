@@ -1,5 +1,7 @@
 import type { Provider, Service } from '@/types/domain';
 
+import type { DisplayedBookingPrice } from '../DiscountedPrice';
+
 /**
  * Props del paso "Confirmar datos" del flujo de reserva.
  *
@@ -15,14 +17,15 @@ export interface BookingSummaryProps {
   slotEndIso: string;
   notes: string;
   /**
-   * Importe que devuelve el servidor al abrir el checkout, en céntimos.
+   * Importe a mostrar, ya resuelto por el flujo.
    *
-   * `null` mientras no exista reserva (que es el caso normal la primera
-   * vez que se ve este paso): entonces el resumen cae al precio de
-   * catálogo del servicio como estimación. El importe que se cobra sale
+   * Mientras no exista reserva (el caso normal la primera vez que se ve
+   * este paso) es una previsión: el precio del hueco elegido, con su
+   * descuento si lo tenía, o el de catálogo. El resumen lo rotula como
+   * «precio previsto» cuando hay descuento. El importe que se cobra sale
    * siempre del servidor.
    */
-  amountCents: number | null;
+  price: DisplayedBookingPrice;
   /**
    * `true` si el hueco empieza en menos de 2 h (reserva de última hora):
    * el resumen sustituye la política de "cancela gratis" por la de

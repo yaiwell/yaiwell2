@@ -6,7 +6,12 @@
  */
 import { Prisma } from '@prisma/client';
 
-import { BUSINESS_TIMEZONE, getCivilDayUtc, getServiceDaySlots } from '@/lib/services/availability';
+import {
+  BUSINESS_TIMEZONE,
+  availabilityRepository,
+  getCivilDayUtc,
+  getServiceDaySlots,
+} from '@/lib/services/availability';
 import { getEarliestBookableStart } from '@/lib/utils/booking-lead-time';
 import {
   SLOT_OFFER_TIER_2H_MS,
@@ -47,6 +52,17 @@ async function loadOwnedService(serviceId: string, providerUserId: string, provi
     throw new SlotOfferForbiddenError();
   }
   return service;
+}
+
+/**
+ * Dos ofertas que se solapan en el mismo profesional (p. ej. 10:00 y
+ * 10:30) confundirían: solo una puede venderse. El índice único solo
+ * cubre la misma hora de inicio; esto cubre el solape.
+ */
+async function assertNoOverlappingOffer(professionalId: string, start: Date, end: Date, now: Date) {
+  if (await slotOffersRepository.hasActiveOfferOverlap(professionalId, start, end, now)) {
+    throw new SlotOfferAlreadyExistsError();
+  }
 }
 
 /** Inserta la oferta traduciendo las violaciones de unicidad. */
@@ -93,7 +109,13 @@ export async function releaseCancelledSlot(
     providerUserId,
     booking.providerId,
   );
-  if (service.professionalId && service.professionalId !== booking.professionalId) {
+  // El checkout reserva siempre con el profesional que el motor asigna
+  // al servicio (el suyo o, si no tiene, el primero del centro): una
+  // oferta en otro profesional se anunciaría sin poder comprarse.
+  const effectiveProfessionalId =
+    service.professionalId ??
+    (await availabilityRepository.findFirstProfessionalIdForProvider(booking.providerId));
+  if (effectiveProfessionalId !== booking.professionalId) {
     throw new SlotOfferServiceInvalidError();
   }
   const endAt = new Date(booking.startAt.getTime() + service.durationMinutes * 60_000);
@@ -110,6 +132,7 @@ export async function releaseCancelledSlot(
   ) {
     throw new SlotOfferSlotTakenError();
   }
+  await assertNoOverlappingOffer(booking.professionalId, booking.startAt, endAt, now);
 
   return insertOffer({
     providerId: booking.providerId,
@@ -151,6 +174,8 @@ export async function releaseFreeSlot(
   );
   const slot = slots.find((s) => s.startAt.getTime() === data.startAt.getTime());
   if (!slot) throw new SlotOfferSlotTakenError();
+  const endAt = new Date(slot.startAt.getTime() + durationMinutes * 60_000);
+  await assertNoOverlappingOffer(professionalId, slot.startAt, endAt, now);
 
   return insertOffer({
     providerId,
@@ -158,7 +183,7 @@ export async function releaseFreeSlot(
     serviceId: data.serviceId,
     sourceBookingId: null,
     startAt: slot.startAt,
-    endAt: new Date(slot.startAt.getTime() + durationMinutes * 60_000),
+    endAt,
     expiresAt: getSlotOfferExpiresAt(slot.startAt),
     discounts: data.discounts satisfies SlotOfferDiscounts,
   });
@@ -176,4 +201,20 @@ export async function withdrawSlotOffer(
   if (offer.provider.userId !== providerUserId) throw new SlotOfferForbiddenError();
   if (offer.status === 'withdrawn') return;
   await slotOffersRepository.withdraw(offerId, now);
+}
+
+/**
+ * Retira la oferta con la que se vendió una reserva que el proveedor
+ * acaba de cancelar.
+ *
+ * «Vendida» se deriva de la reserva, así que sin esto la oferta volvería
+ * a anunciarse sola al quedar el hueco libre. El proveedor decide de
+ * nuevo si lo libera (la reserva cancelada puede ser origen de otra).
+ * Uso interno: la titularidad ya la comprobó la cancelación.
+ */
+export async function retireOfferOfCancelledBooking(
+  slotOfferId: string,
+  now: Date = new Date(),
+): Promise<void> {
+  await slotOffersRepository.withdrawIfActive(slotOfferId, now);
 }

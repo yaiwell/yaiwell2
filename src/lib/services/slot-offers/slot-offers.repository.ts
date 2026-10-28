@@ -3,6 +3,8 @@
  *
  * Las reglas (titularidad, ventanas, tramos) viven en el servicio.
  */
+import type { Prisma } from '@prisma/client';
+
 import { prisma } from '@/lib/db/prisma';
 // Import directo y no del barrel de `booking`: `booking.service` usa
 // este módulo para aplicar el descuento y el barrel crearía un ciclo.
@@ -24,11 +26,18 @@ const offerSelect = {
   discountPctUnder1h: true,
 } as const;
 
-/** Filtro de «reservable ahora»: activa, sin caducar y a ≥30 min. */
+/**
+ * Filtro de «reservable ahora»: activa, sin caducar, a ≥30 min y sobre
+ * un servicio y un profesional que siguen existiendo. Si el centro pausa
+ * o borra el servicio, la oferta deja de anunciarse (no podría comprarse).
+ */
 function liveWhere(now: Date) {
   return {
     status: 'active' as const,
-    expiresAt: { gt: now },
+    // Inclusivo, como la antelación mínima: justo a 30 min se puede reservar.
+    expiresAt: { gte: now },
+    service: { isActive: true, deletedAt: null },
+    professional: { deletedAt: null },
     // En `AND` para no pisar el `startAt` propio de cada consulta.
     AND: [{ startAt: { gte: getEarliestBookableStart(now) } }],
   };
@@ -103,6 +112,20 @@ export const slotOffersRepository = {
     return count > 0;
   },
 
+  /** ¿Hay otra oferta activa sin caducar del profesional que pise `[start, end)`? */
+  async hasActiveOfferOverlap(professionalId: string, start: Date, end: Date, now: Date) {
+    const count = await prisma.slotOffer.count({
+      where: {
+        professionalId,
+        status: 'active',
+        expiresAt: { gte: now },
+        startAt: { lt: end },
+        endAt: { gt: start },
+      },
+    });
+    return count > 0;
+  },
+
   async create(data: CreateSlotOfferData) {
     return prisma.slotOffer.create({
       data: {
@@ -128,6 +151,14 @@ export const slotOffersRepository = {
     });
   },
 
+  /** Retira la oferta si sigue activa (idempotente, sin comprobar dueño). */
+  async withdrawIfActive(offerId: string, now: Date) {
+    await prisma.slotOffer.updateMany({
+      where: { id: offerId, status: 'active' },
+      data: { status: 'withdrawn', withdrawnAt: now },
+    });
+  },
+
   async withdraw(offerId: string, now: Date) {
     return prisma.slotOffer.update({
       where: { id: offerId },
@@ -137,8 +168,14 @@ export const slotOffersRepository = {
   },
 
   /** Oferta reservable de un profesional, servicio y hora exactos. */
-  async findLiveForSlot(professionalId: string, serviceId: string, startAt: Date, now: Date) {
-    return prisma.slotOffer.findFirst({
+  async findLiveForSlot(
+    professionalId: string,
+    serviceId: string,
+    startAt: Date,
+    now: Date,
+    db: typeof prisma | Prisma.TransactionClient = prisma,
+  ) {
+    return db.slotOffer.findFirst({
       where: { professionalId, serviceId, startAt, ...liveWhere(now) },
       select: offerSelect,
     });

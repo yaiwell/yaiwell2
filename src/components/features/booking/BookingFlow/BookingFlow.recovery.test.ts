@@ -41,6 +41,8 @@ const OK_CHECKOUT = {
   bookingId: 'bk-123',
   clientSecret: 'pi_123_secret_abc',
   amountCents: 4500,
+  originalPriceCents: null,
+  discountPct: null,
   slotStartIso: FUTURE_START,
   slotEndIso: FUTURE_END,
   isLastMinute: false,

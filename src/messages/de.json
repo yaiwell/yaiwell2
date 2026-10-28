@@ -211,6 +211,11 @@
       "youAreHere": "Du bist hier",
       "fallbackCenter": "Zentrum Barcelonas (Schätzung)"
     },
+    "slotOffer": {
+      "tag": "Frei gewordener Termin · −{pct} % · {when}",
+      "tagAria": "Frei gewordener Termin mit {pct} % Rabatt, {when}. Diesen Termin buchen",
+      "filterToggle": "Mit Rabatt"
+    },
     "nearMeChip": "In deiner Nähe",
     "nearMeChipAria": "Profis im Umkreis von {radius} km filtern",
     "resultsCount": "{count, plural, one {# Ergebnis} other {# Ergebnisse}}"
@@ -231,6 +236,7 @@
       "groupLabel": "Aktive Filter",
       "queryLabel": "Text: {value}",
       "availabilityLabel": "Jetzt verfügbar",
+      "discountLabel": "Mit Rabatt",
       "priceLabel": "Preis {value}",
       "ratingLabel": "{value}+ Sterne",
       "clearAll": "Alle zurücksetzen",
@@ -424,6 +430,77 @@
             "notCancellable": "Diese Buchung lässt sich in ihrem aktuellen Status nicht mehr stornieren.",
             "refundFailed": "Die Buchung wurde storniert, aber die Erstattung konnte nicht ausgelöst werden. Der Support kümmert sich darum; du musst es nicht erneut versuchen.",
             "internal": "Die Buchung konnte nicht storniert werden. Versuche es in ein paar Minuten erneut."
+          }
+        }
+      },
+      "slotOffers": {
+        "releaseTitle": "Der Termin ist frei. Möchtest du ihn mit Rabatt anbieten?",
+        "releaseFreeTitle": "Termin mit Rabatt freigeben",
+        "releaseFreeSubtitle": "{service} · {time}",
+        "description": "Lege fest, wie viel Rabatt es je nach verbleibender Zeit bis zum Termin gibt. Der Preis sinkt automatisch, je näher die Uhrzeit rückt, und der Termin wird auf Yaiwell für Suchende in der Nähe hervorgehoben.",
+        "rules": "In 5-%-Schritten, bis zu {max} %. Eine nähere Stufe darf nie weniger Rabatt haben als die vorherige.",
+        "tiersLabel": "Rabatt pro Stufe",
+        "tiers": {
+          "over2h": "Mehr als 2 Std. vorher",
+          "oneToTwoHours": "1 bis 2 Std. vorher",
+          "underOneHour": "In der letzten Stunde"
+        },
+        "tierNow": "Jetzt",
+        "decrease": "Rabatt senken: {tier}",
+        "increase": "Rabatt erhöhen: {tier}",
+        "pct": "{pct} %",
+        "issues": {
+          "underOneHourMin": "Die letzte Stunde braucht mindestens 5 % Rabatt.",
+          "decreasing": "Der Rabatt darf nicht sinken, wenn der Termin näher rückt: Jede Stufe muss gleich hoch oder höher sein als die vorherige.",
+          "outOfRange": "Verwende Prozentsätze in 5-%-Schritten von 0 bis 50 %."
+        },
+        "refundFailedNotice": "Die Buchung ist storniert, aber die Erstattung konnte nicht ausgelöst werden. Der Support kümmert sich darum; du musst nichts weiter tun.",
+        "submit": "Mit Rabatt anbieten",
+        "pending": "Wird veröffentlicht…",
+        "skip": "Überspringen",
+        "successTitle": "Termin freigegeben",
+        "successDescription": "Er erscheint jetzt mit Rabatt auf Yaiwell. Du kannst ihn jederzeit im Kalender zurückziehen.",
+        "close": "Schließen",
+        "errors": {
+          "invalidInput": "Prüfe die Rabatte: Eine Stufe ist ungültig.",
+          "notFound": "Diese Buchung oder dieses Angebot gibt es nicht mehr.",
+          "forbidden": "Du hast keine Berechtigung für diesen Termin.",
+          "notCancelled": "Nur der Termin einer stornierten Buchung kann freigegeben werden.",
+          "slotTaken": "Dieser Termin ist nicht mehr frei.",
+          "outsideWindow": "Dieser Termin kann nicht mehr freigegeben werden: Er beginnt zu bald oder liegt außerhalb des erlaubten Zeitfensters.",
+          "alreadyExists": "Dieser Termin ist bereits freigegeben.",
+          "serviceInvalid": "Diese Leistung kann in diesem Termin nicht angeboten werden.",
+          "internal": "Der Termin konnte nicht freigegeben werden. Bitte versuche es in ein paar Minuten erneut."
+        },
+        "free": {
+          "title": "Freie Termine in den nächsten 2 Std.",
+          "subtitle": "Wenn du sie füllen möchtest, kannst du sie mit Rabatt anbieten. Nur du siehst diese Liste.",
+          "empty": "Du hast in den nächsten 2 Stunden keine freien buchbaren Termine.",
+          "release": "Mit Rabatt freigeben",
+          "releaseAriaLabel": "{service} um {time} mit Rabatt freigeben",
+          "more": "{count, plural, one {und # weiterer Termin} other {und # weitere Termine}}"
+        },
+        "block": {
+          "label": "Freigegeben · −{pct} %",
+          "labelNoDiscount": "Freigegebener Termin",
+          "ariaLabel": "{label}: {service} um {time}",
+          "legend": "Freigegebener Termin"
+        },
+        "detail": {
+          "title": "Freigegebener Termin",
+          "description": "Details zum mit Rabatt freigegebenen Termin und Möglichkeit, ihn zurückzuziehen.",
+          "service": "Leistung",
+          "priceNow": "Preis jetzt",
+          "tiers": "Rabatt pro Stufe"
+        },
+        "withdraw": {
+          "button": "Angebot zurückziehen",
+          "pending": "Wird zurückgezogen…",
+          "hint": "Danach gilt für den Termin wieder der normale Preis.",
+          "errors": {
+            "notFound": "Dieses Angebot gibt es nicht mehr.",
+            "forbidden": "Du hast keine Berechtigung für dieses Angebot.",
+            "internal": "Das Angebot konnte nicht zurückgezogen werden. Bitte versuche es in ein paar Minuten erneut."
           }
         }
       },
@@ -722,6 +799,13 @@
       "notBookableSubtitle": "Das Studio hat seinen Kalender noch nicht eingerichtet. Wähle einen anderen Service oder schau später wieder vorbei.",
       "retry": "Erneut versuchen",
       "lastMinuteGroup": "In den nächsten 2 Std. · Zahlung bei Buchung, keine Stornierung"
+    },
+    "slotOffer": {
+      "discountBadge": "−{pct} %",
+      "slotAria": "{time}, frei gewordener Termin mit {pct} % Rabatt: {price}",
+      "priceAria": "Regulärer Preis {original}; mit {pct} % Rabatt {amount}",
+      "estimatedPriceLabel": "Voraussichtlicher Preis",
+      "estimatedPriceHint": "Der endgültige Betrag wird beim Bezahlen bestätigt."
     },
     "summary": {
       "serviceLabel": "Service",

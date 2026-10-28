@@ -1,3 +1,5 @@
+import type { SlotOfferDiscounts } from '@/lib/utils/slot-offer-pricing';
+
 import type { BookingActionRow } from '../BookingActionsList/BookingActionsList.logic';
 import type {
   PanelBookingAction,
@@ -58,6 +60,44 @@ export interface PositionedRow {
   priceLabel: string;
 }
 
+/**
+ * Hueco liberado con descuento y todavía sin vender, tal y como lo
+ * pinta el calendario. El % y el precio vigentes se calculan en el
+ * servidor en el momento del render.
+ */
+export interface PanelSlotOffer {
+  id: string;
+  /** Inicio en ISO-8601 UTC; `null` en los ejemplos del modo preview. */
+  startAtIso: string | null;
+  weekday: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  startTime: string;
+  endTime: string;
+  serviceName: string;
+  professionalName: string | null;
+  discounts: SlotOfferDiscounts;
+  /** % que se aplicaría a quien reserve ahora (0 si el tramo vigente no rebaja). */
+  currentDiscountPct: number;
+  /** Precio de referencia: el vigente del servicio, nunca uno inflado. */
+  priceCents: number;
+  /** Precio que pagaría quien reserve ahora. */
+  currentPriceCents: number;
+}
+
+/** Oferta lista para pintarse en una columna del calendario. */
+export interface PositionedOffer {
+  offer: PanelSlotOffer;
+  topPx: number;
+  heightPx: number;
+  /**
+   * Si pisa un bloque de reserva (la cancelada de la que nace, por
+   * ejemplo), se pinta en la mitad derecha para que ambos sigan
+   * siendo visibles y tocables.
+   */
+  compact: boolean;
+  priceLabel: string;
+  currentPriceLabel: string;
+}
+
 /** Cabecera de un día de la semana mostrada. */
 export interface CalendarDay {
   key: WeekdayKey;
@@ -89,6 +129,8 @@ export interface CalendarWeek {
 /** Props del componente WeeklyCalendar. */
 export interface WeeklyCalendarProps {
   bookings: PanelBookingAction[];
+  /** Huecos liberados sin vender de la semana visible. */
+  slotOffers?: PanelSlotOffer[];
   week: CalendarWeek;
   locale: SupportedLocale;
   /** Modo preview: acciones deshabilitadas y sin navegación. */
@@ -101,6 +143,7 @@ export interface WeeklyCalendarProps {
 export interface CalendarColumnsProps {
   days: CalendarDay[];
   grouped: Record<WeekdayKey, PositionedRow[]>;
+  groupedOffers: Record<WeekdayKey, PositionedOffer[]>;
   hours: number[];
   locale: SupportedLocale;
   readOnly: boolean;

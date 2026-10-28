@@ -75,7 +75,7 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
   // El parser vive junto a `buildSearchParams` para que ida y vuelta de
   // la URL no puedan divergir (ver `SearchView.url.ts`).
   const { nearMeOnly, ...filters } = parseSearchParams(sp);
-  const { query, categorySlug, availabilityOnly, minRating, priceRange } = filters;
+  const { query, categorySlug, availabilityOnly, discountOnly, minRating, priceRange } = filters;
 
   // Ejecutamos la búsqueda. El service ya enriquece con disponibilidad
   // y devuelve la lista ordenada lista para pintar.
@@ -86,6 +86,8 @@ export default async function SearchPage({ params, searchParams }: SearchPagePro
       query: query || undefined,
       categorySlug: categorySlug ?? undefined,
       availabilityOnly,
+      // «Con descuento»: filtra, pero no reordena (CLAUDE.md §4.bis).
+      discountOnly,
       minRating: minRating ?? undefined,
       priceRange: priceRange.length > 0 ? priceRange : undefined,
     }),

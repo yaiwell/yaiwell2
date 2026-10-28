@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { SlotGridSkeleton } from './SlotGridSkeleton';
 import { groupSlots } from './SlotPicker.groups';
 import { useSlotPicker } from './SlotPicker.logic';
+import { useSlotPreselection } from './SlotPicker.preselect';
 import { slotPickerStyles as s } from './SlotPicker.styles';
 import type { SlotPickerProps } from './SlotPicker.types';
 import { SlotPickerError } from './SlotPickerError';
@@ -31,6 +32,7 @@ export function SlotPicker({
   selectedStartIso,
   onSelect,
   now,
+  initialSlotIso,
 }: SlotPickerProps) {
   const t = useTranslations('booking.slotPicker');
 
@@ -41,7 +43,11 @@ export function SlotPicker({
       serviceDurationMinutes,
       locale,
       now,
+      initialSlotIso,
     });
+
+  // Llegada desde una etiqueta de oferta: deja el hueco ya elegido.
+  useSlotPreselection({ initialSlotIso, slots, selectedStartIso, onSelect });
 
   const groups = groupSlots(slots, clock);
   const hasLastMinute = groups.lastMinute.length > 0;

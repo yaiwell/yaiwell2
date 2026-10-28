@@ -30,11 +30,17 @@ export const slotPickerStyles = {
   // Grid de slots.
   slotGrid: 'grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4',
   slotButtonBase:
-    'inline-flex h-11 items-center justify-center rounded-xl border px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
+    'inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
   slotButtonIdle: 'border-border bg-card text-foreground hover:border-primary/50 hover:bg-muted/60',
   slotButtonSelected: 'border-primary bg-primary text-primary-foreground hover:bg-primary/90',
   slotButtonDisabled:
     'border-dashed border-border bg-transparent text-muted-foreground line-through cursor-not-allowed',
+  // Marca «−20 %» de un hueco liberado: pequeña y en el tono de marca,
+  // sin rojo ni urgencia. Al seleccionar se invierte para no perderse.
+  slotOfferBadge:
+    'rounded-full bg-primary/10 px-1.5 py-0.5 text-[11px] font-medium leading-none text-primary',
+  slotOfferBadgeSelected:
+    'rounded-full bg-primary-foreground/20 px-1.5 py-0.5 text-[11px] font-medium leading-none text-primary-foreground',
 
   // Estado vacío cuando no hay ningún slot ni libre ni ocupado en el día.
   empty:

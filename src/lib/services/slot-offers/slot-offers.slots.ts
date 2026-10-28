@@ -8,7 +8,7 @@
 import { BUSINESS_TIMEZONE, getCivilDayUtc, getServiceDaySlots } from '@/lib/services/availability';
 import { priceSlot } from '@/lib/utils/slot-offer-pricing';
 
-import { getLiveOffersForService } from './slot-offers.queries';
+import { findLiveOfferForSlot, getLiveOffersForService } from './slot-offers.queries';
 import { slotOffersRepository } from './slot-offers.repository';
 
 /** Hueco reservable con su precio si está liberado con descuento. */
@@ -78,4 +78,27 @@ export async function getPricedSlotsForService(
     });
   }
   return [...byStart.values()].sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
+}
+
+/**
+ * ¿Es `startAt` una hora que ofrecemos para este servicio y profesional?
+ * Lo es si está en la rejilla del motor (horario, buffer, reservas y
+ * antelación) o si tiene una oferta de hueco vigente.
+ *
+ * `createBooking` lo exige: el servidor solo acepta lo que la UI ofrece.
+ */
+export async function isBookableStart(
+  serviceId: string,
+  professionalId: string,
+  startAt: Date,
+  now: Date = new Date(),
+): Promise<boolean> {
+  if (await findLiveOfferForSlot(professionalId, serviceId, startAt, now)) return true;
+  const day = getCivilDayUtc(startAt, BUSINESS_TIMEZONE);
+  const engine = await getServiceDaySlots(serviceId, day, now).catch(() => null);
+  return (
+    engine !== null &&
+    engine.professionalId === professionalId &&
+    engine.slots.some((slot) => slot.startAt.getTime() === startAt.getTime())
+  );
 }

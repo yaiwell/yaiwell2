@@ -46,6 +46,8 @@ export function readyCheckout(
     status: 'ready',
     clientSecret: result.clientSecret,
     amountCents: result.amountCents,
+    originalPriceCents: result.originalPriceCents,
+    discountPct: result.discountPct,
     isLastMinute: result.isLastMinute,
     estimatedLastMinute,
     slotStartIso: result.slotStartIso,

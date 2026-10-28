@@ -18,6 +18,7 @@ const messages = {
     nearMeChip: 'Cerca de ti',
     nearMeChipAria: 'Cerca de ti ({radius} km)',
     availableNowToggle: 'Disponibles ahora',
+    slotOffer: { filterToggle: 'Con descuento' },
     filters: { button: 'Filtros' },
     categories: { all: 'Todas' },
   },
@@ -31,11 +32,13 @@ function renderBar(overrides: Partial<FiltersBarProps> = {}) {
     ],
     activeCategorySlug: null,
     availabilityOnly: false,
+    discountOnly: false,
     hasAdvancedFilters: false,
     nearMeOnly: false,
     nearMeRadiusKm: 5,
     onCategoryChange: vi.fn(),
     onAvailabilityToggle: vi.fn(),
+    onDiscountToggle: vi.fn(),
     onNearMeToggle: vi.fn(),
     onOpenFiltersSheet: vi.fn(),
     ...overrides,
@@ -64,6 +67,16 @@ describe('FiltersBar', () => {
 
     await userEvent.click(chip);
     expect(props.onCategoryChange).toHaveBeenCalledWith(null);
+  });
+
+  it('el toggle «Con descuento» refleja su estado y lo invierte al pulsarlo', async () => {
+    const props = renderBar({ discountOnly: true });
+
+    const toggle = screen.getByRole('button', { name: 'Con descuento' });
+    expect(toggle).toHaveAttribute('aria-pressed', 'true');
+
+    await userEvent.click(toggle);
+    expect(props.onDiscountToggle).toHaveBeenCalledWith(false);
   });
 
   it('selecciona una categoría inactiva por su slug', async () => {

@@ -38,6 +38,9 @@ export const mapProviderPopupStyles = {
   separator: 'text-muted-foreground/60',
   distance: 'text-muted-foreground',
 
+  // Etiqueta de hueco liberado, bajo la meta.
+  offerRow: 'mt-2 flex',
+
   // CTA opcional al final.
   cta: 'mt-3 inline-flex w-full items-center justify-center rounded-full bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
 } as const;

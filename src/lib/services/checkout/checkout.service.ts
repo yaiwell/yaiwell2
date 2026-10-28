@@ -123,6 +123,10 @@ export async function createBookingCheckout(
     bookingId: booking.id,
     clientSecret: intent.client_secret,
     amountCents: booking.priceCents,
+    // Lo congelado en la reserva por `createBooking`: la UI muestra el
+    // precio tachado con estos valores, nunca con los del hueco que vio.
+    originalPriceCents: booking.originalPriceCents ?? null,
+    discountPct: booking.discountPct ?? null,
     slotStartIso: booking.startAt.toISOString(),
     slotEndIso: booking.endAt.toISOString(),
     // Con el `createdAt` que ha puesto la BD, no con el reloj del cliente.

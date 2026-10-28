@@ -10,6 +10,14 @@
  * mantener coherencia visual con landing y futuro modo oscuro.
  */
 export const providerCardStyles = {
+  // Marco que agrupa la card (enlace a la ficha) y, si hay oferta, la
+  // etiqueta de hueco liberado (enlace a reservar) superpuesta.
+  frame: 'relative',
+  // Capa con el mismo formato que la foto (16/10, mismo ancho): coloca
+  // la etiqueta en su esquina inferior sin medir nada en JS. No captura
+  // clics salvo sobre la propia etiqueta.
+  offerLayer: 'pointer-events-none absolute inset-x-px top-px aspect-[16/10]',
+  offerSlot: 'pointer-events-auto absolute bottom-3 left-3 right-3 flex',
   root: 'group relative flex w-full flex-col overflow-hidden rounded-3xl border border-border/70 bg-card shadow-sm transition-all duration-200 hover:shadow-md',
   rootHighlighted: 'ring-2 ring-primary/30 shadow-md',
   imageWrapper: 'relative aspect-[16/10] w-full overflow-hidden bg-muted',

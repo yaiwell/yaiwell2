@@ -10,6 +10,7 @@ export type ActiveFilterChip =
   | { kind: 'query'; value: string }
   | { kind: 'category'; slug: string; label: string }
   | { kind: 'availability' }
+  | { kind: 'discount' }
   | { kind: 'price'; value: PriceRange }
   | { kind: 'rating'; value: number };
 
@@ -22,6 +23,7 @@ export interface ActiveFiltersState {
   query: string;
   categorySlug: string | null;
   availabilityOnly: boolean;
+  discountOnly: boolean;
   priceRange: PriceRange[];
   minRating: number | null;
 }

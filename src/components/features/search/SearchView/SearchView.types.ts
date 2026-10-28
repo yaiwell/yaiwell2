@@ -5,6 +5,8 @@ export interface SearchFilters {
   query: string;
   categorySlug: string | null;
   availabilityOnly: boolean;
+  /** Solo centros con algún hueco liberado con descuento (`?discount=1`). */
+  discountOnly: boolean;
   priceRange: PriceRange[];
   minRating: number | null;
 }

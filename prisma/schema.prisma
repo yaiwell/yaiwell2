@@ -469,6 +469,7 @@ model SlotOffer {
 
   @@index([providerId, startAt])
   @@index([professionalId, startAt])
+  @@index([serviceId])
   @@index([status, startAt])
   @@map("slot_offers")
 }

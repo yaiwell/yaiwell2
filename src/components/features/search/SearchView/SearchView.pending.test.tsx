@@ -72,6 +72,7 @@ const initial: SearchViewInitialState = {
     query: '',
     categorySlug: null,
     availabilityOnly: false,
+    discountOnly: false,
     priceRange: [],
     minRating: null,
   },

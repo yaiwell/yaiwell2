@@ -16,6 +16,8 @@ export interface FiltersBarProps {
   activeCategorySlug: string | null;
   /** Estado del toggle "solo disponibles ahora". */
   availabilityOnly: boolean;
+  /** Estado del toggle "Con descuento" (huecos liberados). */
+  discountOnly: boolean;
   /** Indica si hay filtros avanzados activos (mostrar punto en botón). */
   hasAdvancedFilters: boolean;
   /** Estado del toggle "Cerca de ti" (filtra por radio respecto al usuario). */
@@ -26,6 +28,8 @@ export interface FiltersBarProps {
   onCategoryChange: (slug: string | null) => void;
   /** Toggle del badge "ahora". */
   onAvailabilityToggle: (next: boolean) => void;
+  /** Toggle del filtro "Con descuento". */
+  onDiscountToggle: (next: boolean) => void;
   /** Toggle del chip "Cerca de ti". */
   onNearMeToggle: () => void;
   /** Abre el sheet de filtros avanzados. */

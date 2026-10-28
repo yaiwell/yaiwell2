@@ -23,6 +23,8 @@ function useChipLabel() {
         return chip.label;
       case 'availability':
         return t('availabilityLabel');
+      case 'discount':
+        return t('discountLabel');
       case 'price':
         return t('priceLabel', { value: chip.value });
       case 'rating':
@@ -43,6 +45,8 @@ function chipKey(chip: ActiveFilterChip): string {
       return `category-${chip.slug}`;
     case 'availability':
       return 'availability';
+    case 'discount':
+      return 'discount';
     case 'price':
       return `price-${chip.value.length}`;
     case 'rating':

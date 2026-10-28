@@ -14,6 +14,7 @@ import { SlotPicker } from '../SlotPicker';
 import { BookingCheckoutPanel } from './BookingCheckoutPanel';
 import { useIsLastMinuteSlot } from './BookingFlow.lastMinute';
 import { BOOKING_STEPS, useBookingFlow } from './BookingFlow.logic';
+import { useBookingPrice } from './BookingFlow.price';
 import { bookingFlowStyles as s } from './BookingFlow.styles';
 import type { BookingFlowProps } from './BookingFlow.types';
 
@@ -29,7 +30,13 @@ import type { BookingFlowProps } from './BookingFlow.types';
  * El componente JSX se limita a componer; toda la lógica vive en
  * `BookingFlow.logic.ts` para cumplir con la convención del proyecto.
  */
-export function BookingFlow({ provider, service, locale, providerSlugWithId }: BookingFlowProps) {
+export function BookingFlow({
+  provider,
+  service,
+  locale,
+  providerSlugWithId,
+  initialSlotIso,
+}: BookingFlowProps) {
   const t = useTranslations('booking.flow');
   const tPolicy = useTranslations('booking.policy');
 
@@ -65,17 +72,9 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
    */
   const bookingPath = `/centro/${providerSlugWithId}/reservar?serviceId=${encodeURIComponent(service.id)}`;
 
-  /**
-   * Importe a mostrar.
-   *
-   * Sólo hay dato de servidor una vez creada la reserva (`checkout`
-   * `ready` devuelve el `amountCents` que Stripe va a cobrar). Antes de
-   * eso —pasos de hueco y resumen— no existe todavía ninguna reserva, así
-   * que enseñamos el precio de catálogo del servicio como estimación. El
-   * número que se cobra es siempre el del servidor, y es el que ven el
-   * paso de pago y la confirmación.
-   */
-  const amountCents = checkout.status === 'ready' ? checkout.amountCents : service.priceCents;
+  // Importe a mostrar: el del servidor en cuanto existe reserva; antes,
+  // el previsto del hueco elegido (con su oferta) o el de catálogo.
+  const { price, rememberSlot } = useBookingPrice(checkout, service.priceCents, draft.slotStartIso);
 
   /**
    * URL absoluta a la que Stripe devuelve al usuario si la tarjeta exige
@@ -102,7 +101,7 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
           slotEndIso={draft.slotEndIso}
           bookingId={draft.bookingId}
           providerSlugWithId={providerSlugWithId}
-          amountCents={amountCents}
+          amountCents={price.amountCents}
           // La reserva sólo pasa a `confirmed` cuando llega el webhook
           // `payment_intent.succeeded`. Hasta que BD lo diga, el copy
           // honesto es "pago en curso" — también en el camino sin 3DS.
@@ -166,7 +165,11 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
             serviceDurationMinutes={service.durationMinutes}
             locale={locale}
             selectedStartIso={draft.slotStartIso}
-            onSelect={(slot) => selectSlot(slot.startAtIso, slot.endAtIso)}
+            initialSlotIso={initialSlotIso}
+            onSelect={(slot) => {
+              rememberSlot(slot);
+              selectSlot(slot.startAtIso, slot.endAtIso);
+            }}
           />
         )}
 
@@ -178,7 +181,7 @@ export function BookingFlow({ provider, service, locale, providerSlugWithId }: B
             slotStartIso={draft.slotStartIso}
             slotEndIso={draft.slotEndIso}
             notes={draft.notes}
-            amountCents={checkout.status === 'ready' ? checkout.amountCents : null}
+            price={price}
             isLastMinute={isLastMinute}
             onNotesChange={(notes) => updateDraft({ notes })}
           />

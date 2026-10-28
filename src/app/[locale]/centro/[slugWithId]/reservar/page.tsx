@@ -7,11 +7,16 @@ import { BookingFlow } from '@/components/features/booking/BookingFlow';
 import { routing } from '@/i18n/routing';
 import { getProviderDetail } from '@/lib/services/providers';
 import { parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
+// Import directo, no al barrel `@/lib/validation` (ver BookingCheckoutPanel).
+import { parseSlotParam } from '@/lib/validation/slot-param';
 
 /**
  * Página del flujo de reserva mock para un servicio concreto.
  *
- * URL: `/centro/{slug}-{id}/reservar?serviceId=svc-XX`.
+ * URL: `/centro/{slug}-{id}/reservar?serviceId=svc-XX[&slot=ISO]`.
+ *
+ * `slot` lo ponen las etiquetas de hueco liberado con descuento: se
+ * valida con Zod y, si no vale, se ignora (el flujo abre en hoy).
  *
  * Server Component que valida locale + segmento del proveedor, resuelve
  * el servicio dentro del catálogo del proveedor y pasa todo al
@@ -23,7 +28,7 @@ import { parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
 interface BookingPageProps {
   // Next.js 16: tanto params como searchParams se entregan como Promise.
   params: Promise<{ locale: string; slugWithId: string }>;
-  searchParams: Promise<{ serviceId?: string | string[] }>;
+  searchParams: Promise<{ serviceId?: string | string[]; slot?: string | string[] }>;
 }
 
 /**
@@ -62,7 +67,7 @@ export async function generateMetadata({ params }: BookingPageProps): Promise<Me
 
 export default async function BookingPage({ params, searchParams }: BookingPageProps) {
   const { locale, slugWithId } = await params;
-  const { serviceId: serviceIdRaw } = await searchParams;
+  const { serviceId: serviceIdRaw, slot: slotRaw } = await searchParams;
 
   if (!hasLocale(routing.locales, locale)) {
     notFound();
@@ -79,6 +84,7 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
       service={loaded.service}
       locale={locale as 'es' | 'ca' | 'en' | 'de'}
       providerSlugWithId={slugWithId}
+      initialSlotIso={parseSlotParam(slotRaw)}
     />
   );
 }

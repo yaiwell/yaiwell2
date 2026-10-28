@@ -35,6 +35,7 @@ function makeInitial(overrides: Partial<SearchViewInitialState> = {}): SearchVie
       query: '',
       categorySlug: 'belleza',
       availabilityOnly: false,
+      discountOnly: false,
       priceRange: [],
       minRating: null,
     },

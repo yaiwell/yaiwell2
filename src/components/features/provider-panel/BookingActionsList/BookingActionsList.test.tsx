@@ -11,6 +11,11 @@ vi.mock('@/app/[locale]/panel/calendario/actions', () => ({
   completeBookingAction: (...args: unknown[]) => completeBookingActionMock(...args),
   cancelBookingAction: (...args: unknown[]) => cancelBookingActionMock(...args),
 }));
+vi.mock('@/app/[locale]/panel/calendario/slot-offers.actions', () => ({
+  releaseCancelledSlotAction: vi.fn(),
+  releaseFreeSlotAction: vi.fn(),
+  withdrawSlotOfferAction: vi.fn(),
+}));
 
 import { BookingActionsList } from './BookingActionsList';
 import type { PanelBookingAction } from './BookingActionsList.types';

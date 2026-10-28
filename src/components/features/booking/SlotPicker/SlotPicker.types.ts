@@ -22,6 +22,11 @@ export interface SlotPickerProps {
   onSelect: (slot: BookingSlot) => void;
   /** `now` opcional para tests; en producción se toma del logic. */
   now?: Date;
+  /**
+   * Hueco pedido por URL (`?slot=ISO`, ya validado en servidor): la tira
+   * abre en su día y, si sigue libre, queda seleccionado.
+   */
+  initialSlotIso?: string | null;
 }
 
 /**

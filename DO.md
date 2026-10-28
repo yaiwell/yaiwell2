@@ -8,6 +8,17 @@
 
 ## 2026-10-28
 
+### 2026-10-28 — Huecos sueltos con descuento automático (MVP)
+
+P4: Plan → datos (`db-migration-guard`) → servicio → UI panel y UI cliente en paralelo → `e2e-tester` + `business-rules-auditor` + `conventions-reviewer` → arreglos (el del pago tardío, `stripe-payments`).
+
+- **Decisiones** en CLAUDE.md §4.bis: descuento por tramos de tiempo (> 2 h, 1-2 h, < 1 h) en pasos de 5 % con tope 50 % y nunca menor más cerca; comisión sobre lo cobrado; se libera tras cancelar o sobre un hueco libre a menos de 2 h; «avisar» = destacarlo en la app.
+- **BD**: `9b_slot_offers` (tabla con CHECK de tramos, índice único parcial por profesional y hora, RLS) y columnas `slotOfferId`/`originalPriceCents`/`discountPct` en `bookings`; `9c_slot_offers_hardening` (sin lectura pública por PostgREST, índice de `serviceId`). Aplicadas con permiso del dev y verificadas.
+- **Servidor**: módulo `slot-offers`; `createBooking` solo acepta horas que el motor ofrece o con oferta vigente, aplica y congela el % del tramo con un solo reloj y serializa por profesional (`pg_advisory_xact_lock`), igual que la confirmación por pago tardío. Cancelar una reserva con descuento retira su oferta. Las ofertas de servicios pausados o profesionales borrados no se anuncian.
+- **Panel**: «Hueco libre. ¿Quieres ofrecerlo con descuento?» tras cancelar (también si el reembolso falló), sección de huecos libres de las próximas 2 h, ofertas en el calendario (escritorio y móvil) con detalle y «Retirar oferta».
+- **Cliente**: marca «−X %» en el selector de hora (también horas fuera de rejilla), precio tachado en resumen y pago con el importe del servidor, etiqueta «Hueco liberado · −X % · hora» en tarjeta, mapa y ficha, filtro «Con descuento» (`?discount=1`) y `?slot=` para llegar con la hora elegida. Las ofertas no reordenan el listado.
+- **Tests**: 1303 unitarios; E2E `tests/e2e/slot-offers.spec.ts` 5/5 (cancelar y liberar, búsqueda/ficha/selector, reserva con 44,99 sobre 49,99 y comisión y PaymentIntent coherentes, liberar y retirar un hueco libre, hora sin oferta a precio normal). Limpieza verificada en BD y Stripe; Studio Aura intacta.
+
 ### 2026-10-28 — Barra inferior del panel en móvil
 
 - La barra de navegación del panel flotaba a `bottom-20` (heredado de cuando convivía con la barra global, que bajo `/panel` está oculta) y con 5 enlaces `flex-1` sin `min-w-0` las etiquetas largas se montaban. Ahora va pegada al borde inferior, a todo el ancho, con el margen del home indicator de iOS, rejilla de 5 columnas iguales y etiquetas que bajan a dos líneas. El contenido reserva ese alto.

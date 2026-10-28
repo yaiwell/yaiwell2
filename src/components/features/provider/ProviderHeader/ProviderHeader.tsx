@@ -2,7 +2,9 @@ import { useTranslations } from 'next-intl';
 
 import { AvailabilityBadge } from '@/components/features/search/AvailabilityBadge';
 import { RatingSummary } from '@/components/shared/RatingSummary';
+import { SlotOfferTag } from '@/components/shared/SlotOfferTag';
 import { Link } from '@/i18n/navigation';
+import { buildProviderSlugWithId } from '@/lib/utils/provider-slug';
 
 import { getMinutesUntilNextSlot } from './ProviderHeader.logic';
 import { providerHeaderStyles as s } from './ProviderHeader.styles';
@@ -71,6 +73,16 @@ export function ProviderHeader({ provider }: ProviderHeaderProps) {
           <p className={s.address} data-component="provider-header-address">
             {provider.address}
           </p>
+          {/* Hueco liberado con descuento: lleva directo a reservar esa hora. */}
+          {provider.bestOffer && (
+            <div className={s.offerRow}>
+              <SlotOfferTag
+                offer={provider.bestOffer}
+                providerSlugWithId={buildProviderSlugWithId(provider)}
+                dataComponent="provider-header-slot-offer"
+              />
+            </div>
+          )}
         </div>
 
         {/* Columna derecha: estado, precio y valoración. */}

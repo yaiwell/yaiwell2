@@ -21,6 +21,7 @@ const emptyState: SearchUrlState = {
   query: '',
   categorySlug: null,
   availabilityOnly: false,
+  discountOnly: false,
   priceRange: [],
   minRating: null,
   nearMeOnly: false,
@@ -40,6 +41,7 @@ describe('buildSearchParams / parseSearchParams', () => {
       query: 'corte de pelo',
       categorySlug: 'manicura-pedicura',
       availabilityOnly: true,
+      discountOnly: true,
       priceRange: ['€', '€€€'],
       minRating: 4.5,
       nearMeOnly: true,
@@ -55,9 +57,17 @@ describe('buildSearchParams / parseSearchParams', () => {
       near: 'yes',
       cat: '',
       now: 'quizá',
+      discount: 'sí',
     });
 
     expect(parsed).toEqual({ ...emptyState, priceRange: ['€', '€€'] });
+  });
+
+  it('emite discount=1 con el filtro «Con descuento» y lo lee de vuelta', () => {
+    expect(buildSearchParams({ ...emptyState, discountOnly: true })).toBe('?discount=1');
+    expect(parseSearchParams({ discount: '1' }).discountOnly).toBe(true);
+    expect(parseSearchParams({ discount: 'true' }).discountOnly).toBe(true);
+    expect(parseSearchParams({ discount: ['1', '1'] }).discountOnly).toBe(false);
   });
 
   it('acepta now=true además de now=1 y descarta parámetros repetidos', () => {

@@ -108,6 +108,11 @@ export function useSearchView(initial: SearchViewInitialState) {
     [updateFilters],
   );
 
+  const handleDiscountToggle = useCallback(
+    (discountOnly: boolean) => updateFilters({ discountOnly }),
+    [updateFilters],
+  );
+
   const handleApplyAdvanced = useCallback(
     (value: AdvancedFiltersValue) => {
       updateFilters({
@@ -219,6 +224,7 @@ export function useSearchView(initial: SearchViewInitialState) {
     handleQueryChange,
     handleCategoryChange,
     handleAvailabilityToggle,
+    handleDiscountToggle,
     handleApplyAdvanced,
     handleClearAdvanced,
 

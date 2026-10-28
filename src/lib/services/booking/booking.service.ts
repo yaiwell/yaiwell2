@@ -13,7 +13,11 @@
  */
 
 import { prisma } from '@/lib/db/prisma';
-import { findLiveOfferForSlot } from '@/lib/services/slot-offers';
+import {
+  findLiveOfferForSlot,
+  isBookableStart,
+  retireOfferOfCancelledBooking,
+} from '@/lib/services/slot-offers';
 import { canCancelBooking } from '@/lib/utils/booking-cancellation';
 import { computeCommissionCents, priceSlot } from '@/lib/utils/slot-offer-pricing';
 
@@ -74,14 +78,24 @@ export async function createBooking(input: unknown, clientId: string) {
   // Calculamos el cierre del slot a partir de la duración del servicio.
   const endAt = new Date(data.slotStart.getTime() + service.durationMinutes * 60_000);
 
+  // Un único instante para el tramo de descuento y para `createdAt`, del
+  // que sale la regla de última hora: así nunca se contradicen en la
+  // frontera de 2 h.
   const now = new Date();
+
+  // Solo aceptamos horas que ofrecemos: de la rejilla del motor o
+  // liberadas con descuento. Sin esto una llamada directa podría
+  // reservar fuera de horario o una hora que la UI nunca enseñó.
+  if (!(await isBookableStart(data.serviceId, data.professionalId, data.slotStart, now))) {
+    throw new SlotUnavailableError();
+  }
 
   return prisma.$transaction(async (tx) => {
     // Bloqueo por profesional hasta el fin de la transacción: dos
     // clientes que reservan el mismo hueco a la vez (más probable en un
     // hueco liberado con descuento) se serializan, y el segundo ya ve
     // la reserva del primero en la comprobación de solape.
-    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${data.professionalId}))`;
+    await bookingRepository.lockProfessional(tx, data.professionalId);
 
     const overlapping = await bookingRepository.findOverlapping(
       data.professionalId,
@@ -101,6 +115,7 @@ export async function createBooking(input: unknown, clientId: string) {
       data.serviceId,
       data.slotStart,
       now,
+      tx,
     );
     const price = priceSlot(service.priceCents, offer?.discounts ?? null, data.slotStart, now);
 
@@ -122,6 +137,7 @@ export async function createBooking(input: unknown, clientId: string) {
         slotOfferId: price.discountPct !== null ? offer?.id : null,
         originalPriceCents: price.originalPriceCents,
         discountPct: price.discountPct,
+        createdAt: now,
       },
       tx,
     );
@@ -176,9 +192,15 @@ export async function cancelBookingByProvider(input: unknown, providerUserId: st
     throw new BookingTooLateToCancelError();
   }
 
+  const cancelledAt = new Date();
   const cancelled = await bookingRepository.updateStatus(bookingId, 'cancelled', {
-    cancelledAt: new Date(),
+    cancelledAt,
   });
+  // Una reserva vendida con descuento libera su oferta: la retiramos para
+  // que no vuelva a anunciarse sin que el proveedor lo decida.
+  if (booking.slotOfferId) {
+    await retireOfferOfCancelledBooking(booking.slotOfferId, cancelledAt);
+  }
   // Devolvemos además el estado leído justo antes de cancelar: el caller
   // de pagos lo necesita para saber si había cobro (`confirmed`) o solo
   // un intent vivo (`pending`) sin depender de una lectura aparte, que

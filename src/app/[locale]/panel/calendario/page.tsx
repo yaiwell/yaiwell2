@@ -5,19 +5,31 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { BookingActionsList } from '@/components/features/provider-panel/BookingActionsList';
 import type { PanelBookingAction } from '@/components/features/provider-panel/BookingActionsList';
 import {
+  FreeSlotsSection,
+  type PanelFreeSlot,
+} from '@/components/features/provider-panel/FreeSlotsSection';
+import {
   PanelPreviewToggle,
   PreviewBanner,
 } from '@/components/features/provider-panel/PanelPreviewToggle';
+import { ReleaseSlotPromptProvider } from '@/components/features/provider-panel/ReleaseSlotDialog';
 import {
   WeeklyCalendar,
   buildCalendarWeek,
+  type PanelSlotOffer,
 } from '@/components/features/provider-panel/WeeklyCalendar';
 import type { AppLocale } from '@/i18n/routing';
 import { isPanelPreviewActive } from '@/lib/auth/panel-preview';
 import { requireCurrentProvider } from '@/lib/auth/server';
 import { fakePanelBookings } from '@/lib/fake-data/panel-bookings';
+import { fakePanelFreeSlots, fakePanelSlotOffers } from '@/lib/fake-data/panel-slot-offers';
 import { toIntlLocale } from '@/lib/i18n';
-import { getPanelWeekBookings, toPreviewBookingActions } from '@/lib/services/provider-panel';
+import {
+  getPanelReleasableFreeSlots,
+  getPanelWeekBookings,
+  getPanelWeekSlotOffers,
+  toPreviewBookingActions,
+} from '@/lib/services/provider-panel';
 import { getMadridWeekRange, parseWeekParam } from '@/lib/utils/madrid-week';
 
 interface PanelCalendarPageProps {
@@ -36,6 +48,11 @@ interface PanelCalendarPageProps {
  * (§3 de CLAUDE.md — una página no habla con Prisma). Cada bloque del
  * calendario abre el detalle con sus acciones; debajo sigue el listado
  * de la semana, la vista accesible de lo mismo.
+ *
+ * Encima del calendario, los huecos libres de las próximas 2 h que se
+ * pueden liberar con descuento; en la cuadrícula, los ya liberados sin
+ * vender. `ReleaseSlotPromptProvider` monta una sola vez el diálogo de
+ * liberar hueco (también se abre tras cancelar una reserva).
  *
  * En modo preview enseñamos datos de ejemplo con las acciones
  * deshabilitadas y sin navegación (los ejemplos no tienen fecha).
@@ -58,15 +75,20 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
     : parseWeekParam((await searchParams).semana, now);
 
   let bookings: PanelBookingAction[];
+  let slotOffers: PanelSlotOffer[];
+  let freeSlots: PanelFreeSlot[];
   if (preview) {
     bookings = toPreviewBookingActions(fakePanelBookings);
+    slotOffers = fakePanelSlotOffers;
+    freeSlots = fakePanelFreeSlots;
   } else {
     const { id: providerId } = await requireCurrentProvider(panelLocale);
-    bookings = await getPanelWeekBookings(
-      providerId,
-      getMadridWeekRange(weekKey).start,
-      panelLocale,
-    );
+    const weekStart = getMadridWeekRange(weekKey).start;
+    [bookings, slotOffers, freeSlots] = await Promise.all([
+      getPanelWeekBookings(providerId, weekStart, panelLocale),
+      getPanelWeekSlotOffers(providerId, weekStart, panelLocale, now),
+      getPanelReleasableFreeSlots(providerId, panelLocale, now),
+    ]);
   }
 
   return (
@@ -86,14 +108,18 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
       </header>
 
       {preview ? <PreviewBanner /> : null}
-      <WeeklyCalendar
-        bookings={bookings}
-        week={buildCalendarWeek(weekKey, now, toIntlLocale(panelLocale))}
-        locale={panelLocale}
-        readOnly={preview}
-        now={now}
-      />
-      <BookingActionsList bookings={bookings} locale={panelLocale} readOnly={preview} now={now} />
+      <ReleaseSlotPromptProvider locale={panelLocale}>
+        <FreeSlotsSection slots={freeSlots} readOnly={preview} />
+        <WeeklyCalendar
+          bookings={bookings}
+          slotOffers={slotOffers}
+          week={buildCalendarWeek(weekKey, now, toIntlLocale(panelLocale))}
+          locale={panelLocale}
+          readOnly={preview}
+          now={now}
+        />
+        <BookingActionsList bookings={bookings} locale={panelLocale} readOnly={preview} now={now} />
+      </ReleaseSlotPromptProvider>
     </section>
   );
 }

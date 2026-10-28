@@ -204,7 +204,7 @@ export function SearchMap({
         {providers.map((p) => {
           const icon = L.divIcon({
             className: 'yaiwell-pin',
-            html: buildPinHtml(p.availability.status, p.id === highlightedId),
+            html: buildPinHtml(p.availability.status, p.id === highlightedId, !!p.bestOffer),
             iconSize: [22, 22],
             iconAnchor: [11, 11],
           });

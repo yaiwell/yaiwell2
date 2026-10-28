@@ -4,8 +4,6 @@ import { revalidatePath } from 'next/cache';
 import { ZodError } from 'zod';
 
 import type { AppLocale } from '@/i18n/routing';
-import { requireCurrentProvider } from '@/lib/auth/server';
-import { prisma } from '@/lib/db/prisma';
 import {
   BookingNotCancellableError,
   BookingNotConfirmedError,
@@ -16,6 +14,8 @@ import {
 } from '@/lib/services/booking';
 import { cancelBookingByProviderWithRefund } from '@/lib/services/checkout';
 import type { RefundOutcome } from '@/lib/services/checkout';
+
+import { resolveProviderOwner } from './provider-owner';
 
 /**
  * Resultado serializable de las server actions del calendario.
@@ -46,32 +46,13 @@ export type CalendarActionState =
 type CalendarActionError = Extract<CalendarActionState, { ok: false }>;
 
 /**
- * Resuelve el `User.id` interno dueño del Provider autenticado.
+ * `User.id` interno dueño del Provider autenticado, o `null`.
  *
- * Los services del dominio booking autorizan comparando contra
- * `provider.userId` (no contra el `clerkId`), así que traducimos aquí
- * una sola vez en lugar de en cada action.
- *
- * @returns el `User.id`, o `null` si no hay provider resoluble.
+ * La resolución vive en `provider-owner.ts` porque también la usan las
+ * actions de huecos liberados (`slot-offers.actions.ts`).
  */
 async function resolveProviderUserId(locale: AppLocale): Promise<string | null> {
-  let providerId: string;
-  try {
-    const provider = await requireCurrentProvider(locale);
-    providerId = provider.id;
-  } catch {
-    // `requireCurrentProvider` redirige cuando no hay provider; este
-    // catch cubre el caso defensivo de no llegar a redirect (tests,
-    // entornos sin Clerk montado, etc.).
-    return null;
-  }
-
-  const providerRow = await prisma.provider.findUnique({
-    where: { id: providerId },
-    select: { userId: true },
-  });
-
-  return providerRow?.userId ?? null;
+  return (await resolveProviderOwner(locale))?.userId ?? null;
 }
 
 /**

@@ -45,7 +45,12 @@ function renderSummary(isLastMinute: boolean) {
         slotStartIso={SLOT_START}
         slotEndIso={SLOT_END}
         notes=""
-        amountCents={null}
+        price={{
+          amountCents: 4500,
+          originalPriceCents: null,
+          discountPct: null,
+          isEstimate: true,
+        }}
         isLastMinute={isLastMinute}
         onNotesChange={() => {}}
       />

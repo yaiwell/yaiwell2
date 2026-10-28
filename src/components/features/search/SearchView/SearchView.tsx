@@ -63,6 +63,7 @@ export function SearchView({ initial, categories }: SearchViewProps) {
     handleQueryChange,
     handleCategoryChange,
     handleAvailabilityToggle,
+    handleDiscountToggle,
     handleApplyAdvanced,
     handleClearAdvanced,
     handleSeeOnList,
@@ -93,11 +94,13 @@ export function SearchView({ initial, categories }: SearchViewProps) {
             categories={categories.roots}
             activeCategorySlug={initial.filters.categorySlug}
             availabilityOnly={initial.filters.availabilityOnly}
+            discountOnly={initial.filters.discountOnly}
             hasAdvancedFilters={hasAdvancedFilters}
             nearMeOnly={nearMeOnly}
             nearMeRadiusKm={NEAR_ME_RADIUS_KM}
             onCategoryChange={handleCategoryChange}
             onAvailabilityToggle={handleAvailabilityToggle}
+            onDiscountToggle={handleDiscountToggle}
             onNearMeToggle={handleToggleNearMe}
             onOpenFiltersSheet={() => setFiltersSheetOpen(true)}
           />

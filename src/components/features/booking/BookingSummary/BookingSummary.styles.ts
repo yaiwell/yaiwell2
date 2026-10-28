@@ -19,6 +19,8 @@ export const bookingSummaryStyles = {
   rowLabel: 'text-xs font-medium uppercase tracking-wide text-muted-foreground',
   rowValue: 'text-sm text-foreground text-right',
   rowValueStrong: 'text-sm font-semibold text-foreground text-right',
+  // Aclaración bajo el precio previsto de un hueco con descuento.
+  priceHint: 'mt-1 block text-xs font-normal text-muted-foreground text-right',
 
   // Notas opcionales.
   notesBlock: 'flex flex-col gap-2',

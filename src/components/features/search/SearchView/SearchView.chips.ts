@@ -37,6 +37,9 @@ export function useFilterChipHandlers(
         case 'availability':
           updateFilters({ availabilityOnly: false });
           return;
+        case 'discount':
+          updateFilters({ discountOnly: false });
+          return;
         case 'price':
           updateFilters({
             priceRange: priceRange.filter((p) => p !== chip.value),
@@ -55,6 +58,7 @@ export function useFilterChipHandlers(
       query: '',
       categorySlug: null,
       availabilityOnly: false,
+      discountOnly: false,
       priceRange: [] as PriceRange[],
       minRating: null,
     });

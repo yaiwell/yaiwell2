@@ -40,3 +40,30 @@ describe('groupSlots', () => {
     expect(groups.morning).toHaveLength(1);
   });
 });
+
+describe('groupSlots — huecos liberados fuera de la rejilla', () => {
+  it('coloca un hueco liberado a una hora suelta en su franja y en orden', () => {
+    // La API devuelve los huecos ordenados por inicio, también los que
+    // caen fuera de la rejilla normal (p. ej. 13:45 tras una cancelación).
+    const offer = { discountPct: 20, priceCents: 3600, originalPriceCents: 4500 };
+    const groups = groupSlots(
+      [
+        slot('2026-10-09T09:00:00.000Z'), // 11:00 Madrid
+        { ...slot('2026-10-09T11:45:00.000Z'), offer }, // 13:45, fuera de rejilla
+        slot('2026-10-09T12:00:00.000Z'), // 14:00
+        { ...slot('2026-10-09T12:10:00.000Z'), offer }, // 14:10, fuera de rejilla
+      ],
+      NOW,
+    );
+
+    expect(groups.morning.map((s) => s.startAtIso)).toEqual([
+      '2026-10-09T09:00:00.000Z',
+      '2026-10-09T11:45:00.000Z',
+    ]);
+    expect(groups.afternoon.map((s) => s.startAtIso)).toEqual([
+      '2026-10-09T12:00:00.000Z',
+      '2026-10-09T12:10:00.000Z',
+    ]);
+    expect(groups.morning[1].offer?.discountPct).toBe(20);
+  });
+});

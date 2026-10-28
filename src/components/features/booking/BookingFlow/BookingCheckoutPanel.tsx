@@ -63,6 +63,8 @@ export function BookingCheckoutPanel({
         <StripePaymentStep
           clientSecret={checkout.clientSecret}
           amountCents={checkout.amountCents}
+          originalPriceCents={checkout.originalPriceCents}
+          discountPct={checkout.discountPct}
           locale={locale}
           isLastMinute={checkout.isLastMinute}
           returnUrl={returnUrl}

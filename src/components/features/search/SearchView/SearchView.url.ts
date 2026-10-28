@@ -43,6 +43,10 @@ export function parseSearchParams(sp: RawSearchParams): SearchUrlState {
     query,
     categorySlug,
     availabilityOnly: sp.now === '1' || sp.now === 'true',
+    // Mismo criterio que `now`: solo `1`/`true` activan el filtro y
+    // cualquier otro valor se ignora. El servidor lo revalida con Zod
+    // (`searchProvidersFiltersSchema.discountOnly`).
+    discountOnly: sp.discount === '1' || sp.discount === 'true',
     priceRange,
     // `Number('')` es 0, pero solo llega aquí si `rating` existe; aun
     // así filtramos NaN/Infinity para no inventar un filtro.
@@ -71,6 +75,7 @@ export function buildSearchParams(state: SearchUrlState): string {
   if (state.query) params.set('q', state.query);
   if (state.categorySlug) params.set('cat', state.categorySlug);
   if (state.availabilityOnly) params.set('now', '1');
+  if (state.discountOnly) params.set('discount', '1');
   if (state.priceRange.length > 0) params.set('price', state.priceRange.join(','));
   if (state.minRating !== null) params.set('rating', String(state.minRating));
   if (state.nearMeOnly) params.set('near', 'me');

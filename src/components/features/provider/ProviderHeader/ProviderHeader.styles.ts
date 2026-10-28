@@ -36,6 +36,8 @@ export const providerHeaderStyles = {
   type: 'text-xs uppercase tracking-wide text-muted-foreground',
   name: 'font-display text-3xl leading-tight tracking-tight text-foreground md:text-4xl',
   address: 'text-sm text-muted-foreground',
+  // Etiqueta de hueco liberado bajo la dirección.
+  offerRow: 'mt-2 flex',
 
   // Columna derecha: en móvil apilada y alineada a la izquierda para
   // mantener el flow lectura natural; en desktop alineada a la derecha.

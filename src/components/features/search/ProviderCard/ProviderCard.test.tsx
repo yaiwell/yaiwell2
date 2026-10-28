@@ -26,6 +26,10 @@ const messages = {
       typeCenter: 'Centro',
       noPhoto: 'Sin fotos',
     },
+    slotOffer: {
+      tag: 'Hueco liberado · −{pct} % · {when}',
+      tagAria: 'Hueco liberado con un {pct} % de descuento, {when}. Reservar esta hora',
+    },
     availability: {
       now: 'Disponible ahora',
       soon: 'Libre en {minutes} min',
@@ -102,6 +106,30 @@ describe('ProviderCard', () => {
     expect(rating).toHaveTextContent('Nuevo en Yaiwell');
     expect(rating).not.toHaveTextContent(/\d/);
     expect(screen.queryByText(/0[.,]0/)).toBeNull();
+  });
+
+  it('sin oferta no pinta la etiqueta de hueco liberado', () => {
+    renderCard(buildProvider({ bestOffer: null }));
+
+    expect(document.querySelector('[data-component="provider-card-slot-offer"]')).toBeNull();
+  });
+
+  it('con oferta pinta la etiqueta como enlace propio a reservar ese hueco', () => {
+    renderCard(
+      buildProvider({
+        bestOffer: {
+          serviceId: 'svc-9',
+          startAtIso: '2099-06-14T15:00:00.000Z',
+          discountPct: 20,
+        },
+      }),
+    );
+
+    const tag = document.querySelector('[data-component="provider-card-slot-offer"]');
+    expect(tag).toHaveTextContent(/Hueco liberado · −20 % · .*17:00/u);
+    expect(tag?.getAttribute('href')).toContain('/reservar?serviceId=svc-9&slot=');
+    // No anidado dentro del enlace de la card (HTML inválido).
+    expect(tag?.parentElement?.closest('a')).toBeNull();
   });
 
   it('pinta la nota y el número de reseñas cuando las hay', () => {

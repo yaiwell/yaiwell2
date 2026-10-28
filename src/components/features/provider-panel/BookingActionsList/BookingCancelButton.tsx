@@ -8,6 +8,7 @@ import { useState, useTransition } from 'react';
 import { cancelBookingAction } from '@/app/[locale]/panel/calendario/actions';
 import { Button } from '@/components/ui/button';
 
+import { useReleaseSlotPrompt } from '../ReleaseSlotDialog';
 import {
   bookingActionDialogStyles as d,
   bookingActionsListStyles as s,
@@ -43,8 +44,12 @@ type CancelErrorCode =
  *    botón se deshabilita y explicamos que la excepción por fuerza
  *    mayor la gestiona soporte, no el self-service.
  *  - `refundFailed` no es un fracaso total: la reserva SÍ quedó
- *    cancelada. El diálogo se mantiene abierto para contarlo sin
- *    pedir al proveedor que reintente.
+ *    cancelada. Se cuenta sin pedir al proveedor que reintente.
+ *
+ * Tras cancelar (con o sin reembolso), si el calendario monta el
+ * diálogo de huecos liberados, se ofrece liberar el hueco con descuento
+ * («Omitir» lo cierra). Sin ese contexto, el diálogo se cierra o se
+ * queda abierto con el aviso del reembolso, como antes.
  */
 export function BookingCancelButton({
   locale,
@@ -58,6 +63,7 @@ export function BookingCancelButton({
   const [errorCode, setErrorCode] = useState<CancelErrorCode | null>(null);
   const [isPending, startTransition] = useTransition();
   const cancellable = useCancellationWindow(startAtIso, initialCancellable);
+  const openReleasePrompt = useReleaseSlotPrompt();
 
   const blocked = !cancellable && !disabled;
 
@@ -65,6 +71,17 @@ export function BookingCancelButton({
     setErrorCode(null);
     startTransition(async () => {
       const result = await cancelBookingAction(locale, bookingId);
+      // Con `REFUND_FAILED` la reserva también quedó cancelada: el hueco
+      // está libre igualmente y el aviso del reembolso viaja al diálogo.
+      const cancelled = result.ok || result.code === 'REFUND_FAILED';
+      if (cancelled && openReleasePrompt && startAtIso) {
+        setOpen(false);
+        openReleasePrompt({
+          target: { kind: 'cancelled', bookingId, startAtIso },
+          notice: result.ok ? null : 'refundFailed',
+        });
+        return;
+      }
       if (result.ok) {
         setOpen(false);
         return;

@@ -8,46 +8,10 @@ import type { PanelBooking } from '@/components/features/provider-panel/WeeklyCa
 import type { AppLocale } from '@/i18n/routing';
 import { prisma } from '@/lib/db/prisma';
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
-import {
-  PANEL_TIMEZONE as PANEL_TZ,
-  getMadridWeekRange,
-  getMadridWeekStartKey,
-} from '@/lib/utils/madrid-week';
+import { getMadridWeekRange, getMadridWeekStartKey } from '@/lib/utils/madrid-week';
 import type { LocalizedText } from '@/types/domain';
 
-/**
- * Devuelve el día de la semana en hora Madrid (0=lunes .. 6=domingo).
- *
- * Usa Intl con timeZone fija para que el cálculo no dependa de la
- * zona horaria del servidor (Vercel = UTC). Sin esto, una reserva
- * del lunes a las 00:30 Madrid se vería en la columna del domingo.
- */
-function weekdayInMadrid(date: Date): 0 | 1 | 2 | 3 | 4 | 5 | 6 {
-  const short = new Intl.DateTimeFormat('en-US', {
-    weekday: 'short',
-    timeZone: PANEL_TZ,
-  }).format(date);
-  const map: Record<string, 0 | 1 | 2 | 3 | 4 | 5 | 6> = {
-    Mon: 0,
-    Tue: 1,
-    Wed: 2,
-    Thu: 3,
-    Fri: 4,
-    Sat: 5,
-    Sun: 6,
-  };
-  return map[short] ?? 0;
-}
-
-/** Formatea una fecha como "HH:mm" en hora Madrid. */
-function timeInMadrid(date: Date): string {
-  return new Intl.DateTimeFormat('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    timeZone: PANEL_TZ,
-  }).format(date);
-}
+import { timeInMadrid, weekdayInMadrid } from './panel-madrid-time';
 
 /**
  * Recupera las reservas del proveedor en una semana de Madrid (lunes

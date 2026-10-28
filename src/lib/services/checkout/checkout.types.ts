@@ -23,6 +23,14 @@ export interface BookingCheckoutSession {
   clientSecret: string;
   /** Importe total en céntimos, para que la UI lo pinte sin recalcular. */
   amountCents: number;
+  /**
+   * Precio de referencia (el del servicio) si la reserva cayó en un
+   * hueco liberado con descuento; `null` sin descuento. Congelado en la
+   * reserva: la UI lo tacha tal cual, sin recalcular.
+   */
+  originalPriceCents: number | null;
+  /** % de descuento congelado en la reserva; `null` sin descuento. */
+  discountPct: number | null;
   /** Inicio del slot ya confirmado en BD (puede diferir del pedido si hubo redondeo). */
   slotStartIso: string;
   slotEndIso: string;

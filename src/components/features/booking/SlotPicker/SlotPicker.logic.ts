@@ -18,6 +18,7 @@ import { buildUpcomingDays, getDateKey } from '@/lib/utils/calendar-days';
 
 import { useTickingNow } from '../shared/useTickingNow';
 
+import { getInitialDayForSlot } from './SlotPicker.preselect';
 import type { DayTab, SlotPickerLocale } from './SlotPicker.types';
 
 /**
@@ -171,12 +172,16 @@ export function useSlotPicker(args: {
   serviceDurationMinutes: number;
   locale: SlotPickerLocale;
   now?: Date;
+  /** Hueco pedido por URL (`?slot=`): abre la tira en su día. */
+  initialSlotIso?: string | null;
 }) {
   // El instante de referencia se fija al montar el hook para que el
   // calendario no "salte" si el usuario tarda en interactuar.
   const [now] = useState<Date>(() => args.now ?? new Date());
   const [selectedDay, setSelectedDay] = useState<Date>(
-    () => new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+    () =>
+      getInitialDayForSlot(args.initialSlotIso, now, VISIBLE_DAYS) ??
+      new Date(now.getFullYear(), now.getMonth(), now.getDate()),
   );
 
   const days = useMemo<Date[]>(() => buildUpcomingDays(now, VISIBLE_DAYS), [now]);

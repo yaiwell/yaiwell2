@@ -4,11 +4,11 @@ import { useTranslations } from 'next-intl';
 
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
+import { DiscountedPrice } from '../DiscountedPrice';
 import { LastMinuteNotice } from '../LastMinuteNotice';
 
 import {
   formatCancellationDeadline,
-  formatPriceCents,
   formatSlotDateLong,
   formatSlotTimeOnly,
 } from './BookingSummary.logic';
@@ -33,21 +33,21 @@ export function BookingSummary({
   slotStartIso,
   slotEndIso,
   notes,
-  amountCents,
+  price,
   isLastMinute,
   onNotesChange,
 }: BookingSummaryProps) {
   const t = useTranslations('booking.summary');
   const tPolicy = useTranslations('booking.policy');
+  const tOffer = useTranslations('booking.slotOffer');
 
   // `en` y `de` son opcionales en `LocalizedText`: indexar a pelo dejaba
   // el nombre del servicio en blanco en esos dos idiomas.
   const serviceName = pickLocalized(service.name, locale);
 
-  // El servidor es la fuente del importe en cuanto existe reserva; antes
-  // de eso no hay nada que cobrar todavía y mostramos el precio de
-  // catálogo (ver comentario de `amountCents` en los tipos).
-  const totalCents = amountCents ?? service.priceCents;
+  // Con descuento y sin reserva todavía, el importe es una previsión:
+  // el tramo puede cambiar antes de abrir el pago y manda el servidor.
+  const isEstimatedOffer = price.isEstimate && price.discountPct !== null;
 
   return (
     <div className={s.root} data-component="booking-summary">
@@ -94,8 +94,24 @@ export function BookingSummary({
           <dd className={s.rowValue}>{t('anyProfessional')}</dd>
         </div>
         <div className={s.row}>
-          <dt className={s.rowLabel}>{t('totalLabel')}</dt>
-          <dd className={s.rowValueStrong}>{formatPriceCents(totalCents, locale)}</dd>
+          <dt className={s.rowLabel}>
+            {isEstimatedOffer ? tOffer('estimatedPriceLabel') : t('totalLabel')}
+          </dt>
+          <dd className={s.rowValueStrong}>
+            <DiscountedPrice
+              amountCents={price.amountCents}
+              originalPriceCents={price.originalPriceCents}
+              discountPct={price.discountPct}
+              locale={locale}
+              dataComponent="booking-summary-total"
+            />
+            {/* Dentro del <dd>: un <dl> solo admite filas, no párrafos. */}
+            {isEstimatedOffer && (
+              <span className={s.priceHint} data-component="booking-summary-estimate-hint">
+                {tOffer('estimatedPriceHint')}
+              </span>
+            )}
+          </dd>
         </div>
       </dl>
 

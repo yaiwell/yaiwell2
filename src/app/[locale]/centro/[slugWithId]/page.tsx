@@ -10,6 +10,7 @@ import { buildAlternates } from '@/lib/seo';
 import { getProvidersAvailability } from '@/lib/services/availability';
 import { getProviderSchedule, ProviderHasNoProfessionalError } from '@/lib/services/provider';
 import { getProviderDetail } from '@/lib/services/providers';
+import { getBestOfferByProvider } from '@/lib/services/slot-offers';
 import { buildProviderSlugWithId, parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
 import type { ProviderWithAvailability } from '@/types/domain';
 
@@ -92,13 +93,16 @@ export default async function ProviderPage({ params }: ProviderPageProps) {
   // esconde el bloque sin romper la página).
   // Ambas lecturas dependen sólo del providerId: van en paralelo para
   // no encadenar dos viajes a BD.
-  const [schedule, availabilityByProvider] = await Promise.all([
+  const [schedule, availabilityByProvider, offersByProvider] = await Promise.all([
     getProviderSchedule(detail.provider.id).catch((err) => {
       if (err instanceof ProviderHasNoProfessionalError) return null;
       throw err;
     }),
     getProvidersAvailability([detail.provider.id]),
+    // Mejor hueco liberado con descuento: se anuncia en la cabecera.
+    getBestOfferByProvider([detail.provider.id]),
   ]);
+  const bestOffer = offersByProvider.get(detail.provider.id);
 
   // Enrichment local: el detalle del proveedor no incluye `availability`
   // ni `distanceKm` porque dependen del momento y del usuario; aquí
@@ -112,6 +116,14 @@ export default async function ProviderPage({ params }: ProviderPageProps) {
       nextSlot: null,
     },
     distanceKm: null,
+    // Solo lo que se anuncia: el id interno de la oferta no viaja.
+    bestOffer: bestOffer
+      ? {
+          serviceId: bestOffer.serviceId,
+          startAtIso: bestOffer.startAtIso,
+          discountPct: bestOffer.discountPct,
+        }
+      : null,
   };
 
   return (

@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import { PhotoPlaceholder } from '@/components/shared/PhotoPlaceholder';
 import { RatingSummary } from '@/components/shared/RatingSummary';
+import { SlotOfferTag } from '@/components/shared/SlotOfferTag';
 import { Link } from '@/i18n/navigation';
 import { formatDistance } from '@/lib/services/location';
 import { cn } from '@/lib/utils';
@@ -63,102 +64,122 @@ export function ProviderCard({
   // respeta el prefijo de locale. Mantenemos el <article> interno con
   // sus data-attributes y handlers de hover intactos para no romper la
   // comunicación con el mapa.
-  const detailHref = `/centro/${buildProviderSlugWithId(provider)}`;
+  const slugWithId = buildProviderSlugWithId(provider);
+  const detailHref = `/centro/${slugWithId}`;
 
   return (
-    <Link href={detailHref} className="block">
-      <article
-        data-provider-id={provider.id}
-        data-component={`provider-card-${provider.slug}`}
-        className={cn(s.root, highlighted && s.rootHighlighted)}
-        onMouseEnter={() => onHover?.(provider.id)}
-        onMouseLeave={() => onHover?.(null)}
-      >
-        <div className={s.imageWrapper} data-component="provider-card-image">
-          {/* Foto principal (Unsplash, hostname registrado en next.config.ts).
+    <div className={s.frame}>
+      <Link href={detailHref} className="block">
+        <article
+          data-provider-id={provider.id}
+          data-component={`provider-card-${provider.slug}`}
+          className={cn(s.root, highlighted && s.rootHighlighted)}
+          onMouseEnter={() => onHover?.(provider.id)}
+          onMouseLeave={() => onHover?.(null)}
+        >
+          <div className={s.imageWrapper} data-component="provider-card-image">
+            {/* Foto principal (Unsplash, hostname registrado en next.config.ts).
               `fill` + `sizes` permite que el navegador descargue la variante
               óptima por viewport. Lazy por defecto: la mayoría de las cards
               están fuera del primer pliegue en la lista de resultados. */}
-          {coverPhoto ? (
-            <Image
-              src={coverPhoto}
-              alt={provider.name}
-              fill
-              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              className={s.image}
-            />
-          ) : (
-            <PhotoPlaceholder
-              label={t('noPhoto')}
-              size="md"
-              dataComponent="provider-card-photo-placeholder"
-            />
-          )}
-          <span className={s.badgeOverlay} data-component="provider-card-availability">
-            <AvailabilityBadge
-              status={provider.availability.status}
-              minutesUntilNext={minutesUntilNext}
-              nextSlotAt={provider.availability.nextSlot?.startAt ?? null}
-            />
-          </span>
-          <span className={s.priceTag} data-component="provider-card-price-range">
-            {provider.priceRange}
-          </span>
-        </div>
-
-        <div className={s.body} data-component="provider-card-body">
-          <div className={s.headerRow}>
-            <div className="flex flex-col gap-1">
-              <span className={s.type} data-component="provider-card-type">
-                {t(provider.type === 'autonomo' ? 'typeAutonomous' : 'typeCenter')}
-              </span>
-              <h3 className={s.name} data-component="provider-card-name">
-                {provider.name}
-              </h3>
-            </div>
-          </div>
-
-          <p className={s.address} data-component="provider-card-address">
-            {provider.address}
-          </p>
-
-          <div className={s.metaRow} data-component="provider-card-meta">
-            <RatingSummary
-              ratingAvg={provider.rating}
-              reviewsCount={provider.reviewsCount}
-              variant="card"
-              dataComponent="provider-card-rating"
-            />
-            {distanceLabel !== null && (
-              <span
-                className={s.distancePill}
-                data-component="provider-card-distance"
-                title={hasRealLocation ? undefined : t('distanceFromFallbackHint')}
-              >
-                <MapPin className={s.distancePillIcon} aria-hidden />
-                {distanceLabel}
-              </span>
-            )}
-          </div>
-
-          <div className={s.footerRow} data-component="provider-card-footer">
-            {fromPriceCents !== null ? (
-              <div className={s.fromPrice} data-component="provider-card-from-price">
-                <span className={s.fromPriceLabel}>{t('from')}</span>
-                <span className={s.fromPriceValue}>{formatPriceCents(fromPriceCents, locale)}</span>
-              </div>
+            {coverPhoto ? (
+              <Image
+                src={coverPhoto}
+                alt={provider.name}
+                fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className={s.image}
+              />
             ) : (
-              <span />
+              <PhotoPlaceholder
+                label={t('noPhoto')}
+                size="md"
+                dataComponent="provider-card-photo-placeholder"
+              />
             )}
-            {/* Affordance visual de "ver detalle". Ya no es un enlace
-                independiente porque toda la card es clicable; mantenemos
-                solo la flecha decorativa para sugerir navegación. */}
-            <span className={s.ctaLink} data-component="provider-card-cta" aria-hidden>
-              <ArrowRight className="size-4" />
+            <span className={s.badgeOverlay} data-component="provider-card-availability">
+              <AvailabilityBadge
+                status={provider.availability.status}
+                minutesUntilNext={minutesUntilNext}
+                nextSlotAt={provider.availability.nextSlot?.startAt ?? null}
+              />
+            </span>
+            <span className={s.priceTag} data-component="provider-card-price-range">
+              {provider.priceRange}
             </span>
           </div>
+
+          <div className={s.body} data-component="provider-card-body">
+            <div className={s.headerRow}>
+              <div className="flex flex-col gap-1">
+                <span className={s.type} data-component="provider-card-type">
+                  {t(provider.type === 'autonomo' ? 'typeAutonomous' : 'typeCenter')}
+                </span>
+                <h3 className={s.name} data-component="provider-card-name">
+                  {provider.name}
+                </h3>
+              </div>
+            </div>
+
+            <p className={s.address} data-component="provider-card-address">
+              {provider.address}
+            </p>
+
+            <div className={s.metaRow} data-component="provider-card-meta">
+              <RatingSummary
+                ratingAvg={provider.rating}
+                reviewsCount={provider.reviewsCount}
+                variant="card"
+                dataComponent="provider-card-rating"
+              />
+              {distanceLabel !== null && (
+                <span
+                  className={s.distancePill}
+                  data-component="provider-card-distance"
+                  title={hasRealLocation ? undefined : t('distanceFromFallbackHint')}
+                >
+                  <MapPin className={s.distancePillIcon} aria-hidden />
+                  {distanceLabel}
+                </span>
+              )}
+            </div>
+
+            <div className={s.footerRow} data-component="provider-card-footer">
+              {fromPriceCents !== null ? (
+                <div className={s.fromPrice} data-component="provider-card-from-price">
+                  <span className={s.fromPriceLabel}>{t('from')}</span>
+                  <span className={s.fromPriceValue}>
+                    {formatPriceCents(fromPriceCents, locale)}
+                  </span>
+                </div>
+              ) : (
+                <span />
+              )}
+              {/* Affordance visual de "ver detalle". Ya no es un enlace
+                independiente porque toda la card es clicable; mantenemos
+                solo la flecha decorativa para sugerir navegación. */}
+              <span className={s.ctaLink} data-component="provider-card-cta" aria-hidden>
+                <ArrowRight className="size-4" />
+              </span>
+            </div>
+          </div>
+        </article>
+      </Link>
+      {/* La etiqueta de hueco liberado es otro enlace (al flujo de reserva)
+        y no puede anidarse dentro del de la card: va como hermano,
+        superpuesta sobre la foto con una capa del mismo formato. */}
+      {provider.bestOffer && (
+        <div className={s.offerLayer}>
+          <span className={s.offerSlot}>
+            <SlotOfferTag
+              offer={provider.bestOffer}
+              providerSlugWithId={slugWithId}
+              variant="overlay"
+              dataComponent="provider-card-slot-offer"
+            />
+          </span>
         </div>
-      </article>
-    </Link>
+      )}
+    </div>
   );
 }

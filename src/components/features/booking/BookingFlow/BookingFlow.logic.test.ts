@@ -33,6 +33,8 @@ const OK_RESULT = {
   bookingId: 'bk-123',
   clientSecret: 'pi_123_secret_abc',
   amountCents: 4500,
+  originalPriceCents: null,
+  discountPct: null,
   slotStartIso: SLOT_START,
   slotEndIso: SLOT_END,
   isLastMinute: false,
@@ -135,6 +137,8 @@ describe('useBookingFlow', () => {
       status: 'ready',
       clientSecret: 'pi_123_secret_abc',
       amountCents: 4500,
+      originalPriceCents: null,
+      discountPct: null,
       isLastMinute: false,
       // Depende del reloj real frente a SLOT_START; se prueba con `now`
       // fijo en BookingFlow.checkout.test.ts.

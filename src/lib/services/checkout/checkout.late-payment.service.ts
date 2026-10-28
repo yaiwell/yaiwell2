@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { prisma } from '@/lib/db/prisma';
 import { bookingRepository, isBookingHoldingSlot } from '@/lib/services/booking';
 
 import { reportCheckoutWarning } from './checkout.payment-intent';
@@ -66,7 +67,11 @@ export async function refundPaymentOnCancelledBooking(
  *  - Franja ya empezada o pasada: cancelar y reembolsar.
  *  - Retención vigente al pagar y todavía ahora: confirmar.
  *  - En otro caso, confirmar si la franja sigue libre; si otra reserva
- *    activa la ocupa, cancelar y reembolsar.
+ *    activa la ocupa, cancelar y reembolsar. La comprobación y la
+ *    confirmación van bajo el bloqueo por profesional que también toma
+ *    `createBooking`: sin él, un cliente podía coger el hueco (p. ej.
+ *    liberado con descuento) entre nuestra lectura y nuestra escritura y
+ *    quedaban dos reservas activas en la misma franja.
  *
  * Toda escritura es condicional a `pending`: si otro camino (proveedor,
  * cron) movió la fila entre medias, se relee y se actúa sobre su estado
@@ -87,12 +92,15 @@ export async function settlePaymentOnPendingBooking(
 
   const heldWhenPaid = isBookingHoldingSlot(booking, clock.paidAt);
   if (heldWhenPaid && isBookingHoldingSlot(booking, clock.now)) {
-    return confirmOrFollow(booking, paymentIntentId);
+    // Retención vigente: nuestra `pending` aún cuenta como activa y
+    // `createBooking` no puede dar la franja a otro; no hace falta bloqueo.
+    if (await checkoutRepository.confirmIfPending(booking.id)) return confirmed(booking);
+    return followCurrentState(booking, paymentIntentId);
   }
 
-  if (!(await isSlotTakenByOther(booking, clock.now))) {
-    return confirmOrFollow(booking, paymentIntentId);
-  }
+  const decision = await confirmIfSlotFree(booking, clock.now);
+  if (decision === 'confirmed') return confirmed(booking);
+  if (decision === 'not-pending') return followCurrentState(booking, paymentIntentId);
 
   if (heldWhenPaid) {
     // Pagó a tiempo y aun así pierde la franja: el webhook llegó tarde.
@@ -102,20 +110,49 @@ export async function settlePaymentOnPendingBooking(
       'error',
     );
   }
+  // El reembolso va fuera de la transacción: una llamada a Stripe no debe
+  // alargar el bloqueo, y cancelar una `pending` es seguro sin él.
   return cancelAndRefund(booking, paymentIntentId, clock.now, 'slot taken by another booking');
 }
 
+/** Resultado de intentar confirmar con la retención vencida. */
+type SlotDecision = 'confirmed' | 'taken' | 'not-pending';
+
 /**
- * Confirma si la fila sigue en `pending`. Si perdimos la carrera, sigue
- * al estado real: `cancelled` → reembolso; cualquier otro → sin cambios.
+ * Bajo el bloqueo por profesional: si ninguna otra reserva activa solapa,
+ * confirma (condicional a `pending`). Solo decide y escribe en BD; las
+ * acciones con Stripe las hace el llamador fuera de la transacción.
  */
-async function confirmOrFollow(
+async function confirmIfSlotFree(booking: CheckoutBookingRow, now: Date): Promise<SlotDecision> {
+  return prisma.$transaction(async (tx) => {
+    await bookingRepository.lockProfessional(tx, booking.professionalId);
+    const overlapping = await bookingRepository.findOverlapping(
+      booking.professionalId,
+      booking.startAt,
+      booking.endAt,
+      now,
+      tx,
+    );
+    // Excluimos la propia fila por si todavía cuenta como activa.
+    if (overlapping.some((other) => other.id !== booking.id)) return 'taken';
+    return (await checkoutRepository.confirmIfPending(booking.id, tx))
+      ? 'confirmed'
+      : 'not-pending';
+  });
+}
+
+function confirmed(booking: CheckoutBookingRow): BookingTransitionResult {
+  return { bookingId: booking.id, changed: true, status: 'confirmed' };
+}
+
+/**
+ * Perdimos la escritura condicional: seguimos al estado real.
+ * `cancelled` → reembolso; cualquier otro → sin cambios.
+ */
+async function followCurrentState(
   booking: CheckoutBookingRow,
   paymentIntentId: string,
 ): Promise<BookingTransitionResult> {
-  if (await checkoutRepository.confirmIfPending(booking.id)) {
-    return { bookingId: booking.id, changed: true, status: 'confirmed' };
-  }
   const current = await checkoutRepository.findCheckoutRow(booking.id);
   if (current?.status === 'cancelled') {
     return refundPaymentOnCancelledBooking(current, paymentIntentId);
@@ -145,20 +182,6 @@ async function cancelAndRefund(
   const { outcome } = await issueBookingRefund(booking.id, paymentIntentId, { now });
   console.warn(`[checkout/late-payment] ${reason}; refund ${outcome}:`, booking.id);
   return { bookingId: booking.id, changed: applied, status: 'cancelled' };
-}
-
-/**
- * ¿Hay otra reserva activa que solape con esta? Excluimos la propia
- * fila por si todavía cuenta como activa.
- */
-async function isSlotTakenByOther(booking: CheckoutBookingRow, now: Date): Promise<boolean> {
-  const overlapping = await bookingRepository.findOverlapping(
-    booking.professionalId,
-    booking.startAt,
-    booking.endAt,
-    now,
-  );
-  return overlapping.some((other) => other.id !== booking.id);
 }
 
 /**

@@ -1,16 +1,18 @@
 import { Prisma } from '@prisma/client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { repo, getServiceDaySlotsMock } = vi.hoisted(() => ({
+const { repo, getServiceDaySlotsMock, firstProfessionalMock } = vi.hoisted(() => ({
   repo: {
     findBookingForRelease: vi.fn(),
     findServiceWithOwner: vi.fn(),
     hasActiveBookingOverlap: vi.fn(),
+    hasActiveOfferOverlap: vi.fn(),
     create: vi.fn(),
     findWithOwner: vi.fn(),
     withdraw: vi.fn(),
   },
   getServiceDaySlotsMock: vi.fn(),
+  firstProfessionalMock: vi.fn(),
 }));
 
 vi.mock('./slot-offers.repository', () => ({ slotOffersRepository: repo }));
@@ -18,6 +20,7 @@ vi.mock('@/lib/services/availability', () => ({
   BUSINESS_TIMEZONE: 'Europe/Madrid',
   getCivilDayUtc: (d: Date) => d,
   getServiceDaySlots: getServiceDaySlotsMock,
+  availabilityRepository: { findFirstProfessionalIdForProvider: firstProfessionalMock },
 }));
 
 import {
@@ -78,6 +81,9 @@ beforeEach(() => {
   repo.findBookingForRelease.mockResolvedValue(cancelledBooking());
   repo.findServiceWithOwner.mockResolvedValue(service());
   repo.hasActiveBookingOverlap.mockResolvedValue(false);
+  repo.hasActiveOfferOverlap.mockResolvedValue(false);
+  // El checkout asigna el primer profesional del centro: el de la reserva.
+  firstProfessionalMock.mockResolvedValue('pro-1');
   repo.create.mockImplementation(async (data: Record<string, unknown>) => createdRow(data));
 });
 
@@ -129,6 +135,18 @@ describe('releaseCancelledSlot', () => {
     repo.hasActiveBookingOverlap.mockResolvedValue(true);
     await expect(releaseCancelledSlot(input, OWNER, NOW)).rejects.toBeInstanceOf(
       SlotOfferSlotTakenError,
+    );
+  });
+
+  it('rechaza si el checkout asignaría otro profesional o pisa otra oferta activa', async () => {
+    firstProfessionalMock.mockResolvedValue('pro-2');
+    await expect(releaseCancelledSlot(input, OWNER, NOW)).rejects.toBeInstanceOf(
+      SlotOfferServiceInvalidError,
+    );
+    firstProfessionalMock.mockResolvedValue('pro-1');
+    repo.hasActiveOfferOverlap.mockResolvedValue(true);
+    await expect(releaseCancelledSlot(input, OWNER, NOW)).rejects.toBeInstanceOf(
+      SlotOfferAlreadyExistsError,
     );
   });
 

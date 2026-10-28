@@ -36,7 +36,7 @@ export const WEEKDAY_KEYS: readonly WeekdayKey[] = [
 export const HOUR_HEIGHT_PX = 60;
 
 /** Alto mínimo de un bloque para que el texto y el toque sigan siendo usables. */
-const MIN_BLOCK_HEIGHT_PX = 28;
+export const MIN_BLOCK_HEIGHT_PX = 28;
 
 /**
  * Convierte una hora `HH:mm` en minutos totales desde medianoche.
@@ -53,13 +53,19 @@ function parseTimeToMinutes(time: string): number {
   return hours * 60 + minutes;
 }
 
+/** Franja `HH:mm`–`HH:mm` de una reserva u oferta dentro de su día. */
+export interface TimeSpan {
+  startTime: string;
+  endTime: string;
+}
+
 /**
- * Minutos de inicio y fin de una reserva dentro de su día. Si termina
+ * Minutos de inicio y fin de una franja dentro de su día. Si termina
  * después de medianoche, la cortamos a las 24:00 de su columna.
  */
-function getMinutesSpan(row: BookingActionRow): { startMin: number; endMin: number } {
-  const startMin = parseTimeToMinutes(row.booking.startTime);
-  const endRaw = parseTimeToMinutes(row.booking.endTime);
+export function getMinutesSpan(span: TimeSpan): { startMin: number; endMin: number } {
+  const startMin = parseTimeToMinutes(span.startTime);
+  const endRaw = parseTimeToMinutes(span.endTime);
   return { startMin, endMin: endRaw <= startMin ? 24 * 60 : endRaw };
 }
 
@@ -73,13 +79,13 @@ export function toBlockStatus(status: PanelBookingActionStatus): PanelBookingSta
  *
  * Por defecto 08:00–21:00, ampliado para que quepa cualquier reserva
  * fuera de esa franja: antes una cita a las 07:00 se pintaba por
- * encima de la cuadrícula.
+ * encima de la cuadrícula. `extraSpans` cubre los huecos liberados.
  */
-export function getHoursRange(rows: BookingActionRow[]): number[] {
+export function getHoursRange(rows: BookingActionRow[], extraSpans: TimeSpan[] = []): number[] {
   let first = PANEL_CALENDAR_START_HOUR;
   let last = PANEL_CALENDAR_END_HOUR;
-  for (const row of rows) {
-    const { startMin, endMin } = getMinutesSpan(row);
+  for (const span of [...rows.map((r) => r.booking), ...extraSpans]) {
+    const { startMin, endMin } = getMinutesSpan(span);
     first = Math.min(first, Math.floor(startMin / 60));
     last = Math.max(last, Math.ceil(endMin / 60));
   }
@@ -116,7 +122,7 @@ export function groupRowsByWeekday(
   for (const row of rows) {
     const key = WEEKDAY_KEYS[row.booking.weekday];
     if (!key) continue;
-    const { startMin, endMin } = getMinutesSpan(row);
+    const { startMin, endMin } = getMinutesSpan(row.booking);
     grouped[key].push({
       row,
       topPx: ((startMin - firstHour * 60) / 60) * HOUR_HEIGHT_PX,

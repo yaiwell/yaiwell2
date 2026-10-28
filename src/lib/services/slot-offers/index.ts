@@ -4,7 +4,12 @@
  * Solo servidor: arrastra Prisma. El cálculo de precios que comparten
  * servidor y cliente vive en `@/lib/utils/slot-offer-pricing`.
  */
-export { releaseCancelledSlot, releaseFreeSlot, withdrawSlotOffer } from './slot-offers.service';
+export {
+  releaseCancelledSlot,
+  releaseFreeSlot,
+  retireOfferOfCancelledBooking,
+  withdrawSlotOffer,
+} from './slot-offers.service';
 export {
   findLiveOfferForSlot,
   getBestOfferByProvider,
@@ -12,7 +17,7 @@ export {
   getOpenOffersForProviderRange,
   listReleasableFreeSlots,
 } from './slot-offers.queries';
-export { getPricedSlotsForService, type PricedSlot } from './slot-offers.slots';
+export { getPricedSlotsForService, isBookableStart, type PricedSlot } from './slot-offers.slots';
 export {
   SlotOfferAlreadyExistsError,
   SlotOfferForbiddenError,

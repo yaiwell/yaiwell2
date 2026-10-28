@@ -62,7 +62,15 @@ export const weeklyCalendarStyles = {
   bookingTitle: 'block truncate font-semibold',
   bookingMeta: 'block truncate text-[10px] opacity-80',
 
+  // Hueco liberado con descuento: borde discontinuo para que nunca se
+  // confunda con una reserva. Por encima de los bloques de reserva.
+  offerBlock:
+    'absolute z-[1] overflow-hidden rounded-lg border border-dashed border-primary/60 bg-card/95 px-2 py-1 text-left text-[11px] leading-tight text-primary shadow-sm transition-shadow outline-none hover:z-10 hover:shadow-md focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring cursor-pointer',
+  offerBlockFull: 'inset-x-1',
+  offerBlockCompact: 'left-1/2 right-1',
+
   legend: 'flex flex-wrap items-center gap-3 text-xs text-muted-foreground',
+  legendDotOffer: 'inline-block size-2 rounded-full border border-dashed border-primary',
   legendTitle: 'text-xs font-semibold text-foreground',
   legendChip: 'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5',
   legendDot: 'inline-block size-2 rounded-full',
@@ -81,6 +89,9 @@ export const bookingDetailStyles = {
   actions:
     'flex flex-col gap-2 border-t border-border/60 pt-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-end',
   noActions: 'border-t border-border/60 pt-4 text-sm text-muted-foreground',
+  originalPrice: 'ml-1 text-muted-foreground line-through',
+  tierList: 'flex flex-col gap-0.5',
+  hint: 'text-xs text-muted-foreground sm:self-center',
 } as const;
 
 /**

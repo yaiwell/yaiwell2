@@ -3,6 +3,8 @@
  * precio de la reserva), las de listados y selector, las del panel y
  * los huecos libres que el profesional puede liberar.
  */
+import type { Prisma } from '@prisma/client';
+
 import {
   BUSINESS_TIMEZONE,
   getCivilDaysInWindow,
@@ -27,8 +29,15 @@ export async function findLiveOfferForSlot(
   serviceId: string,
   startAt: Date,
   now: Date = new Date(),
+  db?: Prisma.TransactionClient,
 ): Promise<LiveSlotOffer | null> {
-  const row = await slotOffersRepository.findLiveForSlot(professionalId, serviceId, startAt, now);
+  const row = await slotOffersRepository.findLiveForSlot(
+    professionalId,
+    serviceId,
+    startAt,
+    now,
+    db,
+  );
   return row ? toLiveSlotOffer(row) : null;
 }
 
@@ -117,7 +126,9 @@ export async function listReleasableFreeSlots(
     earliest,
     windowEnd,
   );
-  const taken = new Set(existing.map((o) => `${o.professionalId}|${o.startAt.getTime()}`));
+  // Un hueco que pisa una oferta activa no se puede liberar otra vez.
+  const overlapsOffer = (professionalId: string, start: Date, end: Date) =>
+    existing.some((o) => o.professionalId === professionalId && o.startAt < end && o.endAt > start);
   // La ventana puede cruzar la medianoche de Madrid: miramos los dos días.
   const days = getCivilDaysInWindow(earliest, windowEnd, BUSINESS_TIMEZONE);
 
@@ -130,7 +141,7 @@ export async function listReleasableFreeSlots(
       }));
       for (const slot of slots) {
         if (slot.startAt >= windowEnd) continue;
-        if (taken.has(`${professionalId}|${slot.startAt.getTime()}`)) continue;
+        if (overlapsOffer(professionalId, slot.startAt, slot.endAt)) continue;
         result.push({
           serviceId,
           startAtIso: slot.startAt.toISOString(),

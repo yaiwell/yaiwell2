@@ -14,6 +14,10 @@ import type { AppLocale } from '@/i18n/routing';
 export interface StripePaymentStepProps {
   clientSecret: string;
   amountCents: number;
+  /** Precio de referencia congelado en la reserva; `null` sin descuento. */
+  originalPriceCents: number | null;
+  /** % de descuento congelado en la reserva; `null` sin descuento. */
+  discountPct: number | null;
   locale: AppLocale;
   /**
    * Reserva de última hora (empieza en menos de 2 h): se paga ahora y no
@@ -33,6 +37,8 @@ export interface StripePaymentStepProps {
  */
 export interface StripePaymentFormProps {
   amountCents: number;
+  originalPriceCents: number | null;
+  discountPct: number | null;
   locale: AppLocale;
   isLastMinute: boolean;
   returnUrl: string;

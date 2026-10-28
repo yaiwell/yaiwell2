@@ -25,6 +25,8 @@ import type { StripePaymentStepProps } from './StripePaymentStep.types';
 export function StripePaymentStep({
   clientSecret,
   amountCents,
+  originalPriceCents,
+  discountPct,
   locale,
   isLastMinute,
   returnUrl,
@@ -59,6 +61,8 @@ export function StripePaymentStep({
     <Elements stripe={stripePromise} options={options}>
       <StripePaymentForm
         amountCents={amountCents}
+        originalPriceCents={originalPriceCents}
+        discountPct={discountPct}
         locale={locale}
         isLastMinute={isLastMinute}
         returnUrl={returnUrl}

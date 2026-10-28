@@ -211,6 +211,11 @@
       "youAreHere": "You are here",
       "fallbackCenter": "Central Barcelona (estimate)"
     },
+    "slotOffer": {
+      "tag": "Freed-up slot · −{pct}% · {when}",
+      "tagAria": "Freed-up slot with {pct}% off, {when}. Book this time",
+      "filterToggle": "With discount"
+    },
     "nearMeChip": "Near you",
     "nearMeChipAria": "Filter to professionals within a {radius} km radius",
     "resultsCount": "{count, plural, one {# result} other {# results}}"
@@ -231,6 +236,7 @@
       "groupLabel": "Active filters",
       "queryLabel": "Text: {value}",
       "availabilityLabel": "Available now",
+      "discountLabel": "With discount",
       "priceLabel": "Price {value}",
       "ratingLabel": "{value}+ stars",
       "clearAll": "Clear all",
@@ -424,6 +430,77 @@
             "notCancellable": "This booking can no longer be cancelled in its current state.",
             "refundFailed": "The booking was cancelled, but the refund could not be issued. Support will look into it; there is no need to try again.",
             "internal": "We could not cancel it. Please try again in a few minutes."
+          }
+        }
+      },
+      "slotOffers": {
+        "releaseTitle": "This slot is free. Would you like to offer it at a discount?",
+        "releaseFreeTitle": "Release slot at a discount",
+        "releaseFreeSubtitle": "{service} · {time}",
+        "description": "Choose how much to take off depending on how long is left before the appointment. The price drops on its own as the time approaches, and the slot is highlighted on Yaiwell to people searching nearby.",
+        "rules": "In 5 % steps, up to {max} %. A closer tier can never have a smaller discount than the one before it.",
+        "tiersLabel": "Discount per tier",
+        "tiers": {
+          "over2h": "More than 2 h ahead",
+          "oneToTwoHours": "Between 1 and 2 h before",
+          "underOneHour": "In the last hour"
+        },
+        "tierNow": "Now",
+        "decrease": "Lower discount: {tier}",
+        "increase": "Raise discount: {tier}",
+        "pct": "{pct}%",
+        "issues": {
+          "underOneHourMin": "The last hour needs a discount of at least 5 %.",
+          "decreasing": "The discount can't go down as the time approaches: each tier must match or exceed the one before.",
+          "outOfRange": "Use percentages in 5 % steps, from 0 to 50 %."
+        },
+        "refundFailedNotice": "The booking is cancelled, but the refund couldn't be issued. Support will look into it; you don't need to do anything else.",
+        "submit": "Offer at a discount",
+        "pending": "Publishing…",
+        "skip": "Skip",
+        "successTitle": "Slot released",
+        "successDescription": "It now shows on Yaiwell with its discount. You can withdraw it from the calendar whenever you like.",
+        "close": "Close",
+        "errors": {
+          "invalidInput": "Check the discounts: one of the tiers isn't valid.",
+          "notFound": "This booking or offer no longer exists.",
+          "forbidden": "You don't have permission for this slot.",
+          "notCancelled": "Only the slot of a cancelled booking can be released.",
+          "slotTaken": "This slot is no longer free.",
+          "outsideWindow": "This slot can no longer be released: it starts too soon or outside the allowed window.",
+          "alreadyExists": "This slot has already been released.",
+          "serviceInvalid": "This service can't be offered in this slot.",
+          "internal": "The slot couldn't be released. Please try again in a few minutes."
+        },
+        "free": {
+          "title": "Free slots in the next 2 h",
+          "subtitle": "If you'd like to fill them, you can offer them at a discount. Only you can see this list.",
+          "empty": "You have no free bookable slots in the next 2 hours.",
+          "release": "Release at a discount",
+          "releaseAriaLabel": "Release {service} at {time} at a discount",
+          "more": "{count, plural, one {and # more slot} other {and # more slots}}"
+        },
+        "block": {
+          "label": "Released slot · −{pct} %",
+          "labelNoDiscount": "Released slot",
+          "ariaLabel": "{label}: {service} at {time}",
+          "legend": "Released slot"
+        },
+        "detail": {
+          "title": "Released slot",
+          "description": "Details of the slot released at a discount and the option to withdraw it.",
+          "service": "Service",
+          "priceNow": "Price now",
+          "tiers": "Discount per tier"
+        },
+        "withdraw": {
+          "button": "Withdraw offer",
+          "pending": "Withdrawing…",
+          "hint": "Once withdrawn, the slot goes back to its usual price.",
+          "errors": {
+            "notFound": "This offer no longer exists.",
+            "forbidden": "You don't have permission for this offer.",
+            "internal": "The offer couldn't be withdrawn. Please try again in a few minutes."
           }
         }
       },
@@ -722,6 +799,13 @@
       "notBookableSubtitle": "The venue has not set up its calendar yet. You can choose another service or come back later.",
       "retry": "Try again",
       "lastMinuteGroup": "In the next 2 h · pay when booking, no cancellation"
+    },
+    "slotOffer": {
+      "discountBadge": "−{pct}%",
+      "slotAria": "{time}, freed-up slot with {pct}% off: {price}",
+      "priceAria": "Usual price {original}; with {pct}% off, {amount}",
+      "estimatedPriceLabel": "Expected price",
+      "estimatedPriceHint": "The final amount is confirmed when you go to payment."
     },
     "summary": {
       "serviceLabel": "Service",

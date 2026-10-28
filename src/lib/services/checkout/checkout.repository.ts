@@ -1,6 +1,11 @@
 import 'server-only';
 
+import type { Prisma } from '@prisma/client';
+
 import { prisma } from '@/lib/db/prisma';
+
+/** Cliente de BD: el global o el de una transacción en curso. */
+type Db = typeof prisma | Prisma.TransactionClient;
 
 /**
  * Campos de la reserva que necesitan el webhook y el cron de caducidad:
@@ -101,10 +106,12 @@ export const checkoutRepository = {
    * misma fila a la vez, y un `update` a ciegas podría resucitar una
    * reserva recién cancelada.
    *
+   * @param db — cliente de una transacción, para confirmar bajo el
+   *   bloqueo por profesional (pago tardío con la retención vencida).
    * @returns `true` si esta llamada aplicó la confirmación.
    */
-  async confirmIfPending(bookingId: string): Promise<boolean> {
-    const { count } = await prisma.booking.updateMany({
+  async confirmIfPending(bookingId: string, db: Db = prisma): Promise<boolean> {
+    const { count } = await db.booking.updateMany({
       where: { id: bookingId, status: 'pending' },
       data: { status: 'confirmed' },
     });

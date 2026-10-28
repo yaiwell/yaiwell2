@@ -50,6 +50,8 @@ export function SlotSection({
               label={formatSlotTime(slot, locale)}
               available={slot.available}
               selected={slot.startAtIso === selectedStartIso}
+              offer={slot.offer}
+              locale={locale}
               onClick={() => onSelect(slot)}
             />
           ))}

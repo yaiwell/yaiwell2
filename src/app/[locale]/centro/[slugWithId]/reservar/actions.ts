@@ -60,6 +60,10 @@ export type CheckoutActionState =
       bookingId: string;
       clientSecret: string;
       amountCents: number;
+      /** Precio de referencia tachado si la reserva tiene descuento; `null` si no. */
+      originalPriceCents: number | null;
+      /** % de descuento congelado en la reserva; `null` si no lo hay. */
+      discountPct: number | null;
       slotStartIso: string;
       slotEndIso: string;
       /**
@@ -114,6 +118,8 @@ export async function createBookingCheckoutAction(
       bookingId: session.bookingId,
       clientSecret: session.clientSecret,
       amountCents: session.amountCents,
+      originalPriceCents: session.originalPriceCents,
+      discountPct: session.discountPct,
       slotStartIso: session.slotStartIso,
       slotEndIso: session.slotEndIso,
       isLastMinute: session.isLastMinute,

@@ -25,6 +25,11 @@ vi.mock('@/app/[locale]/panel/calendario/actions', () => ({
   cancelBookingAction: vi.fn(),
   completeBookingAction: vi.fn(),
 }));
+vi.mock('@/app/[locale]/panel/calendario/slot-offers.actions', () => ({
+  releaseCancelledSlotAction: vi.fn(),
+  releaseFreeSlotAction: vi.fn(),
+  withdrawSlotOfferAction: vi.fn(),
+}));
 
 vi.mock('server-only', () => ({}));
 vi.mock('@/lib/db/prisma', () => ({ prisma: {} }));

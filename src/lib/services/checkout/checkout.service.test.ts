@@ -123,10 +123,27 @@ describe('createBookingCheckout', () => {
       bookingId: 'bk-1',
       clientSecret: 'pi_123_secret_abc',
       amountCents: 4500,
+      originalPriceCents: null,
+      discountPct: null,
       slotStartIso: BOOKING.startAt.toISOString(),
       slotEndIso: BOOKING.endAt.toISOString(),
       isLastMinute: false,
     });
+  });
+
+  it('devuelve el precio de referencia y el % congelados si la reserva tiene descuento', async () => {
+    bookingMock.createBooking.mockResolvedValue({
+      ...BOOKING,
+      priceCents: 3600,
+      originalPriceCents: 4500,
+      discountPct: 20,
+    });
+
+    const session = await createBookingCheckout(validInput(), CLIENT_ID);
+
+    expect(session.amountCents).toBe(3600);
+    expect(session.originalPriceCents).toBe(4500);
+    expect(session.discountPct).toBe(20);
   });
 
   it('monta un destination charge con la comisión y la metadata de la reserva', async () => {

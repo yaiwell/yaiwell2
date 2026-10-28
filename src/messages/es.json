@@ -211,6 +211,11 @@
       "youAreHere": "Estás aquí",
       "fallbackCenter": "Centro de Barcelona (estimación)"
     },
+    "slotOffer": {
+      "tag": "Hueco liberado · −{pct} % · {when}",
+      "tagAria": "Hueco liberado con un {pct} % de descuento, {when}. Reservar esta hora",
+      "filterToggle": "Con descuento"
+    },
     "nearMeChip": "Cerca de ti",
     "nearMeChipAria": "Filtrar a profesionales en un radio de {radius} km",
     "resultsCount": "{count, plural, one {# resultado} other {# resultados}}"
@@ -231,6 +236,7 @@
       "groupLabel": "Filtros activos",
       "queryLabel": "Texto: {value}",
       "availabilityLabel": "Disponibles ahora",
+      "discountLabel": "Con descuento",
       "priceLabel": "Precio {value}",
       "ratingLabel": "{value}+ estrellas",
       "clearAll": "Limpiar todo",
@@ -424,6 +430,77 @@
             "notCancellable": "Esta reserva ya no se puede cancelar en su estado actual.",
             "refundFailed": "La reserva se ha cancelado, pero el reembolso no ha podido emitirse. Soporte lo revisará; no hace falta que lo intentes de nuevo.",
             "internal": "No se ha podido cancelar. Inténtalo de nuevo en unos minutos."
+          }
+        }
+      },
+      "slotOffers": {
+        "releaseTitle": "Hueco libre. ¿Quieres ofrecerlo con descuento?",
+        "releaseFreeTitle": "Liberar hueco con descuento",
+        "releaseFreeSubtitle": "{service} · {time}",
+        "description": "Elige cuánto rebajar según el tiempo que falte para la cita. El precio baja solo a medida que se acerca la hora y el hueco se destaca en Yaiwell a quien busque cerca.",
+        "rules": "En pasos del 5 %, hasta un {max} %. Un tramo más cercano nunca puede tener menos descuento que el anterior.",
+        "tiersLabel": "Descuento por tramo",
+        "tiers": {
+          "over2h": "Con más de 2 h de margen",
+          "oneToTwoHours": "Entre 1 y 2 h antes",
+          "underOneHour": "En la última hora"
+        },
+        "tierNow": "Ahora",
+        "decrease": "Bajar descuento: {tier}",
+        "increase": "Subir descuento: {tier}",
+        "pct": "{pct} %",
+        "issues": {
+          "underOneHourMin": "La última hora necesita al menos un 5 % de descuento.",
+          "decreasing": "El descuento no puede bajar al acercarse la hora: cada tramo debe igualar o superar al anterior.",
+          "outOfRange": "Usa porcentajes en pasos del 5 %, del 0 al 50 %."
+        },
+        "refundFailedNotice": "La reserva está cancelada, pero el reembolso no ha podido emitirse. Soporte lo revisará; no hace falta que hagas nada más.",
+        "submit": "Ofrecer con descuento",
+        "pending": "Publicando…",
+        "skip": "Omitir",
+        "successTitle": "Hueco liberado",
+        "successDescription": "Ya aparece con descuento en Yaiwell. Puedes retirarlo desde el calendario cuando quieras.",
+        "close": "Cerrar",
+        "errors": {
+          "invalidInput": "Revisa los descuentos: algún tramo no es válido.",
+          "notFound": "Esta reserva u oferta ya no existe.",
+          "forbidden": "No tienes permiso sobre este hueco.",
+          "notCancelled": "Solo se puede liberar el hueco de una reserva cancelada.",
+          "slotTaken": "Este hueco ya no está libre.",
+          "outsideWindow": "Este hueco ya no se puede liberar: empieza demasiado pronto o fuera de la ventana permitida.",
+          "alreadyExists": "Este hueco ya está liberado.",
+          "serviceInvalid": "Este servicio no se puede ofrecer en este hueco.",
+          "internal": "No se ha podido liberar el hueco. Inténtalo de nuevo en unos minutos."
+        },
+        "free": {
+          "title": "Huecos libres en las próximas 2 h",
+          "subtitle": "Si quieres llenarlos, puedes ofrecerlos con descuento. Nadie más ve esta lista.",
+          "empty": "No tienes huecos libres que se puedan reservar en las próximas 2 horas.",
+          "release": "Liberar con descuento",
+          "releaseAriaLabel": "Liberar con descuento {service} a las {time}",
+          "more": "{count, plural, one {y # hueco más} other {y # huecos más}}"
+        },
+        "block": {
+          "label": "Hueco liberado · −{pct} %",
+          "labelNoDiscount": "Hueco liberado",
+          "ariaLabel": "{label}: {service} a las {time}",
+          "legend": "Hueco liberado"
+        },
+        "detail": {
+          "title": "Hueco liberado",
+          "description": "Datos del hueco liberado con descuento y opción de retirarlo.",
+          "service": "Servicio",
+          "priceNow": "Precio ahora",
+          "tiers": "Descuento por tramo"
+        },
+        "withdraw": {
+          "button": "Retirar oferta",
+          "pending": "Retirando…",
+          "hint": "Al retirarla, el hueco vuelve a su precio normal.",
+          "errors": {
+            "notFound": "Esta oferta ya no existe.",
+            "forbidden": "No tienes permiso sobre esta oferta.",
+            "internal": "No se ha podido retirar. Inténtalo de nuevo en unos minutos."
           }
         }
       },
@@ -722,6 +799,13 @@
       "notBookableSubtitle": "El centro todavía no ha configurado su agenda. Puedes elegir otro servicio o volver más adelante.",
       "retry": "Reintentar",
       "lastMinuteGroup": "En las próximas 2 h · pago al reservar, sin cancelación"
+    },
+    "slotOffer": {
+      "discountBadge": "−{pct} %",
+      "slotAria": "{time}, hueco liberado con un {pct} % de descuento: {price}",
+      "priceAria": "Precio habitual {original}; con un {pct} % de descuento, {amount}",
+      "estimatedPriceLabel": "Precio previsto",
+      "estimatedPriceHint": "El importe final se confirma al pasar al pago."
     },
     "summary": {
       "serviceLabel": "Servicio",

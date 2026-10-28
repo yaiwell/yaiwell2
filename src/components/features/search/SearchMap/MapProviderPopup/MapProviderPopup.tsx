@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl';
 
 import { PhotoPlaceholder } from '@/components/shared/PhotoPlaceholder';
 import { RatingSummary } from '@/components/shared/RatingSummary';
+import { SlotOfferTag } from '@/components/shared/SlotOfferTag';
+import { buildProviderSlugWithId } from '@/lib/utils/provider-slug';
 
 import { AvailabilityBadge } from '../../AvailabilityBadge';
 
@@ -90,6 +92,17 @@ export function MapProviderPopup({
             </>
           )}
         </div>
+
+        {/* Hueco liberado con descuento: enlaza directo a reservar esa hora. */}
+        {provider.bestOffer && (
+          <div className={s.offerRow}>
+            <SlotOfferTag
+              offer={provider.bestOffer}
+              providerSlugWithId={buildProviderSlugWithId(provider)}
+              dataComponent="map-provider-popup-slot-offer"
+            />
+          </div>
+        )}
 
         {onPrimaryAction && (
           <button

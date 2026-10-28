@@ -21,6 +21,7 @@ const messages = {
       groupLabel: 'Filtros activos',
       queryLabel: 'Texto: {value}',
       availabilityLabel: 'Disponibles ahora',
+      discountLabel: 'Con descuento',
       priceLabel: 'Precio {value}',
       ratingLabel: '{value}+ estrellas',
       clearAll: 'Limpiar todo',
@@ -41,6 +42,7 @@ const emptyState: ActiveFiltersState = {
   query: '',
   categorySlug: null,
   availabilityOnly: false,
+  discountOnly: false,
   priceRange: [],
   minRating: null,
 };
@@ -77,6 +79,24 @@ describe('ActiveFiltersChips', () => {
 
     expect(onRemove).toHaveBeenCalledTimes(1);
     expect(onRemove).toHaveBeenCalledWith({ kind: 'availability' });
+  });
+
+  it('pinta el chip «Con descuento» y lo quita con su X', async () => {
+    const onRemove = vi.fn();
+    const user = userEvent.setup();
+
+    renderWithIntl(
+      <ActiveFiltersChips
+        filters={{ ...emptyState, discountOnly: true }}
+        categoryLabel={null}
+        onRemove={onRemove}
+        onClearAll={vi.fn()}
+      />,
+    );
+
+    await user.click(screen.getByLabelText('Quitar Con descuento'));
+
+    expect(onRemove).toHaveBeenCalledWith({ kind: 'discount' });
   });
 
   it('muestra "Limpiar todo" solo si hay más de un chip', () => {

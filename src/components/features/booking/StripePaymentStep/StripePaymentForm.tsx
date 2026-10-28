@@ -5,6 +5,7 @@ import { ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { formatPriceCents } from '../BookingSummary/BookingSummary.logic';
+import { DiscountedPrice } from '../DiscountedPrice';
 import { LastMinuteNotice } from '../LastMinuteNotice';
 
 import { useStripePaymentForm } from './StripePaymentStep.logic';
@@ -23,6 +24,8 @@ const LAST_MINUTE_NOTICE_ID = 'booking-payment-last-minute-notice';
  */
 export function StripePaymentForm({
   amountCents,
+  originalPriceCents,
+  discountPct,
   locale,
   isLastMinute,
   returnUrl,
@@ -38,7 +41,15 @@ export function StripePaymentForm({
     <form className={s.root} onSubmit={submit} data-component="booking-stripe-payment">
       <div className={s.amountRow}>
         <span className={s.amountLabel}>{t('totalLabel')}</span>
-        <span className={s.amountValue}>{formatPriceCents(amountCents, locale)}</span>
+        {/* Importe y tachado del servidor: los congelados en la reserva. */}
+        <DiscountedPrice
+          amountCents={amountCents}
+          originalPriceCents={originalPriceCents}
+          discountPct={discountPct}
+          locale={locale}
+          size="lg"
+          dataComponent="booking-stripe-payment-amount"
+        />
       </div>
 
       <div className={s.elementWrapper}>

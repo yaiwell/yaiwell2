@@ -47,12 +47,26 @@ export interface CreateBookingData {
   slotOfferId?: string | null;
   originalPriceCents?: number | null;
   discountPct?: number | null;
+  /** Instante de creación; lo fija el servicio para usar un solo reloj. */
+  createdAt?: Date;
 }
 
 /** Cliente de BD: el global o el de una transacción en curso. */
 type Db = typeof prisma | Prisma.TransactionClient;
 
 export const bookingRepository = {
+  /**
+   * Bloqueo por profesional hasta el fin de la transacción `tx`.
+   *
+   * Serializa todo lo que decide si una franja queda ocupada (crear una
+   * reserva, confirmar un pago tardío): con él dos caminos no pueden
+   * ver la franja libre a la vez. Es de transacción, así que funciona con
+   * el pooler en modo transacción de producción.
+   */
+  async lockProfessional(tx: Prisma.TransactionClient, professionalId: string) {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${professionalId}))`;
+  },
+
   /**
    * Localiza una reserva por id incluyendo el `provider` para que el
    * servicio pueda comprobar la titularidad sin un segundo round-trip.
@@ -111,6 +125,7 @@ export const bookingRepository = {
         slotOfferId: data.slotOfferId ?? null,
         originalPriceCents: data.originalPriceCents ?? null,
         discountPct: data.discountPct ?? null,
+        ...(data.createdAt && { createdAt: data.createdAt }),
         status: 'pending',
       },
     });

@@ -31,10 +31,15 @@ export const TILE_LAYER_CLASS = 'yaiwell-map-tiles';
  * heredan utilidades de Tailwind, por lo que referenciamos las CSS
  * variables del tema (`--brand-sage`, `--brand-butter`, `--muted-foreground`,
  * `--card`, `--ring`) para que los pines respeten el modo oscuro.
+ *
+ * Un centro con hueco liberado con descuento lleva una marca «%» en la
+ * esquina del pin: se ve de un vistazo sin cambiar el color, que sigue
+ * hablando de disponibilidad.
  */
 export function buildPinHtml(
   status: 'available_now' | 'available_soon' | 'busy',
   highlighted: boolean,
+  hasOffer = false,
 ): string {
   // Mapeo a tokens de marca, coherente con AvailabilityBadge.
   const color =
@@ -49,8 +54,19 @@ export function buildPinHtml(
     ? '0 0 0 4px color-mix(in oklch, var(--ring) 55%, transparent)'
     : '0 1px 3px rgba(0,0,0,0.18)';
   const scale = highlighted ? 1.15 : 1;
+  const offerMark = hasOffer
+    ? `<span data-pin-offer style="
+        position:absolute;top:-7px;right:-9px;
+        display:inline-flex;align-items:center;justify-content:center;
+        width:13px;height:13px;border-radius:9999px;
+        background:var(--primary);color:var(--primary-foreground);
+        border:1.5px solid var(--card);
+        font:600 8px/1 system-ui,sans-serif;
+      ">%</span>`
+    : '';
   return `
     <span style="
+      position:relative;
       display:inline-flex;
       width:18px;height:18px;
       border-radius:9999px;
@@ -59,7 +75,7 @@ export function buildPinHtml(
       box-shadow:${ring};
       transform:scale(${scale});
       transition:transform 150ms ease;
-    "></span>
+    ">${offerMark}</span>
   `;
 }
 

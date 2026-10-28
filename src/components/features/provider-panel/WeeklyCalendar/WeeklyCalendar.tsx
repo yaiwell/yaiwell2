@@ -10,6 +10,7 @@ import {
   getInitialDayIndex,
   groupRowsByWeekday,
 } from './WeeklyCalendar.logic';
+import { groupOffersByWeekday } from './WeeklyCalendar.offers';
 import { legendDotByStatus, weeklyCalendarStyles as s } from './WeeklyCalendar.styles';
 import { WeekNavigation } from './WeekNavigation';
 import type { PanelBookingStatus, WeeklyCalendarProps } from './WeeklyCalendar.types';
@@ -25,15 +26,25 @@ const LEGEND_STATUSES: PanelBookingStatus[] = ['confirmed', 'pending', 'complete
  * posición. Solo cruzan a cliente los bloques (abren el detalle) y la
  * vista de día móvil (pestañas).
  *
+ * Los huecos liberados con descuento sin vender se pintan como bloques
+ * discontinuos con el % vigente y su opción de retirarlos.
+ *
  * Cuadrícula de 7 días desde `md`; por debajo, vista de un día.
  */
-export function WeeklyCalendar({ bookings, week, locale, readOnly, now }: WeeklyCalendarProps) {
+export function WeeklyCalendar({
+  bookings,
+  slotOffers = [],
+  week,
+  locale,
+  readOnly,
+  now,
+}: WeeklyCalendarProps) {
   const t = useTranslations('providerPanel.calendar');
   const rows = buildBookingActionRows(bookings, now);
-  const hours = getHoursRange(rows);
-  const grouped = groupRowsByWeekday(rows, hours[0], (cents) =>
-    formatCurrencyFromCents(cents, locale),
-  );
+  const hours = getHoursRange(rows, slotOffers);
+  const formatPrice = (cents: number) => formatCurrencyFromCents(cents, locale);
+  const grouped = groupRowsByWeekday(rows, hours[0], formatPrice);
+  const groupedOffers = groupOffersByWeekday(slotOffers, hours[0], grouped, formatPrice);
   const { days, nav } = week;
 
   return (
@@ -82,6 +93,7 @@ export function WeeklyCalendar({ bookings, week, locale, readOnly, now }: Weekly
                 >
                   <CalendarDayColumn
                     positioned={grouped[day.key]}
+                    offers={groupedOffers[day.key]}
                     hours={hours}
                     locale={locale}
                     readOnly={readOnly}
@@ -97,6 +109,7 @@ export function WeeklyCalendar({ bookings, week, locale, readOnly, now }: Weekly
       <CalendarDayView
         days={days}
         grouped={grouped}
+        groupedOffers={groupedOffers}
         hours={hours}
         locale={locale}
         readOnly={readOnly}
@@ -111,6 +124,10 @@ export function WeeklyCalendar({ bookings, week, locale, readOnly, now }: Weekly
             {t(`status.${status}`)}
           </span>
         ))}
+        <span className={s.legendChip}>
+          <span className={s.legendDotOffer} aria-hidden />
+          {t('slotOffers.block.legend')}
+        </span>
       </div>
     </div>
   );
