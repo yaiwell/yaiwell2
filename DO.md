@@ -6,6 +6,13 @@
 
 ---
 
+## 2026-10-28
+
+### 2026-10-28 — Barra inferior del panel en móvil
+
+- La barra de navegación del panel flotaba a `bottom-20` (heredado de cuando convivía con la barra global, que bajo `/panel` está oculta) y con 5 enlaces `flex-1` sin `min-w-0` las etiquetas largas se montaban. Ahora va pegada al borde inferior, a todo el ancho, con el margen del home indicator de iOS, rejilla de 5 columnas iguales y etiquetas que bajan a dos líneas. El contenido reserva ese alto.
+- Regresión E2E en `tests/e2e/provider-calendar.spec.ts` (375 px, `es` y `de`): la barra toca el borde inferior y ningún enlace se solapa ni desborda. 6/6.
+
 ## 2026-10-27
 
 ### 2026-10-27 (11) — Aviso de condiciones con Google y rol en el onboarding

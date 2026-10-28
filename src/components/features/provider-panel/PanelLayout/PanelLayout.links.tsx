@@ -60,7 +60,7 @@ export function PanelBottomNavLink({ item, label }: PanelLayoutLinkProps) {
       data-component={`panel-bottom-nav-link-${item.labelKey}`}
     >
       <Icon className={s.bottomNavIcon} aria-hidden />
-      {label}
+      <span className={s.bottomNavLabel}>{label}</span>
     </Link>
   );
 }

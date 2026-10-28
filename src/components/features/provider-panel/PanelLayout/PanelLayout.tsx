@@ -95,9 +95,11 @@ export function PanelLayout({ children, providerName }: PanelLayoutProps) {
         aria-label={tNav('bottomNavLabel')}
         data-component="panel-bottom-nav"
       >
-        {navItems.map((item) => (
-          <PanelBottomNavLink key={item.href} item={item} label={tNav(item.labelKey)} />
-        ))}
+        <div className={s.bottomNavInner}>
+          {navItems.map((item) => (
+            <PanelBottomNavLink key={item.href} item={item} label={tNav(item.labelKey)} />
+          ))}
+        </div>
       </nav>
     </div>
   );

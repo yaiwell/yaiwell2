@@ -325,3 +325,41 @@ test.describe('vista móvil (375 px)', () => {
     await expect(dc(page, 'weekly-calendar-day-empty')).toHaveText(T.emptyDay);
   });
 });
+
+test('móvil: la barra del panel va pegada abajo y sus enlaces no se pisan', async ({ page }) => {
+  // Regresión del 2026-10-28: la barra flotaba a `bottom-20` (heredado de
+  // cuando convivía con la barra global) y las etiquetas largas se montaban.
+  await page.setViewportSize({ width: 375, height: 812 });
+
+  // `de` tiene las etiquetas más largas («Mein Geschäft», «Bewertungen»).
+  for (const locale of ['es', 'de']) {
+    await page.goto(`/${locale}/panel/calendario`);
+    const nav = dc(page, 'panel-bottom-nav');
+    await expect(nav).toBeVisible();
+
+    const box = await nav.boundingBox();
+    expect(box).not.toBeNull();
+    expect(Math.round(box!.x)).toBe(0);
+    expect(Math.round(box!.width)).toBe(375);
+    expect(Math.round(box!.y + box!.height)).toBe(812);
+
+    const links = nav.locator('a');
+    await expect(links).toHaveCount(5);
+    const rects = await links.evaluateAll((els) =>
+      els.map((el) => {
+        const r = el.getBoundingClientRect();
+        return { left: r.left, right: r.right, overflow: el.scrollWidth - el.clientWidth };
+      }),
+    );
+    for (let i = 1; i < rects.length; i++) {
+      expect(rects[i].left).toBeGreaterThanOrEqual(rects[i - 1].right - 0.5);
+    }
+    for (const rect of rects) {
+      expect(rect.overflow).toBeLessThanOrEqual(1);
+    }
+
+    if (process.env.E2E_SCREENSHOT_DIR) {
+      await page.screenshot({ path: `${process.env.E2E_SCREENSHOT_DIR}/panel-nav-${locale}.png` });
+    }
+  }
+});
