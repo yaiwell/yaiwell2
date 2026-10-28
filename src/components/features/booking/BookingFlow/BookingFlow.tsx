@@ -74,7 +74,11 @@ export function BookingFlow({
 
   // Importe a mostrar: el del servidor en cuanto existe reserva; antes,
   // el previsto del hueco elegido (con su oferta) o el de catálogo.
-  const { price, rememberSlot } = useBookingPrice(checkout, service.priceCents, draft.slotStartIso);
+  const { price, discountChange, rememberSlot } = useBookingPrice(
+    checkout,
+    service.priceCents,
+    draft.slotStartIso,
+  );
 
   /**
    * URL absoluta a la que Stripe devuelve al usuario si la tarjeta exige
@@ -102,6 +106,8 @@ export function BookingFlow({
           bookingId={draft.bookingId}
           providerSlugWithId={providerSlugWithId}
           amountCents={price.amountCents}
+          originalPriceCents={price.originalPriceCents}
+          discountPct={price.discountPct}
           // La reserva sólo pasa a `confirmed` cuando llega el webhook
           // `payment_intent.succeeded`. Hasta que BD lo diga, el copy
           // honesto es "pago en curso" — también en el camino sin 3DS.
@@ -190,6 +196,7 @@ export function BookingFlow({
         {step === 'payment' && (
           <BookingCheckoutPanel
             checkout={checkout}
+            discountChange={discountChange}
             locale={locale}
             returnUrl={returnUrl}
             redirectUrl={bookingPath}

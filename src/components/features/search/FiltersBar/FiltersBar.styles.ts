@@ -20,12 +20,7 @@ export const filtersBarStyles = {
     'flex w-full md:flex-1 min-w-0 items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
   // Wrapper de acciones secundarias (toggle + filtros). En mobile va en
   // su propia fila alineado a la derecha; en md+ vuelve a la fila única.
-  // Con cuatro acciones la fila no cabe en 375 px: en móvil scrollea en
-  // horizontal (alineada a la izquierda; `justify-end` con overflow deja
-  // la parte izquierda inalcanzable) y en md+ vuelve a la derecha. El
-  // `pt-1` deja sitio al punto del botón de filtros, que sobresale.
-  actions:
-    'flex items-center gap-2 overflow-x-auto pt-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:justify-end md:overflow-visible md:p-0',
+  actions: 'flex items-center justify-end gap-2',
   chipBase:
     'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   chipIdle: 'border-border bg-card text-foreground/80 hover:bg-muted',
@@ -44,13 +39,19 @@ export const filtersBarStyles = {
     'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   toggleNearIdle: 'border-border bg-card text-foreground/80 hover:bg-muted',
   toggleNearActive: 'border-status-info-foreground/40 bg-status-info text-status-info-foreground',
-  // Toggle "Con descuento": misma base; activo con el par de marca.
+  // Toggle "Con descuento": misma base; activo con el par de marca. Solo
+  // desde `md`: en móvil no cabe en la fila de acciones (a 375 px la
+  // obligaba a scrollear) y vive en el sheet de filtros.
   toggleOffer:
-    'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
+    'hidden md:inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3.5 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   toggleOfferIdle: 'border-border bg-card text-foreground/80 hover:bg-muted',
   toggleOfferActive: 'border-primary bg-primary text-primary-foreground',
   filterButton:
     'relative inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-sm text-foreground/80 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   filterButtonDot:
     'absolute -right-0.5 -top-0.5 size-2 rounded-full bg-primary ring-2 ring-background',
+  // Punto cuando lo único activo del sheet es "Con descuento": en md+ ese
+  // filtro se ve en la barra y el sheet no lo enseña, así que el punto
+  // solo tiene sentido en móvil.
+  filterButtonDotMobileOnly: 'md:hidden',
 } as const;

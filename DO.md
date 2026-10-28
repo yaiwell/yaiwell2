@@ -8,6 +8,15 @@
 
 ## 2026-10-28
 
+### 2026-10-28 — Huecos con descuento: avisos, confirmación, filtro en móvil y mínimo de Stripe
+
+- **Descuento perdido**: si entre elegir el hueco y crear la reserva la oferta se retira, caduca, se vende o cambia de tramo, el pago avisa («El descuento de este hueco ya no está disponible / ha cambiado…») con el importe del servidor.
+- **`?slot=` caducado**: «Ese hueco ya no está disponible. Elige otra hora.» junto al selector, una vez y sin bloquear.
+- **Confirmación** con el precio de referencia tachado y lo pagado (lee `originalPriceCents`/`discountPct` de la reserva).
+- **Filtro «Con descuento»** en el panel de filtros en móvil y en la barra desde `md`; la barra vuelve a su layout original a 375 px.
+- **Mínimo de Stripe**: un descuento nunca deja el importe por debajo de 0,50 €; en ese caso se cobra 0,50 € y se muestra y guarda el % real (`priceSlot`).
+- 1335 tests unitarios, E2E de huecos 5/5 (un primer intento falló por el 500 en frío conocido del servidor de desarrollo; limpieza verificada).
+
 ### 2026-10-28 — Huecos sueltos con descuento automático (MVP)
 
 P4: Plan → datos (`db-migration-guard`) → servicio → UI panel y UI cliente en paralelo → `e2e-tester` + `business-rules-auditor` + `conventions-reviewer` → arreglos (el del pago tardío, `stripe-payments`).

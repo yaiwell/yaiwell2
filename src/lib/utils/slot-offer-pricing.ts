@@ -13,6 +13,12 @@ import { LAST_MINUTE_THRESHOLD_MS } from './booking-last-minute';
 /** Tope de descuento de un hueco liberado. */
 export const MAX_SLOT_OFFER_DISCOUNT_PCT = 50;
 
+/**
+ * Importe mínimo que Stripe acepta cobrar en euros (50 céntimos). Un
+ * descuento nunca baja el precio de ahí: el PaymentIntent fallaría.
+ */
+export const MIN_CHARGE_CENTS = 50;
+
 /** Paso entre porcentajes admitidos (5, 10, 15…). */
 export const SLOT_OFFER_DISCOUNT_STEP_PCT = 5;
 
@@ -119,6 +125,7 @@ export interface SlotPrice {
  *
  * Si el tramo vigente tiene 0 %, el hueco se cobra a precio normal y
  * no se presenta como rebajado: nunca una «oferta» que no rebaja nada.
+ * El precio nunca baja del mínimo que Stripe acepta (`MIN_CHARGE_CENTS`).
  */
 export function priceSlot(
   servicePriceCents: number,
@@ -127,12 +134,19 @@ export function priceSlot(
   now: Date,
 ): SlotPrice {
   const pct = discounts ? getCurrentDiscountPct(discounts, startAt, now) : 0;
-  if (pct === 0) {
-    return { priceCents: servicePriceCents, discountPct: null, originalPriceCents: null };
+  const noDiscount = { priceCents: servicePriceCents, discountPct: null, originalPriceCents: null };
+  if (pct === 0) return noDiscount;
+
+  const discounted = applyDiscountCents(servicePriceCents, pct);
+  if (discounted >= MIN_CHARGE_CENTS) {
+    return { priceCents: discounted, discountPct: pct, originalPriceCents: servicePriceCents };
   }
-  return {
-    priceCents: applyDiscountCents(servicePriceCents, pct),
-    discountPct: pct,
-    originalPriceCents: servicePriceCents,
-  };
+
+  // Por debajo del mínimo de Stripe cobramos 0,50 € y enseñamos y
+  // guardamos el % real (redondeado hacia abajo), no el nominal: nunca
+  // un descuento anunciado mayor que el aplicado.
+  const priceCents = Math.min(servicePriceCents, MIN_CHARGE_CENTS);
+  const realPct = Math.floor(((servicePriceCents - priceCents) / servicePriceCents) * 100);
+  if (realPct <= 0) return noDiscount;
+  return { priceCents, discountPct: realPct, originalPriceCents: servicePriceCents };
 }

@@ -14,8 +14,9 @@ import type { FiltersBarProps } from './FiltersBar.types';
  * Se compone de tres bloques de izquierda a derecha:
  *  1. Chips horizontales con las categorías raíz + chip "Todas". Las
  *     categorías llegan por props desde la BD, ya localizadas.
- *  2. Toggles "Cerca de ti", "Solo disponibles ahora" y "Con descuento"
- *     (huecos liberados; filtra, no reordena).
+ *  2. Toggles "Cerca de ti", "Solo disponibles ahora" y, desde `md`,
+ *     "Con descuento" (huecos liberados; filtra, no reordena). En móvil
+ *     ese último vive en el sheet de filtros para que la fila quepa.
  *  3. Botón "Filtros" que abre el sheet de avanzados.
  *
  * En móvil los chips son scrollables; el toggle y el botón quedan
@@ -118,7 +119,13 @@ export function FiltersBar({
         >
           <SlidersHorizontal className="size-4" aria-hidden />
           <span>{t('filters.button')}</span>
-          {hasAdvancedFilters && <span className={s.filterButtonDot} aria-hidden />}
+          {(hasAdvancedFilters || discountOnly) && (
+            <span
+              className={cn(s.filterButtonDot, !hasAdvancedFilters && s.filterButtonDotMobileOnly)}
+              aria-hidden
+              data-component="filters-bar-open-sheet-dot"
+            />
+          )}
         </button>
       </div>
     </div>

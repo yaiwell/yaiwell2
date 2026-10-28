@@ -26,6 +26,14 @@ export interface BookingConfirmationProps {
    */
   amountCents: number;
   /**
+   * Precio de referencia congelado en la reserva si era un hueco
+   * liberado con descuento; `null`/ausente sin descuento. Se pinta
+   * tachado junto a `amountCents`.
+   */
+  originalPriceCents?: number | null;
+  /** % de descuento congelado en la reserva; `null`/ausente sin descuento. */
+  discountPct?: number | null;
+  /**
    * `true` cuando el cargo aún no ha terminado de liquidarse (la reserva
    * sigue en `pending` porque el webhook de Stripe no ha llegado).
    * Cambia el copy para no prometer una confirmación que todavía no es.

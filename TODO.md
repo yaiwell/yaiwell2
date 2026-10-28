@@ -209,14 +209,11 @@
   - [x] Servicio `slot-offers` y precio rebajado en `createBooking`; API de huecos con oferta; mejor oferta y filtro `discountOnly` en la búsqueda.
   - [x] Índice en `slot_offers.serviceId` y sin lectura pública por PostgREST (migración `9c`, 2026-10-28).
   - [x] Panel (liberar tras cancelar y huecos < 2 h, ofertas en el calendario, retirar) y cliente (selector, resumen con tachado, etiqueta en tarjeta/mapa/ficha, `?slot=`, filtro «Con descuento»).
-  - [ ] **Avisar si el descuento se pierde** entre elegir el hueco y crear la reserva (oferta retirada, caducada o vendida): hoy el pago muestra el importe correcto del servidor pero sin decir que ya no hay descuento.
-  - [ ] **Aviso si el hueco de `?slot=` ya no existe** («ese hueco ya no está disponible»).
-  - [ ] **Precio tachado también en la confirmación** (`BookingConfirmation` solo enseña lo pagado).
-  - [ ] **¿Filtro «Con descuento» en la barra o en el panel de filtros?** En la barra no cabe a 375 px y ahora hace scroll horizontal.
-  - [ ] **Mínimo de Stripe (0,50 €)**: con un 50 % sobre un servicio de menos de 1 € el PaymentIntent falla. Precio mínimo de servicio o tope que deje ≥ 50 céntimos.
   - [ ] **Retención vigente en el pago tardío sin bloqueo**: si vence justo entre la comprobación y la confirmación, la carrera vuelve en una ventana de milisegundos. Meter también esa rama bajo `lockProfessional` (un bloqueo más por pago).
   - [ ] **Cachear `listReleasableFreeSlots`** si un centro tiene muchos servicios (una consulta de disponibilidad por servicio y día en cada carga de `/panel/calendario`).
   - [ ] Convenciones (P2): clases condicionales del diálogo de tramos y del bloque de oferta con `cva`; importar `BookingActionsList` solo por su `index.ts`; datos de ejemplo del preview junto al componente en vez de `lib/fake-data`; unificar «Hora alliberada»/«Forat alliberat» en catalán.
+  - [ ] **«Limpiar» del panel de filtros decide por ancho de pantalla** si borra «Con descuento» (en móvil sí, en escritorio no, porque ahí vive en la barra). Funciona, pero depende de `matchMedia` al pulsar: revisar si se reorganizan los filtros.
+  - [ ] **E2E con 500 en frío**: el primer acceso a `/api/availability/...` en el servidor de desarrollo a veces falla al compilar; reintentar una vez en los helpers del E2E.
   - [ ] Después: alertas por email con opt-in, liberar cualquier franja futura, varios servicios por oferta.
 - [ ] **Fechas desplazadas en `tests/e2e/provider-calendar.spec.ts`**: inserta `Date` por `pg` en columnas `timestamp` sin zona y quedan en hora local (la app las ve 1-2 h desplazadas); pasa por casualidad en invierno. Migrarlo a `connectDb()` + `toISOString()` como `tests/e2e/utils/slot-offers-seed.ts`.
 - [ ] Multi-centro para empresarios.

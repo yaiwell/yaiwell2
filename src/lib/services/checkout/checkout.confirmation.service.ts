@@ -29,6 +29,14 @@ export interface BookingConfirmationData {
    * desde entonces o venir de una caché.
    */
   priceCents: number;
+  /**
+   * Precio de referencia congelado si la reserva fue un hueco liberado
+   * con descuento; `null` sin descuento. Solo sirve para pintarlo
+   * tachado: lo cobrado sigue siendo `priceCents`.
+   */
+  originalPriceCents: number | null;
+  /** % de descuento congelado en la reserva; `null` sin descuento. */
+  discountPct: number | null;
 }
 
 /**
@@ -57,6 +65,8 @@ export async function getBookingForConfirmation(
       endAt: true,
       status: true,
       priceCents: true,
+      originalPriceCents: true,
+      discountPct: true,
     },
   });
   return booking;

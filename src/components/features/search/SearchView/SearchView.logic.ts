@@ -6,7 +6,7 @@ import { usePathname, useRouter } from '@/i18n/navigation';
 import type { Suggestion } from '@/lib/fake-data/search-suggestions';
 import type { PriceRange } from '@/types/domain';
 
-import type { AdvancedFiltersValue } from '../FiltersSheet';
+import type { AdvancedFiltersValue, ClearAdvancedOptions } from '../FiltersSheet';
 import { useFilterChipHandlers } from './SearchView.chips';
 import { NEAR_ME_RADIUS_METERS, useNearMe } from './SearchView.nearMe';
 import type {
@@ -118,6 +118,7 @@ export function useSearchView(initial: SearchViewInitialState) {
       updateFilters({
         priceRange: value.priceRange,
         minRating: value.minRating,
+        discountOnly: value.discountOnly,
       });
       setFiltersSheetOpen(false);
     },
@@ -126,13 +127,18 @@ export function useSearchView(initial: SearchViewInitialState) {
 
   // Cerramos el sheet igual que "Aplicar": limpiar también es una
   // decisión final, y dejarlo abierto ocultaba el resultado del cambio.
-  const handleClearAdvanced = useCallback(() => {
-    updateFilters({
-      priceRange: [] as PriceRange[],
-      minRating: null,
-    });
-    setFiltersSheetOpen(false);
-  }, [updateFilters]);
+  // "Con descuento" solo se limpia si estaba a la vista en el sheet (móvil).
+  const handleClearAdvanced = useCallback(
+    (options: ClearAdvancedOptions = { includeDiscount: true }) => {
+      updateFilters({
+        priceRange: [] as PriceRange[],
+        minRating: null,
+        ...(options.includeDiscount ? { discountOnly: false } : {}),
+      });
+      setFiltersSheetOpen(false);
+    },
+    [updateFilters],
+  );
 
   // Chips de filtros activos: handlers aislados en su propio hook.
   const { handleRemoveChip, handleClearAllChips } = useFilterChipHandlers(
@@ -191,8 +197,9 @@ export function useSearchView(initial: SearchViewInitialState) {
     () => ({
       priceRange: filters.priceRange,
       minRating: filters.minRating,
+      discountOnly: filters.discountOnly,
     }),
-    [filters.priceRange, filters.minRating],
+    [filters.priceRange, filters.minRating, filters.discountOnly],
   );
 
   const hasAdvancedFilters = filters.priceRange.length > 0 || filters.minRating !== null;

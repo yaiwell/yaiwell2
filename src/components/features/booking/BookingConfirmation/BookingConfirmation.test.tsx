@@ -38,6 +38,10 @@ const messages = {
       pendingSubtitle:
         'Estamos confirmando el cobro con tu banco. En cuanto termine, verás la reserva en «Mis reservas».',
     },
+    slotOffer: {
+      discountBadge: '−{pct} %',
+      priceAria: 'Precio habitual {original}; con un {pct} % de descuento, {amount}',
+    },
   },
 };
 
@@ -135,6 +139,31 @@ describe('BookingConfirmation — caminos y datos', () => {
     // 45,00 € del servidor; 99,00 € es el `service.priceCents` local.
     expect(screen.getByText('45 €')).toBeInTheDocument();
     expect(screen.queryByText('99 €')).not.toBeInTheDocument();
+  });
+
+  it('con hueco liberado tacha el precio de referencia y enseña lo pagado', () => {
+    renderConfirmation({ amountCents: 3600, originalPriceCents: 4500, discountPct: 20 });
+
+    const original = document.querySelector(
+      '[data-component="booking-confirmation-total-original"]',
+    );
+    expect(original?.tagName).toBe('DEL');
+    expect(original).toHaveTextContent('45 €');
+    expect(screen.getByText('36 €')).toBeInTheDocument();
+    expect(screen.getByText('−20 %')).toBeInTheDocument();
+    // El lector de pantalla recibe una frase completa, no dos cifras sueltas.
+    expect(
+      screen.getByText('Precio habitual 45 €; con un 20 % de descuento, 36 €'),
+    ).toBeInTheDocument();
+  });
+
+  it('sin descuento no inventa un tachado', () => {
+    renderConfirmation({ amountCents: 4500, originalPriceCents: null, discountPct: null });
+
+    expect(
+      document.querySelector('[data-component="booking-confirmation-total-original"]'),
+    ).toBeNull();
+    expect(screen.getByText('45 €')).toBeInTheDocument();
   });
 
   it('no deja el nombre del servicio en blanco en /en y /de', () => {

@@ -18,6 +18,11 @@ export const slotPickerStyles = {
   dayTabNumber: 'text-lg font-semibold',
   dayTabTodayDot: 'mt-0.5 size-1 rounded-full bg-current opacity-70',
 
+  // Aviso de que el hueco pedido por URL ya no está. Informativo, sin
+  // tono de error: el usuario solo tiene que elegir otra hora.
+  notice:
+    'rounded-2xl border border-dashed border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground',
+
   // Encabezado de sección (Mañana / Tarde).
   sectionTitle: 'text-xs font-medium uppercase tracking-wide text-muted-foreground mt-1 first:mt-0',
   sectionEmpty: 'text-sm text-muted-foreground',

@@ -1,2 +1,6 @@
 export { FiltersSheet } from './FiltersSheet';
-export type { AdvancedFiltersValue, FiltersSheetProps } from './FiltersSheet.types';
+export type {
+  AdvancedFiltersValue,
+  ClearAdvancedOptions,
+  FiltersSheetProps,
+} from './FiltersSheet.types';

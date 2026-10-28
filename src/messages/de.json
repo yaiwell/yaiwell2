@@ -214,7 +214,8 @@
     "slotOffer": {
       "tag": "Frei gewordener Termin · −{pct} % · {when}",
       "tagAria": "Frei gewordener Termin mit {pct} % Rabatt, {when}. Diesen Termin buchen",
-      "filterToggle": "Mit Rabatt"
+      "filterToggle": "Mit Rabatt",
+      "sheetSectionLabel": "Freigegebene Termine"
     },
     "nearMeChip": "In deiner Nähe",
     "nearMeChipAria": "Profis im Umkreis von {radius} km filtern",
@@ -805,7 +806,10 @@
       "slotAria": "{time}, frei gewordener Termin mit {pct} % Rabatt: {price}",
       "priceAria": "Regulärer Preis {original}; mit {pct} % Rabatt {amount}",
       "estimatedPriceLabel": "Voraussichtlicher Preis",
-      "estimatedPriceHint": "Der endgültige Betrag wird beim Bezahlen bestätigt."
+      "estimatedPriceHint": "Der endgültige Betrag wird beim Bezahlen bestätigt.",
+      "discountLost": "Der Rabatt für diesen Termin ist nicht mehr verfügbar. Zu zahlen sind {amount}.",
+      "discountChanged": "Der Rabatt für diesen Termin hat sich geändert: Er beträgt jetzt {pct} %. Zu zahlen sind {amount}.",
+      "slotGone": "Dieser Termin ist nicht mehr verfügbar. Bitte wähle eine andere Uhrzeit."
     },
     "summary": {
       "serviceLabel": "Service",

@@ -79,6 +79,31 @@ describe('FiltersBar', () => {
     expect(props.onDiscountToggle).toHaveBeenCalledWith(false);
   });
 
+  it('el toggle «Con descuento» solo se pinta en la barra desde md', () => {
+    renderBar();
+
+    // En móvil vive en el sheet de filtros: la fila de acciones no hace
+    // scroll horizontal por su culpa.
+    const toggle = screen.getByRole('button', { name: 'Con descuento' });
+    expect(toggle.className).toMatch(/(^|\s)hidden(\s|$)/);
+    expect(toggle.className).toContain('md:inline-flex');
+    const actions = toggle.parentElement;
+    expect(actions?.className).not.toContain('overflow-x-auto');
+  });
+
+  it('el punto de «Filtros» marca el descuento activo solo en móvil', () => {
+    renderBar({ discountOnly: true });
+    const dot = document.querySelector('[data-component="filters-bar-open-sheet-dot"]');
+    expect(dot).not.toBeNull();
+    expect(dot?.className).toContain('md:hidden');
+  });
+
+  it('con filtros avanzados el punto de «Filtros» se ve en todos los tamaños', () => {
+    renderBar({ hasAdvancedFilters: true, discountOnly: true });
+    const dot = document.querySelector('[data-component="filters-bar-open-sheet-dot"]');
+    expect(dot?.className).not.toContain('md:hidden');
+  });
+
   it('selecciona una categoría inactiva por su slug', async () => {
     const props = renderBar();
 

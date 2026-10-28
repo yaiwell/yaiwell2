@@ -214,7 +214,8 @@
     "slotOffer": {
       "tag": "Hora alliberada · −{pct} % · {when}",
       "tagAria": "Hora alliberada amb un {pct} % de descompte, {when}. Reservar aquesta hora",
-      "filterToggle": "Amb descompte"
+      "filterToggle": "Amb descompte",
+      "sheetSectionLabel": "Forats alliberats"
     },
     "nearMeChip": "A prop teu",
     "nearMeChipAria": "Filtrar a professionals en un radi de {radius} km",
@@ -805,7 +806,10 @@
       "slotAria": "{time}, hora alliberada amb un {pct} % de descompte: {price}",
       "priceAria": "Preu habitual {original}; amb un {pct} % de descompte, {amount}",
       "estimatedPriceLabel": "Preu previst",
-      "estimatedPriceHint": "L'import final es confirma en passar al pagament."
+      "estimatedPriceHint": "L'import final es confirma en passar al pagament.",
+      "discountLost": "El descompte d'aquest forat ja no està disponible. L'import a pagar és {amount}.",
+      "discountChanged": "El descompte d'aquest forat ha canviat: ara és del {pct} %. L'import a pagar és {amount}.",
+      "slotGone": "Aquest forat ja no està disponible. Tria una altra hora."
     },
     "summary": {
       "serviceLabel": "Servei",

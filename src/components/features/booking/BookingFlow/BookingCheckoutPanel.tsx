@@ -13,11 +13,15 @@ import { withRedirectUrl } from '@/lib/validation/redirect-url';
 import { StripePaymentStep } from '../StripePaymentStep';
 import { stripePaymentStepStyles as s } from '../StripePaymentStep/StripePaymentStep.styles';
 
+import type { DiscountChange } from './BookingFlow.price';
 import type { CheckoutState } from './BookingFlow.types';
+import { DiscountChangeNotice } from './DiscountChangeNotice';
 import { PaymentPolicyNote } from './PaymentPolicyNote';
 
 interface BookingCheckoutPanelProps {
   checkout: CheckoutState;
+  /** Descuento del hueco perdido o empeorado desde que se eligió. */
+  discountChange?: DiscountChange | null;
   locale: AppLocale;
   /** URL absoluta de retorno tras un 3DS. */
   returnUrl: string;
@@ -40,6 +44,7 @@ interface BookingCheckoutPanelProps {
  */
 export function BookingCheckoutPanel({
   checkout,
+  discountChange = null,
   locale,
   returnUrl,
   redirectUrl,
@@ -54,6 +59,7 @@ export function BookingCheckoutPanel({
     // y el `createdAt` real de la reserva.
     return (
       <>
+        {discountChange && <DiscountChangeNotice change={discountChange} locale={locale} />}
         <PaymentPolicyNote
           isLastMinute={checkout.isLastMinute}
           changed={checkout.isLastMinute !== checkout.estimatedLastMinute}

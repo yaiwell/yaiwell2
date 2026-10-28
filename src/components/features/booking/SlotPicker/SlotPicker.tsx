@@ -36,18 +36,40 @@ export function SlotPicker({
 }: SlotPickerProps) {
   const t = useTranslations('booking.slotPicker');
 
-  const { dayTabs, setSelectedDay, slots, clock, isLoading, isError, isNotBookable, refetch } =
-    useSlotPicker({
-      providerId,
-      serviceId,
-      serviceDurationMinutes,
-      locale,
-      now,
-      initialSlotIso,
-    });
+  const tOffer = useTranslations('booking.slotOffer');
 
-  // Llegada desde una etiqueta de oferta: deja el hueco ya elegido.
-  useSlotPreselection({ initialSlotIso, slots, selectedStartIso, onSelect });
+  const {
+    dayTabs,
+    setSelectedDay,
+    selectedDayKey,
+    slots,
+    clock,
+    initialSlotDayKey,
+    isLoaded,
+    isLoading,
+    isError,
+    isNotBookable,
+    refetch,
+  } = useSlotPicker({
+    providerId,
+    serviceId,
+    serviceDurationMinutes,
+    locale,
+    now,
+    initialSlotIso,
+  });
+
+  // Llegada desde una etiqueta de oferta: deja el hueco ya elegido o,
+  // si ya no existe, lo dice una vez sin bloquear nada.
+  const { slotGone } = useSlotPreselection({
+    initialSlotIso,
+    slots,
+    selectedStartIso,
+    onSelect,
+    targetDayKey: initialSlotDayKey,
+    viewedDayKey: selectedDayKey,
+    isLoaded,
+  });
 
   const groups = groupSlots(slots, clock);
   const hasLastMinute = groups.lastMinute.length > 0;
@@ -75,6 +97,12 @@ export function SlotPicker({
           );
         })}
       </div>
+
+      {slotGone && (
+        <p className={s.notice} role="status" data-component="booking-slot-picker-slot-gone">
+          {tOffer('slotGone')}
+        </p>
+      )}
 
       {isLoading ? (
         <SlotGridSkeleton label={t('loadingLabel')} />

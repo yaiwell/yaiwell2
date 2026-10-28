@@ -214,7 +214,8 @@
     "slotOffer": {
       "tag": "Freed-up slot · −{pct}% · {when}",
       "tagAria": "Freed-up slot with {pct}% off, {when}. Book this time",
-      "filterToggle": "With discount"
+      "filterToggle": "With discount",
+      "sheetSectionLabel": "Released slots"
     },
     "nearMeChip": "Near you",
     "nearMeChipAria": "Filter to professionals within a {radius} km radius",
@@ -805,7 +806,10 @@
       "slotAria": "{time}, freed-up slot with {pct}% off: {price}",
       "priceAria": "Usual price {original}; with {pct}% off, {amount}",
       "estimatedPriceLabel": "Expected price",
-      "estimatedPriceHint": "The final amount is confirmed when you go to payment."
+      "estimatedPriceHint": "The final amount is confirmed when you go to payment.",
+      "discountLost": "The discount on this slot is no longer available. The amount to pay is {amount}.",
+      "discountChanged": "The discount on this slot has changed: it is now {pct}%. The amount to pay is {amount}.",
+      "slotGone": "That slot is no longer available. Please choose another time."
     },
     "summary": {
       "serviceLabel": "Service",

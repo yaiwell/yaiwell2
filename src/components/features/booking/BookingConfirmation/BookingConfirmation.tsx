@@ -4,11 +4,8 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
-import {
-  formatPriceCents,
-  formatSlotDateLong,
-  formatSlotTimeOnly,
-} from '../BookingSummary/BookingSummary.logic';
+import { formatSlotDateLong, formatSlotTimeOnly } from '../BookingSummary/BookingSummary.logic';
+import { DiscountedPrice } from '../DiscountedPrice';
 
 import { bookingConfirmationStyles as s } from './BookingConfirmation.styles';
 import type { BookingConfirmationProps } from './BookingConfirmation.types';
@@ -30,6 +27,8 @@ export function BookingConfirmation({
   bookingId,
   providerSlugWithId,
   amountCents,
+  originalPriceCents = null,
+  discountPct = null,
   paymentPending = false,
 }: BookingConfirmationProps) {
   const t = useTranslations('booking.confirmation');
@@ -75,7 +74,17 @@ export function BookingConfirmation({
         </div>
         <div className={s.row}>
           <dt className={s.rowLabel}>{t('totalLabel')}</dt>
-          <dd className={s.rowValue}>{formatPriceCents(amountCents, locale)}</dd>
+          {/* Con hueco liberado, el precio de referencia sale tachado
+              junto a lo pagado; ambos vienen congelados en la reserva. */}
+          <dd className={s.rowValue}>
+            <DiscountedPrice
+              amountCents={amountCents}
+              originalPriceCents={originalPriceCents}
+              discountPct={discountPct}
+              locale={locale}
+              dataComponent="booking-confirmation-total"
+            />
+          </dd>
         </div>
       </dl>
 

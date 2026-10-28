@@ -1,6 +1,7 @@
+import { act, renderHook } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 
-import { resolveDisplayedPrice } from './BookingFlow.price';
+import { resolveDiscountChange, resolveDisplayedPrice, useBookingPrice } from './BookingFlow.price';
 import type { CheckoutState } from './BookingFlow.types';
 
 /**
@@ -57,5 +58,62 @@ describe('resolveDisplayedPrice', () => {
       originalPriceCents: null,
       discountPct: null,
     });
+  });
+});
+
+describe('resolveDiscountChange', () => {
+  it('no dice nada sin oferta prevista o antes de tener reserva', () => {
+    expect(resolveDiscountChange(null, READY)).toBeNull();
+    expect(resolveDiscountChange(OFFER, { status: 'idle' })).toBeNull();
+    expect(
+      resolveDiscountChange(OFFER, { status: 'creating', estimatedLastMinute: false }),
+    ).toBeNull();
+  });
+
+  it('avisa de descuento perdido si el servidor cobra sin descuento', () => {
+    const ready = { ...READY, amountCents: 4500, originalPriceCents: null, discountPct: null };
+    expect(resolveDiscountChange(OFFER, ready)).toEqual({ kind: 'lost', amountCents: 4500 });
+  });
+
+  it('avisa de descuento cambiado si el importe sube', () => {
+    const ready = { ...READY, amountCents: 4050, discountPct: 10 };
+    expect(resolveDiscountChange(OFFER, ready)).toEqual({
+      kind: 'changed',
+      amountCents: 4050,
+      discountPct: 10,
+    });
+  });
+
+  it('no avisa si el importe es igual o mejor que el previsto', () => {
+    expect(
+      resolveDiscountChange(OFFER, { ...READY, amountCents: 3600, discountPct: 20 }),
+    ).toBeNull();
+    // El tramo bajó a favor del cliente: el pago ya enseña la cifra buena.
+    expect(resolveDiscountChange(OFFER, READY)).toBeNull();
+  });
+});
+
+describe('useBookingPrice', () => {
+  it('recuerda la oferta del hueco elegido y avisa si el servidor la pierde', () => {
+    const start = READY.slotStartIso;
+    const { result, rerender } = renderHook(
+      ({ checkout }: { checkout: CheckoutState }) => useBookingPrice(checkout, 4500, start),
+      { initialProps: { checkout: { status: 'idle' } as CheckoutState } },
+    );
+    act(() =>
+      result.current.rememberSlot({
+        startAtIso: start,
+        endAtIso: start,
+        available: true,
+        offer: OFFER,
+      }),
+    );
+    expect(result.current.discountChange).toBeNull();
+
+    rerender({
+      checkout: { ...READY, amountCents: 4500, originalPriceCents: null, discountPct: null },
+    });
+    expect(result.current.discountChange).toEqual({ kind: 'lost', amountCents: 4500 });
+    expect(result.current.price).toMatchObject({ amountCents: 4500, isEstimate: false });
   });
 });

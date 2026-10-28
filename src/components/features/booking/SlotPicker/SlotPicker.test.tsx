@@ -41,6 +41,9 @@ const messages = {
       notBookableSubtitle: 'El centro todavía no ha configurado su agenda.',
       lastMinuteGroup: 'En las próximas 2 h · pago al reservar, sin cancelación',
     },
+    slotOffer: {
+      slotGone: 'Ese hueco ya no está disponible. Elige otra hora.',
+    },
   },
 };
 
@@ -83,6 +86,7 @@ afterEach(() => {
 function renderPicker(overrides?: {
   selectedStartIso?: string | null;
   onSelect?: (slot: { startAtIso: string }) => void;
+  initialSlotIso?: string | null;
 }) {
   const now = new Date(2099, 5, 14, 8, 0, 0); // 14 junio 2099, 08:00
   const onSelect = overrides?.onSelect ?? vi.fn();
@@ -105,6 +109,7 @@ function renderPicker(overrides?: {
           selectedStartIso={overrides?.selectedStartIso ?? null}
           onSelect={onSelect}
           now={now}
+          initialSlotIso={overrides?.initialSlotIso ?? null}
         />
       </NextIntlClientProvider>
     </QueryClientProvider>,
@@ -272,5 +277,31 @@ describe('SlotPicker', () => {
       expect(screen.queryByText('No hemos podido cargar los huecos')).not.toBeInTheDocument();
       expect(screen.queryByRole('button', { name: /Reintentar/u })).not.toBeInTheDocument();
     });
+  });
+
+  it('avisa una vez si el hueco de ?slot= ya no está entre los del día', async () => {
+    const onSelect = vi.fn();
+    renderPicker({ onSelect, initialSlotIso: '2099-06-14T13:00:00.000Z' });
+
+    const notice = await screen.findByText('Ese hueco ya no está disponible. Elige otra hora.');
+    expect(notice).toHaveAttribute('role', 'status');
+    expect(onSelect).not.toHaveBeenCalled();
+    // No bloquea: los huecos que quedan siguen ahí para elegir.
+    expect(screen.getByText('Mañana')).toBeInTheDocument();
+  });
+
+  it('avisa si el día del hueco de ?slot= queda fuera de la tira', () => {
+    renderPicker({ initialSlotIso: '2099-08-01T10:00:00.000Z' });
+    expect(
+      screen.getByText('Ese hueco ya no está disponible. Elige otra hora.'),
+    ).toBeInTheDocument();
+  });
+
+  it('preselecciona el hueco de ?slot= sin aviso si sigue libre', async () => {
+    const onSelect = vi.fn();
+    renderPicker({ onSelect, initialSlotIso: '2099-06-14T16:00:00.000Z' });
+
+    await waitFor(() => expect(onSelect).toHaveBeenCalledTimes(1));
+    expect(screen.queryByText(/Ese hueco ya no está disponible/)).not.toBeInTheDocument();
   });
 });

@@ -111,9 +111,38 @@ describe('useSearchView — sheet de filtros avanzados', () => {
     const { result } = renderHook(() => useSearchView(makeInitial()));
 
     act(() => result.current.setFiltersSheetOpen(true));
-    act(() => result.current.handleApplyAdvanced({ priceRange: ['€€'], minRating: 4 }));
+    act(() =>
+      result.current.handleApplyAdvanced({ priceRange: ['€€'], minRating: 4, discountOnly: false }),
+    );
 
     expect(result.current.filtersSheetOpen).toBe(false);
     expect(lastReplacedUrl()).toBe('/buscar?cat=belleza&price=%E2%82%AC%E2%82%AC&rating=4');
+  });
+
+  it('el sheet lleva «Con descuento» en su borrador y lo aplica como ?discount=1', () => {
+    const { result } = renderHook(() => useSearchView(makeInitial()));
+    expect(result.current.advancedValue.discountOnly).toBe(false);
+
+    act(() =>
+      result.current.handleApplyAdvanced({ priceRange: [], minRating: null, discountOnly: true }),
+    );
+
+    expect(lastReplacedUrl()).toBe('/buscar?cat=belleza&discount=1');
+  });
+
+  it('«Limpiar» del sheet quita el descuento solo si estaba a la vista (móvil)', () => {
+    const initial = makeInitial({
+      filters: { ...makeInitial().filters, discountOnly: true, minRating: 4 },
+    });
+    const { result } = renderHook(() => useSearchView(initial));
+    expect(result.current.advancedValue.discountOnly).toBe(true);
+
+    // Escritorio: el toggle vive en la barra y no se toca.
+    act(() => result.current.handleClearAdvanced({ includeDiscount: false }));
+    expect(lastReplacedUrl()).toBe('/buscar?cat=belleza&discount=1');
+
+    // Móvil: estaba en el sheet, así que se limpia con lo demás.
+    act(() => result.current.handleClearAdvanced({ includeDiscount: true }));
+    expect(lastReplacedUrl()).toBe('/buscar?cat=belleza');
   });
 });

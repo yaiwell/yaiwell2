@@ -30,6 +30,12 @@ export const filtersSheetStyles = {
     'inline-flex items-center gap-1 rounded-full border px-4 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   ratingChipIdle: 'border-border bg-card text-foreground/80 hover:bg-muted',
   ratingChipActive: 'border-primary bg-primary text-primary-foreground',
+  // "Con descuento": solo en móvil; desde `md` vive en la barra.
+  sectionMobileOnly: 'md:hidden',
+  offerChip:
+    'inline-flex w-fit items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
+  offerChipIdle: 'border-border bg-card text-foreground/80 hover:bg-muted',
+  offerChipActive: 'border-primary bg-primary text-primary-foreground',
   footer: 'mt-auto flex items-center justify-between gap-3 border-t border-border/60 pt-5',
   applyButton:
     'inline-flex h-11 flex-1 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2',

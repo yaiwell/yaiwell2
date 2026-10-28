@@ -214,7 +214,8 @@
     "slotOffer": {
       "tag": "Hueco liberado · −{pct} % · {when}",
       "tagAria": "Hueco liberado con un {pct} % de descuento, {when}. Reservar esta hora",
-      "filterToggle": "Con descuento"
+      "filterToggle": "Con descuento",
+      "sheetSectionLabel": "Huecos liberados"
     },
     "nearMeChip": "Cerca de ti",
     "nearMeChipAria": "Filtrar a profesionales en un radio de {radius} km",
@@ -805,7 +806,10 @@
       "slotAria": "{time}, hueco liberado con un {pct} % de descuento: {price}",
       "priceAria": "Precio habitual {original}; con un {pct} % de descuento, {amount}",
       "estimatedPriceLabel": "Precio previsto",
-      "estimatedPriceHint": "El importe final se confirma al pasar al pago."
+      "estimatedPriceHint": "El importe final se confirma al pasar al pago.",
+      "discountLost": "El descuento de este hueco ya no está disponible. El importe a pagar es {amount}.",
+      "discountChanged": "El descuento de este hueco ha cambiado: ahora es del {pct} %. El importe a pagar es {amount}.",
+      "slotGone": "Ese hueco ya no está disponible. Elige otra hora."
     },
     "summary": {
       "serviceLabel": "Servicio",

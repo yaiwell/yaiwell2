@@ -1,6 +1,6 @@
 'use client';
 
-import { Star, X } from 'lucide-react';
+import { Sparkles, Star, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Dialog } from 'radix-ui';
 
@@ -15,7 +15,8 @@ const PRICE_OPTIONS: PriceRange[] = ['€', '€€', '€€€'];
 const RATING_OPTIONS: number[] = [4, 4.5, 4.8];
 
 /**
- * Sheet de filtros avanzados (precio y valoración mínima).
+ * Sheet de filtros avanzados (precio, valoración mínima y, en móvil,
+ * "Con descuento", que desde `md` está en la barra).
  *
  * Implementado con Radix Dialog. En móvil se ve como bottom-sheet,
  * en desktop como modal centrado. Las animaciones provienen de
@@ -23,7 +24,9 @@ const RATING_OPTIONS: number[] = [4, 4.5, 4.8];
  */
 export function FiltersSheet({ open, onOpenChange, value, onApply, onClear }: FiltersSheetProps) {
   const t = useTranslations('search.filters');
-  const { draft, togglePrice, setRating, handleApply } = useFiltersSheet(value, open, onApply);
+  const tOffer = useTranslations('search.slotOffer');
+  const { draft, togglePrice, setRating, toggleDiscount, handleApply, handleClear } =
+    useFiltersSheet(value, open, onApply, onClear);
 
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
@@ -101,10 +104,27 @@ export function FiltersSheet({ open, onOpenChange, value, onApply, onClear }: Fi
             </div>
           </section>
 
+          <section
+            className={cn(s.section, s.sectionMobileOnly)}
+            data-component="filters-sheet-section-discount"
+          >
+            <span className={s.sectionLabel}>{tOffer('sheetSectionLabel')}</span>
+            <button
+              type="button"
+              onClick={toggleDiscount}
+              aria-pressed={draft.discountOnly}
+              className={cn(s.offerChip, draft.discountOnly ? s.offerChipActive : s.offerChipIdle)}
+              data-component="filters-sheet-discount-toggle"
+            >
+              <Sparkles className="size-3.5" aria-hidden />
+              {tOffer('filterToggle')}
+            </button>
+          </section>
+
           <footer className={s.footer} data-component="filters-sheet-footer">
             <button
               type="button"
-              onClick={onClear}
+              onClick={handleClear}
               className={s.clearButton}
               data-component="filters-sheet-clear"
             >

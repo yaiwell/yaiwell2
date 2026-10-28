@@ -178,10 +178,10 @@ export function useSlotPicker(args: {
   // El instante de referencia se fija al montar el hook para que el
   // calendario no "salte" si el usuario tarda en interactuar.
   const [now] = useState<Date>(() => args.now ?? new Date());
+  // Día del hueco pedido por URL; `null` si no hay o cae fuera de la tira.
+  const initialSlotDay = getInitialDayForSlot(args.initialSlotIso, now, VISIBLE_DAYS);
   const [selectedDay, setSelectedDay] = useState<Date>(
-    () =>
-      getInitialDayForSlot(args.initialSlotIso, now, VISIBLE_DAYS) ??
-      new Date(now.getFullYear(), now.getMonth(), now.getDate()),
+    () => initialSlotDay ?? new Date(now.getFullYear(), now.getMonth(), now.getDate()),
   );
 
   const days = useMemo<Date[]>(() => buildUpcomingDays(now, VISIBLE_DAYS), [now]);
@@ -232,6 +232,9 @@ export function useSlotPicker(args: {
     selectedDayKey: dateKey,
     setSelectedDay,
     slots,
+    /** Día del hueco de `?slot=` (`YYYY-MM-DD`), o `null` si queda fuera. */
+    initialSlotDayKey: initialSlotDay ? getDateKey(initialSlotDay) : null,
+    isLoaded: query.isSuccess,
     isLoading: query.isPending,
     isError: query.isError,
     /** El servicio no admite reserva online (404): sin reintento posible. */

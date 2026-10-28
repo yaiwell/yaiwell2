@@ -64,6 +64,48 @@ export function resolveDisplayedPrice(
 }
 
 /**
+ * Qué le ha pasado al descuento del hueco entre elegirlo y reservarlo.
+ *
+ * - `lost`: el hueco se eligió con oferta y el servidor la ha cobrado
+ *   sin descuento (oferta retirada, caducada o vendida).
+ * - `changed`: sigue habiendo descuento pero el importe es mayor que el
+ *   previsto (por ejemplo, el tramo ha cambiado).
+ */
+export type DiscountChange =
+  | { kind: 'lost'; amountCents: number }
+  | { kind: 'changed'; amountCents: number; discountPct: number };
+
+/**
+ * Compara el precio previsto del hueco con el que ha fijado el servidor.
+ *
+ * Solo avisa cuando el cliente sale perdiendo: si el importe real es
+ * igual o menor que el previsto no hay nada que explicar (el pago ya
+ * enseña la cifra buena). El importe del aviso es siempre el del
+ * servidor, que es el que se cobra.
+ *
+ * @param previewOffer — oferta del hueco elegido, si la tenía.
+ * @param checkout — estado del checkout del flujo.
+ * @returns el cambio a avisar, o `null` si no hay nada que decir.
+ */
+export function resolveDiscountChange(
+  previewOffer: BookingSlotOffer | null,
+  checkout: CheckoutState,
+): DiscountChange | null {
+  if (!previewOffer || checkout.status !== 'ready') return null;
+  if (checkout.discountPct === null || checkout.originalPriceCents === null) {
+    return { kind: 'lost', amountCents: checkout.amountCents };
+  }
+  if (checkout.amountCents > previewOffer.priceCents) {
+    return {
+      kind: 'changed',
+      amountCents: checkout.amountCents,
+      discountPct: checkout.discountPct,
+    };
+  }
+  return null;
+}
+
+/**
  * Recuerda la oferta del último hueco elegido y calcula el importe.
  *
  * La oferta solo vale para ese hueco: si el borrador apunta a otro (por
@@ -91,6 +133,8 @@ export function useBookingPrice(
 
   return {
     price: resolveDisplayedPrice(checkout, servicePriceCents, previewOffer),
+    /** Aviso para el paso de pago si el descuento previsto se ha perdido. */
+    discountChange: resolveDiscountChange(previewOffer, checkout),
     rememberSlot,
   };
 }

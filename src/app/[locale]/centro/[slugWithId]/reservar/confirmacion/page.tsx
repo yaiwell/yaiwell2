@@ -96,6 +96,10 @@ export default async function BookingConfirmationPage({
         providerSlugWithId={slugWithId}
         // Importe congelado al crear la reserva: es el que se cobró.
         amountCents={booking.priceCents}
+        // Hueco liberado: referencia y % congelados en la reserva para
+        // pintar el tachado. `null` en reservas sin descuento.
+        originalPriceCents={booking.originalPriceCents}
+        discountPct={booking.discountPct}
         // El webhook puede tardar unos segundos: si el cobro aún no
         // está liquidado, el copy lo dice en lugar de prometer una
         // confirmación falsa. Mismo criterio que el camino sin 3DS.

@@ -96,4 +96,20 @@ describe('priceSlot', () => {
       originalPriceCents: 4500,
     });
   });
+
+  it('nunca baja del mínimo de Stripe y anuncia el % real aplicado', () => {
+    const half = { over2h: 50, oneToTwoHours: 50, underOneHour: 50 };
+    // 0,90 € al 50 % serían 0,45 €: se cobran 0,50 € (un 44 % real).
+    expect(priceSlot(90, half, START, minutesBefore(45))).toEqual({
+      priceCents: 50,
+      discountPct: 44,
+      originalPriceCents: 90,
+    });
+    // Un servicio de 0,50 € o menos no admite descuento.
+    expect(priceSlot(50, half, START, minutesBefore(45))).toEqual({
+      priceCents: 50,
+      discountPct: null,
+      originalPriceCents: null,
+    });
+  });
 });
