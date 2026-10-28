@@ -5,8 +5,14 @@ import {
   getProvidersAvailability,
   type ProviderAvailabilityMap,
 } from '@/lib/services/availability';
+import { getBestOfferByProvider } from '@/lib/services/slot-offers';
 import { hasPublicRating } from '@/lib/utils/rating';
-import type { GeoPoint, Provider, ProviderWithAvailability } from '@/types/domain';
+import type {
+  GeoPoint,
+  Provider,
+  ProviderSlotOffer,
+  ProviderWithAvailability,
+} from '@/types/domain';
 
 import { InvalidSearchFiltersError } from './providers.errors';
 import { providersRepository } from './providers.repository';
@@ -112,10 +118,12 @@ function matchesFilters(
 function enrichProviders(
   providers: readonly Provider[],
   availabilityByProvider: ProviderAvailabilityMap,
+  offersByProvider: Map<string, ProviderSlotOffer>,
   userLocation: GeoPoint | undefined,
 ): ProviderWithAvailability[] {
   return providers.map((provider) => ({
     ...provider,
+    bestOffer: offersByProvider.get(provider.id) ?? null,
     availability: availabilityByProvider.get(provider.id) ?? {
       status: 'busy' as const,
       nextSlot: null,
@@ -175,23 +183,37 @@ export async function searchProviders(
     .filter((entry) => matchesFilters(entry, parsed.data, resolvedCategoryId, queryTokens))
     .map((entry) => entry.provider);
 
-  // 2. Disponibilidad real, en 2 consultas para todo el conjunto.
-  const availabilityByProvider = await getProvidersAvailability(filtered.map((p) => p.id));
+  // 2. Disponibilidad real (2 consultas) y huecos liberados con
+  //    descuento (2 más), para todo el conjunto a la vez.
+  const ids = filtered.map((p) => p.id);
+  const [availabilityByProvider, offersByProvider] = await Promise.all([
+    getProvidersAvailability(ids),
+    getBestOfferByProvider(ids),
+  ]);
 
-  // 3. Enrichment con disponibilidad y distancia.
-  const enriched = enrichProviders(filtered, availabilityByProvider, parsed.data.userLocation);
+  // 3. Enrichment con disponibilidad, oferta y distancia.
+  const enriched = enrichProviders(
+    filtered,
+    availabilityByProvider,
+    offersByProvider,
+    parsed.data.userLocation,
+  );
 
   // 4. Filtro post-enrichment: el toggle "Disponible ahora" deja pasar
   //    también los ámbar. Con la ventana estricta del verde (30-45 min,
   //    lo primero reservable), filtrar solo por `available_now` vaciaría
   //    la lista; "un hueco reservable en la próxima hora" (30-60 min) es
   //    la promesa del producto.
-  const final = parsed.data.availabilityOnly
+  const byAvailability = parsed.data.availabilityOnly
     ? enriched.filter(
         (p) =>
           p.availability.status === 'available_now' || p.availability.status === 'available_soon',
       )
     : enriched;
+  // Filtro «Con descuento»: solo centros con un hueco liberado vigente.
+  const final = parsed.data.discountOnly
+    ? byAvailability.filter((p) => p.bestOffer)
+    : byAvailability;
 
   // 5. Ordenación final. La disponibilidad NO reordena a propósito:
   //    subir los verdes rompería la expectativa de "el más cercano

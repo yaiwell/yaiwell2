@@ -151,6 +151,14 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
 - Con más de 2 h de antelación el cliente podrá **pagar en el local** (funcionalidad pendiente, ver `TODO.md`).
 - Las constantes viven en `src/lib/utils/` y las comparten servidor y cliente.
 
+### Huecos liberados con descuento (decidido 2026-10-28)
+- El profesional puede **liberar un hueco con descuento**: (a) justo tras cancelar una reserva (siempre a ≥2 h vista, por la regla de cancelación) o (b) sobre un hueco libre que empiece en **menos de 2 h**.
+- **Descuento por tramos de tiempo**: el profesional fija un % por tramo antes del inicio (más de 2 h, de 1 a 2 h, menos de 1 h) y el precio baja solo al acercarse la hora. Pasos de 5 %, **tope del 50 %**, nunca menor en un tramo más cercano. El servidor calcula el % vigente al crear la reserva y lo congela en ella.
+- El precio de referencia es siempre el `Service.priceCents` vigente: nunca un «antes» inflado. La misma hora nunca se ofrece a dos precios: el descuento se aplica a quien reserve ese hueco, venga de donde venga.
+- **La comisión de Yaiwell se calcula sobre lo cobrado** (el precio rebajado).
+- Las reglas de antelación (30 min) y de última hora (< 2 h, sin reembolso) se aplican igual a los huecos con descuento.
+- «Avisar a usuarios cercanos» en el MVP = **destacarlo en la app** (etiqueta en tarjetas, mapa, ficha y selector de hora; filtro «Con descuento»). Sin emails ni push, sin guardar datos nuevos del cliente. Las ofertas no reordenan el listado.
+
 ### Implementación esperada
 - Validar ambas reglas en el `service` (`booking.service.ts` / `review.service.ts`) y en los endpoints, **no solo en UI**.
 - Errores tipados: `BookingTooLateToCancelError`, `BookingNotCompletedError`, `ReviewWindowExpiredError`.

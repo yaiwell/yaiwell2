@@ -27,6 +27,8 @@ export interface SearchProvidersFilters {
   query?: string;
   categorySlug?: string;
   availabilityOnly?: boolean;
+  /** Solo centros con algún hueco liberado con descuento ahora. */
+  discountOnly?: boolean;
   minRating?: number;
   priceRange?: PriceRange[];
   bounds?: GeoBounds;

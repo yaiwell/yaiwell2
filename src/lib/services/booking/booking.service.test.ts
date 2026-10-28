@@ -18,20 +18,29 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // El mock de Prisma debe declararse antes de los imports del SUT
 // para que el repository y el service capturen las versiones mockeadas.
 vi.mock('@/lib/db/prisma', () => {
-  return {
-    prisma: {
-      service: {
-        findUnique: vi.fn(),
-      },
-      booking: {
-        findUnique: vi.fn(),
-        findMany: vi.fn(),
-        create: vi.fn(),
-        update: vi.fn(),
-      },
+  const prisma = {
+    service: {
+      findUnique: vi.fn(),
     },
+    booking: {
+      findUnique: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+    },
+    $executeRaw: vi.fn(),
+    // La transacción ejecuta el callback con el propio mock como `tx`.
+    $transaction: vi.fn(),
   };
+  prisma.$transaction.mockImplementation((fn: (tx: typeof prisma) => unknown) => fn(prisma));
+  return { prisma };
 });
+
+// La oferta vigente se prueba en su módulo; aquí la controlamos a mano.
+const { findLiveOfferForSlotMock } = vi.hoisted(() => ({ findLiveOfferForSlotMock: vi.fn() }));
+vi.mock('@/lib/services/slot-offers', () => ({
+  findLiveOfferForSlot: findLiveOfferForSlotMock,
+}));
 
 import { prisma } from '@/lib/db/prisma';
 
@@ -115,6 +124,7 @@ function fakeBooking(overrides: {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  findLiveOfferForSlotMock.mockResolvedValue(null);
 });
 
 describe('createBooking', () => {
@@ -142,6 +152,67 @@ describe('createBooking', () => {
     expect(createArgs.data.commissionCents).toBe(400);
     // El endAt es slotStart + 60 min (duración del fakeService).
     expect((createArgs.data.endAt as Date).getTime()).toBe(slotStart.getTime() + 60 * 60_000);
+  });
+
+  it('bloquea al profesional dentro de la transacción antes de comprobar el solape', async () => {
+    const slotStart = new Date(Date.now() + 3 * 60 * 60 * 1000);
+    mockPrisma.service.findUnique.mockResolvedValue(fakeService());
+    mockPrisma.booking.findMany.mockResolvedValue([]);
+    mockPrisma.booking.create.mockResolvedValue({ id: 'new-booking' } as never);
+
+    await createBooking({ ...baseInput, slotStart }, 'client-1');
+
+    expect(mockPrisma.$transaction).toHaveBeenCalledOnce();
+    const lockOrder = mockPrisma.$executeRaw.mock.invocationCallOrder[0];
+    expect(lockOrder).toBeLessThan(mockPrisma.booking.findMany.mock.invocationCallOrder[0]);
+    expect(mockPrisma.$executeRaw.mock.calls[0].slice(1)).toEqual([PROFESSIONAL_ID]);
+  });
+
+  it('aplica el descuento vigente del hueco liberado y la comisión sobre lo cobrado', async () => {
+    // A 90 min vista: tramo de 1 a 2 h (20 %).
+    const slotStart = new Date(Date.now() + 90 * 60 * 1000);
+    mockPrisma.service.findUnique.mockResolvedValue(fakeService());
+    mockPrisma.booking.findMany.mockResolvedValue([]);
+    mockPrisma.booking.create.mockResolvedValue({ id: 'new-booking' } as never);
+    findLiveOfferForSlotMock.mockResolvedValue({
+      id: 'offer-1',
+      discounts: { over2h: 10, oneToTwoHours: 20, underOneHour: 30 },
+    });
+
+    await createBooking({ ...baseInput, slotStart }, 'client-1');
+
+    expect(findLiveOfferForSlotMock).toHaveBeenCalledWith(
+      PROFESSIONAL_ID,
+      SERVICE_ID,
+      slotStart,
+      expect.any(Date),
+    );
+    const { data } = mockPrisma.booking.create.mock.calls[0][0];
+    expect(data.priceCents).toBe(4000);
+    expect(data.originalPriceCents).toBe(5000);
+    expect(data.discountPct).toBe(20);
+    expect(data.slotOfferId).toBe('offer-1');
+    // 8 % de 4000 = 320: la comisión baja con el precio.
+    expect(data.commissionCents).toBe(320);
+  });
+
+  it('sin oferta (o con tramo a 0 %) cobra el precio normal sin datos de descuento', async () => {
+    const slotStart = new Date(Date.now() + 90 * 60 * 1000);
+    mockPrisma.service.findUnique.mockResolvedValue(fakeService());
+    mockPrisma.booking.findMany.mockResolvedValue([]);
+    mockPrisma.booking.create.mockResolvedValue({ id: 'new-booking' } as never);
+    findLiveOfferForSlotMock.mockResolvedValue({
+      id: 'offer-1',
+      discounts: { over2h: 0, oneToTwoHours: 0, underOneHour: 20 },
+    });
+
+    await createBooking({ ...baseInput, slotStart }, 'client-1');
+
+    const { data } = mockPrisma.booking.create.mock.calls[0][0];
+    expect(data.priceCents).toBe(5000);
+    expect(data.slotOfferId).toBeNull();
+    expect(data.discountPct).toBeNull();
+    expect(data.originalPriceCents).toBeNull();
   });
 
   it('rechaza con SlotUnavailableError si hay solapamiento', async () => {

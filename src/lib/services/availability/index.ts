@@ -12,7 +12,12 @@
  * dependencias de servidor. Aquí solo reexportamos su TIPO (los tipos se
  * borran en compilación, así que no arrastran nada).
  */
-export { getAvailableSlots, getSlotsForService, isSlotAvailable } from './availability.service';
+export {
+  getAvailableSlots,
+  getServiceDaySlots,
+  getSlotsForService,
+  isSlotAvailable,
+} from './availability.service';
 export { getProvidersAvailability } from './availability.status.service';
 export { availabilityRepository } from './availability.repository';
 export {

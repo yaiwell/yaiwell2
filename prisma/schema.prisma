@@ -92,6 +92,15 @@ enum BookingStatus {
   refunded
 }
 
+/// Estado guardado de una oferta de hueco. «Vendida» (hay una reserva
+/// confirmada con `slotOfferId`) y «caducada» (`expiresAt` pasado) se
+/// derivan al leer: así ni el webhook de Stripe ni un cron tienen que
+/// actualizar esta tabla.
+enum SlotOfferStatus {
+  active
+  withdrawn
+}
+
 enum VerificationStatus {
   pending
   approved
@@ -234,6 +243,7 @@ model Provider {
   professionals        Professional[]
   services             Service[]
   bookings             Booking[]
+  slotOffers           SlotOffer[]
   reviews              Review[]
   categories           ProviderCategory[]
   verificationRequests VerificationRequest[]
@@ -287,9 +297,10 @@ model Professional {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  provider Provider  @relation(fields: [providerId], references: [id], onDelete: Cascade)
-  services Service[]
-  bookings Booking[]
+  provider   Provider    @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  services   Service[]
+  bookings   Booking[]
+  slotOffers SlotOffer[]
 
   @@index([providerId])
   @@index([userId])
@@ -336,6 +347,7 @@ model Service {
   professional Professional? @relation(fields: [professionalId], references: [id], onDelete: SetNull)
   category     Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   bookings     Booking[]
+  slotOffers   SlotOffer[]
 
   @@index([providerId])
   @@index([professionalId])
@@ -392,6 +404,12 @@ model Booking {
   refundFailedAt        DateTime?
   /// Motivo técnico del último fallo (código y mensaje de Stripe).
   refundFailureReason   String?
+  /// Oferta de hueco liberado con la que se reservó. Con ella se congelan
+  /// el precio de referencia y el descuento aplicado: `priceCents` sigue
+  /// siendo lo cobrado, y la comisión se calcula sobre ese importe.
+  slotOfferId           String?
+  originalPriceCents    Int?
+  discountPct           Int?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -401,6 +419,9 @@ model Booking {
   professional Professional @relation(fields: [professionalId], references: [id], onDelete: Restrict)
   provider     Provider     @relation(fields: [providerId], references: [id], onDelete: Restrict)
   review       Review?
+  slotOffer    SlotOffer?   @relation("SlotOfferBookings", fields: [slotOfferId], references: [id], onDelete: SetNull)
+  /// Oferta creada al liberar el hueco de esta reserva cancelada.
+  releasedAs   SlotOffer?   @relation("SlotOfferSource")
 
   @@index([clientId, startAt])
   @@index([providerId, startAt])
@@ -409,7 +430,47 @@ model Booking {
   // basta con buscar reservas activas de un profesional en un rango.
   @@index([professionalId, status, startAt, endAt])
   @@index([status])
+  @@index([slotOfferId])
   @@map("bookings")
+}
+
+/// Hueco liberado con descuento por un profesional (CLAUDE.md §4.bis).
+///
+/// Nace tras cancelar una reserva (`sourceBookingId`) o sobre un hueco
+/// libre que empieza en menos de 2 h. El descuento va por tramos de
+/// tiempo antes del inicio y lo resuelve el servidor al crear la reserva.
+model SlotOffer {
+  id                 String          @id @default(uuid())
+  providerId         String
+  professionalId     String
+  serviceId          String
+  /// Reserva cancelada que dejó el hueco. Única: una oferta por reserva.
+  sourceBookingId    String?         @unique
+  startAt            DateTime
+  endAt              DateTime
+  /// % de descuento por tramo de tiempo hasta el inicio. Pasos de 5,
+  /// tope 50, y nunca menor en un tramo más cercano (CHECK en BD).
+  discountPctOver2h  Int
+  discountPct1To2h   Int
+  discountPctUnder1h Int
+  /// Último momento en que se puede reservar con la oferta.
+  expiresAt          DateTime
+  status             SlotOfferStatus @default(active)
+  withdrawnAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  provider      Provider     @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  professional  Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  service       Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  sourceBooking Booking?     @relation("SlotOfferSource", fields: [sourceBookingId], references: [id], onDelete: SetNull)
+  bookings      Booking[]    @relation("SlotOfferBookings")
+
+  @@index([providerId, startAt])
+  @@index([professionalId, startAt])
+  @@index([status, startAt])
+  @@map("slot_offers")
 }
 
 /// Valoración del cliente sobre un Booking completado.

@@ -146,6 +146,20 @@ export interface ProviderWithAvailability extends Provider {
   availability: ProviderAvailability;
   /** Distancia al usuario en km, redondeada a 1 decimal. `null` si no hay geolocalización. */
   distanceKm: number | null;
+  /**
+   * Mejor hueco liberado con descuento ahora mismo (mayor %). Ausente o
+   * `null` si no hay ninguno. Solo se anuncia, no reordena el listado.
+   */
+  bestOffer?: ProviderSlotOffer | null;
+}
+
+/** Hueco liberado con descuento, tal como se anuncia en listados y ficha. */
+export interface ProviderSlotOffer {
+  serviceId: string;
+  /** Inicio del hueco en ISO-8601 UTC. */
+  startAtIso: string;
+  /** % de descuento vigente ahora (siempre > 0). */
+  discountPct: number;
 }
 
 /**

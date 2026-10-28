@@ -41,6 +41,11 @@ export const searchProvidersFiltersSchema = z.object({
     .union([z.boolean(), z.literal('1'), z.literal('true'), z.literal('0'), z.literal('false')])
     .transform((v) => v === true || v === '1' || v === 'true')
     .optional(),
+  /** Solo centros con algún hueco liberado con descuento ahora. */
+  discountOnly: z
+    .union([z.boolean(), z.literal('1'), z.literal('true'), z.literal('0'), z.literal('false')])
+    .transform((v) => v === true || v === '1' || v === 'true')
+    .optional(),
   minRating: z.coerce.number().min(0).max(5).optional(),
   priceRange: z.array(priceRangeSchema).optional(),
   bounds: geoBoundsSchema.optional(),

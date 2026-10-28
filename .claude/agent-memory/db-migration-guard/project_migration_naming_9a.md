@@ -11,4 +11,6 @@ Estado verificado 2026-10-27 (tras aplicar 9a): `_prisma_migrations` tiene 0..9 
 
 Advisors security (línea base aceptada): 2 WARN function_search_path_mutable (sync_service_category_label_cache, propagate_category_name_to_services) y 4 INFO rls_enabled_no_policy (\_prisma_migrations, bookings, users, verification_requests); acceso solo vía Prisma/postgres.
 
+2026-10-28: 9b_slot_offers pendiente de aplicar (11 aplicadas en remoto, bookings 12 filas). Al generar SQL con `prisma migrate diff > file`, dotenv inyecta la línea basura `◇ injected env (25) from .env.local // tip...` en el .sql; revisar siempre que no quede (rompe la migración). `list_migrations` del MCP devuelve [] (no usa \_prisma_migrations): consultar la tabla.
+
 El MCP ejecuta SELECT como `supabase_read_only_user`, no como postgres. Las tablas pertenecen a `postgres`. `list_migrations` y consultas a `_prisma_migrations` con `order by started_at` dieron timeout alguna vez; reintentar con `order by migration_name`.

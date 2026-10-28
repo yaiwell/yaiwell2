@@ -161,6 +161,21 @@ export async function getSlotsForService(
   date: Date,
   now: Date = new Date(),
 ): Promise<Slot[]> {
+  return (await getServiceDaySlots(serviceId, date, now)).slots;
+}
+
+/**
+ * Igual que `getSlotsForService`, pero devuelve también el profesional
+ * efectivo y la duración. Lo usan los huecos con descuento: la oferta
+ * se guarda con el mismo profesional al que el motor asigna el hueco.
+ *
+ * @throws las mismas excepciones que `getSlotsForService`.
+ */
+export async function getServiceDaySlots(
+  serviceId: string,
+  date: Date,
+  now: Date = new Date(),
+): Promise<{ professionalId: string; durationMinutes: number; slots: Slot[] }> {
   const service = await availabilityRepository.findServiceForAvailability(serviceId);
   if (!service) {
     throw new ServiceForAvailabilityNotFoundError();
@@ -177,7 +192,7 @@ export async function getSlotsForService(
     );
   }
 
-  return getAvailableSlots(
+  const slots = await getAvailableSlots(
     {
       professionalId,
       date,
@@ -185,4 +200,5 @@ export async function getSlotsForService(
     },
     now,
   );
+  return { professionalId, durationMinutes: service.durationMinutes, slots };
 }

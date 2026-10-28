@@ -7,6 +7,8 @@
  * service mockea este repositorio, el repositorio mockea Prisma.
  */
 
+import type { Prisma } from '@prisma/client';
+
 import { prisma } from '@/lib/db/prisma';
 
 import { activeBookingWhere } from './booking.hold';
@@ -41,7 +43,14 @@ export interface CreateBookingData {
   priceCents: number;
   commissionCents: number;
   notes?: string;
+  /** Hueco liberado con el que se reserva y descuento congelado. */
+  slotOfferId?: string | null;
+  originalPriceCents?: number | null;
+  discountPct?: number | null;
 }
+
+/** Cliente de BD: el global o el de una transacción en curso. */
+type Db = typeof prisma | Prisma.TransactionClient;
 
 export const bookingRepository = {
   /**
@@ -64,9 +73,16 @@ export const bookingRepository = {
    * Condición de solape clásica: A.start < B.end && A.end > B.start.
    *
    * @param now — instante de referencia para la retención; inyectable en tests.
+   * @param db — cliente de una transacción, para leer bajo su bloqueo.
    */
-  async findOverlapping(professionalId: string, start: Date, end: Date, now: Date = new Date()) {
-    return prisma.booking.findMany({
+  async findOverlapping(
+    professionalId: string,
+    start: Date,
+    end: Date,
+    now: Date = new Date(),
+    db: Db = prisma,
+  ) {
+    return db.booking.findMany({
       where: {
         professionalId,
         ...activeBookingWhere(now),
@@ -80,8 +96,8 @@ export const bookingRepository = {
    * Crea una reserva en estado `pending`. Stripe la pasará a
    * `confirmed` desde el webhook tras el pago.
    */
-  async create(data: CreateBookingData) {
-    return prisma.booking.create({
+  async create(data: CreateBookingData, db: Db = prisma) {
+    return db.booking.create({
       data: {
         clientId: data.clientId,
         serviceId: data.serviceId,
@@ -92,6 +108,9 @@ export const bookingRepository = {
         priceCents: data.priceCents,
         commissionCents: data.commissionCents,
         notes: data.notes,
+        slotOfferId: data.slotOfferId ?? null,
+        originalPriceCents: data.originalPriceCents ?? null,
+        discountPct: data.discountPct ?? null,
         status: 'pending',
       },
     });

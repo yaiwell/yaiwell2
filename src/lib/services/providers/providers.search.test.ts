@@ -15,12 +15,17 @@ import type { SearchableProvider } from './providers.types';
 const mocks = vi.hoisted(() => ({
   findAllForSearch: vi.fn(),
   getProvidersAvailability: vi.fn(),
+  getBestOfferByProvider: vi.fn(),
 }));
 
 vi.mock('server-only', () => ({}));
 vi.mock('@/lib/db/prisma', () => ({ prisma: { category: { findUnique: vi.fn() } } }));
 vi.mock('@/lib/services/availability', () => ({
   getProvidersAvailability: mocks.getProvidersAvailability,
+}));
+// Huecos con descuento: sin ofertas salvo que un test diga lo contrario.
+vi.mock('@/lib/services/slot-offers', () => ({
+  getBestOfferByProvider: mocks.getBestOfferByProvider,
 }));
 vi.mock('./providers.repository', () => ({
   providersRepository: { findAllForSearch: mocks.findAllForSearch },
@@ -56,6 +61,7 @@ function entry(
 beforeEach(() => {
   vi.clearAllMocks();
   mocks.getProvidersAvailability.mockResolvedValue(new Map());
+  mocks.getBestOfferByProvider.mockResolvedValue(new Map());
   mocks.findAllForSearch.mockResolvedValue([
     entry('atelier', 'Atelier Norte', 'Corte mujer Peluquería Belleza'),
     entry('casa-mar', 'Casa Mar Massatges', 'Masaje relajante 60 min Masajes Bienestar'),
@@ -153,5 +159,31 @@ describe('searchProviders — orden determinista', () => {
 
     const result = await searchProviders({ userLocation: same });
     expect(result.map((p) => p.id)).toEqual(['b', 'z-1', 'z-2', 'lejos']);
+  });
+});
+
+describe('searchProviders — huecos con descuento', () => {
+  const offer = { serviceId: 'svc-1', startAtIso: '2026-10-28T17:00:00.000Z', discountPct: 20 };
+
+  it('anuncia la mejor oferta de cada centro sin reordenar el listado', async () => {
+    mocks.getBestOfferByProvider.mockResolvedValue(
+      new Map([['born', { offerId: 'o-1', ...offer }]]),
+    );
+
+    const result = await searchProviders({});
+
+    expect(result.map((p) => p.id)).toEqual(['atelier', 'born', 'casa-mar']);
+    expect(result.find((p) => p.id === 'born')?.bestOffer).toMatchObject(offer);
+    expect(result.find((p) => p.id === 'atelier')?.bestOffer).toBeNull();
+  });
+
+  it('el filtro «Con descuento» deja solo los centros con oferta vigente', async () => {
+    mocks.getBestOfferByProvider.mockResolvedValue(
+      new Map([['born', { offerId: 'o-1', ...offer }]]),
+    );
+
+    const result = await searchProviders({ discountOnly: true });
+
+    expect(result.map((p) => p.id)).toEqual(['born']);
   });
 });

@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/db/prisma';
-import { activeBookingWhere } from '@/lib/services/booking';
+// Import directo y no del barrel de `booking`: `booking.service` usa
+// `slot-offers`, que usa este módulo; el barrel cerraría un ciclo.
+import { activeBookingWhere } from '@/lib/services/booking/booking.hold';
 
 import type { ProfessionalScheduleBundle } from './availability.types';
 

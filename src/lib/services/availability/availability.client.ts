@@ -40,6 +40,19 @@ export interface BookingSlot {
   endAtIso: string;
   /** `true` si el hueco es reservable. */
   available: boolean;
+  /**
+   * Presente si el hueco está liberado con descuento: % vigente, precio
+   * a cobrar y precio de referencia, en céntimos. Es informativo: el
+   * precio definitivo lo resuelve el servidor al crear la reserva.
+   */
+  offer?: BookingSlotOffer;
+}
+
+/** Descuento de un hueco liberado, tal y como viaja por la API. */
+export interface BookingSlotOffer {
+  discountPct: number;
+  priceCents: number;
+  originalPriceCents: number;
 }
 
 /** Respuesta OK del endpoint de slots. */

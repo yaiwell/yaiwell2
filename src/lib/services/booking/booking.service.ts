@@ -13,7 +13,9 @@
  */
 
 import { prisma } from '@/lib/db/prisma';
+import { findLiveOfferForSlot } from '@/lib/services/slot-offers';
 import { canCancelBooking } from '@/lib/utils/booking-cancellation';
+import { computeCommissionCents, priceSlot } from '@/lib/utils/slot-offer-pricing';
 
 import {
   BookingNotCancellableError,
@@ -35,9 +37,11 @@ import { cancelBookingSchema, createBookingSchema } from './booking.validation';
  *  1. Valida la entrada con Zod (incluye la regla de antelación mínima).
  *  2. Carga el servicio para conocer duración y precio.
  *  3. Calcula `endAt = slotStart + durationMinutes`.
- *  4. Verifica que no haya solapamiento con otras reservas activas.
- *  5. Calcula la comisión a partir del plan del proveedor.
- *  6. Persiste la reserva.
+ *  4. Bajo un bloqueo por profesional, verifica que no haya solapamiento
+ *     con otras reservas activas.
+ *  5. Aplica el descuento de un hueco liberado, si lo hay, y calcula la
+ *     comisión sobre el precio cobrado.
+ *  6. Persiste la reserva en la misma transacción.
  *
  * Congelamos `priceCents` y `commissionCents` en el momento de la
  * reserva para que cambios posteriores de precio o plan no afecten
@@ -70,31 +74,57 @@ export async function createBooking(input: unknown, clientId: string) {
   // Calculamos el cierre del slot a partir de la duración del servicio.
   const endAt = new Date(data.slotStart.getTime() + service.durationMinutes * 60_000);
 
-  const overlapping = await bookingRepository.findOverlapping(
-    data.professionalId,
-    data.slotStart,
-    endAt,
-  );
-  if (overlapping.length > 0) {
-    throw new SlotUnavailableError();
-  }
+  const now = new Date();
 
-  // Comisión en céntimos, redondeada hacia abajo. `commissionRateBps`
-  // está en centésimas de porcentaje (800 = 8.00%).
-  const commissionCents = Math.floor(
-    (service.priceCents * service.provider.plan.commissionRateBps) / 10_000,
-  );
+  return prisma.$transaction(async (tx) => {
+    // Bloqueo por profesional hasta el fin de la transacción: dos
+    // clientes que reservan el mismo hueco a la vez (más probable en un
+    // hueco liberado con descuento) se serializan, y el segundo ya ve
+    // la reserva del primero en la comprobación de solape.
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${data.professionalId}))`;
 
-  return bookingRepository.create({
-    clientId,
-    serviceId: data.serviceId,
-    professionalId: data.professionalId,
-    providerId: service.providerId,
-    startAt: data.slotStart,
-    endAt,
-    priceCents: service.priceCents,
-    commissionCents,
-    notes: data.notes,
+    const overlapping = await bookingRepository.findOverlapping(
+      data.professionalId,
+      data.slotStart,
+      endAt,
+      now,
+      tx,
+    );
+    if (overlapping.length > 0) {
+      throw new SlotUnavailableError();
+    }
+
+    // Hueco liberado con descuento: el % vigente se resuelve aquí, en
+    // servidor, y se congela en la reserva (CLAUDE.md §4.bis).
+    const offer = await findLiveOfferForSlot(
+      data.professionalId,
+      data.serviceId,
+      data.slotStart,
+      now,
+    );
+    const price = priceSlot(service.priceCents, offer?.discounts ?? null, data.slotStart, now);
+
+    return bookingRepository.create(
+      {
+        clientId,
+        serviceId: data.serviceId,
+        professionalId: data.professionalId,
+        providerId: service.providerId,
+        startAt: data.slotStart,
+        endAt,
+        priceCents: price.priceCents,
+        // La comisión se calcula sobre lo que se cobra, con descuento o sin él.
+        commissionCents: computeCommissionCents(
+          price.priceCents,
+          service.provider.plan.commissionRateBps,
+        ),
+        notes: data.notes,
+        slotOfferId: price.discountPct !== null ? offer?.id : null,
+        originalPriceCents: price.originalPriceCents,
+        discountPct: price.discountPct,
+      },
+      tx,
+    );
   });
 }
 

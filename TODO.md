@@ -203,7 +203,15 @@
 - [ ] Notificaciones por email (Resend).
 - [ ] 4 planes de suscripción con Stripe Billing.
 - [ ] Onboarding de proveedor con formulario manual (jerarquía categoría → tipo → subtipo).
-- [ ] Huecos sueltos con descuento automático.
+- [~] **Huecos sueltos con descuento automático** (decisiones en CLAUDE.md §4.bis, 2026-10-28; plan por capas):
+  - [x] Migración `9b_slot_offers` aplicada y verificada (2026-10-28).
+  - [x] Advisory lock por profesional en `createBooking` (cierra la carrera de doble reserva).
+  - [x] Servicio `slot-offers` y precio rebajado en `createBooking`; API de huecos con oferta; mejor oferta y filtro `discountOnly` en la búsqueda.
+  - [ ] Índice en `slot_offers.serviceId` (advisor INFO `unindexed_foreign_keys`, migración `9c_` cuando toque).
+  - [ ] Huecos con oferta en la disponibilidad (`SlotPicker`), en `/buscar` y en la ficha; filtro «Con descuento».
+  - [ ] Panel: «¿Ofrecer este hueco con descuento?» tras cancelar, liberar huecos libres de las próximas 2 h, ofertas en el calendario y retirarlas.
+  - [ ] Cliente: precio tachado y vigente en el resumen; `?slot=` para llegar con la hora elegida.
+  - [ ] Después: alertas por email con opt-in, liberar cualquier franja futura, varios servicios por oferta.
 - [ ] Multi-centro para empresarios.
 - [ ] Panel de métricas para proveedores.
 - [ ] Términos, política de privacidad, cookies, GDPR compliance.

@@ -3,12 +3,12 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import {
-  getSlotsForService,
   InvalidScheduleError,
   ProfessionalNotFoundError,
   ServiceForAvailabilityNotFoundError,
 } from '@/lib/services/availability';
-import type { BookingSlot, Slot } from '@/lib/services/availability';
+import type { BookingSlot } from '@/lib/services/availability';
+import { getPricedSlotsForService, type PricedSlot } from '@/lib/services/slot-offers';
 
 /**
  * Endpoint público de slots disponibles para un servicio en un día.
@@ -90,11 +90,19 @@ export async function GET(
 
   // 3. Delegamos al servicio.
   try {
-    const slots = await getSlotsForService(serviceId, date);
-    const dto: SlotDto[] = slots.map((slot: Slot) => ({
+    // Incluye las horas liberadas con descuento, con su precio vigente.
+    const slots = await getPricedSlotsForService(serviceId, date);
+    const dto: SlotDto[] = slots.map((slot: PricedSlot) => ({
       startAtIso: slot.startAt.toISOString(),
       endAtIso: slot.endAt.toISOString(),
       available: true,
+      ...(slot.offer && {
+        offer: {
+          discountPct: slot.offer.discountPct,
+          priceCents: slot.offer.priceCents,
+          originalPriceCents: slot.offer.originalPriceCents,
+        },
+      }),
     }));
     const took = Math.round(performance.now() - started);
     return NextResponse.json({ slots: dto, took });
