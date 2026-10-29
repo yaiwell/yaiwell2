@@ -152,7 +152,7 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
   - Si pagó online: no hay devolución ni sanción.
   - Si iba a pagar en el local: **1 sanción**.
 - **3 sanciones en los últimos 12 meses** → durante los **3 meses** siguientes el cliente solo puede reservar pagando online. Las sanciones de más de 12 meses dejan de contar.
-- **Comisión**: se cobra por todas las reservas completadas, también las pagadas en el local; esas se cobran al negocio con su factura mensual (Stripe Billing). Tasa para el pago en el local: pendiente de decidir (misma o reducida).
+- **Comisión**: se cobra por todas las reservas completadas, también las pagadas en el local; esas se cobran al negocio con su factura mensual (Stripe Billing). **Misma tasa** que el pago online, según el plan del negocio (decidido 2026-10-29): una comisión más baja en el local empujaría a los negocios a desviar pagos fuera de la app.
 
 ### Planes y cuentas de negocio (decidido 2026-10-29)
 - Planes vigentes: Gratis (1 servicio, 12 %), Básico (19 €/mes, 10 servicios, 10 %), Pro (49 €/mes, 50 servicios, 8 %), Premium (99 €/mes, ilimitado, 6 %).
