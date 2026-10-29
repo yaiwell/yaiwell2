@@ -143,7 +143,21 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
 - A menos de 2h, la cancelación queda bloqueada en UI y rechazada en API. La excepción (fuerza mayor) se gestiona por soporte, no por self-service.
 - El umbral de 2h busca dar al cliente margen real para buscar otra opción antes de la franja reservada.
 - Al cancelar el proveedor: refund íntegro automático al cliente vía Stripe Connect, sin penalización para el cliente.
-- La cancelación por el cliente sigue una política distinta (TBD, probable full-refund hasta -2h, no-show sin refund).
+- La cancelación por el cliente sigue su propia política (ver siguiente apartado).
+
+### Cancelación por el cliente, pago en el local y no presentados (decidido 2026-10-29)
+- El cliente **cancela desde la app** hasta 2 h antes de `startAt`: devolución íntegra automática si pagó online. Las reservas de última hora (< 2 h al reservar) no se pueden cancelar.
+- Con más de 2 h de antelación el cliente puede elegir **pagar en el local**.
+- **No presentado** (lo marca el profesional desde el panel, solo una vez pasada la hora de inicio):
+  - Si pagó online: no hay devolución ni sanción.
+  - Si iba a pagar en el local: **1 sanción**.
+- **3 sanciones en los últimos 12 meses** → durante los **3 meses** siguientes el cliente solo puede reservar pagando online. Las sanciones de más de 12 meses dejan de contar.
+- **Comisión**: se cobra por todas las reservas completadas, también las pagadas en el local; esas se cobran al negocio con su factura mensual (Stripe Billing). Tasa para el pago en el local: pendiente de decidir (misma o reducida).
+
+### Planes y cuentas de negocio (decidido 2026-10-29)
+- Planes vigentes: Gratis (1 servicio, 12 %), Básico (19 €/mes, 10 servicios, 10 %), Pro (49 €/mes, 50 servicios, 8 %), Premium (99 €/mes, ilimitado, 6 %).
+- Si un negocio deja de pagar su plan, tras los reintentos de Stripe **pasa a Gratis**; los servicios que superen el límite quedan ocultos hasta que vuelva a pagar.
+- Un profesional que entra por primera vez con Google puede crear su perfil profesional igual que con email.
 
 ### Antelación mínima y reservas de última hora (decidido 2026-10-27)
 - Se puede reservar **hasta 30 minutos antes** del inicio, si hay hueco. El motor de disponibilidad no ofrece huecos por debajo de ese margen: todo lo que se muestra debe poder reservarse.
