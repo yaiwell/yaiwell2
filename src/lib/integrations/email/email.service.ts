@@ -69,7 +69,11 @@ export async function sendEmail(message: EmailMessage): Promise<SendEmailResult>
     // payload) a los logs estructurados aguas arriba. El `name`/`message`
     // del SDK son seguros (validaciones de formato, dominio no
     // verificado, rate limit, etc.).
-    throw new EmailSendError(error.message ?? 'unknown_provider_error');
+    throw new EmailSendError(
+      error.message ?? 'unknown_provider_error',
+      error.name,
+      error.statusCode,
+    );
   }
 
   if (!data?.id) {

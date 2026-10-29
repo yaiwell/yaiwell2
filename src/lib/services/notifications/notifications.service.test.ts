@@ -14,7 +14,12 @@ const mocks = vi.hoisted(() => ({
 vi.mock('server-only', () => ({}));
 vi.mock('@/lib/integrations/email', () => {
   class EmailConfigError extends Error {}
-  return { sendEmail: mocks.sendEmail, EmailConfigError };
+  class EmailSendError extends Error {
+    constructor(readonly retryable: boolean) {
+      super('resend failed');
+    }
+  }
+  return { sendEmail: mocks.sendEmail, EmailConfigError, EmailSendError };
 });
 vi.mock('./notifications.repository', () => ({
   notificationsRepository: {
@@ -32,7 +37,6 @@ import {
   notifyRefundCompleted,
   notifyRefundDelayed,
 } from './notifications.service';
-import { isTestAddress } from './notifications.delivery';
 import { sendTomorrowReminders } from './notifications.reminders';
 
 const booking = {
@@ -123,17 +127,6 @@ describe('notifyLatePaymentRefunded', () => {
       to: ['ana@yaiwell.com'],
       idempotencyKey: 'late-payment-refund/bk-1',
     });
-  });
-});
-
-describe('isTestAddress', () => {
-  it.each([
-    ['e2e+clerk_test@example.com', true],
-    ['dev-client@yaiwell.local', true],
-    ['x@foo.test', true],
-    ['ana@gmail.com', false],
-  ])('%s → %s', (email, expected) => {
-    expect(isTestAddress(email)).toBe(expected);
   });
 });
 

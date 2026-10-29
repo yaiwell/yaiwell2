@@ -175,3 +175,16 @@ describe('sendEmail', () => {
     vi.unstubAllEnvs();
   });
 });
+
+describe('EmailSendError.retryable', () => {
+  it.each([
+    ['rate_limit_exceeded', 429, true],
+    ['internal_server_error', 500, true],
+    ['application_error', null, true],
+    ['validation_error', 403, false],
+    ['daily_quota_exceeded', 429, false],
+    [undefined, 503, true],
+  ])('%s (%s) → %s', (code, status, expected) => {
+    expect(new EmailSendError('x', code, status).retryable).toBe(expected);
+  });
+});

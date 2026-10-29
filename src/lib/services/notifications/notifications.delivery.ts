@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { EmailConfigError, sendEmail } from '@/lib/integrations/email';
+import { EmailConfigError, EmailSendError, sendEmail } from '@/lib/integrations/email';
 import { isSentryEnabled } from '@/lib/integrations/sentry/sentry.shared';
 
 import { renderEmailHtml, renderEmailText } from './notifications.layout';
@@ -22,9 +22,18 @@ export function isTestAddress(email: string): boolean {
 }
 
 /**
+ * Esperas antes de cada reintento ante un fallo pasajero de Resend (límite
+ * de envíos o error del servidor). Cortas: el envío corre tras responder
+ * (`after`) o dentro del cron, y ninguno puede esperar mucho.
+ */
+const RETRY_DELAYS_MS = [1_000, 3_000];
+
+/**
  * Envía un correo ya construido. **Nunca lanza**: un aviso que falla no
- * puede deshacer un pago confirmado ni una cancelación. El fallo queda
- * en consola y en Sentry, sin el cuerpo del correo (lleva datos personales).
+ * puede deshacer un pago confirmado ni una cancelación. Un fallo pasajero
+ * se reintenta con la misma clave de idempotencia (Resend no duplica); si
+ * persiste, queda en consola y en Sentry, sin el cuerpo del correo (lleva
+ * datos personales).
  *
  * @param kind — tipo de aviso, para logs y la clave de idempotencia.
  * @param refId — reserva o negocio al que se refiere.
@@ -38,18 +47,28 @@ export async function deliverEmail(
   content: EmailContent,
 ): Promise<void> {
   if (isTestAddress(recipient.email)) return;
-  try {
-    await sendEmail({
-      to: [recipient.email],
-      subject: content.subject,
-      html: renderEmailHtml(content, recipient.locale),
-      text: renderEmailText(content),
-      // Stripe reentrega webhooks: la clave evita el correo duplicado
-      // durante las 24 h en que Resend la recuerda.
-      idempotencyKey: `${kind}/${refId}`,
-    });
-  } catch (err) {
-    reportNotificationFailure(kind, refId, err);
+  const message = {
+    to: [recipient.email],
+    subject: content.subject,
+    html: renderEmailHtml(content, recipient.locale),
+    text: renderEmailText(content),
+    // Stripe reentrega webhooks: la clave evita el correo duplicado
+    // durante las 24 h en que Resend la recuerda.
+    idempotencyKey: `${kind}/${refId}`,
+  };
+  for (let attempt = 0; ; attempt++) {
+    try {
+      await sendEmail(message);
+      return;
+    } catch (err) {
+      const delay = RETRY_DELAYS_MS[attempt];
+      if (err instanceof EmailSendError && err.retryable && delay !== undefined) {
+        await new Promise((resolve) => setTimeout(resolve, delay));
+        continue;
+      }
+      reportNotificationFailure(kind, refId, err);
+      return;
+    }
   }
 }
 
