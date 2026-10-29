@@ -226,10 +226,20 @@ export function useAddressAutocomplete(props: AddressAutocompleteProps) {
     setIsFocused(true);
   }, []);
 
+  // Temporizador del blur: se cancela al desmontar para no tocar el estado
+  // de un componente que ya no existe (en tests, tras cerrar el DOM).
+  const blurTimerRef = useRef<number | null>(null);
+  useEffect(
+    () => () => {
+      if (blurTimerRef.current !== null) window.clearTimeout(blurTimerRef.current);
+    },
+    [],
+  );
+
   const handleBlur = useCallback(() => {
     // Pequeño delay para que un click sobre una opción se procese antes
     // de que el blur cierre el listbox y deshaga la selección.
-    window.setTimeout(() => setIsFocused(false), 120);
+    blurTimerRef.current = window.setTimeout(() => setIsFocused(false), 120);
   }, []);
 
   const handleClear = useCallback(() => {
