@@ -67,6 +67,12 @@ export interface BookingTransitionResult {
    * cliente tiene que saber que el dinero ya salió.
    */
   recoveredRefund?: true;
+  /**
+   * Id del refund (`re_…`) cuando `charge.refund.updated` informa de que un
+   * reembolso nuestro ya aceptado ha fallado: el cliente creía que el
+   * dinero iba de camino y hay que decirle que se ha retrasado.
+   */
+  delayedRefund?: string;
 }
 
 /**

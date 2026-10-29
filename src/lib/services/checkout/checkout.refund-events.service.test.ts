@@ -58,7 +58,12 @@ describe('recordAsyncRefundFailure', () => {
       NOW,
       'refund_failed: expired_or_canceled_card',
     );
-    expect(result).toEqual({ bookingId: 'bk-1', changed: true, status: 'cancelled' });
+    expect(result).toEqual({
+      bookingId: 'bk-1',
+      changed: true,
+      status: 'cancelled',
+      delayedRefund: expect.any(String),
+    });
   });
 
   it('no encola un refund ajeno sobre una reserva viva (parcial manual)', async () => {

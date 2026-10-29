@@ -11,6 +11,7 @@ export {
   notifyProviderApproved,
   notifyProviderRejected,
   notifyRefundCompleted,
+  notifyRefundDelayed,
 } from './notifications.service';
 export { sendTomorrowReminders, type ReminderSweepSummary } from './notifications.reminders';
 export { scheduleNotification } from './notifications.schedule';

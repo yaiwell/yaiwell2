@@ -68,13 +68,19 @@ vi.mock('@/lib/services/checkout', () => ({
   MissingBookingReferenceError: MissingRefStub,
 }));
 
-const { scheduleMock, notifyConfirmedMock, notifyLateRefundMock, notifyRefundDoneMock } =
-  vi.hoisted(() => ({
-    scheduleMock: vi.fn((task: () => Promise<void>) => void task()),
-    notifyConfirmedMock: vi.fn(async () => {}),
-    notifyLateRefundMock: vi.fn(async () => {}),
-    notifyRefundDoneMock: vi.fn(async () => {}),
-  }));
+const {
+  scheduleMock,
+  notifyConfirmedMock,
+  notifyLateRefundMock,
+  notifyRefundDoneMock,
+  notifyRefundDelayedMock,
+} = vi.hoisted(() => ({
+  scheduleMock: vi.fn((task: () => Promise<void>) => void task()),
+  notifyConfirmedMock: vi.fn(async () => {}),
+  notifyLateRefundMock: vi.fn(async () => {}),
+  notifyRefundDoneMock: vi.fn(async () => {}),
+  notifyRefundDelayedMock: vi.fn(async () => {}),
+}));
 
 // `after()` solo existe dentro de una petición real: lo sustituimos por
 // una ejecución inmediata para comprobar qué aviso se programa.
@@ -83,6 +89,7 @@ vi.mock('@/lib/services/notifications', () => ({
   notifyBookingConfirmed: notifyConfirmedMock,
   notifyLatePaymentRefunded: notifyLateRefundMock,
   notifyRefundCompleted: notifyRefundDoneMock,
+  notifyRefundDelayed: notifyRefundDelayedMock,
 }));
 
 import { POST } from './route';
@@ -226,6 +233,23 @@ describe('POST /api/webhooks/stripe', () => {
 
     expect(res.status).toBe(200);
     expect(refundUpdatedMock).toHaveBeenCalledWith(refund);
+  });
+
+  it('avisa al cliente cuando un reembolso ya anunciado falla', async () => {
+    verifyMock.mockReturnValue({
+      type: 'charge.refund.updated',
+      data: { object: { id: 're_1', status: 'failed' } },
+    });
+    refundUpdatedMock.mockResolvedValue({
+      bookingId: 'bk-4',
+      changed: true,
+      status: 'cancelled',
+      delayedRefund: 're_1',
+    });
+
+    await POST(buildRequest());
+
+    expect(notifyRefundDelayedMock).toHaveBeenCalledWith('bk-4', 're_1');
   });
 
   it('marca como refunded ante charge.refunded', async () => {

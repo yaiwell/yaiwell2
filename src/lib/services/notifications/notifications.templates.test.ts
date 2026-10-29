@@ -19,6 +19,7 @@ import {
 import {
   buildBookingReminderEmail,
   buildRefundCompletedEmail,
+  buildRefundDelayedEmail,
 } from './notifications.followup-templates';
 import { renderEmailHtml, renderEmailText } from './notifications.layout';
 import type { BookingEmailContext } from './notifications.types';
@@ -75,6 +76,13 @@ describe('plantillas de reserva', () => {
     expect(content.subject).toBe('Te hemos devuelto el pago de tu reserva en Studio Aura');
     expect(content.paragraphs[0]).toMatch(/30,00/);
     expect(content.cta?.url).toMatch(/\/es\/centro\/studio-aura-prov-1$/);
+  });
+
+  it('el reembolso retrasado no promete plazo y no lleva botón', () => {
+    const content = buildRefundDelayedEmail(ctx());
+    expect(content.paragraphs[0]).toMatch(/30,00/);
+    expect(content.paragraphs.join(' ')).not.toMatch(/días/);
+    expect(content.cta).toBeUndefined();
   });
 
   it('el recordatorio sale en el idioma del cliente con la cita completa', () => {

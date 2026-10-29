@@ -47,6 +47,12 @@
     "intro": "Wir haben dir 100 % des Betrags ({amount}) für deine Buchung bei {provider} erstattet. Je nach Bank kann es 5 bis 10 Tage dauern, bis er sichtbar ist.",
     "cta": "Anderen Termin finden"
   },
+  "refundDelayed": {
+    "subject": "Deine Erstattung von {provider} verzögert sich",
+    "heading": "Deine Erstattung verzögert sich",
+    "intro": "Deine Bank konnte die Erstattung von {amount} für deine Buchung bei {provider} nicht annehmen.",
+    "next": "Wir veranlassen sie erneut und schreiben dir, sobald sie durch ist. Du musst nichts tun."
+  },
   "reviewInvite": {
     "subject": "Wie war es bei {provider}?",
     "heading": "Wie war dein Termin?",

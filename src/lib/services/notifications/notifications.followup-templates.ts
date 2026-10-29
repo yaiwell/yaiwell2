@@ -32,6 +32,29 @@ export function buildRefundCompletedEmail(ctx: BookingEmailContext): EmailConten
   };
 }
 
+/**
+ * El reembolso que anunciamos ha fallado en el banco. No prometemos plazo:
+ * lo reintenta soporte y el aviso de reembolso completado cierra el ciclo.
+ */
+export function buildRefundDelayedEmail(ctx: BookingEmailContext): EmailContent {
+  const { locale } = ctx.client;
+  const t = getEmailTranslator(locale);
+  return {
+    subject: t('refundDelayed.subject', { provider: ctx.provider.name }),
+    heading: t('refundDelayed.heading'),
+    greeting: greet(t, ctx.client),
+    paragraphs: [
+      t('refundDelayed.intro', {
+        provider: ctx.provider.name,
+        amount: formatEmailPrice(ctx.priceCents, locale),
+      }),
+      t('refundDelayed.next'),
+    ],
+    details: bookingBaseDetails(ctx, locale, t),
+    ...closing(t),
+  };
+}
+
 /** Recordatorio al cliente de la cita del día siguiente. */
 export function buildBookingReminderEmail(ctx: BookingEmailContext): EmailContent {
   const { locale } = ctx.client;

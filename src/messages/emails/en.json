@@ -47,6 +47,12 @@
     "intro": "We have refunded 100% of the amount ({amount}) for your booking at {provider}. Depending on your bank, it may take 5 to 10 days to appear.",
     "cta": "Find another time"
   },
+  "refundDelayed": {
+    "subject": "Your refund from {provider} has been delayed",
+    "heading": "Your refund has been delayed",
+    "intro": "Your bank could not receive the {amount} refund for your booking at {provider}.",
+    "next": "We are processing it again and will write to you as soon as it goes through. You do not need to do anything."
+  },
   "reviewInvite": {
     "subject": "How was {provider}?",
     "heading": "How was your appointment?",

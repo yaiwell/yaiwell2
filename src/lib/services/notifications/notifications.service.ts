@@ -19,6 +19,7 @@ import { deliverEmail, reportNotificationFailure } from './notifications.deliver
 import {
   buildBookingReminderEmail,
   buildRefundCompletedEmail,
+  buildRefundDelayedEmail,
 } from './notifications.followup-templates';
 import { notificationsRepository } from './notifications.repository';
 import type {
@@ -136,6 +137,21 @@ export async function notifyRefundCompleted(bookingId: string): Promise<void> {
   // llega `charge.refunded`; ambos caminos comparten clave y no duplican.
   await withBooking('refund-completed', bookingId, ['cancelled', 'refunded'], (ctx) =>
     deliverEmail('refund-completed', bookingId, ctx.client, buildRefundCompletedEmail(ctx)),
+  );
+}
+
+/**
+ * Un reembolso ya aceptado por Stripe ha fallado después (tarjeta
+ * cancelada, cuenta cerrada): avisamos de que se retrasa y de que soporte
+ * lo reintenta. Cuando salga, `notifyRefundCompleted` cierra el ciclo.
+ *
+ * @param bookingId — reserva cuyo reembolso ha fallado.
+ * @param refundId — refund fallido; la clave va por refund para que una
+ *   reentrega del webhook no duplique, pero un fallo nuevo sí avise.
+ */
+export async function notifyRefundDelayed(bookingId: string, refundId: string): Promise<void> {
+  await withBooking('refund-delayed', bookingId, ['cancelled'], (ctx) =>
+    deliverEmail('refund-delayed', refundId, ctx.client, buildRefundDelayedEmail(ctx)),
   );
 }
 

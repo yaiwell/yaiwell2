@@ -19,6 +19,7 @@ import {
   notifyBookingConfirmed,
   notifyLatePaymentRefunded,
   notifyRefundCompleted,
+  notifyRefundDelayed,
   scheduleNotification,
 } from '@/lib/services/notifications';
 
@@ -119,6 +120,12 @@ export async function POST(request: NextRequest) {
     // Reembolso que estaba en la cola y se ha devuelto por fin.
     if (result.recoveredRefund) {
       scheduleNotification(() => notifyRefundCompleted(result.bookingId));
+    }
+    // Un reembolso ya anunciado ha fallado en el banco: vuelve a la cola
+    // de /admin y el cliente tiene que saber que se retrasa.
+    const { delayedRefund } = result;
+    if (delayedRefund) {
+      scheduleNotification(() => notifyRefundDelayed(result.bookingId, delayedRefund));
     }
     return NextResponse.json<WebhookResponse>(
       {

@@ -47,6 +47,12 @@
     "intro": "Ya te hemos devuelto el 100 % del importe ({amount}) de tu reserva en {provider}. Según tu banco, puede tardar de 5 a 10 días en aparecer.",
     "cta": "Buscar otra hora"
   },
+  "refundDelayed": {
+    "subject": "Tu devolución de {provider} se ha retrasado",
+    "heading": "Tu devolución se ha retrasado",
+    "intro": "Tu banco no ha podido recibir la devolución de {amount} de tu reserva en {provider}.",
+    "next": "Ya la estamos tramitando de nuevo y te escribiremos en cuanto salga. No tienes que hacer nada."
+  },
   "reviewInvite": {
     "subject": "¿Qué tal en {provider}?",
     "heading": "¿Qué tal tu cita?",

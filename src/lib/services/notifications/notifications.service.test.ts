@@ -30,6 +30,7 @@ import {
   notifyLatePaymentRefunded,
   notifyProviderRejected,
   notifyRefundCompleted,
+  notifyRefundDelayed,
 } from './notifications.service';
 import { isTestAddress } from './notifications.delivery';
 import { sendTomorrowReminders } from './notifications.reminders';
@@ -213,5 +214,22 @@ describe('sendTomorrowReminders: límites', () => {
     const summary = await sendTomorrowReminders(NOW, 0, -1);
     expect(mocks.sendEmail).not.toHaveBeenCalled();
     expect(summary).toEqual({ scanned: 2, sent: 0, truncated: true });
+  });
+});
+
+describe('notifyRefundDelayed', () => {
+  it('avisa al cliente con una clave por refund fallido', async () => {
+    mocks.findBookingContext.mockResolvedValue({ ...booking, status: 'cancelled' });
+    await notifyRefundDelayed('bk-1', 're_1');
+    expect(mocks.sendEmail.mock.calls[0][0]).toMatchObject({
+      to: ['ana@yaiwell.com'],
+      idempotencyKey: 'refund-delayed/re_1',
+    });
+  });
+
+  it('no avisa si la reserva ya consta como reembolsada', async () => {
+    mocks.findBookingContext.mockResolvedValue({ ...booking, status: 'refunded' });
+    await notifyRefundDelayed('bk-1', 're_1');
+    expect(mocks.sendEmail).not.toHaveBeenCalled();
   });
 });

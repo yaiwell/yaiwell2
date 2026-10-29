@@ -62,7 +62,7 @@ export async function recordAsyncRefundFailure(
     booking.id,
     'error',
   );
-  return { bookingId: booking.id, changed: true, status: 'cancelled' };
+  return { bookingId: booking.id, changed: true, status: 'cancelled', delayedRefund: refund.id };
 }
 
 /** Reserva del refund: por `stripeRefundId` y, si no, por su PaymentIntent. */
