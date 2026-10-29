@@ -11,10 +11,15 @@
  * discriminada para que reponerlas sea añadir una variante, no
  * reescribir el componente.
  */
-export type FooterLinkGroup = {
-  titleKey: 'product';
-  links: ReadonlyArray<FooterLink<'howItWorks' | 'categories' | 'pricing'>>;
-};
+export type FooterLinkGroup =
+  | {
+      titleKey: 'product';
+      links: ReadonlyArray<FooterLink<'howItWorks' | 'categories' | 'pricing'>>;
+    }
+  | {
+      titleKey: 'legal';
+      links: ReadonlyArray<FooterLink<'privacy'>>;
+    };
 
 export interface FooterLink<TLabel extends string> {
   /**
@@ -24,3 +29,11 @@ export interface FooterLink<TLabel extends string> {
   href: string;
   labelKey: TLabel;
 }
+
+/**
+ * Claves i18n válidas de los enlaces: `{titleKey}.{labelKey}` de cada
+ * columna, sin cruzar columnas (`product.privacy` no existe).
+ */
+export type FooterMessageKey = {
+  [G in FooterLinkGroup as G['titleKey']]: `${G['titleKey']}.${G['links'][number]['labelKey']}`;
+}[FooterLinkGroup['titleKey']];

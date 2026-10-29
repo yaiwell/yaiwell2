@@ -8,6 +8,12 @@
 
 ## 2026-10-29
 
+### 2026-10-29 — Política de privacidad y Clerk en producción (preparación)
+
+- **`/privacidad`** en los 4 idiomas (Google la exige para el inicio de sesión con credenciales propias): responsable, datos tratados, finalidades y bases legales, proveedores reales (Clerk, Google, Stripe, Supabase, Vercel, Resend, Sentry, Mapbox, OpenStreetMap), conservación, cookies técnicas y derechos. Textos en `src/messages/legal/`, aparte de los de la web para no mandarlos al navegador. Enlazada desde el registro, el footer (columna «Legal») y el sitemap. Versión base pendiente de revisión legal.
+- **Reenlace por email** al cambiar de instancia de Clerk: un usuario existente que llega con otro `clerkId` conserva su cuenta.
+- DNS de Clerk producción en GoDaddy (5 CNAME) verificados.
+
 ### 2026-10-29 — Pagos y reservas blindados
 
 P12 + P13 (`stripe-payments` implementa, `db-migration-guard` sobre la migración, `business-rules-auditor` + `conventions-reviewer`; P1 y casi todos los P2 aplicados).

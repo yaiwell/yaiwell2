@@ -1,0 +1,76 @@
+{
+  "privacy": {
+    "meta": {
+      "title": "Datenschutzerklärung",
+      "description": "Welche Daten Yaiwell verarbeitet, wofür, mit wem wir sie teilen und wie du deine Rechte ausübst."
+    },
+    "title": "Datenschutzerklärung",
+    "updated": "Zuletzt aktualisiert: {date}",
+    "intro": "Yaiwell verbindet Kundschaft mit Profis und Studios für Beauty, Wellness und Sport. Hier erklären wir dir ohne Kleingedrucktes, welche Daten wir von dir verarbeiten und warum.",
+    "sections": [
+      {
+        "heading": "Wer für deine Daten verantwortlich ist",
+        "paragraphs": [
+          "Yaiwell betreibt die Plattform yaiwell.app und ist für die Verarbeitung der auf dieser Seite beschriebenen Daten verantwortlich. Bei Fragen zu deinen Daten schreib uns an {email}."
+        ]
+      },
+      {
+        "heading": "Welche Daten wir verarbeiten",
+        "items": [
+          "Kontodaten: Name, E-Mail-Adresse, Sprache und, wenn du es angibst oder es aus deinem Google-Konto kommt, dein Foto.",
+          "Buchungsdaten: Leistung, Studio, Datum und Uhrzeit, bezahlter Betrag und Anmerkungen, die du für die Fachkraft schreibst.",
+          "Zahlungsdaten: Sie werden von Stripe verarbeitet. Wir sehen und speichern niemals deine vollständige Kartennummer.",
+          "Wenn du ein Unternehmen bist: Geschäftsname, Steuernummer, Adresse, Beschreibung, Fotos, Öffnungszeiten, Leistungen und das Auszahlungskonto, das du bei Stripe einrichtest.",
+          "Standort: Wenn du es im Browser erlaubst, nutzen wir ihn im Moment, um dir Studios in der Nähe zu zeigen. Wir speichern ihn nicht.",
+          "Technische Daten: Fehlerprotokolle, damit der Dienst funktioniert, ohne deine Kartendaten."
+        ]
+      },
+      {
+        "heading": "Wofür wir sie nutzen",
+        "items": [
+          "Um dir den Dienst zu erbringen: dein Konto anlegen, deine Buchungen und Zahlungen verwalten und dir Hinweise dazu schicken (Bestätigung, Stornierung, Erinnerung, Erstattungen). Rechtsgrundlage: die Erfüllung des Vertrags, den du bei der Registrierung annimmst.",
+          "Damit du eine erhaltene Leistung bewerten kannst und diese Bewertungen angezeigt werden. Rechtsgrundlage: die Erfüllung des Vertrags.",
+          "Um die Plattform zu schützen, Betrug zu verhindern und Fehler zu beheben. Rechtsgrundlage: unser berechtigtes Interesse an einem sicheren Dienst.",
+          "Um gesetzliche Pflichten zu erfüllen, etwa steuerliche und buchhalterische. Rechtsgrundlage: die gesetzliche Verpflichtung."
+        ],
+        "paragraphs": [
+          "Wir schicken dir keine Werbung ohne deine Einwilligung und verkaufen deine Daten nicht."
+        ]
+      },
+      {
+        "heading": "Mit wem wir sie teilen",
+        "items": [
+          "Das Studio oder die Fachkraft, bei der du buchst, erhält deinen Namen, die Leistung, Datum und Uhrzeit und deine Anmerkungen. Deine E-Mail-Adresse geben wir nicht weiter.",
+          "Dienstleister, die uns beim Betrieb helfen, immer in unserem Auftrag: Clerk (Konten und Anmeldung), Google (wenn du dich mit Google anmeldest), Stripe (Zahlungen), Supabase (Datenbank und Dateien), Vercel (Hosting der Website), Resend (E-Mail-Versand), Sentry (Fehlerprotokolle), Mapbox (Adresssuche) und OpenStreetMap (Kartenbilder)."
+        ],
+        "paragraphs": [
+          "Einige dieser Dienstleister sitzen außerhalb des Europäischen Wirtschaftsraums, zum Beispiel in den USA. In diesem Fall stützt sich die Übermittlung auf die Standardvertragsklauseln der Europäischen Kommission oder auf das EU-US Data Privacy Framework."
+        ]
+      },
+      {
+        "heading": "Wie lange wir sie speichern",
+        "paragraphs": [
+          "Solange du dein Konto behältst. Wenn du es löschst, löschen oder anonymisieren wir deine Daten, außer denen, die wir gesetzlich aufbewahren müssen, etwa Zahlungs- und Rechnungsdaten für die steuer- und handelsrechtlichen Fristen."
+        ]
+      },
+      {
+        "heading": "Cookies",
+        "paragraphs": [
+          "Wir verwenden nur technisch notwendige Cookies: die für deine Sitzung (Clerk) und die, die Stripe beim Bezahlen zur Betrugsprävention nutzt. Wir verwenden keine Analyse- oder Werbe-Cookies. Die Karten laden Bilder von den Servern von OpenStreetMap, die dafür deine IP-Adresse erhalten."
+        ]
+      },
+      {
+        "heading": "Deine Rechte",
+        "paragraphs": [
+          "Du kannst Auskunft über deine Daten verlangen, sie berichtigen oder löschen lassen, der Verarbeitung widersprechen, sie einschränken oder deine Daten in einem übertragbaren Format erhalten. Schreib uns dazu an {email} von der E-Mail-Adresse deines Kontos. Wenn du meinst, dass wir deine Anfrage nicht richtig bearbeitet haben, kannst du dich bei der spanischen Datenschutzbehörde beschweren (www.aepd.es)."
+        ]
+      },
+      {
+        "heading": "Änderungen dieser Erklärung",
+        "paragraphs": [
+          "Wenn wir diese Erklärung ändern, veröffentlichen wir die neue Fassung auf dieser Seite mit ihrem Aktualisierungsdatum. Bei wesentlichen Änderungen informieren wir dich per E-Mail."
+        ]
+      }
+    ]
+  }
+}

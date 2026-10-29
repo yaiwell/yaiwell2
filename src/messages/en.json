@@ -73,6 +73,10 @@
       "categories": "Categories",
       "pricing": "Pricing"
     },
+    "legal": {
+      "title": "Legal",
+      "privacy": "Privacy"
+    },
     "madeIn": "Made in {city}",
     "copyright": "© {year} Yaiwell",
     "contact": "Contact"

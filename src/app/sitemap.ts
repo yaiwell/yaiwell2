@@ -30,6 +30,7 @@ const STATIC_PATHS = [
   { path: '/', priority: 1.0, changeFrequency: 'daily' as const },
   { path: '/buscar', priority: 0.9, changeFrequency: 'daily' as const },
   { path: '/profesionales', priority: 0.7, changeFrequency: 'monthly' as const },
+  { path: '/privacidad', priority: 0.2, changeFrequency: 'yearly' as const },
 ] as const;
 
 /**

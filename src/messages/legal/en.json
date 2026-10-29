@@ -1,0 +1,76 @@
+{
+  "privacy": {
+    "meta": {
+      "title": "Privacy policy",
+      "description": "What data Yaiwell processes, why, who we share it with and how to exercise your rights."
+    },
+    "title": "Privacy policy",
+    "updated": "Last updated: {date}",
+    "intro": "Yaiwell connects clients with beauty, wellness and sport professionals and venues. Here we explain, with no small print, what data of yours we process and why.",
+    "sections": [
+      {
+        "heading": "Who is responsible for your data",
+        "paragraphs": [
+          "Yaiwell runs the yaiwell.app platform and is the controller of the data described on this page. For any question about your data, write to us at {email}."
+        ]
+      },
+      {
+        "heading": "What data we process",
+        "items": [
+          "Account data: name, email, language and, if you provide it or it comes from your Google account, your photo.",
+          "Booking data: service, venue, date and time, amount paid and any notes you write for the professional.",
+          "Payment data: processed by Stripe. We never see or store your full card number.",
+          "If you are a business: trading name, tax ID, address, description, photos, opening hours, services and the payout account you set up in Stripe.",
+          "Location: if you allow it in your browser, we use it on the spot to show you nearby venues. We do not store it.",
+          "Technical data: error logs to keep the service running, without your card details."
+        ]
+      },
+      {
+        "heading": "What we use it for",
+        "items": [
+          "Providing the service: creating your account, managing your bookings and payments and sending you notices about them (confirmation, cancellation, reminder, refunds). Legal basis: performance of the contract you accept when you sign up.",
+          "Letting you review a service you have received and showing those reviews. Legal basis: performance of the contract.",
+          "Protecting the platform, preventing fraud and fixing errors. Legal basis: our legitimate interest in keeping the service secure.",
+          "Meeting legal obligations, for example tax and accounting. Legal basis: legal obligation."
+        ],
+        "paragraphs": [
+          "We do not send you advertising without your consent and we do not sell your data."
+        ]
+      },
+      {
+        "heading": "Who we share it with",
+        "items": [
+          "The venue or professional you book with receives your name, the service, the date and time and your notes. We do not give them your email.",
+          "Providers that help us run the service, always on our behalf: Clerk (accounts and sign-in), Google (if you choose to sign in with Google), Stripe (payments), Supabase (database and files), Vercel (website hosting), Resend (sending emails), Sentry (error logging), Mapbox (address search) and OpenStreetMap (map images)."
+        ],
+        "paragraphs": [
+          "Some of these providers are outside the European Economic Area, for example in the United States. In that case the transfer relies on the European Commission's standard contractual clauses or on the EU-US Data Privacy Framework."
+        ]
+      },
+      {
+        "heading": "How long we keep it",
+        "paragraphs": [
+          "For as long as you keep your account. If you delete it, we erase or anonymise your data, except what the law requires us to keep, such as payment and billing records for the periods set by tax and commercial law."
+        ]
+      },
+      {
+        "heading": "Cookies",
+        "paragraphs": [
+          "We only use strictly necessary technical cookies: those for your session (Clerk) and those Stripe uses during payment to prevent fraud. We do not use analytics or advertising cookies. Maps load images from OpenStreetMap's servers, which receive your IP address in order to send them."
+        ]
+      },
+      {
+        "heading": "Your rights",
+        "paragraphs": [
+          "You can ask us to access, correct or delete your data, to object to or restrict its processing, or to receive it in a portable format. Write to us at {email} from your account's email address. If you think we have not handled your request properly, you can complain to the Spanish Data Protection Agency (www.aepd.es)."
+        ]
+      },
+      {
+        "heading": "Changes to this policy",
+        "paragraphs": [
+          "If we change this policy, we will publish the new version on this page with its update date. If the change is significant, we will let you know by email."
+        ]
+      }
+    ]
+  }
+}

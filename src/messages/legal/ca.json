@@ -1,0 +1,76 @@
+{
+  "privacy": {
+    "meta": {
+      "title": "Política de privacitat",
+      "description": "Quines dades tractem a Yaiwell, per a què, amb qui les compartim i com pots exercir els teus drets."
+    },
+    "title": "Política de privacitat",
+    "updated": "Darrera actualització: {date}",
+    "intro": "A Yaiwell connectem clients amb professionals i centres de bellesa, benestar i esport. Aquí t’expliquem, sense lletra petita, quines dades teves tractem i per què.",
+    "sections": [
+      {
+        "heading": "Qui és responsable de les teves dades",
+        "paragraphs": [
+          "Yaiwell gestiona la plataforma yaiwell.app i és responsable del tractament de les dades que es descriuen en aquesta pàgina. Per a qualsevol qüestió sobre les teves dades, pots escriure’ns a {email}."
+        ]
+      },
+      {
+        "heading": "Quines dades tractem",
+        "items": [
+          "Dades del teu compte: nom, correu electrònic, idioma i, si l’aportes o ve del teu compte de Google, la teva foto.",
+          "Dades de les teves reserves: servei, centre, data i hora, import pagat i les notes que escriguis per al professional.",
+          "Dades de pagament: les processa Stripe. Nosaltres no veiem ni guardem el número complet de la teva targeta.",
+          "Si ets un negoci: nom comercial, NIF, adreça, descripció, fotos, horaris, serveis i el compte de cobrament que configuris a Stripe.",
+          "Ubicació: si dones permís al navegador, la fem servir en el moment per mostrar-te centres propers. No la guardem.",
+          "Dades tècniques: registres d’errors per mantenir el servei en funcionament, sense dades de la teva targeta."
+        ]
+      },
+      {
+        "heading": "Per a què les fem servir",
+        "items": [
+          "Prestar-te el servei: crear el teu compte, gestionar les teves reserves i pagaments i enviar-te avisos sobre aquests (confirmació, cancel·lació, recordatori, devolucions). Base legal: l’execució del contracte que acceptes en registrar-te.",
+          "Permetre’t valorar un servei que hagis rebut i mostrar aquestes valoracions. Base legal: l’execució del contracte.",
+          "Protegir la plataforma, prevenir el frau i corregir errors. Base legal: el nostre interès legítim que el servei sigui segur.",
+          "Complir obligacions legals, per exemple fiscals i comptables. Base legal: l’obligació legal."
+        ],
+        "paragraphs": [
+          "No t’enviem publicitat sense el teu consentiment i no venem les teves dades."
+        ]
+      },
+      {
+        "heading": "Amb qui les compartim",
+        "items": [
+          "El centre o professional amb qui reserves rep el teu nom, el servei, la data i hora i les teves notes. No li donem el teu correu.",
+          "Proveïdors que ens ajuden a prestar el servei, sempre per compte nostre: Clerk (comptes i inici de sessió), Google (si tries entrar amb Google), Stripe (pagaments), Supabase (base de dades i fitxers), Vercel (allotjament del web), Resend (enviament de correus), Sentry (registre d’errors), Mapbox (cerca d’adreces) i OpenStreetMap (imatges dels mapes)."
+        ],
+        "paragraphs": [
+          "Alguns d’aquests proveïdors són fora de l’Espai Econòmic Europeu, per exemple als Estats Units. En aquest cas la transferència s’empara en les clàusules contractuals tipus de la Comissió Europea o en el Marc de Privacitat de Dades UE-EUA."
+        ]
+      },
+      {
+        "heading": "Quant de temps les guardem",
+        "paragraphs": [
+          "Mentre mantinguis el teu compte. Si l’elimines, esborrem o anonimitzem les teves dades, excepte les que la llei ens obliga a conservar, com les de pagaments i facturació durant els terminis fiscals i mercantils."
+        ]
+      },
+      {
+        "heading": "Galetes",
+        "paragraphs": [
+          "Només fem servir galetes tècniques imprescindibles: les de la teva sessió (Clerk) i les que Stripe utilitza durant el pagament per prevenir el frau. No fem servir galetes d’analítica ni de publicitat. Els mapes carreguen imatges des dels servidors d’OpenStreetMap, que reben la teva adreça IP per poder enviar-les."
+        ]
+      },
+      {
+        "heading": "Els teus drets",
+        "paragraphs": [
+          "Pots demanar-nos accedir a les teves dades, rectificar-les, suprimir-les, oposar-te al seu tractament, limitar-lo o rebre-les en un format portable. Escriu-nos a {email} des del correu del teu compte. Si creus que no hem atès bé la teva petició, pots reclamar davant l’Agència Espanyola de Protecció de Dades (www.aepd.es)."
+        ]
+      },
+      {
+        "heading": "Canvis en aquesta política",
+        "paragraphs": [
+          "Si canviem aquesta política, publicarem la nova versió en aquesta pàgina amb la data d’actualització. Si el canvi és important, t’avisarem per correu."
+        ]
+      }
+    ]
+  }
+}

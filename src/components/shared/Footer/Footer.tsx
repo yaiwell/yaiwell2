@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 
 import { footerStyles as s } from './Footer.styles';
-import type { FooterLinkGroup } from './Footer.types';
+import type { FooterLinkGroup, FooterMessageKey } from './Footer.types';
 
 /**
  * Dirección de contacto pública de Yaiwell. Es la misma que ofrece la
@@ -26,13 +26,10 @@ const CONTACT_EMAIL = 'hola@yaiwell.com';
  *  - **Empresa** (`about`, `blog`, `careers`): no hay ni "sobre
  *    nosotros", ni blog, ni página de empleo. Tres enlaces muertos
  *    valen menos que ninguna columna.
- *  - **Legal** (`terms`, `privacy`, `cookies`): decisión de producto
- *    del 2026-09-24. Los documentos no están redactados y prometer
- *    condiciones legales inexistentes es peor que no ofrecerlas.
- *    Producción va en modo test y sin clientes reales, así que no hay
- *    nadie a quien se le deban todavía. **Vuelven el día que se
- *    escriban** — si lees esto y el footer no tiene legales, es una
- *    decisión registrada, no un olvido.
+ *  - **Legal** (`terms`, `cookies`): decisión de producto del
+ *    2026-09-24. La política de privacidad volvió el 2026-10-29 (la
+ *    pedía Google para el inicio de sesión); términos y cookies vuelven
+ *    el día que se redacten.
  */
 const linkGroups: FooterLinkGroup[] = [
   {
@@ -45,6 +42,11 @@ const linkGroups: FooterLinkGroup[] = [
       // La tabla de planes y comisiones vive en la landing comercial.
       { href: '/profesionales', labelKey: 'pricing' },
     ],
+  },
+  {
+    // Solo privacidad: términos y cookies vuelven cuando estén redactados.
+    titleKey: 'legal',
+    links: [{ href: '/privacidad', labelKey: 'privacy' }],
   },
 ];
 
@@ -115,7 +117,9 @@ export function Footer() {
                       className={s.groupLink}
                       data-component={`footer-link-${group.titleKey}-${link.labelKey}`}
                     >
-                      {tFooter(`${group.titleKey}.${link.labelKey}`)}
+                      {/* TS no correlaciona columna y enlace dentro del map: el
+                          tipo de `linkGroups` ya garantiza que la clave existe. */}
+                      {tFooter(`${group.titleKey}.${link.labelKey}` as FooterMessageKey)}
                     </Link>
                   </li>
                 ))}

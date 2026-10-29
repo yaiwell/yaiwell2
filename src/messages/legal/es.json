@@ -1,0 +1,74 @@
+{
+  "privacy": {
+    "meta": {
+      "title": "Política de privacidad",
+      "description": "Qué datos tratamos en Yaiwell, para qué, con quién los compartimos y cómo ejercer tus derechos."
+    },
+    "title": "Política de privacidad",
+    "updated": "Última actualización: {date}",
+    "intro": "En Yaiwell conectamos a clientes con profesionales y centros de belleza, bienestar y deporte. Aquí te contamos, sin letra pequeña, qué datos tuyos tratamos y por qué.",
+    "sections": [
+      {
+        "heading": "Quién es responsable de tus datos",
+        "paragraphs": [
+          "Yaiwell gestiona la plataforma yaiwell.app y es responsable del tratamiento de los datos que se describen en esta página. Para cualquier cuestión sobre tus datos puedes escribirnos a {email}."
+        ]
+      },
+      {
+        "heading": "Qué datos tratamos",
+        "items": [
+          "Datos de tu cuenta: nombre, email, idioma y, si la aportas o viene de tu cuenta de Google, tu foto.",
+          "Datos de tus reservas: servicio, centro, fecha y hora, importe pagado y las notas que escribas para el profesional.",
+          "Datos de pago: los procesa Stripe. Nosotros no vemos ni guardamos el número completo de tu tarjeta.",
+          "Si eres un negocio: nombre comercial, NIF, dirección, descripción, fotos, horarios, servicios y la cuenta de cobro que configures en Stripe.",
+          "Ubicación: si das permiso al navegador, la usamos en el momento para mostrarte centros cercanos. No la guardamos.",
+          "Datos técnicos: registros de errores para mantener el servicio funcionando, sin datos de tu tarjeta."
+        ]
+      },
+      {
+        "heading": "Para qué los usamos",
+        "items": [
+          "Prestarte el servicio: crear tu cuenta, gestionar tus reservas y pagos y enviarte avisos sobre ellas (confirmación, cancelación, recordatorio, devoluciones). Base legal: la ejecución del contrato que aceptas al registrarte.",
+          "Permitirte valorar un servicio que hayas recibido y mostrar esas valoraciones. Base legal: la ejecución del contrato.",
+          "Proteger la plataforma, prevenir el fraude y corregir errores. Base legal: nuestro interés legítimo en que el servicio sea seguro.",
+          "Cumplir obligaciones legales, por ejemplo fiscales y contables. Base legal: la obligación legal."
+        ],
+        "paragraphs": ["No te enviamos publicidad sin tu consentimiento y no vendemos tus datos."]
+      },
+      {
+        "heading": "Con quién los compartimos",
+        "items": [
+          "El centro o profesional con el que reservas recibe tu nombre, el servicio, la fecha y hora y tus notas. No le damos tu email.",
+          "Proveedores que nos ayudan a prestar el servicio, siempre por cuenta nuestra: Clerk (cuentas e inicio de sesión), Google (si eliges entrar con Google), Stripe (pagos), Supabase (base de datos y archivos), Vercel (alojamiento de la web), Resend (envío de correos), Sentry (registro de errores), Mapbox (búsqueda de direcciones) y OpenStreetMap (imágenes de los mapas)."
+        ],
+        "paragraphs": [
+          "Algunos de estos proveedores están fuera del Espacio Económico Europeo, por ejemplo en Estados Unidos. En ese caso la transferencia se ampara en las cláusulas contractuales tipo de la Comisión Europea o en el Marco de Privacidad de Datos UE-EE. UU."
+        ]
+      },
+      {
+        "heading": "Cuánto tiempo los guardamos",
+        "paragraphs": [
+          "Mientras mantengas tu cuenta. Si la eliminas, borramos o anonimizamos tus datos, salvo los que la ley nos obliga a conservar, como los de pagos y facturación durante los plazos fiscales y mercantiles."
+        ]
+      },
+      {
+        "heading": "Cookies",
+        "paragraphs": [
+          "Solo usamos cookies técnicas imprescindibles: las de tu sesión (Clerk) y las que Stripe utiliza durante el pago para prevenir el fraude. No usamos cookies de analítica ni de publicidad. Los mapas cargan imágenes desde los servidores de OpenStreetMap, que reciben tu dirección IP para poder enviarlas."
+        ]
+      },
+      {
+        "heading": "Tus derechos",
+        "paragraphs": [
+          "Puedes pedirnos acceder a tus datos, rectificarlos, suprimirlos, oponerte a su tratamiento, limitarlo o recibirlos en un formato portable. Escríbenos a {email} desde el email de tu cuenta. Si crees que no hemos atendido bien tu petición, puedes reclamar ante la Agencia Española de Protección de Datos (www.aepd.es)."
+        ]
+      },
+      {
+        "heading": "Cambios en esta política",
+        "paragraphs": [
+          "Si cambiamos esta política, publicaremos la nueva versión en esta página con su fecha de actualización. Si el cambio es importante, te avisaremos por email."
+        ]
+      }
+    ]
+  }
+}

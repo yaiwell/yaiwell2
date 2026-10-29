@@ -351,7 +351,7 @@ function FormPhase(props: {
                     </Link>
                   ),
                   privacy: (chunks) => (
-                    <Link href="/" className={s.termsLink}>
+                    <Link href="/privacidad" className={s.termsLink}>
                       {chunks}
                     </Link>
                   ),
