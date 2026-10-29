@@ -7,7 +7,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { SignUpForm } from '@/components/features/auth/SignUpForm';
 import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
-import { getRoleFromUser, resolvePostAuthDestination } from '@/lib/auth';
+import { getRoleFromUser, resolveSignedInSignUpDestination } from '@/lib/auth';
 import { REDIRECT_URL_PARAM, parseInternalRedirectUrl, parseSignUpIntent } from '@/lib/validation';
 
 interface SignUpPageProps {
@@ -72,7 +72,10 @@ export default async function SignUpPage({ params, searchParams }: SignUpPagePro
   if (userId) {
     const user = await currentUser();
     const role = getRoleFromUser(user);
-    redirect({ href: resolvePostAuthDestination(role, redirectUrl), locale });
+    // Un cliente que llega con intención de profesional (CTA de
+    // `/profesionales`) no puede darse de alta otra vez: va a la
+    // pantalla que convierte su cuenta, con el plan que eligió.
+    redirect({ href: resolveSignedInSignUpDestination(role, intent, redirectUrl), locale });
   }
 
   return (

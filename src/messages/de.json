@@ -1460,7 +1460,8 @@
       "favorites": "Meine Favoriten",
       "settings": "Einstellungen und Vorlieben",
       "signOut": "Abmelden",
-      "signedInAs": "Angemeldet als"
+      "signedInAs": "Angemeldet als",
+      "becomeProvider": "Du hast ein Business? Erstelle dein Profi-Profil"
     },
     "mode": {
       "label": "Nutzungsmodus",
@@ -1809,6 +1810,26 @@
     "callback": {
       "title": "Anmeldung mit Google…",
       "description": "Einen Moment, wir verbinden gerade dein Konto."
+    }
+  },
+  "becomeProvider": {
+    "meta": {
+      "title": "Erstelle dein Profi-Profil",
+      "description": "Mach deinen Account zu einem Profi-Account und biete deine Leistungen auf Yaiwell an."
+    },
+    "eyebrow": "Für Profis",
+    "title": "Erstelle dein Profi-Profil",
+    "description": "Mit demselben Account kannst du dein Business anlegen, deine Leistungen veröffentlichen und Buchungen erhalten. Beim Anmelden landest du direkt in deinem Verwaltungsbereich.",
+    "bookingsNote": "Deine eigenen Buchungen bleiben erhalten: Du findest sie weiter unter „Meine Buchungen“. Über „Mein Konto“ kannst du jederzeit zur Kundenansicht wechseln.",
+    "cta": {
+      "confirm": "Mein Profi-Profil erstellen",
+      "submitting": "Dein Profil wird vorbereitet…",
+      "cancel": "Abbrechen"
+    },
+    "errors": {
+      "forbidden": "Dieser Account kann nicht in ein Profi-Profil umgewandelt werden.",
+      "unknown": "Wir konnten dein Profi-Profil nicht erstellen. Versuch es in ein paar Sekunden noch einmal.",
+      "sessionRefresh": "Dein Account ist jetzt ein Profi-Account, aber wir konnten deine Sitzung nicht aktualisieren. Tippe noch einmal auf den Button oder melde dich erneut an, um weiterzumachen."
     }
   }
 }

@@ -157,7 +157,7 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
 ### Planes y cuentas de negocio (decidido 2026-10-29)
 - Planes vigentes: Gratis (1 servicio, 12 %), Básico (19 €/mes, 10 servicios, 10 %), Pro (49 €/mes, 50 servicios, 8 %), Premium (99 €/mes, ilimitado, 6 %). Precios **con IVA incluido** (Stripe `tax_behavior: inclusive`).
 - Si un negocio deja de pagar su plan, tras los reintentos de Stripe **pasa a Gratis**; los servicios que superen el límite quedan ocultos hasta que vuelva a pagar.
-- Un profesional que entra por primera vez con Google puede crear su perfil profesional igual que con email.
+- Un profesional que entra por primera vez con Google puede crear su perfil profesional igual que con email. Cualquier cliente con sesión puede convertir su cuenta en profesional desde `/hazte-profesional` (autoservicio; admin nunca). Si un día hay que impedírselo a alguien concreto, hará falta una marca de bloqueo en Clerk (ver TODO).
 - Los negocios que ya tenían más servicios publicados que su límite antes de aplicarlo (2026-10-29) se respetan como están: el límite solo impide publicar o reactivar por encima a partir de ahora. Al cambiar de plan sí se aplica.
 
 ### Antelación mínima y reservas de última hora (decidido 2026-10-27)

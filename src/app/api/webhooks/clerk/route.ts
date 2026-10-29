@@ -7,7 +7,7 @@ import { promoteRoleToPublicMetadata } from '@/lib/auth/server';
 import {
   deleteUserFromClerk,
   MissingPrimaryEmailError,
-  syncUserFromClerk,
+  syncUserFromClerkById,
   UserNotFoundError,
 } from '@/lib/services/user';
 
@@ -76,14 +76,19 @@ export async function POST(request: NextRequest) {
         // sólo lo guardó en unsafe. La promoción es idempotente y no
         // sobrescribe un publicMetadata.role ya válido.
         await promoteRoleToPublicMetadata(event.data as UserJSON);
-        await syncUserFromClerk(event.data as UserJSON);
+        // 2) Sincronizamos releyendo el usuario de Clerk, no el payload:
+        // un reintento tardío de este evento traería el rol del alta y
+        // pisaría en BD una conversión a profesional posterior.
+        await syncUserFromClerkById((event.data as UserJSON).id);
         return NextResponse.json({ ok: true, type: event.type }, { status: 200 });
 
       case 'user.updated':
         // En user.updated no promovemos: si el backend o un admin
-        // decidió cambiar publicMetadata, lo respetamos sin "desfacerlo"
-        // con un unsafe viejo.
-        await syncUserFromClerk(event.data as UserJSON);
+        // decidió cambiar publicMetadata, lo respetamos. Releemos el
+        // usuario de Clerk en vez de usar el payload porque svix puede
+        // entregar eventos fuera de orden: un `user.updated` antiguo con
+        // `role=client` no debe deshacer la conversión a profesional.
+        await syncUserFromClerkById((event.data as UserJSON).id);
         return NextResponse.json({ ok: true, type: event.type }, { status: 200 });
 
       case 'user.deleted':
@@ -98,7 +103,9 @@ export async function POST(request: NextRequest) {
   } catch (err) {
     // Casos esperables que tratamos como "ya está bien":
     // - El usuario no existe en BD al recibir user.deleted (race o purga
-    //   previa). Respondemos 200 para no entrar en bucle de reintentos.
+    //   previa), o ya no existe en Clerk al releerlo en user.created /
+    //   user.updated (lo borraron; llegará su user.deleted). Respondemos
+    //   200 para no entrar en bucle de reintentos.
     // - El payload no tiene email primario (puede ocurrir en flujos
     //   OAuth incompletos). Lo dejamos pasar — Clerk volverá a notificar
     //   con un user.updated en cuanto el email se confirme.

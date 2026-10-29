@@ -74,6 +74,18 @@ export async function ensureUserFromClerk(clerkUserId: string) {
 }
 
 /**
+ * Reescribe el row `User` con el estado actual de un usuario de Clerk
+ * leído por la API REST (o devuelto por una escritura en Clerk).
+ *
+ * A diferencia de `ensureUserFromClerk`, que no toca un row existente,
+ * este siempre actualiza: se usa justo después de cambiar el rol en
+ * Clerk para que `users.role` no se quede atrás esperando al webhook.
+ */
+export async function syncUserFromBackendUser(user: ClerkBackendUser) {
+  return userRepository.upsertByClerkId(normalizeBackendClerkUser(user));
+}
+
+/**
  * Procesa un evento `user.deleted` de Clerk.
  *
  * Hace soft delete (`deletedAt = now`) para no romper las FKs de

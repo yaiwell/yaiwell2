@@ -13,7 +13,7 @@ import {
   resolvePostAuthDestination,
 } from '@/lib/auth';
 
-import { prepareGoogleSignUp } from './SignUpForm.google';
+import { prepareGoogleSignUp, resolveGoogleRedirectUrl } from './SignUpForm.google';
 import type {
   SignUpDraft,
   SignUpFieldErrors,
@@ -282,6 +282,11 @@ export function useSignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpF
     return result.params;
   }, [draft, initialPlan, role]);
 
+  const googleRedirectUrl = useMemo(
+    () => resolveGoogleRedirectUrl(role, initialPlan, redirectUrl),
+    [initialPlan, redirectUrl, role],
+  );
+
   const switchRole = useCallback((next: SignUpRole) => {
     setRole(next);
     // Al cambiar de pestaña limpiamos errores: los campos requeridos
@@ -311,5 +316,6 @@ export function useSignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpF
     switchRole,
     resetToForm,
     prepareGoogle,
+    googleRedirectUrl,
   };
 }

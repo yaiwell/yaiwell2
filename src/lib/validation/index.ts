@@ -8,6 +8,7 @@
  */
 
 export { parseSignUpIntent, signUpSearchParamsSchema } from './sign-up-params';
+export { becomeProviderInputSchema, parseBecomeProviderPlan } from './become-provider-params';
 export type { SignUpIntent } from './sign-up-params';
 
 export { localizedTextPatchSchema, storableLocalizedTextSchema } from './localized-text';

@@ -42,6 +42,7 @@ export function SignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpForm
     switchRole,
     resetToForm,
     prepareGoogle,
+    googleRedirectUrl,
   } = useSignUpForm({ initialRole, initialPlan, redirectUrl });
 
   // Mapeo exhaustivo código → mensaje. Si se añade un código nuevo al
@@ -83,7 +84,7 @@ export function SignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpForm
               switchRole={switchRole}
               updateField={updateField}
               handleSubmit={handleSubmit}
-              redirectUrl={redirectUrl}
+              redirectUrl={googleRedirectUrl}
               prepareGoogle={prepareGoogle}
             />
           ) : (

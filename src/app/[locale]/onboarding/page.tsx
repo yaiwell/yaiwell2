@@ -13,7 +13,7 @@ import type {
 import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import type { AppLocale } from '@/i18n/routing';
-import { requireRole } from '@/lib/auth/server';
+import { getRoleFromUser, resolveOnboardingRedirect } from '@/lib/auth';
 import { prisma } from '@/lib/db/prisma';
 import {
   isPlanTierId,
@@ -59,8 +59,7 @@ export async function generateMetadata({ params }: OnboardingPageProps): Promise
  * (lo escribe el propio navegador al darse de alta), así que se valida
  * contra el catálogo: cualquier otra cosa empieza en Gratis.
  */
-async function readSelectedPlan(): Promise<PlanTierChoice> {
-  const user = await currentUser();
+function readSelectedPlan(user: Awaited<ReturnType<typeof currentUser>>): PlanTierChoice {
   const raw: unknown = user?.unsafeMetadata?.selectedPlan;
   return isPlanTierId(raw) ? raw : 'free';
 }
@@ -88,16 +87,26 @@ export default async function OnboardingPage({ params }: OnboardingPageProps) {
   }
   setRequestLocale(locale);
 
-  // Solo proveedores autenticados acceden al wizard. Clerk redirige
-  // automáticamente a clientes/admins a su destino natural.
-  await requireRole(['provider'], locale);
+  // Solo profesionales autenticados acceden al wizard. El rol se lee de
+  // `currentUser()` y no de los claims: quien acaba de convertir su
+  // cuenta en `/hazte-profesional` puede llevar aún un JWT de cliente.
+  // Un cliente va a esa pantalla de conversión (antes iba a la portada
+  // y no tenía forma de crear su negocio); un admin, a su panel.
+  const { userId: clerkUserId } = await auth();
+  if (!clerkUserId) {
+    redirect({ href: '/entrar', locale });
+  }
+  const clerkUser = await currentUser();
+  const roleRedirect = resolveOnboardingRedirect(getRoleFromUser(clerkUser));
+  if (roleRedirect) {
+    redirect({ href: roleRedirect, locale });
+  }
 
   // Resolución del `User` interno a partir del `clerkId` activo.
   // `ensureUserFromClerk` lo crea sobre la marcha si no existe (por
   // ejemplo cuando el webhook `user.created` no llegó). Sin esta red,
   // el wizard quedaba colgado en "Sincronizando…" para usuarios que
   // se crearon en Clerk antes de configurar el webhook.
-  const { userId: clerkUserId } = await auth();
   let internalUser: { id: string } | null = null;
   if (clerkUserId) {
     try {
@@ -140,16 +149,16 @@ export default async function OnboardingPage({ params }: OnboardingPageProps) {
 
   // Pre-carga de categorías raíz para el paso 4. Ordenadas por nombre
   // estable; el componente las muestra en el locale activo.
-  // El plan y el catálogo van en paralelo con las categorías.
-  const [rawCategories, plans, selectedPlan] = await Promise.all([
+  // El catálogo de planes va en paralelo con las categorías.
+  const [rawCategories, plans] = await Promise.all([
     prisma.category.findMany({
       where: { parentId: null },
       select: { id: true, slug: true, name: true, icon: true },
       orderBy: { slug: 'asc' },
     }),
     loadPlans(),
-    readSelectedPlan(),
   ]);
+  const selectedPlan = readSelectedPlan(clerkUser);
   // Sin catálogo no se puede contratar nada: se empieza en Gratis.
   const initialPlan: PlanTierChoice = plans.some((plan) => plan.tier === selectedPlan)
     ? selectedPlan

@@ -60,7 +60,7 @@ vi.mock('svix', () => {
 });
 
 vi.mock('@/lib/services/user', () => ({
-  syncUserFromClerk: syncUserMock,
+  syncUserFromClerkById: syncUserMock,
   deleteUserFromClerk: deleteUserMock,
   MissingPrimaryEmailError: MissingPrimaryEmailErrorStub,
   UserNotFoundError: UserNotFoundErrorStub,
@@ -140,7 +140,8 @@ describe('POST /api/webhooks/clerk', () => {
 
     expect(res.status).toBe(200);
     expect(promoteRoleMock).toHaveBeenCalledWith({ id: 'user_1' });
-    expect(syncUserMock).toHaveBeenCalledWith({ id: 'user_1' });
+    // Se sincroniza por id (releyendo Clerk), nunca con el payload.
+    expect(syncUserMock).toHaveBeenCalledWith('user_1');
     expect(deleteUserMock).not.toHaveBeenCalled();
   });
 
@@ -151,9 +152,35 @@ describe('POST /api/webhooks/clerk', () => {
     const res = await POST(buildRequest({ body: {} }));
 
     expect(res.status).toBe(200);
-    expect(syncUserMock).toHaveBeenCalledWith({ id: 'user_1' });
+    expect(syncUserMock).toHaveBeenCalledWith('user_1');
     // En user.updated NO promovemos: respetamos el publicMetadata actual.
     expect(promoteRoleMock).not.toHaveBeenCalled();
+  });
+
+  it('un user.updated antiguo con role=client no se usa para sincronizar', async () => {
+    // Llega tarde, tras la conversión a profesional: su payload dice client.
+    verifyMock.mockImplementation(() => ({
+      type: 'user.updated',
+      data: { id: 'user_1', public_metadata: { role: 'client' } },
+    }));
+    syncUserMock.mockResolvedValue({ id: 'db_1', role: 'provider' });
+
+    const res = await POST(buildRequest({ body: {} }));
+
+    expect(res.status).toBe(200);
+    // Solo viaja el id: el rol lo pone la lectura fresca de Clerk
+    // (ver `user.clerk-sync.test.ts`).
+    expect(syncUserMock).toHaveBeenCalledWith('user_1');
+  });
+
+  it('200 + skipped si el usuario ya no existe en Clerk al releerlo', async () => {
+    verifyMock.mockImplementation(() => ({ type: 'user.updated', data: { id: 'user_gone' } }));
+    syncUserMock.mockRejectedValue(new UserNotFoundErrorStub());
+
+    const res = await POST(buildRequest({ body: {} }));
+
+    expect(res.status).toBe(200);
+    expect((await res.json()).skipped).toBe('USER_NOT_FOUND');
   });
 
   it('200 + soft delete en user.deleted', async () => {

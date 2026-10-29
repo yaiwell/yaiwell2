@@ -12,8 +12,10 @@ export {
   ensureUserFromClerk,
   normalizeBackendClerkUser,
   normalizeClerkUser,
+  syncUserFromBackendUser,
   syncUserFromClerk,
 } from './user.service';
+export { syncUserFromClerkById } from './user.clerk-sync';
 export { userRepository } from './user.repository';
 export { MissingPrimaryEmailError, UserNotFoundError } from './user.errors';
 export type { ClerkUserSyncInput, ClerkWebhookEventType } from './user.types';

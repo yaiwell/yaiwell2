@@ -12,6 +12,14 @@
  * server-side (layouts protegidos, webhooks) importan desde ahí.
  */
 
+export {
+  BECOME_PROVIDER_PATH,
+  buildBecomeProviderHref,
+  resolveBecomeProviderPageRedirect,
+  resolveOnboardingRedirect,
+  resolveSignedInSignUpDestination,
+} from './become-provider';
+export type { BecomeProviderResult } from './become-provider';
 export { AuthError } from './errors';
 export { mapClerkError } from './mapClerkError';
 export { getRoleFromUser, getRoleFromSessionClaims, resolvePostAuthDestination } from './role';

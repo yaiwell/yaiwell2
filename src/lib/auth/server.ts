@@ -15,6 +15,8 @@ import 'server-only';
  * actions que necesitan el usuario actual.
  */
 
+export { convertClientToProvider } from './convertToProvider';
+export type { ConvertToProviderOutcome } from './convertToProvider';
 export { getCurrentRole, requireRole } from './guard';
 export type { GuardResult } from './guard';
 export { promoteRoleToPublicMetadata } from './promoteRole';

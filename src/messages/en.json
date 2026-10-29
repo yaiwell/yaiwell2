@@ -1460,7 +1460,8 @@
       "favorites": "My favourites",
       "settings": "Settings and preferences",
       "signOut": "Sign out",
-      "signedInAs": "Signed in as"
+      "signedInAs": "Signed in as",
+      "becomeProvider": "Have a business? Create your professional profile"
     },
     "mode": {
       "label": "Usage mode",
@@ -1809,6 +1810,26 @@
     "callback": {
       "title": "Signing in with Google…",
       "description": "One moment, we're finishing connecting your account."
+    }
+  },
+  "becomeProvider": {
+    "meta": {
+      "title": "Create your professional profile",
+      "description": "Turn your account into a professional one to offer your services on Yaiwell."
+    },
+    "eyebrow": "For professionals",
+    "title": "Create your professional profile",
+    "description": "With this same account you can set up your business, publish your services and receive bookings. When you sign in you will go straight to your management panel.",
+    "bookingsNote": "Your bookings as a client are not lost: they stay in “My bookings”. You can switch back to the client view at any time from “My account”.",
+    "cta": {
+      "confirm": "Create my professional profile",
+      "submitting": "Setting up your profile…",
+      "cancel": "Cancel"
+    },
+    "errors": {
+      "forbidden": "This account cannot be turned into a professional profile.",
+      "unknown": "We couldn’t create your professional profile. Please try again in a few seconds.",
+      "sessionRefresh": "Your account is now a professional one, but we couldn’t refresh your session. Press the button again or sign in again to continue."
     }
   }
 }

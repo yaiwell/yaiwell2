@@ -206,7 +206,9 @@
   - [ ] **Si se recarga tras el paso 4 del alta**, se salta el paso de plan y el negocio entra en Gratis (puede contratar luego desde `/panel/plan`, pero se pierde la preselección).
   - [ ] **Ficheros largos**: `provider-onboarding.repository.ts` (~367) y `.service.ts` (~283), `scripts/stripe-sync-plans.ts` (253).
   - [ ] **Comisión del pago en el local en la factura mensual** (invoice items por reserva completada; cron mensual para negocios en Gratis): va con la tarea de pago en el local.
-- [ ] **Alta de profesional entrando con Google** (2026-10-29): quien entra por primera vez con Google debe poder crear su perfil profesional igual que con email.
+- [ ] **E2E de la conversión cliente → profesional** (P15, e2e-tester): cliente con sesión → `/registro?as=provider&plan=pro` → `/hazte-profesional` → confirmar → `/onboarding` → `POST /api/provider-onboarding/create` 2xx; y que sigue viendo y valorando sus reservas en modo cliente.
+- [ ] **Marca de bloqueo de profesional** (opcional): hoy un proveedor degradado a cliente por soporte puede volver a convertirse con un clic. Si hace falta impedirlo, `publicMetadata.providerBlocked` comprobado en `convertClientToProvider`.
+- [ ] **Trocear** `cuenta/page.tsx` (~343), `SignUpForm.tsx` (~417) y `SignUpForm.logic.ts` (~320).
 - [ ] Onboarding de proveedor con formulario manual (jerarquía categoría → tipo → subtipo).
 - [~] **Huecos sueltos con descuento automático** (MVP hecho 2026-10-28, ver DO.md; decisiones en CLAUDE.md §4.bis). Pendiente:
   - [x] Migración `9b_slot_offers` aplicada y verificada (2026-10-28).

@@ -27,6 +27,8 @@ vi.mock('@clerk/nextjs/server', () => ({
   clerkClient: clerkClientMock,
 }));
 
+import { ClerkAPIResponseError } from '@clerk/nextjs/errors';
+
 import { promoteRoleToPublicMetadata } from './promoteRole';
 
 /**
@@ -115,5 +117,16 @@ describe('promoteRoleToPublicMetadata', () => {
     expect(updateUserMetadataMock).toHaveBeenCalledWith('user_test', {
       publicMetadata: { role: 'client' },
     });
+  });
+
+  it('usuario ya borrado en Clerk (404 al releer): no hace nada y no lanza', async () => {
+    getUserMock.mockRejectedValueOnce(
+      new ClerkAPIResponseError('Not Found', { data: [], status: 404 }),
+    );
+
+    const result = await promoteRoleToPublicMetadata(buildPayload());
+
+    expect(result).toBeNull();
+    expect(updateUserMetadataMock).not.toHaveBeenCalled();
   });
 });

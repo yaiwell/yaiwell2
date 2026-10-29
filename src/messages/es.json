@@ -1460,7 +1460,8 @@
       "favorites": "Mis favoritos",
       "settings": "Ajustes y preferencias",
       "signOut": "Cerrar sesión",
-      "signedInAs": "Sesión iniciada como"
+      "signedInAs": "Sesión iniciada como",
+      "becomeProvider": "¿Tienes un negocio? Crea tu perfil profesional"
     },
     "mode": {
       "label": "Modo de uso",
@@ -1809,6 +1810,26 @@
     "callback": {
       "title": "Entrando con Google…",
       "description": "Un momento, estamos terminando de conectar tu cuenta."
+    }
+  },
+  "becomeProvider": {
+    "meta": {
+      "title": "Crea tu perfil profesional",
+      "description": "Convierte tu cuenta en profesional para ofrecer tus servicios en Yaiwell."
+    },
+    "eyebrow": "Para profesionales",
+    "title": "Crea tu perfil profesional",
+    "description": "Con esta misma cuenta podrás dar de alta tu negocio, publicar tus servicios y recibir reservas. Al entrar irás directamente a tu panel de gestión.",
+    "bookingsNote": "Tus reservas como cliente no se pierden: siguen en «Mis reservas». Puedes volver a la vista de cliente cuando quieras desde «Mi cuenta».",
+    "cta": {
+      "confirm": "Crear mi perfil profesional",
+      "submitting": "Preparando tu perfil…",
+      "cancel": "Cancelar"
+    },
+    "errors": {
+      "forbidden": "Esta cuenta no puede convertirse en perfil profesional.",
+      "unknown": "No hemos podido crear tu perfil profesional. Inténtalo de nuevo en unos segundos.",
+      "sessionRefresh": "Tu cuenta ya es profesional, pero no hemos podido actualizar tu sesión. Pulsa de nuevo el botón o vuelve a entrar para continuar."
     }
   }
 }

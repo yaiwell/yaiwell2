@@ -1460,7 +1460,8 @@
       "favorites": "Els meus preferits",
       "settings": "Ajustos i preferències",
       "signOut": "Tancar sessió",
-      "signedInAs": "Sessió iniciada com a"
+      "signedInAs": "Sessió iniciada com a",
+      "becomeProvider": "Tens un negoci? Crea el teu perfil professional"
     },
     "mode": {
       "label": "Mode d'ús",
@@ -1809,6 +1810,26 @@
     "callback": {
       "title": "Entrant amb Google…",
       "description": "Un moment, estem acabant de connectar el teu compte."
+    }
+  },
+  "becomeProvider": {
+    "meta": {
+      "title": "Crea el teu perfil professional",
+      "description": "Converteix el teu compte en professional per oferir els teus serveis a Yaiwell."
+    },
+    "eyebrow": "Per a professionals",
+    "title": "Crea el teu perfil professional",
+    "description": "Amb aquest mateix compte podràs donar d’alta el teu negoci, publicar els teus serveis i rebre reserves. En entrar aniràs directament al teu panell de gestió.",
+    "bookingsNote": "Les teves reserves com a client no es perden: continuen a «Les meves reserves». Pots tornar a la vista de client quan vulguis des de «El meu compte».",
+    "cta": {
+      "confirm": "Crear el meu perfil professional",
+      "submitting": "Preparant el teu perfil…",
+      "cancel": "Cancel·lar"
+    },
+    "errors": {
+      "forbidden": "Aquest compte no es pot convertir en perfil professional.",
+      "unknown": "No hem pogut crear el teu perfil professional. Torna-ho a provar d’aquí a uns segons.",
+      "sessionRefresh": "El teu compte ja és professional, però no hem pogut actualitzar la teva sessió. Torna a prémer el botó o torna a entrar per continuar."
     }
   }
 }

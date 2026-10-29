@@ -44,7 +44,10 @@ export async function PATCH(request: NextRequest): Promise<NextResponse<ErrorBod
   }
 
   // Solo un profesional da de alta un centro: la misma regla que aplica
-  // la página `/onboarding` con `requireRole(['provider'])`. Sin esto,
+  // la página `/onboarding`. La página lee el rol con `currentUser()` a
+  // propósito (tras convertir la cuenta en `/hazte-profesional` el JWT
+  // puede seguir diciendo `client`); aquí usamos `getCurrentRole()`, y
+  // el cliente refresca el token antes de entrar al wizard. Sin esto,
   // una cuenta de cliente podía crear un `Provider` con un POST directo.
   if ((await getCurrentRole()) !== 'provider') {
     return NextResponse.json({ error: { code: 'FORBIDDEN_ROLE' } }, { status: 403 });

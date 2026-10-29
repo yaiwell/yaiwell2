@@ -1,4 +1,5 @@
 import type { UserJSON } from '@clerk/backend';
+import { isClerkAPIResponseError } from '@clerk/nextjs/errors';
 import { clerkClient } from '@clerk/nextjs/server';
 
 import { sanitizeSelfServiceRole } from './role';
@@ -48,7 +49,17 @@ export async function promoteRoleToPublicMetadata(payload: UserJSON): Promise<Us
   // El payload es la foto del alta, y Clerk reintenta entregas viejas:
   // releemos el usuario para no pisar un rol puesto después a mano
   // (p. ej. `admin` o `provider` desde el dashboard).
-  const current = await client.users.getUser(payload.id);
+  // Releer justo antes de escribir deja la ventana de carrera en una
+  // sola ida y vuelta a Clerk; su API no ofrece escritura condicional.
+  let current;
+  try {
+    current = await client.users.getUser(payload.id);
+  } catch (err) {
+    // Usuario ya borrado en Clerk (reintento tardío): no hay nada que
+    // promocionar, y lanzar haría que Clerk reintentase sin fin.
+    if (isClerkAPIResponseError(err) && err.status === 404) return null;
+    throw err;
+  }
   if (pickValidRole(current.publicMetadata)) return null;
 
   await client.users.updateUserMetadata(payload.id, {

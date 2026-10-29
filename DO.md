@@ -8,6 +8,16 @@
 
 ## 2026-10-29
 
+### 2026-10-29 — Convertir una cuenta de cliente en profesional
+
+P2 + `business-rules-auditor` (sin P0; P1 y P2 aplicados salvo el E2E, que queda en TODO).
+
+- **`/hazte-profesional`**: un cliente con sesión confirma y pasa a `provider` (Clerk `publicMetadata.role`, BD sincronizada) y entra al alta del negocio conservando el plan elegido como preferencia. Admin nunca; un provider va directo a `/onboarding`.
+- Se llega desde `/registro?as=provider` con sesión de cliente, los CTA de `/profesionales`, el botón de Google de la pestaña profesional (si la cuenta ya existía como cliente) y un enlace en `/cuenta`.
+- `/onboarding` lee el rol con `currentUser()` y manda al cliente a la conversión; las APIs del wizard siguen con `requireRole`. El cliente refresca el token antes de entrar.
+- **Webhook de Clerk** relee el usuario de Clerk en `user.created/updated`: el orden de los eventos ya no puede devolver el rol a `client` en BD.
+- 1821 tests unitarios.
+
 ### 2026-10-29 — Planes de negocio con Stripe Billing
 
 P4 + P12 + P13 (`Plan` → migración con `db-migration-guard` → `stripe-payments` y dos `general-purpose` en paralelo → `business-rules-auditor` + `conventions-reviewer`; P1 y P2 aplicados).

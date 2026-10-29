@@ -9,6 +9,7 @@ import {
   LogOut,
   Settings,
   Sparkles,
+  Store,
   UserPlus,
   UserRound,
 } from 'lucide-react';
@@ -20,6 +21,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
+import { BECOME_PROVIDER_PATH } from '@/lib/auth/become-provider';
 import { getRoleFromSessionClaims, getRoleFromUser } from '@/lib/auth/role';
 import { getUiMode } from '@/lib/auth/ui-mode';
 
@@ -246,6 +248,21 @@ export default async function AccountPage({ params }: AccountPageProps) {
               </span>
               <span className={accountStyles.comingSoonTag}>{tCommon('comingSoon')}</span>
             </div>
+            {/* Solo clientes: el camino para crear un negocio con esta
+                misma cuenta (p. ej. quien entró por primera vez con Google). */}
+            {role === 'client' ? (
+              <Link
+                href={BECOME_PROVIDER_PATH}
+                className={accountStyles.linkItem}
+                data-component="account-become-provider"
+              >
+                <span className={accountStyles.linkLeft}>
+                  <Store className={accountStyles.linkIcon} aria-hidden="true" />
+                  {t('authenticated.becomeProvider')}
+                </span>
+                <ChevronRight className={accountStyles.linkChevron} aria-hidden="true" />
+              </Link>
+            ) : null}
           </nav>
 
           {/* Tarjeta de modo de uso — sólo visible para providers reales.
