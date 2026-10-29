@@ -24,13 +24,14 @@ import { ensureUserFromClerk, MissingPrimaryEmailError } from '@/lib/services/us
  *
  * Contrato:
  *  - `PATCH /api/provider-onboarding/plan`
- *  - Body: `{ providerId: string, planTier: 'free' | 'basic' | 'pro' | 'premium' }`.
+ *  - Body: `{ providerId: string, planTier: 'free' }`. Los planes de pago
+ *    solo se activan cuando Stripe confirma el cobro.
  *  - 204: éxito.
  */
 
 const bodyShapeSchema = z.object({
   providerId: z.string().min(1, 'providerId requerido.'),
-  planTier: z.enum(['free', 'basic', 'pro', 'premium']),
+  planTier: z.literal('free'),
 });
 
 interface ErrorBody {

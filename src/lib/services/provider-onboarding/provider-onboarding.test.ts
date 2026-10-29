@@ -276,9 +276,9 @@ describe('selectPlan', () => {
     repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
     repoMock.findPlanByTier.mockResolvedValue({ id: 'new-plan-id' });
 
-    await selectPlan(PROVIDER_ID, { planTier: 'pro' }, OWNER_ID);
+    await selectPlan(PROVIDER_ID, { planTier: 'free' }, OWNER_ID);
 
-    expect(repoMock.findPlanByTier).toHaveBeenCalledWith('pro');
+    expect(repoMock.findPlanByTier).toHaveBeenCalledWith('free');
     expect(repoMock.updatePlan).toHaveBeenCalledWith(PROVIDER_ID, 'new-plan-id');
   });
 
@@ -286,9 +286,16 @@ describe('selectPlan', () => {
     repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
     repoMock.findPlanByTier.mockResolvedValue(null);
 
-    await expect(selectPlan(PROVIDER_ID, { planTier: 'premium' }, OWNER_ID)).rejects.toBeInstanceOf(
+    await expect(selectPlan(PROVIDER_ID, { planTier: 'free' }, OWNER_ID)).rejects.toBeInstanceOf(
       PlanTierNotFoundError,
     );
+    expect(repoMock.updatePlan).not.toHaveBeenCalled();
+  });
+
+  it('rechaza un plan de pago sin pasar por Stripe', async () => {
+    await expect(
+      selectPlan(PROVIDER_ID, { planTier: 'premium' } as never, OWNER_ID),
+    ).rejects.toThrow();
     expect(repoMock.updatePlan).not.toHaveBeenCalled();
   });
 });

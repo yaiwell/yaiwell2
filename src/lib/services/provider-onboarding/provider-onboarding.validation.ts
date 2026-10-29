@@ -87,9 +87,16 @@ export const createFirstServiceSchema = z.object({
 
 export type CreateFirstServiceParsed = z.infer<typeof createFirstServiceSchema>;
 
-/** Validación del paso 5: selección de plan. */
+/**
+ * Validación del paso 5: selección de plan.
+ *
+ * Solo `free`: un plan de pago se activa únicamente cuando Stripe confirma
+ * el cobro (webhook de Billing). Aceptar aquí `pro` o `premium` dejaba a
+ * cualquier negocio ponerse un plan de pago sin pagar y cobrar con una
+ * comisión más baja.
+ */
 export const selectPlanSchema = z.object({
-  planTier: z.enum(['free', 'basic', 'pro', 'premium']),
+  planTier: z.literal('free'),
 });
 
 export type SelectPlanParsed = z.infer<typeof selectPlanSchema>;

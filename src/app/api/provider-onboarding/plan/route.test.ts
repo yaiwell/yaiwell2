@@ -106,8 +106,16 @@ describe('PATCH /api/provider-onboarding/plan', () => {
   it('devuelve 400 INVALID_BODY si falta providerId', async () => {
     authMock.mockResolvedValue({ userId: 'clerk_123' });
     ensureUserMock.mockResolvedValue({ id: 'user-abc' });
-    const res = await PATCH(buildRequest({ planTier: 'pro' }));
+    const res = await PATCH(buildRequest({ planTier: 'free' }));
     expect(res.status).toBe(400);
+  });
+
+  it('rechaza un plan de pago: solo se activa cuando Stripe cobra', async () => {
+    authMock.mockResolvedValue({ userId: 'clerk_123' });
+    ensureUserMock.mockResolvedValue({ id: 'user-abc' });
+    const res = await PATCH(buildRequest({ providerId: 'prov-xyz', planTier: 'premium' }));
+    expect(res.status).toBe(400);
+    expect(selectPlanMock).not.toHaveBeenCalled();
   });
 
   it('llama al servicio con providerId, { planTier } y userId; responde 204', async () => {
@@ -115,9 +123,9 @@ describe('PATCH /api/provider-onboarding/plan', () => {
     ensureUserMock.mockResolvedValue({ id: 'user-abc' });
     selectPlanMock.mockResolvedValue(undefined);
 
-    const res = await PATCH(buildRequest({ providerId: 'prov-xyz', planTier: 'pro' }));
+    const res = await PATCH(buildRequest({ providerId: 'prov-xyz', planTier: 'free' }));
     expect(res.status).toBe(204);
-    expect(selectPlanMock).toHaveBeenCalledWith('prov-xyz', { planTier: 'pro' }, 'user-abc');
+    expect(selectPlanMock).toHaveBeenCalledWith('prov-xyz', { planTier: 'free' }, 'user-abc');
   });
 
   it('mapea ProviderForOnboardingNotFoundError a 404', async () => {
