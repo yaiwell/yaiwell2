@@ -7,10 +7,15 @@ import { ReleaseSlotPromptContext, useReleaseSlotPromptState } from './ReleaseSl
 /**
  * Monta el diálogo de liberar hueco una sola vez para todo el
  * calendario y deja abrirlo desde cualquier botón descendiente
- * (cancelar reserva, «Liberar con descuento» de un hueco libre).
+ * (cancelar reserva, «Liberar con descuento» de un hueco libre o de una
+ * reserva cancelada). Con `initialRequest` se abre solo al cargar.
  */
-export function ReleaseSlotPromptProvider({ locale, children }: ReleaseSlotPromptProviderProps) {
-  const { request, requestKey, open, close } = useReleaseSlotPromptState();
+export function ReleaseSlotPromptProvider({
+  locale,
+  children,
+  initialRequest = null,
+}: ReleaseSlotPromptProviderProps) {
+  const { request, requestKey, open, close } = useReleaseSlotPromptState(initialRequest);
 
   return (
     <ReleaseSlotPromptContext.Provider value={open}>

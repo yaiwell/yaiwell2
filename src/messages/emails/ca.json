@@ -35,6 +35,23 @@
     "refundUncertain": "Si vas arribar a pagar, et retornarem el 100 % de l'import ({amount}). Estem comprovant el pagament i t'avisarem si necessitem res de tu.",
     "cta": "Cercar una altra hora"
   },
+  "clientCancelled": {
+    "subject": "Has cancel·lat la teva reserva a {provider}",
+    "heading": "Reserva cancel·lada",
+    "intro": "Hem cancel·lat la teva reserva a {provider}, tal com ens vas demanar.",
+    "noPayment": "No t'han cobrat res per aquesta reserva, així que no hi ha res a retornar.",
+    "cta": "Cercar una altra hora"
+  },
+  "providerClientCancelled": {
+    "subject": "Cancel·lació: {service}, {when}",
+    "heading": "Un client ha cancel·lat la seva reserva",
+    "intro": "{client} ha cancel·lat la seva reserva des de l'app.",
+    "slotFree": "La franja torna a estar lliure al teu calendari. Si havia pagat en línia, li retornem l'import íntegre.",
+    "releaseHint": "Si la vols omplir, pots alliberar-la amb descompte: el preu baixa sol a mesura que s'acosta l'hora i la destaquem a qui cerqui a prop.",
+    "offerReopened": "Aquesta hora s'havia venut amb descompte: l'oferta continua activa i es torna a anunciar amb el descompte que toqui a cada moment.",
+    "releaseCta": "Alliberar amb descompte",
+    "calendarCta": "Obrir el calendari"
+  },
   "latePaymentRefunded": {
     "subject": "No hem pogut confirmar la teva reserva a {provider}",
     "heading": "La teva reserva no s'ha confirmat",

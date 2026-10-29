@@ -34,6 +34,9 @@ export const customerBookingsRepository = {
         completedAt: true,
         priceCents: true,
         notes: true,
+        // Solo para saber si hubo cobro online (qué se devuelve al
+        // cancelar); el id no sale del servicio hacia la UI.
+        stripePaymentIntentId: true,
         serviceId: true,
         service: { select: { name: true } },
         professional: { select: { name: true } },

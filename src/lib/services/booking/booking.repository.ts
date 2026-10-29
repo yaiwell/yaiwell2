@@ -132,6 +132,25 @@ export const bookingRepository = {
   },
 
   /**
+   * Cancela la reserva solo si sigue activa (`pending` o `confirmed`).
+   *
+   * Escritura condicional: si entre la lectura del servicio y este
+   * `UPDATE` otro camino la movió (el centro y el cliente cancelando a
+   * la vez, el webhook pasándola a `refunded`), no se pisa ese estado y
+   * el caller recibe 0 filas. Así nunca se liquida el pago ni se avisa
+   * dos veces por la misma cancelación.
+   *
+   * @returns número de filas cambiadas (0 o 1).
+   */
+  async cancelIfActive(id: string, cancelledAt: Date): Promise<number> {
+    const { count } = await prisma.booking.updateMany({
+      where: { id, status: { in: ['pending', 'confirmed'] } },
+      data: { status: 'cancelled', cancelledAt },
+    });
+    return count;
+  },
+
+  /**
    * Actualiza el estado de una reserva y, opcionalmente, marca
    * `cancelledAt` o `completedAt`. Mantener ambos en la misma
    * transacción evita estados inconsistentes (status cambiado pero

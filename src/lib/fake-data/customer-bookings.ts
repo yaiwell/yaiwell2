@@ -1,4 +1,6 @@
 import type { BookingStatus, CustomerBookingView } from '@/lib/services/customer-bookings';
+// Import directo: el barrel arrastra Prisma y esta regla es pura.
+import { resolveCancellation } from '@/lib/services/customer-bookings/customer-bookings.cancellation';
 import type { Service } from '@/types/domain';
 
 import { fakeProviders } from './providers';
@@ -58,14 +60,15 @@ function buildBooking(args: {
   const endAt = new Date(startAt.getTime() + service.durationMinutes * 60 * 1000);
   const isCompleted = args.status === 'completed';
   const hasReview = args.hasReview ?? false;
+  // Una semana antes del inicio: la demo no tiene reservas de última hora.
+  const createdAt = new Date(startAt.getTime() - 7 * 24 * 60 * 60 * 1000);
 
   return {
     id: args.id,
     status: args.status,
     startAt,
     endAt,
-    // Una semana antes del inicio: la demo no tiene reservas de última hora.
-    createdAt: new Date(startAt.getTime() - 7 * 24 * 60 * 60 * 1000),
+    createdAt,
     priceCents: service.priceCents,
     serviceId: service.id,
     serviceName: service.name,
@@ -82,6 +85,17 @@ function buildBooking(args: {
     review: hasReview ? { rating: 5, text: 'Muy buena experiencia, repetiré.' } : null,
     canReview: isCompleted && !hasReview,
     reviewWindowClosed: false,
+    // Mismo veredicto que calcula el servicio real, frente al «ahora» fijo.
+    cancellation: resolveCancellation(
+      {
+        status: args.status,
+        startAt,
+        createdAt,
+        priceCents: service.priceCents,
+        stripePaymentIntentId: `pi_fake_${args.id}`,
+      },
+      REFERENCE_NOW,
+    ),
     notes: args.notes,
   };
 }

@@ -6,6 +6,7 @@ import { AlertDialog } from 'radix-ui';
 import { useState, useTransition } from 'react';
 
 import { cancelBookingAction } from '@/app/[locale]/panel/calendario/actions';
+import { useCancellationWindow } from '@/components/shared/CancellationWindow';
 import { Button } from '@/components/ui/button';
 
 import { useReleaseSlotPrompt } from '../ReleaseSlotDialog';
@@ -13,7 +14,6 @@ import {
   bookingActionDialogStyles as d,
   bookingActionsListStyles as s,
 } from './BookingActionsList.styles';
-import { useCancellationWindow } from './BookingCancelButton.logic';
 import type { SupportedLocale } from './BookingActionsList.types';
 
 interface BookingCancelButtonProps {

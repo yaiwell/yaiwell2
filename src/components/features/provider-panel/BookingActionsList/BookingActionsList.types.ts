@@ -49,6 +49,12 @@ export interface PanelBookingAction {
   professionalName: string | null;
   status: PanelBookingActionStatus;
   priceCents: number;
+  /**
+   * Reserva cancelada (por el centro o por el cliente) cuya hora aún se
+   * puede liberar con descuento. Lo decide el servidor; ausente en los
+   * datos de ejemplo del modo preview.
+   */
+  releasable?: boolean;
 }
 
 /** Props del componente BookingActionsList. */

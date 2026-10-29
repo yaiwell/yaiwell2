@@ -151,7 +151,7 @@
         },
         "2": {
           "title": "Clear rules",
-          "body": "Cancel for free up to 2 h beforehand by writing to us. For last-minute bookings, secure payment on the spot and, if the centre cannot see you, a full refund through support."
+          "body": "Cancel for free in the app up to 2 h beforehand. For last-minute bookings, secure payment on the spot and, if the centre cannot see you, a full refund through support."
         }
       }
     },
@@ -935,10 +935,10 @@
     },
     "policy": {
       "title": "Quick policy",
-      "cancelUntil": "Free cancellation until {deadline}: write to us and we'll handle it.",
+      "cancelUntil": "Free cancellation until {deadline} from “My bookings”, with a full refund.",
       "cancelWindowPassed": "The free cancellation period has already ended.",
       "providerCancel": "The centre can also cancel up to 2 hours beforehand; if so, you'll get a full automatic refund.",
-      "compactNote": "Free cancellation up to 2 h before the service: write to us and we'll handle it. If you book less than 2 h ahead, you pay on the spot and it cannot be cancelled."
+      "compactNote": "Free cancellation from “My bookings” up to 2 h before the service, with a full refund. If you book less than 2 h ahead, you pay on the spot and it cannot be cancelled."
     },
     "lastMinute": {
       "policy": "This booking starts in less than 2 h: you pay now and it cannot be cancelled or refunded. If the centre cannot see you, write to us and we'll refund 100%.",
@@ -1025,10 +1025,34 @@
     },
     "actions": {
       "viewDetail": "View details",
-      "cancelSupportHint": "Need to cancel? Get in touch and we will sort it out with you.",
+      "cancel": "Cancel booking",
       "lastMinuteHint": "Last-minute booking: it cannot be cancelled. If the centre cannot see you, write to us.",
+      "tooLateHint": "It can no longer be cancelled: the appointment is less than 2 h away. If something comes up, write to us.",
       "review": "Review",
       "reviewWindowClosed": "Review period closed"
+    },
+    "cancelDialog": {
+      "title": "Cancel this booking?",
+      "description": "{service} at {provider}, {when}.",
+      "refundInfo": "We will refund the full amount ({amount}) to the same payment method. Depending on your bank, it may take 5 to 10 days to show up.",
+      "noPaymentInfo": "You have not been charged for this booking, so there is nothing to refund.",
+      "keep": "Keep booking",
+      "confirm": "Yes, cancel",
+      "pending": "Cancelling…",
+      "result": {
+        "refunded": "Booking cancelled. We are refunding {amount}: depending on your bank, it may take 5 to 10 days to show up. We will confirm it by email.",
+        "refund_pending": "Booking cancelled. We are processing the refund of {amount} and will email you.",
+        "refund_uncertain": "Booking cancelled. We are checking whether the payment went through; if it did, we will refund {amount}.",
+        "no_payment": "Booking cancelled. You had not been charged."
+      },
+      "errors": {
+        "FORBIDDEN": "This booking cannot be cancelled from this account. Check that you are signed in with the account you booked with.",
+        "TOO_LATE": "It can no longer be cancelled: the appointment is less than 2 h away.",
+        "LAST_MINUTE": "This is a last-minute booking: it cannot be cancelled.",
+        "NOT_CANCELLABLE": "This booking can no longer be cancelled. Reload the page to see its status.",
+        "VALIDATION": "We could not cancel the booking. Reload the page and try again.",
+        "INTERNAL": "We could not cancel the booking. Please try again in a few minutes."
+      }
     },
     "existingReview": {
       "label": "Your review:",
@@ -1395,7 +1419,7 @@
       "title": "Your diary, wherever you go.",
       "subtitle": "Book instantly, manage your appointments and discover professionals near you.",
       "bullet1": "Real availability, no calls and no waiting.",
-      "bullet2": "Clear rules: cancel for free up to 2 h beforehand by writing to us. For last-minute bookings, secure payment on the spot and, if the centre cannot see you, a full refund through support."
+      "bullet2": "Clear rules: cancel for free in the app up to 2 h beforehand. For last-minute bookings, secure payment on the spot and, if the centre cannot see you, a full refund through support."
     },
     "tabs": {
       "ariaLabel": "Choose account type",

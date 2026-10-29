@@ -12,7 +12,7 @@ import type { CustomerBookingView } from '@/lib/services/customer-bookings';
 /**
  * Variante visual de la card según el contexto donde se renderiza.
  *
- * - `upcoming`: próximas reservas, muestra el aviso de cancelación.
+ * - `upcoming`: próximas reservas, ofrece cancelar (o dice por qué no).
  * - `past`: historial, no muestra acciones de cambio.
  * - `pendingReview`: sección de valoraciones pendientes. El CTA "Valorar"
  *   no depende de la variante sino de `booking.canReview`.
@@ -22,4 +22,14 @@ export type BookingCardVariant = 'upcoming' | 'past' | 'pendingReview';
 export interface BookingCardProps {
   booking: CustomerBookingView;
   variant: BookingCardVariant;
+}
+
+export interface BookingCancellationActionProps {
+  booking: CustomerBookingView;
+  /** Nombre del servicio ya resuelto al locale activo. */
+  serviceName: string;
+  /** Fecha y hora ya formateadas. */
+  whenLabel: string;
+  /** Importe ya formateado. */
+  amountLabel: string;
 }

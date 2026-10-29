@@ -24,6 +24,12 @@ export interface BookingActionRow {
    * definitiva es el service, que la vuelve a comprobar.
    */
   cancellable: boolean;
+  /**
+   * Reserva cancelada (por el centro o por el cliente) cuya hora aún se
+   * puede liberar con descuento: lo decide el servidor en `releasable`.
+   * Sin `startAtIso` (preview) no hay hora que liberar.
+   */
+  releasable: boolean;
 }
 
 /** Estados en los que una reserva todavía admite cancelación. */
@@ -55,6 +61,7 @@ export function buildBookingActionRows(
       canComplete: booking.status === 'confirmed',
       showCancel,
       cancellable,
+      releasable: booking.releasable === true && booking.startAtIso !== null,
     };
   });
 }

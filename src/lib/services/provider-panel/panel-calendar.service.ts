@@ -12,6 +12,7 @@ import { getMadridWeekRange, getMadridWeekStartKey } from '@/lib/utils/madrid-we
 import type { LocalizedText } from '@/types/domain';
 
 import { timeInMadrid, weekdayInMadrid } from './panel-madrid-time';
+import { isCancelledSlotReleasable } from './panel-releasable';
 
 /**
  * Recupera las reservas del proveedor en una semana de Madrid (lunes
@@ -29,12 +30,15 @@ import { timeInMadrid, weekdayInMadrid } from './panel-madrid-time';
  * @param providerId — Provider del usuario autenticado.
  * @param reference — cualquier instante de la semana a consultar.
  * @param locale — locale activo, para el nombre localizado del servicio.
+ * @param now — reloj del servidor, para decidir si un hueco cancelado
+ *   todavía se puede liberar con descuento.
  * @returns reservas de la semana ordenadas por inicio.
  */
 export async function getPanelWeekBookings(
   providerId: string,
   reference: Date,
   locale: AppLocale,
+  now: Date = new Date(),
 ): Promise<PanelBookingAction[]> {
   const { start, end } = getMadridWeekRange(getMadridWeekStartKey(reference));
 
@@ -52,6 +56,9 @@ export async function getPanelWeekBookings(
       client: { select: { fullName: true, email: true } },
       service: { select: { name: true } },
       professional: { select: { name: true } },
+      // Para ofrecer «Liberar con descuento» sobre las canceladas.
+      releasedAs: { select: { id: true } },
+      slotOffer: { select: { status: true } },
     },
     orderBy: { startAt: 'asc' },
   });
@@ -67,6 +74,15 @@ export async function getPanelWeekBookings(
     professionalName: r.professional?.name ?? null,
     status: r.status as PanelBookingActionStatus,
     priceCents: r.priceCents,
+    releasable: isCancelledSlotReleasable(
+      {
+        status: r.status,
+        startAt: r.startAt,
+        releasedAs: r.releasedAs ?? null,
+        slotOffer: r.slotOffer ?? null,
+      },
+      now,
+    ),
   }));
 }
 

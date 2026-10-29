@@ -74,7 +74,9 @@ describe('BookingSummary — política de cancelación', () => {
     expect(screen.queryByText(/menos de 2 h/u)).not.toBeInTheDocument();
     const deadline = formatCancellationDeadline(SLOT_START, 'es');
     expect(
-      screen.getByText(`Cancelación gratuita hasta el ${deadline}: escríbenos y la tramitamos.`),
+      screen.getByText(
+        `Cancelación gratuita hasta el ${deadline}, desde «Mis reservas», con devolución íntegra.`,
+      ),
     ).toBeInTheDocument();
     // La política aparece una sola vez.
     expect(screen.getAllByText(/Cancelación gratuita/u)).toHaveLength(1);

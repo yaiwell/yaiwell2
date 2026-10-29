@@ -24,10 +24,17 @@ export function useReleaseSlotPrompt(): OpenReleaseSlotPrompt | null {
   return useContext(ReleaseSlotPromptContext);
 }
 
-/** Estado del proveedor: petición abierta y clave para reiniciar el formulario. */
-export function useReleaseSlotPromptState() {
-  const [request, setRequest] = useState<ReleaseSlotRequest | null>(null);
-  const [requestKey, setRequestKey] = useState(0);
+/**
+ * Estado del proveedor: petición abierta y clave para reiniciar el formulario.
+ *
+ * @param initialRequest — petición abierta desde el primer render (enlace
+ *   del email). Solo cuenta al montar: cerrar el diálogo no lo reabre en
+ *   cada refresco de la página. No rompe la hidratación porque el portal
+ *   de Radix no pinta nada en el servidor.
+ */
+export function useReleaseSlotPromptState(initialRequest: ReleaseSlotRequest | null = null) {
+  const [request, setRequest] = useState<ReleaseSlotRequest | null>(initialRequest);
+  const [requestKey, setRequestKey] = useState(initialRequest ? 1 : 0);
 
   const open = useCallback<OpenReleaseSlotPrompt>((next) => {
     setRequestKey((k) => k + 1);

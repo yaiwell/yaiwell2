@@ -8,8 +8,8 @@ import { Link } from '@/i18n/navigation';
 import type { AppLocale } from '@/i18n/routing';
 import { pickLocalized } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
-import { isLastMinuteAtCreation } from '@/lib/utils/booking-last-minute';
 
+import { BookingCancellationAction } from './BookingCancellationAction';
 import { bookingCardStyles as s } from './BookingCard.styles';
 import type { BookingCardProps } from './BookingCard.types';
 
@@ -37,7 +37,8 @@ function statusClassName(status: BookingCardProps['booking']['status']): string 
  *
  * Se renderiza en tres contextos (próximas, historial, valoraciones
  * pendientes) y cambia las acciones según la variante:
- *  - `upcoming`: aviso de cómo cancelar + "Ver detalle".
+ *  - `upcoming`: "Cancelar reserva" (o el motivo por el que no se puede)
+ *    + "Ver detalle".
  *  - `past`: solo botón "Ver detalle".
  *  - `pendingReview`: CTA primario "Valorar" + "Ver detalle".
  *
@@ -48,11 +49,10 @@ function statusClassName(status: BookingCardProps['booking']['status']): string 
  * Server Component: lo interactivo (el diálogo de valoración y el
  * "Ver más" de la reseña) vive en Client Components hijos.
  *
- * Cancelación: el botón "Cancelar" que existía aquí era una simulación
- * sin backend — pintaba "Cancelación solicitada" sobre una reserva
- * pagada que seguía en pie — y se retiró. La política de cancelación por
- * parte del cliente sigue pendiente de definir (§4.bis de CLAUDE.md);
- * hasta entonces se gestiona por soporte y aquí solo se informa de ello.
+ * Cancelación (§4.bis, decidido 2026-10-29): lo que se ofrece lo decide
+ * el servidor en `booking.cancellation` con las mismas reglas que la
+ * action (última hora nunca, hasta 2 h antes). La card solo elige qué
+ * pintar; el botón y su diálogo son un Client Component.
  */
 export function BookingCard({ booking, variant }: BookingCardProps) {
   const t = useTranslations('customerArea');
@@ -62,9 +62,13 @@ export function BookingCard({ booking, variant }: BookingCardProps) {
   // El nombre del servicio viene del dominio (`LocalizedText`) y se
   // resuelve aquí según el locale activo para evitar lookups en JSX.
   const serviceName = pickLocalized(booking.serviceName, locale as AppLocale);
-  // Reserva de última hora (creada a menos de 2 h del inicio): no admite
-  // cancelación, así que no ofrecemos "escríbenos para cancelar".
-  const isLastMinute = isLastMinuteAtCreation(booking.startAt, booking.createdAt);
+  const whenFormatted = format.dateTime(booking.startAt, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
   const priceFormatted = format.number(booking.priceCents / 100, {
     style: 'currency',
     currency: 'EUR',
@@ -107,13 +111,7 @@ export function BookingCard({ booking, variant }: BookingCardProps) {
         <ul className={s.meta}>
           <li className={s.metaItem}>
             <CalendarClock className={s.metaIcon} aria-hidden="true" />
-            {format.dateTime(booking.startAt, {
-              weekday: 'short',
-              day: 'numeric',
-              month: 'short',
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
+            {whenFormatted}
           </li>
           <li className={s.metaItem}>
             <User className={s.metaIcon} aria-hidden="true" />
@@ -156,17 +154,12 @@ export function BookingCard({ booking, variant }: BookingCardProps) {
             ) : null}
 
             {variant === 'upcoming' ? (
-              // El botón de cancelar del cliente se retiró: no llamaba a
-              // ninguna API y con el cobro ya real le decía a quien reservó
-              // que había cancelado algo que seguía en pie. La política de
-              // cancelación por cliente sigue sin definirse (§4.bis), así
-              // que hasta entonces la vía es soporte.
-              <span
-                className={s.blockedHint}
-                data-component={`customer-booking-cancel-hint-${booking.id}`}
-              >
-                {isLastMinute ? t('actions.lastMinuteHint') : t('actions.cancelSupportHint')}
-              </span>
+              <BookingCancellationAction
+                booking={booking}
+                serviceName={serviceName}
+                whenLabel={whenFormatted}
+                amountLabel={priceFormatted}
+              />
             ) : null}
 
             <Button asChild variant="ghost" size="lg">

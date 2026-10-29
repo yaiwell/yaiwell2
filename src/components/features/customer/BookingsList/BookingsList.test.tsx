@@ -1,11 +1,17 @@
 import { render, screen, within } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import type { CustomerBookingView } from '@/lib/services/customer-bookings';
 
 import { BookingsList } from './BookingsList';
 import { splitBookings } from './BookingsList.logic';
+
+// La card de próximas monta el diálogo de cancelar, que importa la server
+// action; aquí solo se prueba el listado. Vitest eleva `vi.mock`.
+vi.mock('@/app/[locale]/mis-reservas/cancel-actions', () => ({
+  cancelMyBookingAction: vi.fn(),
+}));
 
 /**
  * Tests del listado de reservas del área cliente.
@@ -15,8 +21,8 @@ import { splitBookings } from './BookingsList.logic';
  *  - Que cuando una sección está vacía aparece el mensaje empty
  *    correspondiente en lugar del grid (incluido el caso "cliente
  *    nuevo, cero reservas", que con datos fake nunca se ejecutaba).
- *  - Que las próximas reservas muestran el aviso de cancelación por
- *    soporte en lugar del antiguo botón simulado.
+ *  - Que las próximas reservas ofrecen «Cancelar reserva» cuando el
+ *    servidor lo permite.
  *  - Que un proveedor sin fotos no renderiza un `<img>` vacío.
  *  - Que las horas se pintan en hora de Madrid, no en UTC.
  *  - La partición §4.bis: `completed` sin review va a "valoraciones
@@ -57,6 +63,7 @@ function buildBooking(overrides: Partial<CustomerBookingView> = {}): CustomerBoo
       overrides.canReview ??
       ((overrides.status ?? 'confirmed') === 'completed' && !overrides.hasReview),
     reviewWindowClosed: overrides.reviewWindowClosed ?? false,
+    cancellation: overrides.cancellation ?? { kind: 'none' },
     notes: overrides.notes,
   };
 }
@@ -81,7 +88,8 @@ const messages = {
     },
     actions: {
       viewDetail: 'Ver detalle',
-      cancelSupportHint: '¿Necesitas cancelar? Escríbenos y lo gestionamos contigo.',
+      cancel: 'Cancelar reserva',
+      tooLateHint: 'Ya no se puede cancelar.',
       review: 'Valorar',
     },
   },
@@ -94,6 +102,10 @@ function renderWithIntl(ui: React.ReactNode) {
     </NextIntlClientProvider>,
   );
 }
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe('BookingsList', () => {
   it('renderiza el número correcto de cards en cada sección', () => {
@@ -146,17 +158,19 @@ describe('BookingsList', () => {
     expect(screen.queryAllByRole('article')).toHaveLength(0);
   });
 
-  it('avisa de que la cancelación se gestiona por soporte en las próximas reservas', () => {
-    const upcoming = buildBooking({ id: 'bkg-up', startAt: inHours(5) });
+  it('ofrece cancelar en las próximas reservas cuando el servidor lo permite', () => {
+    // El diálogo vigila el reloj: lo fijamos al `NOW` del test.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(NOW);
+    const upcoming = buildBooking({
+      id: 'bkg-up',
+      startAt: inHours(5),
+      cancellation: { kind: 'allowed', refundCents: 4500, untilStart: false },
+    });
 
     renderWithIntl(<BookingsList upcoming={[upcoming]} pendingReview={[]} past={[]} />);
 
-    expect(
-      screen.getByText('¿Necesitas cancelar? Escríbenos y lo gestionamos contigo.'),
-    ).toBeInTheDocument();
-    // El botón simulado ya no existe: cobrado el pago, no podemos decirle
-    // al cliente que ha cancelado algo que sigue en pie.
-    expect(screen.queryByRole('button', { name: 'Cancelar' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Cancelar reserva' })).toBeInTheDocument();
   });
 
   it('no renderiza imagen cuando el proveedor no tiene fotos', () => {

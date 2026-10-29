@@ -8,6 +8,17 @@
 
 ## 2026-10-29
 
+### 2026-10-29 — Cancelación de reservas por el cliente
+
+P12/P15 (`stripe-payments` implementa; `business-rules-auditor` + `conventions-reviewer`; P1 y P2 aplicados salvo el E2E, en TODO).
+
+- **Botón «Cancelar reserva» en `/mis-reservas`** con diálogo (importe a devolver y plazo, o motivo por el que no se puede). Hasta 2 h antes; las de última hora ya pagadas no se cancelan; una `pending` sin cobro sí. Servidor y tarjeta deciden con las mismas reglas y el reloj del servidor.
+- **Devolución íntegra automática** (comisión incluida) por el mismo camino que la cancelación del centro (`settleCancelledBookingPayment`, clave `booking_refund_<id>`, cola de /admin si falla).
+- **Escritura condicional** (`cancelIfActive`): una reserva solo se cancela una vez, aunque cancelen a la vez cliente y centro; ya no hay correos contradictorios ni se pisa `refunded`.
+- **Avisos**: al cliente (cancelación y estado del reembolso) y al centro (hora libre, con botón para liberarla con descuento o aviso de que su oferta sigue activa). Si la reserva venía de una hora con descuento, la oferta no se retira.
+- **Panel**: «Liberar con descuento» en las reservas canceladas liberables y enlace directo `?liberar=` desde el correo.
+- 1904 tests unitarios.
+
 ### 2026-10-29 — Convertir una cuenta de cliente en profesional
 
 P2 + `business-rules-auditor` (sin P0; P1 y P2 aplicados salvo el E2E, que queda en TODO).

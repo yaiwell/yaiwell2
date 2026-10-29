@@ -7,6 +7,7 @@
  */
 
 export { cancelBookingByProvider, createBooking, markBookingCompleted } from './booking.service';
+export { cancelBookingByClient } from './booking.client-cancel.service';
 
 export { bookingRepository } from './booking.repository';
 
@@ -23,6 +24,7 @@ export {
   BookingNotConfirmedError,
   BookingNotFoundError,
   BookingTooLateToCancelError,
+  LastMinuteBookingNotCancellableError,
   ServiceNotFoundError,
   ServicePausedError,
   SlotUnavailableError,

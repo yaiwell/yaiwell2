@@ -6,6 +6,7 @@ import { canCancelBooking } from '@/lib/utils/booking-cancellation';
 
 /**
  * Mantiene viva en el cliente la ventana de cancelación de 2 h (§4.bis).
+ * La comparten el panel del proveedor y `/mis-reservas` del cliente.
  *
  * El primer render DEBE devolver el valor calculado en el servidor: si
  * recalculásemos con el reloj del navegador en el render inicial,

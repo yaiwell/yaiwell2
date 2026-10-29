@@ -3,28 +3,37 @@
 import { createContext, useCallback, useContext, useState } from 'react';
 
 /**
- * Contexto que permite al formulario de valoración anunciar el éxito en
- * un aviso a nivel de página.
- *
- * Hace falta porque, al publicar, la action revalida `/mis-reservas` y la
- * card (con su diálogo) se desmonta: un mensaje de éxito guardado en el
- * estado del formulario desaparecería con él. Este estado vive por
- * encima del listado y React lo conserva tras el refresco del RSC.
+ * Anuncia un aviso a nivel de página. Sin `message` muestra el de
+ * «valoración publicada»; la cancelación de una reserva pasa el suyo.
  */
-export const ReviewFeedbackContext = createContext<(() => void) | null>(null);
+export type AnnounceFeedback = (message?: string) => void;
 
 /**
- * Devuelve la función que anuncia «valoración publicada», o `null` si el
- * formulario se renderiza fuera de `ReviewFeedbackProvider` (tests).
+ * Contexto que permite a los diálogos de una card (valorar, cancelar)
+ * anunciar su resultado en un aviso a nivel de página.
+ *
+ * Hace falta porque, al terminar, la action revalida `/mis-reservas` y la
+ * card (con su diálogo) cambia de sección y se desmonta: un mensaje
+ * guardado en el estado del diálogo desaparecería con él. Este estado
+ * vive por encima del listado y React lo conserva tras el refresco del RSC.
  */
-export function useReviewFeedback(): (() => void) | null {
+export const ReviewFeedbackContext = createContext<AnnounceFeedback | null>(null);
+
+/**
+ * Devuelve la función que anuncia el aviso, o `null` si el diálogo se
+ * renderiza fuera de `ReviewFeedbackProvider` (tests).
+ */
+export function useReviewFeedback(): AnnounceFeedback | null {
   return useContext(ReviewFeedbackContext);
 }
 
-/** Estado del aviso: visible u oculto, con sus dos transiciones. */
+/**
+ * Estado del aviso: oculto (`null`) o visible con su texto. La cadena
+ * vacía representa el aviso por defecto («valoración publicada»).
+ */
 export function useReviewFeedbackState() {
-  const [visible, setVisible] = useState(false);
-  const announce = useCallback(() => setVisible(true), []);
-  const dismiss = useCallback(() => setVisible(false), []);
-  return { visible, announce, dismiss };
+  const [message, setMessage] = useState<string | null>(null);
+  const announce = useCallback<AnnounceFeedback>((text) => setMessage(text ?? ''), []);
+  const dismiss = useCallback(() => setMessage(null), []);
+  return { visible: message !== null, message, announce, dismiss };
 }

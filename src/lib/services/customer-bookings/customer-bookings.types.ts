@@ -26,6 +26,23 @@ export interface CustomerBookingReview {
 }
 
 /**
+ * Qué puede hacer el cliente sobre cancelar una reserva (§4.bis):
+ *  - `allowed`: puede cancelarla ahora. `refundCents` es lo que se le
+ *    devuelve si pagó online; `null` si no hubo cobro (una `pending`, o
+ *    el futuro pago en el local). `untilStart`: sin cobro que proteger,
+ *    se puede cancelar hasta el inicio (una `pending`), así que la UI no
+ *    aplica la ventana de 2 h.
+ *  - `lastMinute`: reserva de última hora, nunca cancelable.
+ *  - `tooLate`: faltan menos de 2 h para el inicio.
+ *  - `none`: su estado ya no admite cancelación (completada, cancelada…).
+ */
+export type CustomerBookingCancellation =
+  | { kind: 'allowed'; refundCents: number | null; untilStart: boolean }
+  | { kind: 'lastMinute' }
+  | { kind: 'tooLate' }
+  | { kind: 'none' };
+
+/**
  * Una reserva del cliente lista para renderizar en el área privada.
  */
 export interface CustomerBookingView {
@@ -77,6 +94,11 @@ export interface CustomerBookingView {
    * «Plazo de valoración cerrado» en lugar de no decir nada.
    */
   reviewWindowClosed: boolean;
+  /**
+   * Veredicto sobre la cancelación, calculado en el servidor con las
+   * mismas reglas que `cancelBookingByClient`. La UI no lo recalcula.
+   */
+  cancellation: CustomerBookingCancellation;
   /** Notas que el cliente escribió al reservar. */
   notes?: string;
 }

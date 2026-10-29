@@ -90,14 +90,14 @@ export interface BookingTransitionResult {
 export type RefundOutcome = 'issued' | 'already_refunded' | 'not_applicable' | 'failed';
 
 /**
- * Resultado de cancelar una reserva desde el panel del proveedor
+ * Resultado de cancelar una reserva (la cancele el centro o el cliente)
  * incluyendo el reembolso al cliente.
  *
  * `status` es siempre `cancelled`: el paso a `refunded` lo escribe el
  * webhook `charge.refunded`, que es la única fuente de verdad del
  * dinero. Devolver aquí `refunded` mentiría mientras Stripe no confirme.
  */
-export interface ProviderCancellationResult {
+export interface BookingCancellationResult {
   bookingId: string;
   /** Siempre 'cancelled': el paso a 'refunded' lo hace el webhook. */
   status: BookingStatus;
@@ -110,7 +110,28 @@ export interface ProviderCancellationResult {
    * reembolso que quizá no existe.
    */
   paymentUncertain?: boolean;
+  /**
+   * Solo en la cancelación del cliente: la reserva se vendió con una
+   * oferta con descuento que sigue activa, así que la hora vuelve a
+   * anunciarse sola. El aviso al centro lo cuenta en vez de proponerle
+   * liberarla otra vez.
+   */
+  offerReopened?: boolean;
 }
+
+/** Quién cancela: para logs y alertas, y para que soporte sepa el origen. */
+export type CancellationActor = 'client' | 'provider';
+
+/** Lo que el dominio `booking` devuelve tras cancelar. */
+export interface CancelledBookingSnapshot {
+  id: string;
+  /** Estado leído justo antes de cancelar (`pending` o `confirmed`). */
+  previousStatus: string;
+  stripePaymentIntentId: string | null;
+}
+
+/** Alias histórico: la cancelación del centro devuelve el mismo resultado. */
+export type ProviderCancellationResult = BookingCancellationResult;
 
 /**
  * Resumen de una ejecución del cron de caducidad de `pending`.

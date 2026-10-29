@@ -31,4 +31,5 @@ export const releaseSlotStyles = {
   successIcon: 'size-6 text-primary',
 
   trigger: 'shrink-0',
+  triggerIcon: 'size-3.5',
 } as const;

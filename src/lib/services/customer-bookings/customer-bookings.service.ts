@@ -2,6 +2,7 @@ import 'server-only';
 
 import type { LocalizedText } from '@/types/domain';
 
+import { resolveCancellation } from './customer-bookings.cancellation';
 import { customerBookingsRepository } from './customer-bookings.repository';
 import { resolveReviewState } from './customer-bookings.review-state';
 import type { CustomerBookingView } from './customer-bookings.types';
@@ -17,11 +18,12 @@ import type { CustomerBookingView } from './customer-bookings.types';
  * un orden estable de partida; la partición en próximas / pendientes de
  * valorar / historial reordena cada grupo por su cuenta.
  *
- * `canReview` se calcula aquí, una sola vez y con el reloj del servidor,
- * para que la UI no reimplemente la regla de valoración (§4.bis).
+ * `canReview` y `cancellation` se calculan aquí, una sola vez y con el
+ * reloj del servidor, para que la UI no reimplemente las reglas de
+ * valoración ni de cancelación (§4.bis).
  *
  * @param clientId — `User.id` del cliente autenticado.
- * @param now — instante de referencia para la ventana de valoración.
+ * @param now — instante de referencia para las ventanas de valoración y cancelación.
  * @returns las reservas del cliente, sin ninguna de otro.
  */
 export async function getCustomerBookings(
@@ -57,6 +59,7 @@ export async function getCustomerBookings(
       { status: record.status, completedAt: record.completedAt, hasReview: record.review !== null },
       now,
     ),
+    cancellation: resolveCancellation(record, now),
     // Prisma devuelve `null` para las columnas opcionales vacías; la
     // vista usa `undefined` para poder hacer `booking.notes ? ...`.
     notes: record.notes ?? undefined,

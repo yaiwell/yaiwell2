@@ -10,14 +10,15 @@ import { reviewFeedbackStyles as s } from './ReviewFeedback.styles';
 /**
  * Envuelve el listado de `/mis-reservas` y pinta, encima, el aviso
  * «¡Gracias! Tu valoración ya es visible…» cuando el formulario lo
- * anuncia. Ver `ReviewFeedback.logic.ts` para el porqué.
+ * anuncia, o el resultado de cancelar una reserva. Ver
+ * `ReviewFeedback.logic.ts` para el porqué.
  *
  * El aviso es `role="status"` para que los lectores de pantalla lo lean
  * aunque el foco se haya perdido al desmontarse el diálogo.
  */
 export function ReviewFeedbackProvider({ children }: { children: ReactNode }) {
   const t = useTranslations('customerArea.reviewForm');
-  const { visible, announce, dismiss } = useReviewFeedbackState();
+  const { visible, message, announce, dismiss } = useReviewFeedbackState();
 
   return (
     <ReviewFeedbackContext.Provider value={announce}>
@@ -25,7 +26,7 @@ export function ReviewFeedbackProvider({ children }: { children: ReactNode }) {
         <div role="status" aria-live="polite">
           {visible ? (
             <div className={s.banner} data-component="customer-review-success">
-              <p className={s.message}>{t('success')}</p>
+              <p className={s.message}>{message || t('success')}</p>
               <button
                 type="button"
                 className={s.dismiss}

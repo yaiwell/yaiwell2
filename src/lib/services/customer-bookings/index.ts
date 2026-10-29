@@ -11,6 +11,7 @@
 export { getCustomerBookings } from './customer-bookings.service';
 export type {
   BookingStatus,
+  CustomerBookingCancellation,
   CustomerBookingReview,
   CustomerBookingView,
 } from './customer-bookings.types';

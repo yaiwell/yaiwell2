@@ -107,3 +107,18 @@ export class BookingNotCancellableError extends Error {
     this.name = 'BookingNotCancellableError';
   }
 }
+
+/**
+ * Error lanzado cuando el cliente intenta cancelar una reserva de última
+ * hora (la que empezaba a menos de 2 h de crearse). Se pagó sabiendo que
+ * no admite cancelación ni devolución (§4.bis), así que no se cancela
+ * nunca, ni siquiera si aún faltaran más de 2 h por algún desfase.
+ */
+export class LastMinuteBookingNotCancellableError extends Error {
+  readonly code = 'LAST_MINUTE_BOOKING_NOT_CANCELLABLE';
+
+  constructor(message = 'Las reservas de última hora no se pueden cancelar.') {
+    super(message);
+    this.name = 'LastMinuteBookingNotCancellableError';
+  }
+}

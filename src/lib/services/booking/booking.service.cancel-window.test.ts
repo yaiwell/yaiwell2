@@ -12,7 +12,7 @@ vi.mock('@/lib/db/prisma', () => ({
   prisma: {
     booking: {
       findUnique: vi.fn(),
-      update: vi.fn(),
+      updateMany: vi.fn(),
     },
   },
 }));
@@ -51,11 +51,11 @@ afterEach(() => {
 describe('cancelBookingByProvider — límite de 2 h', () => {
   it('acepta la cancelación exactamente a 2h00 del inicio', async () => {
     mockPrisma.booking.findUnique.mockResolvedValue(bookingStartingAt('2026-10-05T12:00:00.000Z'));
-    mockPrisma.booking.update.mockResolvedValue({ id: BOOKING_ID } as never);
+    mockPrisma.booking.updateMany.mockResolvedValue({ count: 1 });
 
     await cancelBookingByProvider({ bookingId: BOOKING_ID }, 'user-provider');
 
-    expect(mockPrisma.booking.update).toHaveBeenCalledOnce();
+    expect(mockPrisma.booking.updateMany).toHaveBeenCalledOnce();
   });
 
   it('la rechaza a 1h59m59s del inicio', async () => {
@@ -64,6 +64,6 @@ describe('cancelBookingByProvider — límite de 2 h', () => {
     await expect(
       cancelBookingByProvider({ bookingId: BOOKING_ID }, 'user-provider'),
     ).rejects.toBeInstanceOf(BookingTooLateToCancelError);
-    expect(mockPrisma.booking.update).not.toHaveBeenCalled();
+    expect(mockPrisma.booking.updateMany).not.toHaveBeenCalled();
   });
 });

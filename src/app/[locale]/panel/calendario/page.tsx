@@ -12,7 +12,10 @@ import {
   PanelPreviewToggle,
   PreviewBanner,
 } from '@/components/features/provider-panel/PanelPreviewToggle';
-import { ReleaseSlotPromptProvider } from '@/components/features/provider-panel/ReleaseSlotDialog';
+import {
+  ReleaseSlotPromptProvider,
+  type ReleaseSlotRequest,
+} from '@/components/features/provider-panel/ReleaseSlotDialog';
 import {
   WeeklyCalendar,
   buildCalendarWeek,
@@ -34,7 +37,7 @@ import { getMadridWeekRange, parseWeekParam } from '@/lib/utils/madrid-week';
 
 interface PanelCalendarPageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ semana?: string | string[] }>;
+  searchParams: Promise<{ semana?: string | string[]; liberar?: string | string[] }>;
 }
 
 /**
@@ -54,6 +57,11 @@ interface PanelCalendarPageProps {
  * vender. `ReleaseSlotPromptProvider` monta una sola vez el diálogo de
  * liberar hueco (también se abre tras cancelar una reserva).
  *
+ * `?liberar=<bookingId>` (enlace del email «un cliente ha cancelado»)
+ * abre al cargar el diálogo de liberar esa hora, solo si la reserva es de
+ * esta semana y del centro (sale de su propia query) y sigue siendo
+ * liberable. Si no, se ignora: el listado ya cuenta su estado.
+ *
  * En modo preview enseñamos datos de ejemplo con las acciones
  * deshabilitadas y sin navegación (los ejemplos no tienen fecha).
  */
@@ -70,9 +78,8 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
   const panelLocale = locale as AppLocale;
   const preview = await isPanelPreviewActive();
   const now = new Date();
-  const weekKey = preview
-    ? parseWeekParam(undefined, now)
-    : parseWeekParam((await searchParams).semana, now);
+  const query = await searchParams;
+  const weekKey = preview ? parseWeekParam(undefined, now) : parseWeekParam(query.semana, now);
 
   let bookings: PanelBookingAction[];
   let slotOffers: PanelSlotOffer[];
@@ -85,11 +92,13 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
     const { id: providerId } = await requireCurrentProvider(panelLocale);
     const weekStart = getMadridWeekRange(weekKey).start;
     [bookings, slotOffers, freeSlots] = await Promise.all([
-      getPanelWeekBookings(providerId, weekStart, panelLocale),
+      getPanelWeekBookings(providerId, weekStart, panelLocale, now),
       getPanelWeekSlotOffers(providerId, weekStart, panelLocale, now),
       getPanelReleasableFreeSlots(providerId, panelLocale, now),
     ]);
   }
+
+  const releaseRequest = preview ? null : findReleaseRequest(bookings, query.liberar);
 
   return (
     <section data-component="panel-calendar-page" className="flex flex-col gap-6">
@@ -108,7 +117,7 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
       </header>
 
       {preview ? <PreviewBanner /> : null}
-      <ReleaseSlotPromptProvider locale={panelLocale}>
+      <ReleaseSlotPromptProvider locale={panelLocale} initialRequest={releaseRequest}>
         <FreeSlotsSection slots={freeSlots} readOnly={preview} />
         <WeeklyCalendar
           bookings={bookings}
@@ -122,4 +131,22 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
       </ReleaseSlotPromptProvider>
     </section>
   );
+}
+
+/**
+ * Petición de liberar la hora que pide el enlace `?liberar=<bookingId>`.
+ *
+ * Se busca entre las reservas ya cargadas para la semana del centro: un
+ * id ajeno o inventado no aparece ahí, así que no hace falta otra query
+ * ni otra comprobación de titularidad (y el servidor la repite al
+ * liberar).
+ */
+function findReleaseRequest(
+  bookings: PanelBookingAction[],
+  raw: string | string[] | undefined,
+): ReleaseSlotRequest | null {
+  if (typeof raw !== 'string') return null;
+  const booking = bookings.find((b) => b.id === raw);
+  if (!booking?.releasable || !booking.startAtIso) return null;
+  return { target: { kind: 'cancelled', bookingId: booking.id, startAtIso: booking.startAtIso } };
 }

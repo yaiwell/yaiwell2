@@ -1,3 +1,4 @@
+export { ReleaseCancelledSlotButton } from './ReleaseCancelledSlotButton';
 export { ReleaseFreeSlotButton } from './ReleaseFreeSlotButton';
 export { ReleaseSlotDialog } from './ReleaseSlotDialog';
 export { ReleaseSlotPromptProvider } from './ReleaseSlotPrompt';

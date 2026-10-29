@@ -146,7 +146,8 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
 - La cancelación por el cliente sigue su propia política (ver siguiente apartado).
 
 ### Cancelación por el cliente, pago en el local y no presentados (decidido 2026-10-29)
-- El cliente **cancela desde la app** hasta 2 h antes de `startAt`: devolución íntegra automática si pagó online. Las reservas de última hora (< 2 h al reservar) no se pueden cancelar.
+- El cliente **cancela desde la app** hasta 2 h antes de `startAt`: devolución íntegra automática si pagó online, **comisión de Yaiwell incluida**. Las reservas de última hora (< 2 h al reservar) ya pagadas no se pueden cancelar; una de última hora aún sin pagar (`pending`) sí, porque no hay cobro.
+- Cuando cancela el cliente, al centro se le ofrece **liberar esa hora con descuento**, igual que tras una cancelación propia; si la reserva venía de una hora con descuento, la oferta sigue viva.
 - Con más de 2 h de antelación el cliente puede elegir **pagar en el local**.
 - **No presentado** (lo marca el profesional desde el panel, solo una vez pasada la hora de inicio):
   - Si pagó online: no hay devolución ni sanción.

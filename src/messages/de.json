@@ -151,7 +151,7 @@
         },
         "2": {
           "title": "Klare Regeln",
-          "body": "Kostenlos stornieren bis 2 Std. vorher – schreib uns einfach. Bei Last-Minute-Buchungen sichere Zahlung sofort und, falls das Studio dich nicht bedienen kann, volle Erstattung über den Support."
+          "body": "Kostenlos in der App stornieren bis 2 Std. vorher. Bei Last-Minute-Buchungen sichere Zahlung sofort und, falls das Studio dich nicht bedienen kann, volle Erstattung über den Support."
         }
       }
     },
@@ -935,10 +935,10 @@
     },
     "policy": {
       "title": "Kurze Richtlinie",
-      "cancelUntil": "Kostenlose Stornierung bis {deadline}: Schreib uns, wir kümmern uns darum.",
+      "cancelUntil": "Kostenlose Stornierung bis {deadline} unter „Meine Buchungen“, mit voller Erstattung.",
       "cancelWindowPassed": "Die Frist für die kostenlose Stornierung ist bereits abgelaufen.",
       "providerCancel": "Das Studio kann ebenfalls bis 2 Stunden vorher stornieren; in diesem Fall erhältst du automatisch die vollständige Rückerstattung.",
-      "compactNote": "Kostenlose Stornierung bis 2 Std. vor dem Service: Schreib uns, wir kümmern uns darum. Buchst du weniger als 2 Std. vorher, zahlst du sofort und kannst nicht stornieren."
+      "compactNote": "Kostenlose Stornierung unter „Meine Buchungen“ bis 2 Std. vor dem Service, mit voller Erstattung. Buchst du weniger als 2 Std. vorher, zahlst du sofort und kannst nicht stornieren."
     },
     "lastMinute": {
       "policy": "Diese Buchung beginnt in weniger als 2 Std.: Die Zahlung erfolgt sofort, eine Stornierung oder Erstattung ist nicht möglich. Kann das Studio dich nicht bedienen, schreib uns und wir erstatten dir 100 %.",
@@ -1025,10 +1025,34 @@
     },
     "actions": {
       "viewDetail": "Details ansehen",
-      "cancelSupportHint": "Du musst absagen? Schreib uns und wir regeln es gemeinsam.",
+      "cancel": "Buchung stornieren",
       "lastMinuteHint": "Last-Minute-Buchung: keine Stornierung möglich. Kann das Studio dich nicht bedienen, schreib uns.",
+      "tooLateHint": "Eine Stornierung ist nicht mehr möglich: Der Termin beginnt in weniger als 2 Std. Wenn etwas dazwischenkommt, schreib uns.",
       "review": "Bewerten",
       "reviewWindowClosed": "Bewertungszeitraum abgelaufen"
+    },
+    "cancelDialog": {
+      "title": "Diese Buchung stornieren?",
+      "description": "{service} bei {provider}, {when}.",
+      "refundInfo": "Wir erstatten dir den vollen Betrag ({amount}) auf dieselbe Zahlungsmethode. Je nach Bank kann es 5 bis 10 Tage dauern, bis er sichtbar ist.",
+      "noPaymentInfo": "Für diese Buchung wurde dir nichts berechnet, daher gibt es nichts zu erstatten.",
+      "keep": "Buchung behalten",
+      "confirm": "Ja, stornieren",
+      "pending": "Wird storniert…",
+      "result": {
+        "refunded": "Buchung storniert. Wir erstatten dir {amount}: Je nach Bank kann es 5 bis 10 Tage dauern, bis der Betrag sichtbar ist. Du bekommst eine Bestätigung per E-Mail.",
+        "refund_pending": "Buchung storniert. Wir bearbeiten die Erstattung von {amount} und schreiben dir per E-Mail.",
+        "refund_uncertain": "Buchung storniert. Wir prüfen, ob die Zahlung durchgegangen ist; falls ja, erstatten wir dir {amount}.",
+        "no_payment": "Buchung storniert. Dir wurde nichts berechnet."
+      },
+      "errors": {
+        "FORBIDDEN": "Diese Buchung kann mit diesem Konto nicht storniert werden. Prüfe, ob du mit dem Konto angemeldet bist, mit dem du gebucht hast.",
+        "TOO_LATE": "Eine Stornierung ist nicht mehr möglich: Der Termin beginnt in weniger als 2 Std.",
+        "LAST_MINUTE": "Das ist eine Last-Minute-Buchung: Sie kann nicht storniert werden.",
+        "NOT_CANCELLABLE": "Diese Buchung kann nicht mehr storniert werden. Lade die Seite neu, um ihren Status zu sehen.",
+        "VALIDATION": "Wir konnten die Buchung nicht stornieren. Lade die Seite neu und versuch es noch einmal.",
+        "INTERNAL": "Wir konnten die Buchung nicht stornieren. Versuch es in ein paar Minuten noch einmal."
+      }
     },
     "existingReview": {
       "label": "Deine Bewertung:",
@@ -1395,7 +1419,7 @@
       "title": "Dein Kalender immer dabei.",
       "subtitle": "Buche sofort, verwalte deine Termine und entdecke Profis in deiner Nähe.",
       "bullet1": "Echte Verfügbarkeit, ohne Anrufe und ohne Wartezeit.",
-      "bullet2": "Klare Regeln: kostenlos stornieren bis 2 Std. vorher – schreib uns einfach. Bei Last-Minute-Buchungen sichere Zahlung sofort und, falls das Studio dich nicht bedienen kann, volle Erstattung über den Support."
+      "bullet2": "Klare Regeln: kostenlos in der App stornieren bis 2 Std. vorher. Bei Last-Minute-Buchungen sichere Zahlung sofort und, falls das Studio dich nicht bedienen kann, volle Erstattung über den Support."
     },
     "tabs": {
       "ariaLabel": "Account-Typ wählen",

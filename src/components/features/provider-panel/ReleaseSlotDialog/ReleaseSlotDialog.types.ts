@@ -44,6 +44,13 @@ export type OpenReleaseSlotPrompt = (request: ReleaseSlotRequest) => void;
 export interface ReleaseSlotPromptProviderProps {
   locale: SupportedLocale;
   children: ReactNode;
+  /**
+   * Petición a abrir nada más montar: el enlace del email «un cliente ha
+   * cancelado» (`?liberar=<bookingId>`) lleva directo al diálogo de
+   * liberar esa hora. La página solo la pasa si el servidor ve la
+   * reserva liberable.
+   */
+  initialRequest?: ReleaseSlotRequest | null;
 }
 
 export interface ReleaseSlotDialogProps {
@@ -59,6 +66,13 @@ export interface ReleaseSlotFormProps {
   locale: SupportedLocale;
   request: ReleaseSlotRequest;
   onClose: () => void;
+}
+
+export interface ReleaseCancelledSlotButtonProps {
+  bookingId: string;
+  /** Inicio de la reserva cancelada en ISO-8601. */
+  startAtIso: string;
+  disabled?: boolean;
 }
 
 export interface ReleaseFreeSlotButtonProps {

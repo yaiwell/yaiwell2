@@ -35,6 +35,23 @@
     "refundUncertain": "If you were charged, we will refund 100% of the amount ({amount}). We are checking the payment and will let you know if we need anything from you.",
     "cta": "Find another time"
   },
+  "clientCancelled": {
+    "subject": "You have cancelled your booking at {provider}",
+    "heading": "Booking cancelled",
+    "intro": "We have cancelled your booking at {provider}, as you asked.",
+    "noPayment": "You had not been charged for this booking, so there is nothing to refund.",
+    "cta": "Find another time"
+  },
+  "providerClientCancelled": {
+    "subject": "Cancellation: {service}, {when}",
+    "heading": "A client has cancelled their booking",
+    "intro": "{client} has cancelled their booking in the app.",
+    "slotFree": "The slot is free again in your calendar. If they paid online, we refund the full amount.",
+    "releaseHint": "If you want to fill it, you can release it at a discount: the price drops on its own as the time gets closer, and we highlight it to people searching nearby.",
+    "offerReopened": "This slot had been sold at a discount: the offer is still active and is shown again with whatever discount applies at each moment.",
+    "releaseCta": "Release at a discount",
+    "calendarCta": "Open the calendar"
+  },
   "latePaymentRefunded": {
     "subject": "We couldn't confirm your booking at {provider}",
     "heading": "Your booking was not confirmed",

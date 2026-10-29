@@ -35,6 +35,23 @@
     "refundUncertain": "Falls du schon bezahlt hast, erstatten wir 100 % des Betrags ({amount}). Wir prüfen die Zahlung und melden uns, falls wir etwas von dir brauchen.",
     "cta": "Anderen Termin finden"
   },
+  "clientCancelled": {
+    "subject": "Du hast deine Buchung bei {provider} storniert",
+    "heading": "Buchung storniert",
+    "intro": "Wir haben deine Buchung bei {provider} wie gewünscht storniert.",
+    "noPayment": "Für diese Buchung wurde dir nichts berechnet, daher gibt es nichts zu erstatten.",
+    "cta": "Andere Uhrzeit finden"
+  },
+  "providerClientCancelled": {
+    "subject": "Stornierung: {service}, {when}",
+    "heading": "Eine Buchung wurde storniert",
+    "intro": "{client} hat die Buchung in der App storniert.",
+    "slotFree": "Der Termin ist in deinem Kalender wieder frei. Wurde online bezahlt, erstatten wir den vollen Betrag.",
+    "releaseHint": "Wenn du ihn füllen möchtest, kannst du ihn mit Rabatt freigeben: Der Preis sinkt automatisch, je näher der Termin rückt, und wir heben ihn für Leute in der Nähe hervor.",
+    "offerReopened": "Dieser Termin wurde mit Rabatt verkauft: Das Angebot ist weiterhin aktiv und wird mit dem jeweils gültigen Rabatt wieder angezeigt.",
+    "releaseCta": "Mit Rabatt freigeben",
+    "calendarCta": "Kalender öffnen"
+  },
   "latePaymentRefunded": {
     "subject": "Wir konnten deine Buchung bei {provider} nicht bestätigen",
     "heading": "Deine Buchung wurde nicht bestätigt",

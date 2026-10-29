@@ -10,6 +10,7 @@
 export { createBookingCheckout } from './checkout.service';
 
 export { cancelBookingByProviderWithRefund } from './checkout.refund.service';
+export { cancelBookingByClientWithRefund } from './checkout.client-cancel.service';
 
 export { listPendingRefunds, retryBookingRefund } from './checkout.refund-queue.service';
 export { dismissBookingRefund } from './checkout.refund-dismiss.service';
@@ -57,6 +58,7 @@ export type {
 } from './checkout.validation';
 
 export type {
+  BookingCancellationResult,
   BookingCheckoutSession,
   BookingTransitionResult,
   ExpirePendingSummary,

@@ -34,9 +34,10 @@ import {
 
 /**
  * Carga la reserva y ejecuta el envío; si la lectura falla o la reserva
- * no existe, lo registra y no hace nada más.
+ * no existe, lo registra y no hace nada más. Se exporta para los avisos
+ * que viven en otros ficheros (cancelación del cliente).
  */
-async function withBooking(
+export async function withBooking(
   kind: string,
   bookingId: string,
   expected: BookingStatus[],

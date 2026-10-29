@@ -151,7 +151,7 @@
         },
         "2": {
           "title": "Regles clares",
-          "body": "Cancel·la gratis fins a 2 h abans escrivint-nos. Per a última hora, pagament segur al moment i, si el centre no et pot atendre, reemborsament total a través de suport."
+          "body": "Cancel·la gratis des de l'app fins a 2 h abans. Per a última hora, pagament segur al moment i, si el centre no et pot atendre, reemborsament total a través de suport."
         }
       }
     },
@@ -935,10 +935,10 @@
     },
     "policy": {
       "title": "Política breu",
-      "cancelUntil": "Cancel·lació gratuïta fins al {deadline}: escriu-nos i la tramitem.",
+      "cancelUntil": "Cancel·lació gratuïta fins al {deadline}, des de «Les meves reserves», amb retorn íntegre.",
       "cancelWindowPassed": "El termini de cancel·lació gratuïta ja ha passat.",
       "providerCancel": "El centre també pot cancel·lar fins a 2h abans; en aquest cas rebràs un reemborsament íntegre automàtic.",
-      "compactNote": "Cancel·lació gratuïta fins a 2 h abans del servei: escriu-nos i la tramitem. Si reserves amb menys de 2 h, es paga al moment i no admet cancel·lació."
+      "compactNote": "Cancel·lació gratuïta des de «Les meves reserves» fins a 2 h abans del servei, amb retorn íntegre. Si reserves amb menys de 2 h, es paga al moment i no admet cancel·lació."
     },
     "lastMinute": {
       "policy": "Aquesta reserva comença d'aquí a menys de 2 h: es paga ara i no admet cancel·lació ni reemborsament. Si el centre no et pot atendre, escriu-nos i et tornem el 100 %.",
@@ -1025,10 +1025,34 @@
     },
     "actions": {
       "viewDetail": "Veure detall",
-      "cancelSupportHint": "Necessites cancel·lar? Escriu-nos i ho gestionem amb tu.",
+      "cancel": "Cancel·lar la reserva",
       "lastMinuteHint": "Reserva d'última hora: no admet cancel·lació. Si el centre no et pot atendre, escriu-nos.",
+      "tooLateHint": "Ja no es pot cancel·lar: falten menys de 2 h per a la cita. Si et sorgeix un imprevist, escriu-nos.",
       "review": "Valorar",
       "reviewWindowClosed": "Termini de valoració tancat"
+    },
+    "cancelDialog": {
+      "title": "Vols cancel·lar aquesta reserva?",
+      "description": "{service} a {provider}, {when}.",
+      "refundInfo": "Et retornarem l'import íntegre ({amount}) al mateix mètode de pagament. Segons el teu banc, pot trigar de 5 a 10 dies a aparèixer.",
+      "noPaymentInfo": "No t'han cobrat res per aquesta reserva, així que no hi ha res a retornar.",
+      "keep": "Mantenir la reserva",
+      "confirm": "Sí, cancel·la-la",
+      "pending": "Cancel·lant…",
+      "result": {
+        "refunded": "Reserva cancel·lada. Et retornem {amount}: segons el teu banc, pot trigar de 5 a 10 dies a aparèixer. T'ho confirmem per correu.",
+        "refund_pending": "Reserva cancel·lada. Estem tramitant el retorn de {amount} i t'escriurem per correu.",
+        "refund_uncertain": "Reserva cancel·lada. Estem comprovant si vas arribar a pagar; si és així, et retornarem {amount}.",
+        "no_payment": "Reserva cancel·lada. No t'havien cobrat res."
+      },
+      "errors": {
+        "FORBIDDEN": "No es pot cancel·lar aquesta reserva des d'aquest compte. Comprova que has entrat amb el compte amb què vas reservar.",
+        "TOO_LATE": "Ja no es pot cancel·lar: falten menys de 2 h per a la cita.",
+        "LAST_MINUTE": "És una reserva d'última hora: no admet cancel·lació.",
+        "NOT_CANCELLABLE": "Aquesta reserva ja no es pot cancel·lar. Recarrega la pàgina per veure'n l'estat.",
+        "VALIDATION": "No hem pogut cancel·lar la reserva. Recarrega la pàgina i torna-ho a provar.",
+        "INTERNAL": "No hem pogut cancel·lar la reserva. Torna-ho a provar d'aquí a uns minuts."
+      }
     },
     "existingReview": {
       "label": "La teva valoració:",
@@ -1395,7 +1419,7 @@
       "title": "La teva agenda a tot arreu.",
       "subtitle": "Reserva a l'instant, gestiona les teves cites i descobreix professionals a prop.",
       "bullet1": "Disponibilitat real, sense trucades ni esperes.",
-      "bullet2": "Regles clares: cancel·la gratis fins a 2 h abans escrivint-nos. Per a última hora, pagament segur al moment i, si el centre no et pot atendre, reemborsament total a través de suport."
+      "bullet2": "Regles clares: cancel·la gratis des de l'app fins a 2 h abans. Per a última hora, pagament segur al moment i, si el centre no et pot atendre, reemborsament total a través de suport."
     },
     "tabs": {
       "ariaLabel": "Tria tipus de compte",

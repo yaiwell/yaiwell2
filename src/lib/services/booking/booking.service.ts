@@ -13,19 +13,17 @@
  */
 
 import { prisma } from '@/lib/db/prisma';
-import {
-  findLiveOfferForSlot,
-  isBookableStart,
-  retireOfferOfCancelledBooking,
-} from '@/lib/services/slot-offers';
-import { canCancelBooking } from '@/lib/utils/booking-cancellation';
+import { findLiveOfferForSlot, isBookableStart } from '@/lib/services/slot-offers';
 import { computeCommissionCents, priceSlot } from '@/lib/utils/slot-offer-pricing';
 
 import {
-  BookingNotCancellableError,
+  assertCancellableStatus,
+  assertCancellationWindow,
+  commitCancellation,
+} from './booking.cancel';
+import {
   BookingNotConfirmedError,
   BookingNotFoundError,
-  BookingTooLateToCancelError,
   ServiceNotFoundError,
   ServicePausedError,
   SlotUnavailableError,
@@ -159,7 +157,8 @@ export async function createBooking(input: unknown, clientId: string) {
  * @throws BookingNotFoundError — si la reserva no existe.
  * @throws UnauthorizedCancellationError — si el usuario no es dueño.
  * @throws BookingNotCancellableError — si el estado actual no admite
- *   cancelación (ya cancelada, reembolsada o completada).
+ *   cancelación (ya cancelada, reembolsada o completada), también si
+ *   cambió en paralelo antes de escribir.
  * @throws BookingTooLateToCancelError — si faltan menos de 2 h.
  */
 export async function cancelBookingByProvider(input: unknown, providerUserId: string) {
@@ -175,37 +174,15 @@ export async function cancelBookingByProvider(input: unknown, providerUserId: st
     throw new UnauthorizedCancellationError();
   }
 
-  // El estado se comprueba antes que la ventana de 2 h a propósito:
-  // sobre una reserva ya cancelada el mensaje correcto es "ya no se
-  // puede cancelar", no "llegas tarde". Además corta aquí cualquier
-  // intento de emitir un segundo reembolso sobre el mismo cobro.
-  if (booking.status !== 'pending' && booking.status !== 'confirmed') {
-    throw new BookingNotCancellableError();
-  }
+  // Estado antes que ventana: ver `assertCancellableStatus`. La ventana
+  // de 2 h ya no coincide con la antelación mínima al crear (30 min): una
+  // reserva de última hora nace dentro de ella y no es cancelable.
+  const now = new Date();
+  assertCancellableStatus(booking);
+  assertCancellationWindow(booking, now);
 
-  // Ventana de 2 h frente a `now` (límite incluido: a 2h00 se acepta).
-  // Delegamos en `canCancelBooking`, el mismo util que usa la UI del
-  // panel, para que el umbral viva en un solo sitio. Ya no coincide con
-  // la antelación mínima al crear (30 min): una reserva de última hora
-  // nace dentro de esta ventana y no es cancelable.
-  if (!canCancelBooking({ startAt: booking.startAt, status: booking.status }, new Date())) {
-    throw new BookingTooLateToCancelError();
-  }
-
-  const cancelledAt = new Date();
-  const cancelled = await bookingRepository.updateStatus(bookingId, 'cancelled', {
-    cancelledAt,
-  });
-  // Una reserva vendida con descuento libera su oferta: la retiramos para
-  // que no vuelva a anunciarse sin que el proveedor lo decida.
-  if (booking.slotOfferId) {
-    await retireOfferOfCancelledBooking(booking.slotOfferId, cancelledAt);
-  }
-  // Devolvemos además el estado leído justo antes de cancelar: el caller
-  // de pagos lo necesita para saber si había cobro (`confirmed`) o solo
-  // un intent vivo (`pending`) sin depender de una lectura aparte, que
-  // abriría una ventana más de carrera con el webhook.
-  return { ...cancelled, previousStatus: booking.status };
+  // El centro retira la oferta de origen: decide él si vuelve a liberar.
+  return commitCancellation(booking, now, { retireOffer: true });
 }
 
 /**

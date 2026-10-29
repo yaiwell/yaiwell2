@@ -151,7 +151,7 @@
         },
         "2": {
           "title": "Reglas claras",
-          "body": "Cancela gratis hasta 2 h antes escribiéndonos. Para última hora, pago seguro al momento y, si el centro no puede atenderte, reembolso total a través de soporte."
+          "body": "Cancela gratis desde la app hasta 2 h antes. Para última hora, pago seguro al momento y, si el centro no puede atenderte, reembolso total a través de soporte."
         }
       }
     },
@@ -935,10 +935,10 @@
     },
     "policy": {
       "title": "Política breve",
-      "cancelUntil": "Cancelación gratuita hasta el {deadline}: escríbenos y la tramitamos.",
+      "cancelUntil": "Cancelación gratuita hasta el {deadline}, desde «Mis reservas», con devolución íntegra.",
       "cancelWindowPassed": "El plazo de cancelación gratuita ya ha pasado.",
       "providerCancel": "El centro también puede cancelar hasta 2h antes; en ese caso recibirás un reembolso íntegro automático.",
-      "compactNote": "Cancelación gratuita hasta 2 h antes del servicio: escríbenos y la tramitamos. Si reservas con menos de 2 h, se paga al momento y no admite cancelación."
+      "compactNote": "Cancelación gratuita desde «Mis reservas» hasta 2 h antes del servicio, con devolución íntegra. Si reservas con menos de 2 h, se paga al momento y no admite cancelación."
     },
     "lastMinute": {
       "policy": "Esta reserva empieza en menos de 2 h: se paga ahora y no admite cancelación ni reembolso. Si el centro no puede atenderte, escríbenos y te devolvemos el 100 %.",
@@ -1025,10 +1025,34 @@
     },
     "actions": {
       "viewDetail": "Ver detalle",
-      "cancelSupportHint": "¿Necesitas cancelar? Escríbenos y lo gestionamos contigo.",
+      "cancel": "Cancelar reserva",
       "lastMinuteHint": "Reserva de última hora: no admite cancelación. Si el centro no puede atenderte, escríbenos.",
+      "tooLateHint": "Ya no se puede cancelar: faltan menos de 2 h para la cita. Si te surge un imprevisto, escríbenos.",
       "review": "Valorar",
       "reviewWindowClosed": "Plazo de valoración cerrado"
+    },
+    "cancelDialog": {
+      "title": "¿Cancelar esta reserva?",
+      "description": "{service} en {provider}, {when}.",
+      "refundInfo": "Te devolveremos el importe íntegro ({amount}) al mismo método de pago. Según tu banco, puede tardar de 5 a 10 días en aparecer.",
+      "noPaymentInfo": "No se te ha cobrado nada por esta reserva, así que no hay nada que devolver.",
+      "keep": "Mantener reserva",
+      "confirm": "Sí, cancelar",
+      "pending": "Cancelando…",
+      "result": {
+        "refunded": "Reserva cancelada. Te devolvemos {amount}: según tu banco, puede tardar de 5 a 10 días en aparecer. Te lo confirmamos por email.",
+        "refund_pending": "Reserva cancelada. Estamos tramitando la devolución de {amount} y te escribiremos por email.",
+        "refund_uncertain": "Reserva cancelada. Estamos comprobando si llegaste a pagar; si es así, te devolveremos {amount}.",
+        "no_payment": "Reserva cancelada. No se te había cobrado nada."
+      },
+      "errors": {
+        "FORBIDDEN": "No se puede cancelar esta reserva desde esta cuenta. Comprueba que has entrado con la cuenta con la que reservaste.",
+        "TOO_LATE": "Ya no se puede cancelar: faltan menos de 2 h para la cita.",
+        "LAST_MINUTE": "Es una reserva de última hora: no admite cancelación.",
+        "NOT_CANCELLABLE": "Esta reserva ya no se puede cancelar. Recarga la página para ver su estado.",
+        "VALIDATION": "No hemos podido cancelar la reserva. Recarga la página e inténtalo de nuevo.",
+        "INTERNAL": "No hemos podido cancelar la reserva. Inténtalo de nuevo en unos minutos."
+      }
     },
     "existingReview": {
       "label": "Tu valoración:",
@@ -1395,7 +1419,7 @@
       "title": "Tu agenda contigo a todas partes.",
       "subtitle": "Reserva al instante, gestiona tus citas y descubre profesionales cerca de ti.",
       "bullet1": "Disponibilidad real, sin llamadas ni esperas.",
-      "bullet2": "Reglas claras: cancela gratis hasta 2 h antes escribiéndonos. Para última hora, pago seguro al momento y, si el centro no puede atenderte, reembolso total a través de soporte."
+      "bullet2": "Reglas claras: cancela gratis desde la app hasta 2 h antes. Para última hora, pago seguro al momento y, si el centro no puede atenderte, reembolso total a través de soporte."
     },
     "tabs": {
       "ariaLabel": "Elige tipo de cuenta",

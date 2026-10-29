@@ -35,6 +35,23 @@
     "refundUncertain": "Si llegaste a pagar, te devolveremos el 100 % del importe ({amount}). Estamos comprobando el pago y te avisaremos si necesitamos algo de ti.",
     "cta": "Buscar otra hora"
   },
+  "clientCancelled": {
+    "subject": "Has cancelado tu reserva en {provider}",
+    "heading": "Reserva cancelada",
+    "intro": "Hemos cancelado tu reserva en {provider}, tal como nos pediste.",
+    "noPayment": "No se te había cobrado nada por esta reserva, así que no hay nada que devolver.",
+    "cta": "Buscar otra hora"
+  },
+  "providerClientCancelled": {
+    "subject": "Cancelación: {service}, {when}",
+    "heading": "Un cliente ha cancelado su reserva",
+    "intro": "{client} ha cancelado su reserva desde la app.",
+    "slotFree": "La franja vuelve a estar libre en tu calendario. Si había pagado online, le devolvemos el importe íntegro.",
+    "releaseHint": "Si quieres llenarla, puedes liberarla con descuento: el precio baja solo a medida que se acerca la hora y la destacamos a quien busque cerca.",
+    "offerReopened": "Esta hora se había vendido con descuento: la oferta sigue activa y vuelve a anunciarse con el descuento que toque en cada momento.",
+    "releaseCta": "Liberar con descuento",
+    "calendarCta": "Abrir el calendario"
+  },
   "latePaymentRefunded": {
     "subject": "No hemos podido confirmar tu reserva en {provider}",
     "heading": "Tu reserva no se ha confirmado",

@@ -27,6 +27,7 @@ vi.mock('@/lib/db/prisma', () => {
       findMany: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
+      updateMany: vi.fn(),
     },
     $executeRaw: vi.fn(),
     // La transacción ejecuta el callback con el propio mock como `tx`.
@@ -299,14 +300,40 @@ describe('cancelBookingByProvider', () => {
     // 5 horas hasta el inicio: margen sobrado.
     const startAt = new Date(Date.now() + 5 * 60 * 60 * 1000);
     mockPrisma.booking.findUnique.mockResolvedValue(fakeBooking({ startAt }));
-    mockPrisma.booking.update.mockResolvedValue({ id: bookingId } as never);
+    mockPrisma.booking.updateMany.mockResolvedValue({ count: 1 });
 
     await cancelBookingByProvider({ bookingId }, 'user-provider');
 
-    expect(mockPrisma.booking.update).toHaveBeenCalledOnce();
-    const updateArgs = mockPrisma.booking.update.mock.calls[0][0];
-    expect(updateArgs.data.status).toBe('cancelled');
-    expect(updateArgs.data.cancelledAt).toBeInstanceOf(Date);
+    // Escritura condicional: solo si sigue activa.
+    expect(mockPrisma.booking.updateMany).toHaveBeenCalledOnce();
+    const updateArgs = mockPrisma.booking.updateMany.mock.calls[0][0];
+    expect(updateArgs?.where).toEqual({ id: bookingId, status: { in: ['pending', 'confirmed'] } });
+    expect(updateArgs?.data.status).toBe('cancelled');
+    expect(updateArgs?.data.cancelledAt).toBeInstanceOf(Date);
+  });
+
+  it('retira la oferta con descuento con la que se vendió la reserva', async () => {
+    const startAt = new Date(Date.now() + 5 * 60 * 60 * 1000);
+    mockPrisma.booking.findUnique.mockResolvedValue({
+      ...fakeBooking({ startAt }),
+      slotOfferId: 'offer-1',
+    } as never);
+    mockPrisma.booking.updateMany.mockResolvedValue({ count: 1 });
+
+    await cancelBookingByProvider({ bookingId }, 'user-provider');
+
+    expect(retireOfferMock).toHaveBeenCalledWith('offer-1', expect.any(Date));
+  });
+
+  it('si la reserva cambió en paralelo (0 filas), lanza BookingNotCancellableError', async () => {
+    const startAt = new Date(Date.now() + 5 * 60 * 60 * 1000);
+    mockPrisma.booking.findUnique.mockResolvedValue(fakeBooking({ startAt }));
+    mockPrisma.booking.updateMany.mockResolvedValue({ count: 0 });
+
+    await expect(cancelBookingByProvider({ bookingId }, 'user-provider')).rejects.toBeInstanceOf(
+      BookingNotCancellableError,
+    );
+    expect(retireOfferMock).not.toHaveBeenCalled();
   });
 
   it('rechaza con BookingTooLateToCancelError a 1 h 59 min del inicio', async () => {
@@ -317,7 +344,7 @@ describe('cancelBookingByProvider', () => {
     await expect(cancelBookingByProvider({ bookingId }, 'user-provider')).rejects.toBeInstanceOf(
       BookingTooLateToCancelError,
     );
-    expect(mockPrisma.booking.update).not.toHaveBeenCalled();
+    expect(mockPrisma.booking.updateMany).not.toHaveBeenCalled();
   });
 
   it('rechaza con BookingNotCancellableError si la reserva ya está reembolsada', async () => {
@@ -329,7 +356,7 @@ describe('cancelBookingByProvider', () => {
     await expect(cancelBookingByProvider({ bookingId }, 'user-provider')).rejects.toBeInstanceOf(
       BookingNotCancellableError,
     );
-    expect(mockPrisma.booking.update).not.toHaveBeenCalled();
+    expect(mockPrisma.booking.updateMany).not.toHaveBeenCalled();
   });
 
   it('rechaza con BookingNotCancellableError si el servicio ya se prestó', async () => {
@@ -339,7 +366,7 @@ describe('cancelBookingByProvider', () => {
     await expect(cancelBookingByProvider({ bookingId }, 'user-provider')).rejects.toBeInstanceOf(
       BookingNotCancellableError,
     );
-    expect(mockPrisma.booking.update).not.toHaveBeenCalled();
+    expect(mockPrisma.booking.updateMany).not.toHaveBeenCalled();
   });
 
   it('prioriza el estado sobre la ventana de 2 h en el mensaje de error', async () => {
@@ -362,7 +389,7 @@ describe('cancelBookingByProvider', () => {
     await expect(cancelBookingByProvider({ bookingId }, 'user-provider')).rejects.toBeInstanceOf(
       UnauthorizedCancellationError,
     );
-    expect(mockPrisma.booking.update).not.toHaveBeenCalled();
+    expect(mockPrisma.booking.updateMany).not.toHaveBeenCalled();
   });
 });
 

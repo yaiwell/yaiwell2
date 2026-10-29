@@ -2,6 +2,7 @@ import { CalendarClock } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { formatCurrencyFromCents } from '../DashboardMetrics/DashboardMetrics.logic';
+import { ReleaseCancelledSlotButton } from '../ReleaseSlotDialog';
 import { buildBookingActionRows } from './BookingActionsList.logic';
 import { bookingActionsListStyles as s } from './BookingActionsList.styles';
 import type { BookingActionsListProps, PanelBookingActionStatus } from './BookingActionsList.types';
@@ -30,7 +31,9 @@ const STATUS_CLASSES: Record<PanelBookingActionStatus, string> = {
  * Incluye también las reservas ya resueltas de la semana: tras cancelar
  * o finalizar, la fila permanece con su nuevo estado en lugar de
  * desaparecer, que es lo que confirma al proveedor que la acción ha
- * surtido efecto (y si el reembolso ya salió).
+ * surtido efecto (y si el reembolso ya salió). Una cancelada cuya hora
+ * aún se puede vender ofrece «Liberar con descuento», la cancelara el
+ * centro o el cliente.
  */
 export function BookingActionsList({ bookings, locale, readOnly, now }: BookingActionsListProps) {
   const t = useTranslations('providerPanel.calendar');
@@ -55,7 +58,7 @@ export function BookingActionsList({ bookings, locale, readOnly, now }: BookingA
         </p>
       ) : (
         <ul className={s.list}>
-          {rows.map(({ booking, canComplete, showCancel, cancellable }) => (
+          {rows.map(({ booking, canComplete, showCancel, cancellable, releasable }) => (
             <li
               key={booking.id}
               className={s.card}
@@ -100,6 +103,13 @@ export function BookingActionsList({ bookings, locale, readOnly, now }: BookingA
                       bookingId={booking.id}
                       startAtIso={booking.startAtIso}
                       initialCancellable={cancellable}
+                      disabled={readOnly}
+                    />
+                  )}
+                  {releasable && booking.startAtIso && (
+                    <ReleaseCancelledSlotButton
+                      bookingId={booking.id}
+                      startAtIso={booking.startAtIso}
                       disabled={readOnly}
                     />
                   )}

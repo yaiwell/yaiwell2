@@ -1,19 +1,23 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { CustomerBookingView } from '@/lib/services/customer-bookings';
 import messages from '@/messages/es.json';
 
 import { BookingCard } from './BookingCard';
 
+// El diálogo de cancelar importa la server action; su UI se prueba en
+// `CancelBookingDialog.test.tsx`. Vitest eleva `vi.mock` sobre los imports.
+vi.mock('@/app/[locale]/mis-reservas/cancel-actions', () => ({
+  cancelMyBookingAction: vi.fn(),
+}));
+
 /**
- * Aviso de cancelación de la card en "Próximas reservas".
- *
- * Una reserva de última hora (creada a menos de 2 h del inicio) no
- * admite cancelación: la card no puede invitar a "escríbenos para
- * cancelar". Usamos los mensajes reales de `es.json`.
+ * Cancelación en la card de "Próximas reservas" (§4.bis). La card no
+ * decide si se puede cancelar: pinta el veredicto `cancellation` que
+ * calcula el servicio. Usamos los mensajes reales de `es.json`.
  */
 
 const START = new Date('2026-10-05T16:00:00.000Z');
@@ -42,6 +46,7 @@ function booking(
     review: null,
     canReview: false,
     reviewWindowClosed: false,
+    cancellation: { kind: 'allowed', refundCents: 4500, untilStart: false },
     ...overrides,
   };
 }
@@ -58,23 +63,47 @@ function renderCard(
   );
 }
 
-describe('BookingCard — aviso de cancelación', () => {
-  it('en una reserva de última hora (1h59) dice que no admite cancelación', () => {
-    renderCard(new Date(START.getTime() - 119 * 60_000));
+describe('BookingCard — cancelación', () => {
+  const CREATED = new Date(START.getTime() - 24 * 60 * 60_000);
+  const a = messages.customerArea.actions;
+  const cancelButton = () => screen.queryByRole('button', { name: a.cancel });
 
-    expect(screen.getByText(messages.customerArea.actions.lastMinuteHint)).toBeInTheDocument();
-    expect(
-      screen.queryByText(messages.customerArea.actions.cancelSupportHint),
-    ).not.toBeInTheDocument();
+  beforeEach(() => {
+    // El diálogo vigila el reloj: lo fijamos un día antes de la cita.
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(CREATED);
   });
 
-  it('en una reserva hecha con margen (2h00) mantiene el aviso de soporte', () => {
-    renderCard(new Date(START.getTime() - 120 * 60_000));
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
-    expect(screen.getByText(messages.customerArea.actions.cancelSupportHint)).toBeInTheDocument();
-    expect(
-      screen.queryByText(messages.customerArea.actions.lastMinuteHint),
-    ).not.toBeInTheDocument();
+  it('ofrece «Cancelar reserva» cuando el servidor lo permite', () => {
+    renderCard(CREATED);
+
+    expect(cancelButton()).toBeInTheDocument();
+    expect(screen.queryByText(a.lastMinuteHint)).not.toBeInTheDocument();
+  });
+
+  it('en una reserva de última hora dice que no admite cancelación, sin botón', () => {
+    renderCard(CREATED, { cancellation: { kind: 'lastMinute' } });
+
+    expect(screen.getByText(a.lastMinuteHint)).toBeInTheDocument();
+    expect(cancelButton()).not.toBeInTheDocument();
+  });
+
+  it('a menos de 2 h dice que ya no se puede cancelar, sin botón', () => {
+    renderCard(CREATED, { cancellation: { kind: 'tooLate' } });
+
+    expect(screen.getByText(a.tooLateHint)).toBeInTheDocument();
+    expect(cancelButton()).not.toBeInTheDocument();
+  });
+
+  it('en el historial no ofrece nada sobre cancelar', () => {
+    renderCard(CREATED, { status: 'cancelled', cancellation: { kind: 'none' } }, 'past');
+
+    expect(cancelButton()).not.toBeInTheDocument();
+    expect(screen.queryByText(a.tooLateHint)).not.toBeInTheDocument();
   });
 });
 
@@ -87,6 +116,7 @@ describe('BookingCard — valoración', () => {
   const CREATED = new Date(START.getTime() - 7 * 24 * 60 * 60_000);
   const COMPLETED_AT = new Date(START.getTime() + 60 * 60_000);
   const reviewCta = () => screen.queryByRole('button', { name: /Valorar/ });
+  const past = { cancellation: { kind: 'none' } } as const;
 
   it('muestra el CTA «Valorar» cuando canReview', () => {
     renderCard(
@@ -101,7 +131,7 @@ describe('BookingCard — valoración', () => {
   it.each(['pending', 'confirmed', 'cancelled', 'refunded'] as const)(
     'no muestra el CTA en una reserva %s',
     (status) => {
-      renderCard(CREATED, { status }, 'past');
+      renderCard(CREATED, { status, ...past }, 'past');
 
       expect(reviewCta()).not.toBeInTheDocument();
       expect(screen.queryByText(messages.customerArea.actions.reviewWindowClosed)).toBeNull();
