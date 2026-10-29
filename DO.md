@@ -12,7 +12,7 @@
 
 - **`/privacidad`** en los 4 idiomas (Google la exige para el inicio de sesión con credenciales propias): responsable, datos tratados, finalidades y bases legales, proveedores reales (Clerk, Google, Stripe, Supabase, Vercel, Resend, Sentry, Mapbox, OpenStreetMap), conservación, cookies técnicas y derechos. Textos en `src/messages/legal/`, aparte de los de la web para no mandarlos al navegador. Enlazada desde el registro, el footer (columna «Legal») y el sitemap. Versión base pendiente de revisión legal.
 - **Reenlace por email** al cambiar de instancia de Clerk: un usuario existente que llega con otro `clerkId` conserva su cuenta.
-- DNS de Clerk producción en GoDaddy (5 CNAME) verificados.
+- **Clerk en producción** (instancia `yaiwell.app`): DNS en GoDaddy (5 CNAME), Google con credenciales propias (proyecto «Yaiwell» en Google Cloud, app publicada, solo scopes básicos), webhook `https://www.yaiwell.app/api/webhooks/clerk` (`user.created/updated/deleted`) y claves separadas en Vercel (`pk_live`/`sk_live`/`whsec` en Production; `pk_test`/`sk_test` en Preview). Verificado: producción carga Clerk desde `clerk.yaiwell.app` y el admin entra en `/admin` con `publicMetadata.role = admin`. El login en `yaiwell2.vercel.app` deja de funcionar (las claves live solo valen en `yaiwell.app`).
 
 ### 2026-10-29 — Pagos y reservas blindados
 

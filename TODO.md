@@ -244,7 +244,6 @@
 - [ ] **Aviso al profesional que entra con una cuenta de Google de cliente** (P2): en `/registro` pestaña profesional, si la cuenta ya existe Clerk entra como cliente sin explicar nada.
 - [ ] **Guardar el idioma en el alta** (P2): ni email ni Google mandan `unsafeMetadata.locale`; `users.locale` queda en `es` para quien se registra desde `/en` o `/de`.
 - [ ] **Trocear `SignUpForm.tsx` (416 líneas) y `SignUpForm.logic.ts` (315)**: mover `FormPhase` a `SignUpFormPhase.tsx` y la verificación a su propio fichero. `SignInForm.tsx` (256) y `user.service.ts` (252) rozan el límite.
-- [ ] **Google en producción**: crear credenciales OAuth propias en Google Cloud y pegarlas en la instancia de producción de Clerk (en desarrollo usa las compartidas de Clerk). Apple sigue en «Próximamente».
 - [ ] **`legalAccepted` en el alta por email**: el alta con Google ya lo manda (en `/registro` con la casilla y en `/entrar` con el aviso junto al botón). Cuando estén los textos legales, enlazar «condiciones de uso» y «política de privacidad» en ese aviso y mandar `legalAccepted` también en `signUp.create`.
 - [ ] **Agentes de la ola 3** (`.claude/agents/`): `seo-perf-auditor` (Lighthouse, bundle, caché). Los de la ola 2 (`e2e-tester`, `release-verifier`) y `design-auditor` se crearon el 2026-10-27. `i18n-guardian` se descarta de momento: `conventions-reviewer` ya comprueba la paridad de claves en cada diff.
 - [ ] **Activar la protección de `main` en GitHub** para que el CI sea obligatorio antes de mergear un PR (configuración del repo, la hace el dev).
