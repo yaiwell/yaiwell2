@@ -110,31 +110,33 @@ export const verificationRepository = {
    * Cambia el `verificationStatus` del Provider y registra la decisión
    * en `verification_requests` (upsert por providerId).
    *
-   * Hacemos las dos escrituras en una transacción para que un fallo
-   * deje BD consistente — sin que el Provider quede aprobado pero el
-   * registro de decisión perdido (o viceversa).
+   * Hacemos las escrituras en una transacción para que un fallo deje BD
+   * consistente — sin que el Provider quede aprobado pero el registro de
+   * decisión perdido (o viceversa).
+   *
+   * @returns id del `VerificationRequest` creado, o `null` si el Provider
+   *   ya estaba en ese estado (doble clic o decisión repetida): no se
+   *   registra de nuevo ni se vuelve a avisar.
    */
   async setVerificationDecision(args: {
     providerId: string;
     status: Exclude<VerificationStatus, 'pending'>;
     reviewedBy: string;
     notes: string | null;
-  }): Promise<void> {
+  }): Promise<string | null> {
     const { providerId, status, reviewedBy, notes } = args;
 
-    await prisma.$transaction([
-      prisma.provider.update({
-        where: { id: providerId },
+    return prisma.$transaction(async (tx) => {
+      // Update condicional: con dos clics a la vez solo uno cambia la fila.
+      const { count } = await tx.provider.updateMany({
+        where: { id: providerId, verificationStatus: { not: status } },
         data: { verificationStatus: status },
-      }),
-      // Upsert por providerId: en el modelo `VerificationRequest` no
-      // hay UNIQUE en providerId todavía, así que hacemos findFirst +
-      // update/create manual. Para MVP es suficiente; si crece, añadir
-      // `@@unique([providerId])` y usar `upsert` directo.
-      prisma.verificationRequest.deleteMany({
-        where: { providerId },
-      }),
-      prisma.verificationRequest.create({
+      });
+      if (count === 0) return null;
+      // Sin UNIQUE en providerId: borramos y creamos. Para MVP basta; si
+      // crece, añadir `@@unique([providerId])` y usar `upsert` directo.
+      await tx.verificationRequest.deleteMany({ where: { providerId } });
+      const decision = await tx.verificationRequest.create({
         data: {
           providerId,
           status,
@@ -143,8 +145,10 @@ export const verificationRepository = {
           notes,
           documents: [],
         },
-      }),
-    ]);
+        select: { id: true },
+      });
+      return decision.id;
+    });
   },
 
   /**

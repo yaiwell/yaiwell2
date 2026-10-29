@@ -19,6 +19,8 @@ export interface BookingEmailContext {
   /** Estado actual: el aviso se descarta si ya no es el que lo motivó. */
   status: BookingStatus;
   startAt: Date;
+  /** Momento de la reserva: decide si fue de última hora. */
+  createdAt: Date;
   priceCents: number;
   /** Precio del servicio antes del descuento; `null` si no hubo hueco rebajado. */
   originalPriceCents: number | null;

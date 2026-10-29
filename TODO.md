@@ -199,15 +199,11 @@
 - [ ] **Reponer el footer legal y la columna "Empresa"** cuando existan los destinos. Los textos de las 8 claves retiradas están en la entrada de `DO.md` del 2026-09-24, listos para copiar y pegar sin retraducir.
 - [ ] **`public/og-default.svg` queda huérfano** tras generar la imagen de compartición en código. Es el único asset de marca del repo, así que se conserva por si se reutiliza; borrarlo o no es decisión de diseño.
 - [ ] **Decidir qué hacer con la tabla `provider_categories`**, que queda sin uso tras derivar las categorías de los servicios (2026-09-28). Nunca tuvo una fila. O se borra del schema con una migración, o se documenta por qué se conserva.
-- [~] **Notificaciones por email (Resend)** — los 6 avisos base están hechos (2026-10-28, ver DO.md). Pendiente:
-  - [x] Variables en Vercel (producción) añadidas por el dev (2026-10-28): `RESEND_API_KEY`, `NEXT_PUBLIC_SENTRY_DSN`, `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`.
-  - [x] Dominio `yaiwell.com` verificado en Resend (confirmado 2026-10-28): el remitente por defecto `noreply@yaiwell.com` vale. `EMAIL_FROM_DEFAULT` en Vercel corregida a `@yaiwell.com` (con `@yaiwell.app` Resend daba 403). Envío real probado en producción el mismo día.
-  - [ ] **Reintento de correos fallidos**: si Resend falla, el aviso se pierde (queda en logs/Sentry). Guardar `confirmationEmailSentAt` o una tabla outbox y que el cron diario los reintente.
-  - [ ] **Aviso de reembolso completado** cuando un reembolso «en trámite» sale desde la cola de admin o llega `charge.refunded`.
-  - [ ] **Recibo con la regla de última hora**: si la reserva empezaba en menos de 2 h, recordar en el recibo que no es reembolsable (§4.bis).
-  - [ ] **Rechazo repetido con el mismo motivo** en menos de 24 h: la clave de idempotencia coincide y Resend no manda el segundo. Incluir el id de `VerificationRequest` en la clave.
-  - [ ] **Test de las acciones de `/admin/verificaciones`**: que un rechazo sin motivo no programa correo (las del calendario ya lo tienen).
-  - [ ] Recordatorio el día antes de la cita (necesita cron; en Vercel Hobby solo hay uno al día).
+- [~] **Notificaciones por email (Resend)** — avisos base (2026-10-28) y segunda tanda (2026-10-29) hechos, ver DO.md. Pendiente:
+  - [ ] **Reintento de correos fallidos**: si Resend falla, el aviso se pierde (queda en logs/Sentry). Necesita migración: `confirmationEmailSentAt` o una tabla outbox, y que el cron diario reintente.
+  - [ ] **Avisar al cliente si su reembolso falla de forma asíncrona** (`charge.refund.updated` → `failed` tras un «te devolvemos»): hoy solo entra en la cola de /admin y el cliente no sabe nada hasta que sale.
+  - [ ] **Recordatorio con umbral de ~24 h** en vez de por día civil, para cubrir las citas reservadas después del cron (necesita más de un cron al día o un plan de pago).
+  - [ ] **Comprobar si el proyecto de Vercel tiene Fluid Compute**: el cron diario fija `maxDuration = 60` (máximo de Hobby sin Fluid); con Fluid se podría subir a 300.
 - [ ] 4 planes de suscripción con Stripe Billing.
 - [ ] Onboarding de proveedor con formulario manual (jerarquía categoría → tipo → subtipo).
 - [~] **Huecos sueltos con descuento automático** (MVP hecho 2026-10-28, ver DO.md; decisiones en CLAUDE.md §4.bis). Pendiente:

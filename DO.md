@@ -6,6 +6,18 @@
 
 ---
 
+## 2026-10-29
+
+### 2026-10-29 — Correos: segunda tanda
+
+P2 + P10 (`business-rules-auditor` y `conventions-reviewer` en paralelo; P1 y P2 aplicados).
+
+- **Recibo de última hora**: si la reserva empezaba en menos de 2 h desde que se hizo, el recibo recuerda que el pago no admite devolución (§4.bis, misma regla que checkout).
+- **Reembolso completado**: aviso al cliente cuando sale un reembolso que estaba en la cola de /admin, desde el reintento manual (`succeeded`) o desde `charge.refunded` (`recoveredRefund`). Comparten clave `refund-completed/<id>`. No se marca en la cola por `pi_cancel_failed`, que ya avisa el pago tardío.
+- **Recordatorio del día antes**: el cron diario (`/api/cron/expire-pending-bookings`, ahora con `maxDuration = 60`) avisa de las citas confirmadas del día siguiente en Madrid, con pausa entre envíos, tope de 60 y presupuesto de 40 s. Caducidad y recordatorios corren por separado (`Promise.allSettled`). `getMadridDayRange` nuevo, con test de los días de cambio de hora.
+- **Aprobado/rechazado**: la clave de idempotencia va por id de `VerificationRequest`, así que un segundo rechazo con el mismo motivo llega. Una decisión repetida (doble clic) no registra de nuevo ni avisa (update condicional en transacción).
+- Tests nuevos de las acciones de `/admin/verificaciones` y `/admin/reembolsos`; 1399 tests unitarios.
+
 ## 2026-10-28
 
 ### 2026-10-28 — Correos transaccionales con Resend

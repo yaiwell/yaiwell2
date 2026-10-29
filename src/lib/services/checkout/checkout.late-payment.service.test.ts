@@ -70,6 +70,7 @@ function row(overrides: Record<string, unknown> = {}) {
     endAt: new Date('2026-10-27T11:00:00.000Z'),
     stripeRefundId: null,
     refundFailedAt: null,
+    refundFailureReason: null,
     // Retención vencida por defecto: creada hace 45 min.
     createdAt: new Date(NOW.getTime() - 45 * MINUTE),
     ...overrides,

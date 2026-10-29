@@ -17,7 +17,8 @@
     "subject": "Reserva confirmada a {provider}",
     "heading": "La teva reserva està confirmada",
     "intro": "Hem rebut el pagament. T'esperen a {provider}.",
-    "cta": "Veure les meves reserves"
+    "cta": "Veure les meves reserves",
+    "lastMinute": "És una reserva d'última hora: comença menys de 2 hores després de fer-la, així que el pagament no admet devolució."
   },
   "providerNewBooking": {
     "subject": "Nova reserva: {service}, {when}",
@@ -40,12 +41,24 @@
     "intro": "El teu pagament va arribar quan aquella hora ja no estava disponible a {provider}, així que no hem pogut confirmar la reserva.",
     "cta": "Cercar una altra hora"
   },
+  "refundCompleted": {
+    "subject": "T'hem retornat el pagament de la teva reserva a {provider}",
+    "heading": "Devolució feta",
+    "intro": "Ja t'hem retornat el 100 % de l'import ({amount}) de la teva reserva a {provider}. Segons el teu banc, pot trigar de 5 a 10 dies a aparèixer.",
+    "cta": "Cercar una altra hora"
+  },
   "reviewInvite": {
     "subject": "Com ha anat a {provider}?",
     "heading": "Com ha anat la cita?",
     "intro": "{provider} ha marcat la teva cita de {service} com a finalitzada. La teva valoració ajuda altres persones a triar.",
     "window": "Pots valorar-la durant els propers {days} dies.",
     "cta": "Valorar la cita"
+  },
+  "bookingReminder": {
+    "subject": "Demà tens cita a {provider}",
+    "heading": "T'esperen demà",
+    "intro": "Et recordem la teva cita de demà a {provider}.",
+    "cta": "Veure les meves reserves"
   },
   "providerApproved": {
     "subject": "{provider} ja està publicat a Yaiwell",

@@ -61,6 +61,12 @@ export interface BookingTransitionResult {
    * cliente. Una reentrega (`already_refunded`) no lo trae.
    */
   lateRefund?: 'issued' | 'failed';
+  /**
+   * Presente cuando `charge.refunded` cierra un reembolso que estaba en la
+   * cola de fallidos (p. ej. devuelto a mano desde el dashboard): el
+   * cliente tiene que saber que el dinero ya salió.
+   */
+  recoveredRefund?: true;
 }
 
 /**

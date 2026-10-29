@@ -16,6 +16,10 @@ import {
   buildProviderNewBookingEmail,
   buildReviewInviteEmail,
 } from './notifications.booking-templates';
+import {
+  buildBookingReminderEmail,
+  buildRefundCompletedEmail,
+} from './notifications.followup-templates';
 import { renderEmailHtml, renderEmailText } from './notifications.layout';
 import type { BookingEmailContext } from './notifications.types';
 import {
@@ -29,6 +33,7 @@ function ctx(overrides: Partial<BookingEmailContext> = {}): BookingEmailContext 
     status: 'confirmed',
     // 17:30 UTC en invierno = 18:30 en Madrid.
     startAt: new Date('2026-11-10T17:30:00.000Z'),
+    createdAt: new Date('2026-11-01T10:00:00.000Z'),
     priceCents: 3000,
     originalPriceCents: null,
     discountPct: null,
@@ -57,6 +62,25 @@ describe('plantillas de reserva', () => {
     const when = content.details.find((d) => d.label === 'Cuándo')?.value;
     expect(when).toContain('18:30');
     expect(content.cta?.url).toMatch(/\/es\/mis-reservas$/);
+  });
+
+  it('el recibo de una reserva de última hora avisa de que no hay devolución', () => {
+    const lastMinute = ctx({ createdAt: new Date('2026-11-10T16:00:00.000Z') });
+    expect(buildBookingConfirmedEmail(lastMinute).paragraphs[1]).toContain('no admite devolución');
+    expect(buildBookingConfirmedEmail(ctx()).paragraphs).toHaveLength(1);
+  });
+
+  it('el reembolso completado da el importe y enlaza al centro', () => {
+    const content = buildRefundCompletedEmail(ctx());
+    expect(content.subject).toBe('Te hemos devuelto el pago de tu reserva en Studio Aura');
+    expect(content.paragraphs[0]).toMatch(/30,00/);
+    expect(content.cta?.url).toMatch(/\/es\/centro\/studio-aura-prov-1$/);
+  });
+
+  it('el recordatorio sale en el idioma del cliente con la cita completa', () => {
+    const content = buildBookingReminderEmail(ctx({ client: { ...ctx().client, locale: 'en' } }));
+    expect(content.subject).toBe('Your appointment at Studio Aura is tomorrow');
+    expect(content.details.find((d) => d.label === 'Professional')?.value).toBe('Marta');
   });
 
   it('el aviso al centro sale en el idioma del dueño, con cliente y notas', () => {

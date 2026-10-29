@@ -16,6 +16,10 @@ import {
   buildReviewInviteEmail,
 } from './notifications.booking-templates';
 import { deliverEmail, reportNotificationFailure } from './notifications.delivery';
+import {
+  buildBookingReminderEmail,
+  buildRefundCompletedEmail,
+} from './notifications.followup-templates';
 import { notificationsRepository } from './notifications.repository';
 import type {
   BookingEmailContext,
@@ -120,6 +124,32 @@ export async function notifyLatePaymentRefunded(
   );
 }
 
+/**
+ * Reembolso completado después de quedarse en la cola de fallidos. Lo
+ * normal es que el cliente tuviera un aviso de «en trámite»; si el fallo
+ * fue asíncrono tras un «te devolvemos», le llega como confirmación.
+ *
+ * @param bookingId — reserva cuyo reembolso acaba de salir.
+ */
+export async function notifyRefundCompleted(bookingId: string): Promise<void> {
+  // Tras un reintento desde /admin la reserva sigue `cancelled` hasta que
+  // llega `charge.refunded`; ambos caminos comparten clave y no duplican.
+  await withBooking('refund-completed', bookingId, ['cancelled', 'refunded'], (ctx) =>
+    deliverEmail('refund-completed', bookingId, ctx.client, buildRefundCompletedEmail(ctx)),
+  );
+}
+
+/**
+ * Recordatorio de la cita del día siguiente (lo lanza el cron diario).
+ *
+ * @param bookingId — reserva confirmada que empieza mañana.
+ */
+export async function notifyBookingReminder(bookingId: string): Promise<void> {
+  await withBooking('booking-reminder', bookingId, ['confirmed'], (ctx) =>
+    deliverEmail('booking-reminder', bookingId, ctx.client, buildBookingReminderEmail(ctx)),
+  );
+}
+
 /** Igual que `withBooking`, para los avisos sobre un negocio. */
 async function withProvider(
   kind: string,
@@ -138,31 +168,37 @@ async function withProvider(
   }
 }
 
-/** Negocio aprobado en la cola de verificación. */
-export async function notifyProviderApproved(providerId: string): Promise<void> {
+/**
+ * Negocio aprobado en la cola de verificación.
+ *
+ * @param decisionId — `VerificationRequest` de esta decisión: la clave de
+ *   idempotencia va por decisión, así que una nueva aprobación tras un
+ *   rechazo sí llega aunque sea el mismo día.
+ */
+export async function notifyProviderApproved(
+  providerId: string,
+  decisionId: string,
+): Promise<void> {
   await withProvider('provider-approved', providerId, (ctx) =>
-    deliverEmail('provider-approved', providerId, ctx.owner, buildProviderApprovedEmail(ctx)),
+    deliverEmail('provider-approved', decisionId, ctx.owner, buildProviderApprovedEmail(ctx)),
   );
 }
 
 /**
- * Negocio rechazado, con el motivo. La clave de idempotencia incluye un
- * resumen del motivo: un segundo rechazo con otro motivo sí debe llegar.
+ * Negocio rechazado, con el motivo. La clave va por decisión: un segundo
+ * rechazo (aunque repita el motivo) sí debe llegar.
  */
-export async function notifyProviderRejected(providerId: string, notes: string): Promise<void> {
+export async function notifyProviderRejected(
+  providerId: string,
+  decisionId: string,
+  notes: string,
+): Promise<void> {
   await withProvider('provider-rejected', providerId, (ctx) =>
     deliverEmail(
       'provider-rejected',
-      `${providerId}/${hashNotes(notes)}`,
+      decisionId,
       ctx.owner,
       buildProviderRejectedEmail(ctx, notes),
     ),
   );
-}
-
-/** Hash corto y estable (djb2) del motivo; solo distingue motivos distintos. */
-function hashNotes(notes: string): string {
-  let hash = 5381;
-  for (let i = 0; i < notes.length; i++) hash = ((hash << 5) + hash + notes.charCodeAt(i)) | 0;
-  return (hash >>> 0).toString(36);
 }

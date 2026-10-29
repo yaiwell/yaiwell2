@@ -1,11 +1,12 @@
-import type { AppLocale } from '@/i18n/routing';
 import { pickLocalized } from '@/lib/i18n';
 // Import directo: el barrel de review arrastra Prisma.
 import { REVIEW_WINDOW_DAYS } from '@/lib/services/review/review.window';
+import { isLastMinuteAtCreation } from '@/lib/utils/booking-last-minute';
 import { buildProviderSlugWithId } from '@/lib/utils/provider-slug';
 
+import { bookingBaseDetails, bookingDetails } from './notifications.booking-details';
 import { buildEmailUrl, formatEmailDateTime, formatEmailPrice } from './notifications.format';
-import { getEmailTranslator, type EmailTranslator } from './notifications.i18n';
+import { getEmailTranslator } from './notifications.i18n';
 import { closing, greet } from './notifications.template-helpers';
 import type {
   BookingEmailContext,
@@ -14,52 +15,21 @@ import type {
 } from './notifications.types';
 
 /**
- * Detalles de la cita en el idioma del destinatario. El importe muestra
- * el descuento con el precio habitual, igual que la confirmación web.
+ * Recibo al cliente cuando el pago confirma la reserva. Si era de última
+ * hora lo recuerda: ese pago no admite devolución (§4.bis).
  */
-function bookingDetails(
-  ctx: BookingEmailContext,
-  locale: AppLocale,
-  t: EmailTranslator,
-): EmailContent['details'] {
-  const details = bookingBaseDetails(ctx, locale, t);
-  if (ctx.professionalName) {
-    details.push({ label: t('common.professionalLabel'), value: ctx.professionalName });
-  }
-  const paid = formatEmailPrice(ctx.priceCents, locale);
-  const value =
-    ctx.discountPct && ctx.originalPriceCents
-      ? `${paid} · ${t('common.discountNote', {
-          pct: ctx.discountPct,
-          original: formatEmailPrice(ctx.originalPriceCents, locale),
-        })}`
-      : paid;
-  details.push({ label: t('common.paidLabel'), value });
-  return details;
-}
-
-/** Qué, cuándo y dónde: lo mínimo para identificar la cita. */
-function bookingBaseDetails(
-  ctx: BookingEmailContext,
-  locale: AppLocale,
-  t: EmailTranslator,
-): EmailContent['details'] {
-  return [
-    { label: t('common.serviceLabel'), value: pickLocalized(ctx.serviceName, locale) },
-    { label: t('common.whenLabel'), value: formatEmailDateTime(ctx.startAt, locale) },
-    { label: t('common.whereLabel'), value: `${ctx.provider.name} · ${ctx.provider.address}` },
-  ];
-}
-
-/** Recibo al cliente cuando el pago confirma la reserva. */
 export function buildBookingConfirmedEmail(ctx: BookingEmailContext): EmailContent {
   const { locale } = ctx.client;
   const t = getEmailTranslator(locale);
+  const paragraphs = [t('bookingConfirmed.intro', { provider: ctx.provider.name })];
+  if (isLastMinuteAtCreation(ctx.startAt, ctx.createdAt)) {
+    paragraphs.push(t('bookingConfirmed.lastMinute'));
+  }
   return {
     subject: t('bookingConfirmed.subject', { provider: ctx.provider.name }),
     heading: t('bookingConfirmed.heading'),
     greeting: greet(t, ctx.client),
-    paragraphs: [t('bookingConfirmed.intro', { provider: ctx.provider.name })],
+    paragraphs,
     details: bookingDetails(ctx, locale, t),
     cta: { label: t('bookingConfirmed.cta'), url: buildEmailUrl(locale, '/mis-reservas') },
     ...closing(t),

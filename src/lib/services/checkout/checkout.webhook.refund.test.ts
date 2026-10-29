@@ -47,6 +47,7 @@ function bookingRow(status: string, overrides: Record<string, unknown> = {}) {
     stripePaymentIntentId: 'pi_123',
     stripeRefundId: null,
     refundFailedAt: null,
+    refundFailureReason: null,
     ...overrides,
   };
 }
@@ -81,6 +82,37 @@ describe('refundBookingPayment', () => {
     // El evento no trae `charge.refunds`: se consulta el refund en Stripe.
     expect(stripeMock.refunds.retrieve).toHaveBeenCalledWith('re_1');
     expect(result.status).toBe('refunded');
+  });
+
+  it('marca recoveredRefund si la reserva estaba en la cola de fallidos', async () => {
+    // Devuelto a mano desde el dashboard tras un fallo: el evento es
+    // posterior al fallo registrado.
+    bookingMock.bookingRepository.findById.mockResolvedValue(
+      bookingRow('cancelled', { refundFailedAt: new Date(EVENT_AT.getTime() - 60_000) }),
+    );
+
+    const result = await refundBookingPayment(charge(), { eventCreatedAt: EVENT_AT });
+
+    expect(result).toEqual({
+      bookingId: 'bk-1',
+      changed: true,
+      status: 'refunded',
+      recoveredRefund: true,
+    });
+  });
+
+  it('no marca recoveredRefund en la cola por pi_cancel_failed (lo avisa el pago tardío)', async () => {
+    bookingMock.bookingRepository.findById.mockResolvedValue(
+      bookingRow('cancelled', {
+        refundFailedAt: new Date(EVENT_AT.getTime() - 60_000),
+        refundFailureReason: 'pi_cancel_failed: unknown_error',
+      }),
+    );
+
+    const result = await refundBookingPayment(charge(), { eventCreatedAt: EVENT_AT });
+
+    expect(result.status).toBe('refunded');
+    expect(result).not.toHaveProperty('recoveredRefund');
   });
 
   it('no marca nada con un reembolso parcial', async () => {
@@ -121,6 +153,7 @@ describe('refundBookingPayment', () => {
 
     expect(bookingMock.bookingRepository.updateStatus).not.toHaveBeenCalled();
     expect(result.changed).toBe(false);
+    expect(result).not.toHaveProperty('recoveredRefund');
   });
 
   it('sigue ignorando un refund sobre una reserva pending', async () => {

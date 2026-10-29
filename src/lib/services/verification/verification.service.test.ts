@@ -140,9 +140,11 @@ describe('approveProvider', () => {
 
   it('persiste la decisión approved cuando el provider existe', async () => {
     mockRepo.findProviderForVerification.mockResolvedValue(buildPendingRow());
-    mockRepo.setVerificationDecision.mockResolvedValue();
+    mockRepo.setVerificationDecision.mockResolvedValue('vr-1');
 
-    await approveProvider({ providerId: SAMPLE_PROVIDER_ID }, SAMPLE_REVIEWER_ID);
+    await expect(
+      approveProvider({ providerId: SAMPLE_PROVIDER_ID }, SAMPLE_REVIEWER_ID),
+    ).resolves.toBe('vr-1');
 
     expect(mockRepo.setVerificationDecision).toHaveBeenCalledWith({
       providerId: SAMPLE_PROVIDER_ID,
@@ -150,6 +152,15 @@ describe('approveProvider', () => {
       reviewedBy: SAMPLE_REVIEWER_ID,
       notes: null,
     });
+  });
+
+  it('devuelve null si el provider ya estaba aprobado', async () => {
+    mockRepo.findProviderForVerification.mockResolvedValue(buildPendingRow());
+    mockRepo.setVerificationDecision.mockResolvedValue(null);
+
+    await expect(
+      approveProvider({ providerId: SAMPLE_PROVIDER_ID }, SAMPLE_REVIEWER_ID),
+    ).resolves.toBeNull();
   });
 
   it('rechaza con InvalidVerificationStatusError si providerId no es UUID', async () => {
@@ -181,7 +192,7 @@ describe('rejectProvider', () => {
 
   it('persiste la decisión rejected con notas cuando todo OK', async () => {
     mockRepo.findProviderForVerification.mockResolvedValue(buildPendingRow());
-    mockRepo.setVerificationDecision.mockResolvedValue();
+    mockRepo.setVerificationDecision.mockResolvedValue('vr-1');
 
     await rejectProvider(
       { providerId: SAMPLE_PROVIDER_ID, notes: 'Documentación incompleta tras dos avisos' },

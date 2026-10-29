@@ -142,10 +142,12 @@ export async function getVerificationDetail(
  * Aprueba un provider (cambia `verificationStatus` a `approved` y
  * registra la decisión en `verification_requests`).
  *
+ * @returns id de la decisión registrada (para la clave del correo), o
+ *   `null` si el provider ya estaba en ese estado.
  * @throws ProviderNotFoundForVerificationError — si el provider no existe.
  * @throws InvalidVerificationStatusError — si Zod rechaza el input.
  */
-export async function approveProvider(input: unknown, reviewedBy: string): Promise<void> {
+export async function approveProvider(input: unknown, reviewedBy: string): Promise<string | null> {
   let data: { providerId: string; notes?: string };
   try {
     data = approveProviderSchema.parse(input);
@@ -163,7 +165,7 @@ export async function approveProvider(input: unknown, reviewedBy: string): Promi
     throw new ProviderNotFoundForVerificationError();
   }
 
-  await verificationRepository.setVerificationDecision({
+  return verificationRepository.setVerificationDecision({
     providerId: data.providerId,
     status: 'approved',
     reviewedBy,
@@ -174,10 +176,12 @@ export async function approveProvider(input: unknown, reviewedBy: string): Promi
 /**
  * Rechaza un provider con motivo obligatorio (>=5 caracteres).
  *
+ * @returns id de la decisión registrada (para la clave del correo), o
+ *   `null` si el provider ya estaba en ese estado.
  * @throws ProviderNotFoundForVerificationError — si el provider no existe.
  * @throws RejectionNotesRequiredError — si las notas no superan validación.
  */
-export async function rejectProvider(input: unknown, reviewedBy: string): Promise<void> {
+export async function rejectProvider(input: unknown, reviewedBy: string): Promise<string | null> {
   let data: { providerId: string; notes: string };
   try {
     data = rejectProviderSchema.parse(input);
@@ -193,7 +197,7 @@ export async function rejectProvider(input: unknown, reviewedBy: string): Promis
     throw new ProviderNotFoundForVerificationError();
   }
 
-  await verificationRepository.setVerificationDecision({
+  return verificationRepository.setVerificationDecision({
     providerId: data.providerId,
     status: 'rejected',
     reviewedBy,

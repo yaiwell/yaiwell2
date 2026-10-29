@@ -69,6 +69,7 @@ function bookingRow(status: string, stripePaymentIntentId: string | null = 'pi_1
     endAt: new Date('2026-10-27T11:00:00.000Z'),
     stripeRefundId: null,
     refundFailedAt: null,
+    refundFailureReason: null,
     createdAt: new Date(NOW.getTime() - 5 * 60 * 1000),
   };
 }

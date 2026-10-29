@@ -139,6 +139,17 @@ export function getMadridWeekRange(weekStartKey: string): { start: Date; end: Da
 }
 
 /**
+ * Rango de instantes de un día civil de Madrid (00:00 incluido, 00:00
+ * del día siguiente excluido). Un día de cambio de hora dura 23 o 25 h.
+ */
+export function getMadridDayRange(dateKey: string): { start: Date; end: Date } {
+  return {
+    start: getMadridMidnight(dateKey),
+    end: getMadridMidnight(addDaysToDateKey(dateKey, 1)),
+  };
+}
+
+/**
  * Interpreta el parámetro `?semana=` de la URL del calendario.
  *
  * Acepta cualquier día de la semana y lo normaliza a su lunes, para que

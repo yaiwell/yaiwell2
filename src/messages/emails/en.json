@@ -17,7 +17,8 @@
     "subject": "Booking confirmed at {provider}",
     "heading": "Your booking is confirmed",
     "intro": "We have received your payment. {provider} is expecting you.",
-    "cta": "View my bookings"
+    "cta": "View my bookings",
+    "lastMinute": "This is a last-minute booking: it starts less than 2 hours after you made it, so the payment is non-refundable."
   },
   "providerNewBooking": {
     "subject": "New booking: {service}, {when}",
@@ -40,12 +41,24 @@
     "intro": "Your payment arrived after that time was no longer available at {provider}, so we couldn't confirm the booking.",
     "cta": "Find another time"
   },
+  "refundCompleted": {
+    "subject": "We have refunded your payment for {provider}",
+    "heading": "Refund sent",
+    "intro": "We have refunded 100% of the amount ({amount}) for your booking at {provider}. Depending on your bank, it may take 5 to 10 days to appear.",
+    "cta": "Find another time"
+  },
   "reviewInvite": {
     "subject": "How was {provider}?",
     "heading": "How was your appointment?",
     "intro": "{provider} has marked your {service} appointment as completed. Your review helps others choose.",
     "window": "You can leave a review for the next {days} days.",
     "cta": "Review my appointment"
+  },
+  "bookingReminder": {
+    "subject": "Your appointment at {provider} is tomorrow",
+    "heading": "See you tomorrow",
+    "intro": "A quick reminder of your appointment tomorrow at {provider}.",
+    "cta": "View my bookings"
   },
   "providerApproved": {
     "subject": "{provider} is now live on Yaiwell",

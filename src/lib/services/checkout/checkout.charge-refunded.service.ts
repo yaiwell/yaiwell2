@@ -76,7 +76,23 @@ export async function refundBookingPayment(
     cancelledAt: now,
     refundedAt: now,
   });
-  return { bookingId: booking.id, changed: true, status: 'refunded' };
+  return {
+    bookingId: booking.id,
+    changed: true,
+    status: 'refunded',
+    ...(isRecoveredRefund(booking) ? { recoveredRefund: true as const } : {}),
+  };
+}
+
+/**
+ * ¿Cierra este evento un reembolso que estaba en la cola? Se excluye la
+ * cola por `pi_cancel_failed` (no sabíamos si hubo cobro): ahí el dinero
+ * vuelve por el pago tardío, que ya avisa con su propio correo, y su
+ * `charge.refunded` puede llegar antes de que se limpie la cola.
+ */
+function isRecoveredRefund(booking: CheckoutBookingRow): boolean {
+  if (!booking.refundFailedAt) return false;
+  return !booking.refundFailureReason?.startsWith('pi_cancel_failed');
 }
 
 /** ¿Hay un fallo de refund registrado después de que Stripe emitiera el evento? */

@@ -12,6 +12,7 @@ import {
   retryBookingRefund,
   type RetryRefundOutcome,
 } from '@/lib/services/checkout';
+import { notifyRefundCompleted, scheduleNotification } from '@/lib/services/notifications';
 
 /**
  * Códigos de error de `retryRefundAction`.
@@ -70,6 +71,13 @@ export async function retryRefundAction(
     outcome = result.refund;
   } catch (err) {
     return { ok: false, code: mapRetryError(err) };
+  }
+
+  // Stripe ha aceptado el reembolso: se lo confirmamos al cliente con el
+  // mismo nivel de promesa que el aviso de cancelación (si falla después,
+  // vuelve a la cola). Comparte clave con el aviso del webhook.
+  if (outcome === 'succeeded') {
+    scheduleNotification(() => notifyRefundCompleted(bookingId));
   }
 
   // Un reintento con éxito saca la reserva de la cola; uno fallido

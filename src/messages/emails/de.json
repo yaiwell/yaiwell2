@@ -17,7 +17,8 @@
     "subject": "Buchung bei {provider} bestätigt",
     "heading": "Deine Buchung ist bestätigt",
     "intro": "Wir haben deine Zahlung erhalten. {provider} erwartet dich.",
-    "cta": "Meine Buchungen ansehen"
+    "cta": "Meine Buchungen ansehen",
+    "lastMinute": "Das ist eine Last-Minute-Buchung: Der Termin beginnt weniger als 2 Stunden nach deiner Buchung, deshalb kann die Zahlung nicht erstattet werden."
   },
   "providerNewBooking": {
     "subject": "Neue Buchung: {service}, {when}",
@@ -40,12 +41,24 @@
     "intro": "Deine Zahlung kam an, als dieser Termin bei {provider} nicht mehr frei war. Deshalb konnten wir die Buchung nicht bestätigen.",
     "cta": "Anderen Termin finden"
   },
+  "refundCompleted": {
+    "subject": "Wir haben deine Buchung bei {provider} erstattet",
+    "heading": "Erstattung erfolgt",
+    "intro": "Wir haben dir 100 % des Betrags ({amount}) für deine Buchung bei {provider} erstattet. Je nach Bank kann es 5 bis 10 Tage dauern, bis er sichtbar ist.",
+    "cta": "Anderen Termin finden"
+  },
   "reviewInvite": {
     "subject": "Wie war es bei {provider}?",
     "heading": "Wie war dein Termin?",
     "intro": "{provider} hat deinen Termin für {service} als abgeschlossen markiert. Deine Bewertung hilft anderen bei der Wahl.",
     "window": "Du kannst ihn in den nächsten {days} Tagen bewerten.",
     "cta": "Termin bewerten"
+  },
+  "bookingReminder": {
+    "subject": "Morgen hast du einen Termin bei {provider}",
+    "heading": "Bis morgen",
+    "intro": "Kurze Erinnerung an deinen Termin morgen bei {provider}.",
+    "cta": "Meine Buchungen ansehen"
   },
   "providerApproved": {
     "subject": "{provider} ist jetzt auf Yaiwell online",

@@ -44,6 +44,7 @@ export async function resolveBooking(
       createdAt: booking.createdAt,
       stripeRefundId: booking.stripeRefundId,
       refundFailedAt: booking.refundFailedAt,
+      refundFailureReason: booking.refundFailureReason,
     };
   }
 

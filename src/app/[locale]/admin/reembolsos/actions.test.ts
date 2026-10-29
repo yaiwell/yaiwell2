@@ -9,16 +9,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 
-const { requireRoleMock, retryBookingRefundMock, revalidatePathMock, errors } = vi.hoisted(() => {
-  class BookingForCheckoutNotFoundError extends Error {}
-  class RefundNotInQueueError extends Error {}
-  return {
-    requireRoleMock: vi.fn(),
-    retryBookingRefundMock: vi.fn(),
-    revalidatePathMock: vi.fn(),
-    errors: { BookingForCheckoutNotFoundError, RefundNotInQueueError },
-  };
-});
+const { requireRoleMock, retryBookingRefundMock, revalidatePathMock, errors, notifyMock } =
+  vi.hoisted(() => {
+    class BookingForCheckoutNotFoundError extends Error {}
+    class RefundNotInQueueError extends Error {}
+    return {
+      requireRoleMock: vi.fn(),
+      retryBookingRefundMock: vi.fn(),
+      revalidatePathMock: vi.fn(),
+      errors: { BookingForCheckoutNotFoundError, RefundNotInQueueError },
+      notifyMock: vi.fn(async () => {}),
+    };
+  });
 
 vi.mock('next/cache', () => ({ revalidatePath: revalidatePathMock }));
 vi.mock('@/lib/auth/server', () => ({ requireRole: requireRoleMock }));
@@ -26,6 +28,11 @@ vi.mock('@/lib/services/checkout', () => ({
   retryBookingRefund: retryBookingRefundMock,
   BookingForCheckoutNotFoundError: errors.BookingForCheckoutNotFoundError,
   RefundNotInQueueError: errors.RefundNotInQueueError,
+}));
+
+vi.mock('@/lib/services/notifications', () => ({
+  scheduleNotification: (task: () => Promise<void>) => void task(),
+  notifyRefundCompleted: notifyMock,
 }));
 
 import { retryRefundAction } from './actions';
@@ -74,6 +81,9 @@ describe('retryRefundAction', () => {
       expect(result).toEqual({ ok: true, outcome });
       expect(retryBookingRefundMock).toHaveBeenCalledWith({ bookingId: BOOKING_ID });
       expect(revalidatePathMock).toHaveBeenCalledWith('/ca/admin/reembolsos');
+      // Solo un reembolso emitido de verdad cierra el aviso «en trámite».
+      if (outcome === 'succeeded') expect(notifyMock).toHaveBeenCalledWith(BOOKING_ID);
+      else expect(notifyMock).not.toHaveBeenCalled();
     },
   );
 

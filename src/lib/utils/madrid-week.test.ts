@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  getMadridDayRange,
   addDaysToDateKey,
   getMadridDateKey,
   getMadridWeekRange,
@@ -51,6 +52,27 @@ describe('getMadridWeekRange', () => {
     // El domingo 25 de octubre de 2026 Madrid vuelve a UTC+1.
     const { start, end } = getMadridWeekRange('2026-10-19');
     expect((end.getTime() - start.getTime()) / 3_600_000).toBe(169);
+  });
+});
+
+describe('getMadridDayRange', () => {
+  it('un día normal de invierno va de 23:00 a 23:00 UTC', () => {
+    expect(getMadridDayRange('2026-11-10')).toEqual({
+      start: new Date('2026-11-09T23:00:00.000Z'),
+      end: new Date('2026-11-10T23:00:00.000Z'),
+    });
+  });
+
+  it('el día del cambio a verano dura 23 h', () => {
+    const { start, end } = getMadridDayRange('2026-03-29');
+    expect(start).toEqual(new Date('2026-03-28T23:00:00.000Z'));
+    expect(end.getTime() - start.getTime()).toBe(23 * 60 * 60 * 1000);
+  });
+
+  it('el día del cambio a invierno dura 25 h', () => {
+    const { start, end } = getMadridDayRange('2026-10-25');
+    expect(start).toEqual(new Date('2026-10-24T22:00:00.000Z'));
+    expect(end.getTime() - start.getTime()).toBe(25 * 60 * 60 * 1000);
   });
 });
 

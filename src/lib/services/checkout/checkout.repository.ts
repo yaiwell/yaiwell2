@@ -22,6 +22,7 @@ const CHECKOUT_BOOKING_SELECT = {
   createdAt: true,
   stripeRefundId: true,
   refundFailedAt: true,
+  refundFailureReason: true,
 } as const;
 
 /** Fila de reserva tal y como la consume el dominio checkout. */
@@ -37,6 +38,8 @@ export interface CheckoutBookingRow {
   stripeRefundId: string | null;
   /** Último fallo de reembolso registrado (cola de /admin). */
   refundFailedAt: Date | null;
+  /** Motivo de ese fallo (`pi_cancel_failed: …`, `refund_failed: …`). */
+  refundFailureReason: string | null;
 }
 
 /**

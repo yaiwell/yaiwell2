@@ -68,11 +68,13 @@ vi.mock('@/lib/services/checkout', () => ({
   MissingBookingReferenceError: MissingRefStub,
 }));
 
-const { scheduleMock, notifyConfirmedMock, notifyLateRefundMock } = vi.hoisted(() => ({
-  scheduleMock: vi.fn((task: () => Promise<void>) => void task()),
-  notifyConfirmedMock: vi.fn(async () => {}),
-  notifyLateRefundMock: vi.fn(async () => {}),
-}));
+const { scheduleMock, notifyConfirmedMock, notifyLateRefundMock, notifyRefundDoneMock } =
+  vi.hoisted(() => ({
+    scheduleMock: vi.fn((task: () => Promise<void>) => void task()),
+    notifyConfirmedMock: vi.fn(async () => {}),
+    notifyLateRefundMock: vi.fn(async () => {}),
+    notifyRefundDoneMock: vi.fn(async () => {}),
+  }));
 
 // `after()` solo existe dentro de una petición real: lo sustituimos por
 // una ejecución inmediata para comprobar qué aviso se programa.
@@ -80,6 +82,7 @@ vi.mock('@/lib/services/notifications', () => ({
   scheduleNotification: scheduleMock,
   notifyBookingConfirmed: notifyConfirmedMock,
   notifyLatePaymentRefunded: notifyLateRefundMock,
+  notifyRefundCompleted: notifyRefundDoneMock,
 }));
 
 import { POST } from './route';
@@ -241,6 +244,26 @@ describe('POST /api/webhooks/stripe', () => {
       eventCreatedAt: new Date(1_790_000_000 * 1000),
     });
     expect((await res.json()).status).toBe('refunded');
+  });
+
+  it('avisa del reembolso completado solo si salía de la cola', async () => {
+    verifyMock.mockReturnValue({
+      type: 'charge.refunded',
+      created: 1_790_000_000,
+      data: { object: { id: 'ch_test', metadata: { bookingId: 'bk-3' } } },
+    });
+    refundMock.mockResolvedValue({ bookingId: 'bk-3', changed: true, status: 'refunded' });
+    await POST(buildRequest());
+    expect(notifyRefundDoneMock).not.toHaveBeenCalled();
+
+    refundMock.mockResolvedValue({
+      bookingId: 'bk-3',
+      changed: true,
+      status: 'refunded',
+      recoveredRefund: true,
+    });
+    await POST(buildRequest());
+    expect(notifyRefundDoneMock).toHaveBeenCalledWith('bk-3');
   });
 
   it('devuelve handled:false cuando el evento era un reintento sin cambio', async () => {

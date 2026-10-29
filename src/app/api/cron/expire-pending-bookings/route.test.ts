@@ -8,9 +8,13 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { expireMock } = vi.hoisted(() => ({ expireMock: vi.fn() }));
+const { expireMock, remindMock } = vi.hoisted(() => ({
+  expireMock: vi.fn(),
+  remindMock: vi.fn(),
+}));
 
 vi.mock('@/lib/services/checkout', () => ({ expireAbandonedPendingBookings: expireMock }));
+vi.mock('@/lib/services/notifications', () => ({ sendTomorrowReminders: remindMock }));
 
 import { GET } from './route';
 
@@ -29,6 +33,7 @@ beforeEach(() => {
   vi.stubEnv('CRON_SECRET', SECRET);
   vi.spyOn(console, 'error').mockImplementation(() => undefined);
   expireMock.mockResolvedValue({ scanned: 2, expired: 1, skipped: 1, failed: 0 });
+  remindMock.mockResolvedValue({ scanned: 3, sent: 3, truncated: false });
 });
 
 afterEach(() => {
@@ -65,14 +70,35 @@ describe('GET /api/cron/expire-pending-bookings', () => {
     const response = await GET(request(`Bearer ${SECRET}`));
 
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual({ scanned: 2, expired: 1, skipped: 1, failed: 0 });
+    expect(await response.json()).toEqual({
+      scanned: 2,
+      expired: 1,
+      skipped: 1,
+      failed: 0,
+      reminders: { scanned: 3, sent: 3, truncated: false },
+    });
   });
 
-  it('responde 500 si el barrido falla de raíz', async () => {
+  it('responde 500 si el barrido falla de raíz, pero los recordatorios salen igual', async () => {
     expireMock.mockRejectedValue(new Error('db down'));
 
     const response = await GET(request(`Bearer ${SECRET}`));
 
     expect(response.status).toBe(500);
+    expect(remindMock).toHaveBeenCalledOnce();
+  });
+
+  it('un fallo de los recordatorios no impide la caducidad', async () => {
+    remindMock.mockRejectedValue(new Error('db down'));
+
+    const response = await GET(request(`Bearer ${SECRET}`));
+
+    expect(response.status).toBe(500);
+    expect(expireMock).toHaveBeenCalledOnce();
+  });
+
+  it('sin autorización no envía recordatorios', async () => {
+    await GET(request('Bearer otro-secreto'));
+    expect(remindMock).not.toHaveBeenCalled();
   });
 });

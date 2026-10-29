@@ -32,6 +32,7 @@ export const notificationsRepository = {
         id: true,
         status: true,
         startAt: true,
+        createdAt: true,
         priceCents: true,
         originalPriceCents: true,
         discountPct: true,
@@ -55,6 +56,7 @@ export const notificationsRepository = {
       bookingId: row.id,
       status: row.status,
       startAt: row.startAt,
+      createdAt: row.createdAt,
       priceCents: row.priceCents,
       originalPriceCents: row.originalPriceCents,
       discountPct: row.discountPct,
@@ -70,6 +72,16 @@ export const notificationsRepository = {
       client: toRecipient(row.client),
       owner: toRecipient(row.provider.owner),
     };
+  },
+
+  /** Reservas confirmadas que empiezan en `[start, end)`, para los recordatorios. */
+  async findConfirmedBookingIdsStartingBetween(start: Date, end: Date): Promise<string[]> {
+    const rows = await prisma.booking.findMany({
+      where: { status: 'confirmed', startAt: { gte: start, lt: end } },
+      select: { id: true },
+      orderBy: { startAt: 'asc' },
+    });
+    return rows.map((row) => row.id);
   },
 
   async findProviderContext(providerId: string): Promise<ProviderEmailContext | null> {
