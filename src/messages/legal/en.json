@@ -72,5 +72,145 @@
         ]
       }
     ]
+  },
+  "terms": {
+    "meta": {
+      "title": "Terms and conditions",
+      "description": "Yaiwell's terms of use for clients and businesses: bookings, payments, cancellations, reviews and commissions."
+    },
+    "title": "Terms and conditions",
+    "updated": "Last updated: {date}",
+    "intro": "These terms govern your use of Yaiwell, whether you book services or offer them. By creating an account you accept them. We have written them to be easy to understand; if anything is unclear, write to us at {email}.",
+    "sections": [
+      {
+        "heading": "What Yaiwell is",
+        "paragraphs": [
+          "Yaiwell is a platform that connects clients with beauty, wellness and sport venues and professionals so they can book and pay for their services. The service is always provided by the venue or professional; Yaiwell acts as an intermediary and handles the booking and the payment."
+        ]
+      },
+      {
+        "heading": "Your account",
+        "items": [
+          "To book or offer services you need an account with genuine details and an email address that belongs to you.",
+          "You are responsible for what is done with your account. If you think someone has accessed it, let us know.",
+          "You can ask us to delete it at any time by writing to {email}."
+        ]
+      },
+      {
+        "heading": "How a booking works",
+        "items": [
+          "The price you see is the final price the venue sets for that service.",
+          "When you choose a time slot, we hold it for 30 minutes so you can complete payment. If you do not pay within that time, the slot becomes available again.",
+          "The booking is confirmed once payment is complete. We send you the confirmation by email.",
+          "We only offer time slots that start at least 30 minutes after the moment of booking.",
+          "When you book, the contract for the service is formed between you and the venue or professional."
+        ]
+      },
+      {
+        "heading": "Payments",
+        "paragraphs": [
+          "Payment is made online when you book, using the methods offered by Stripe, our payment provider. Yaiwell collects the amount on behalf of the venue and transfers it to them after deducting its commission. We do not store your full card details."
+        ]
+      },
+      {
+        "heading": "Cancellations and refunds",
+        "items": [
+          "If you have made a booking, you can cancel it free of charge up to 2 hours before the service starts by writing to us at {email}. We refund 100% of the amount.",
+          "Last-minute bookings, those starting less than 2 hours after they are made, are paid on the spot and cannot be cancelled or refunded. We let you know before you pay.",
+          "If you do not turn up for an appointment, there is no refund.",
+          "The venue can cancel a booking up to 2 hours before it starts. In that case we refund you 100% automatically and let you know by email.",
+          "If the venue cannot see you for any other reason, we also refund you 100%: just write to us.",
+          "If your payment arrives when the time slot is no longer available, there is no booking and we refund you 100% automatically.",
+          "Refunds go back to the same payment method. Depending on your bank, they may take 5 to 10 days to appear."
+        ]
+      },
+      {
+        "heading": "Discounted time slots",
+        "paragraphs": [
+          "A venue can offer a time slot that has become free at a discount. The reference price is always its usual price, and the discount applies to whoever books that slot, wherever they come from. These bookings follow the same advance-notice and cancellation rules as any other."
+        ]
+      },
+      {
+        "heading": "Reviews",
+        "items": [
+          "You can only review a service you have booked and that the venue has marked as completed, within the following 30 days.",
+          "Your review must be honest and about your own experience. Insults, other people's personal data and illegal or promotional content are not allowed.",
+          "We may remove reviews that break these rules. The venue can reply publicly.",
+          "A published review still counts even if the booking is refunded later."
+        ]
+      },
+      {
+        "heading": "If you offer services",
+        "items": [
+          "We review every business by hand before publishing it. The details you give us (name, tax ID, address, services, prices, opening hours and photos) must be accurate and up to date.",
+          "You undertake to honour confirmed bookings at the published time and price. You can only cancel up to 2 hours before; the client receives a full refund.",
+          "Yaiwell charges a commission on each booking, according to your plan, calculated on what the client pays (including any discount). Current rates are shown on the page for professionals.",
+          "You receive payouts through your Stripe account, which you must set up and keep active.",
+          "You are responsible for providing the service and for your tax and professional obligations.",
+          "We may suspend or remove a business that breaches these terms or that builds up justified cancellations or complaints."
+        ]
+      },
+      {
+        "heading": "Acceptable use",
+        "paragraphs": [
+          "Do not use Yaiwell for anything illegal, to impersonate other people, to make fake bookings or to interfere with how the platform works. We may suspend accounts that do so."
+        ]
+      },
+      {
+        "heading": "Liability",
+        "paragraphs": [
+          "We do everything we can to keep the platform working well, but the service is provided by the venue or professional, who is responsible for its quality. If you have a problem with an appointment, write to us and we will help you sort it out. Nothing in these terms limits the rights the law gives you as a consumer."
+        ]
+      },
+      {
+        "heading": "Changes to these terms",
+        "paragraphs": [
+          "If we change them, we will publish the new version on this page with its date. If the change is significant, we will let you know by email before it takes effect. Bookings already made are governed by the terms in force when you made them."
+        ]
+      },
+      {
+        "heading": "Governing law and complaints",
+        "paragraphs": [
+          "These terms are governed by Spanish law. If you have a complaint, write to us first at {email} and we will deal with it. If you are a consumer, you can also turn to consumer protection bodies or to the courts where you live."
+        ]
+      }
+    ]
+  },
+  "cookies": {
+    "meta": {
+      "title": "Cookie policy",
+      "description": "Which cookies Yaiwell uses: only strictly necessary technical ones, with no analytics or advertising."
+    },
+    "title": "Cookie policy",
+    "updated": "Last updated: {date}",
+    "intro": "Cookies are small files that a website stores in your browser. At Yaiwell we only use the ones strictly necessary for the website to work, so we do not ask for your consent with a banner.",
+    "sections": [
+      {
+        "heading": "Cookies we use",
+        "items": [
+          "Session (Clerk): they keep you signed in and protect your account. Without them you could not sign in.",
+          "Payment (Stripe): only on the payment page, to prevent card fraud.",
+          "Preferences: they remember your language, whether you prefer the light or dark theme and, if you have a business, whether you are viewing the website as a client or as a professional."
+        ]
+      },
+      {
+        "heading": "Cookies we do not use",
+        "paragraphs": [
+          "We do not use analytics, advertising or social media cookies, and we do not share information about your browsing with advertisers."
+        ]
+      },
+      {
+        "heading": "Maps",
+        "paragraphs": [
+          "Maps load images from OpenStreetMap's servers. They do not set cookies, but those servers receive your IP address in order to send you the images."
+        ]
+      },
+      {
+        "heading": "How to manage them",
+        "paragraphs": [
+          "You can delete or block cookies in your browser settings. If you block the session or payment cookies, you will not be able to sign in or book. For more details on how we handle your data, see the privacy policy."
+        ]
+      }
+    ]
   }
 }

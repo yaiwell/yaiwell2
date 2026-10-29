@@ -75,7 +75,9 @@
     },
     "legal": {
       "title": "Legal",
-      "privacy": "Privacitat"
+      "terms": "Termes",
+      "privacy": "Privacitat",
+      "cookies": "Galetes"
     },
     "madeIn": "Fet a {city}",
     "copyright": "© {year} Yaiwell",

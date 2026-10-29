@@ -70,5 +70,145 @@
         ]
       }
     ]
+  },
+  "terms": {
+    "meta": {
+      "title": "Términos y condiciones",
+      "description": "Las condiciones de uso de Yaiwell para clientes y negocios: reservas, pagos, cancelaciones, valoraciones y comisiones."
+    },
+    "title": "Términos y condiciones",
+    "updated": "Última actualización: {date}",
+    "intro": "Estas condiciones regulan el uso de Yaiwell, tanto si reservas servicios como si los ofreces. Al crear una cuenta las aceptas. Las hemos escrito para que se entiendan; si algo no queda claro, escríbenos a {email}.",
+    "sections": [
+      {
+        "heading": "Qué es Yaiwell",
+        "paragraphs": [
+          "Yaiwell es una plataforma que conecta a clientes con centros y profesionales de belleza, bienestar y deporte para reservar y pagar sus servicios. El servicio lo presta siempre el centro o profesional; Yaiwell actúa como intermediario y gestiona la reserva y el cobro."
+        ]
+      },
+      {
+        "heading": "Tu cuenta",
+        "items": [
+          "Para reservar u ofrecer servicios necesitas una cuenta con datos reales y un email que sea tuyo.",
+          "Eres responsable de lo que se haga con tu cuenta. Si crees que alguien ha entrado en ella, avísanos.",
+          "Puedes pedir que la eliminemos cuando quieras escribiéndonos a {email}."
+        ]
+      },
+      {
+        "heading": "Cómo funciona una reserva",
+        "items": [
+          "El precio que ves es el precio final que fija el centro para ese servicio.",
+          "Al elegir una hora te la guardamos 30 minutos para que completes el pago. Si no pagas en ese tiempo, la hora vuelve a quedar libre.",
+          "La reserva se confirma cuando el pago se completa. Te enviamos la confirmación por email.",
+          "Solo ofrecemos horas que empiecen al menos 30 minutos después del momento de reservar.",
+          "Al reservar, el contrato del servicio se forma entre tú y el centro o profesional."
+        ]
+      },
+      {
+        "heading": "Pagos",
+        "paragraphs": [
+          "El pago se hace online al reservar, con los medios que ofrece Stripe, nuestro proveedor de pagos. Yaiwell cobra el importe en nombre del centro y se lo transfiere descontando su comisión. No guardamos los datos completos de tu tarjeta."
+        ]
+      },
+      {
+        "heading": "Cancelaciones y devoluciones",
+        "items": [
+          "Si eres cliente, puedes cancelar gratis hasta 2 horas antes del inicio del servicio escribiéndonos a {email}. Te devolvemos el 100 % del importe.",
+          "Las reservas de última hora, las que empiezan menos de 2 horas después de hacerlas, se pagan al momento y no admiten cancelación ni devolución. Te lo avisamos antes de pagar.",
+          "Si no te presentas a una cita, no hay devolución.",
+          "El centro puede cancelar una reserva hasta 2 horas antes de su inicio. En ese caso te devolvemos el 100 % de forma automática y te avisamos por email.",
+          "Si el centro no puede atenderte por cualquier otro motivo, también te devolvemos el 100 %: escríbenos.",
+          "Si tu pago llega cuando la hora ya no está disponible, no hay reserva y te devolvemos el 100 % de forma automática.",
+          "Las devoluciones vuelven al mismo medio de pago. Según tu banco, pueden tardar de 5 a 10 días en aparecer."
+        ]
+      },
+      {
+        "heading": "Horas con descuento",
+        "paragraphs": [
+          "Un centro puede ofrecer con descuento una hora que ha quedado libre. El precio de referencia es siempre su precio habitual y el descuento se aplica a quien reserve esa hora, venga de donde venga. Estas reservas siguen las mismas reglas de antelación y cancelación que el resto."
+        ]
+      },
+      {
+        "heading": "Valoraciones",
+        "items": [
+          "Solo puedes valorar un servicio que hayas reservado y que el centro haya marcado como finalizado, durante los 30 días siguientes.",
+          "Tu valoración tiene que ser sincera y sobre tu experiencia. No se permiten insultos, datos personales de terceros ni contenido ilegal o publicitario.",
+          "Podemos retirar las valoraciones que incumplan estas normas. El centro puede responder públicamente.",
+          "Una valoración publicada sigue contando aunque la reserva se reembolse después."
+        ]
+      },
+      {
+        "heading": "Si ofreces servicios",
+        "items": [
+          "Revisamos a mano cada negocio antes de publicarlo. Los datos que nos des (nombre, NIF, dirección, servicios, precios, horarios y fotos) tienen que ser veraces y estar al día.",
+          "Te comprometes a atender las reservas confirmadas a la hora y al precio publicados. Solo puedes cancelar hasta 2 horas antes; el cliente recibe la devolución íntegra.",
+          "Yaiwell cobra una comisión por cada reserva, según el plan que tengas contratado, calculada sobre lo que paga el cliente (con descuento, si lo hay). Las tarifas vigentes están en la página para profesionales.",
+          "Recibes los cobros a través de tu cuenta de Stripe, que tienes que configurar y mantener activa.",
+          "Eres responsable de prestar el servicio y de tus obligaciones fiscales y profesionales.",
+          "Podemos suspender o retirar un negocio que incumpla estas condiciones o que acumule cancelaciones o quejas justificadas."
+        ]
+      },
+      {
+        "heading": "Uso aceptable",
+        "paragraphs": [
+          "No uses Yaiwell para nada ilegal, para suplantar a otras personas, para hacer reservas falsas ni para interferir en el funcionamiento de la plataforma. Podemos suspender las cuentas que lo hagan."
+        ]
+      },
+      {
+        "heading": "Responsabilidad",
+        "paragraphs": [
+          "Ponemos todo de nuestra parte para que la plataforma funcione bien, pero el servicio lo presta el centro o profesional, que responde de su calidad. Si tienes un problema con una cita, escríbenos y te ayudamos a resolverlo. Nada de lo que dicen estas condiciones limita los derechos que te reconoce la ley como consumidor."
+        ]
+      },
+      {
+        "heading": "Cambios en estas condiciones",
+        "paragraphs": [
+          "Si las cambiamos, publicaremos la nueva versión en esta página con su fecha. Si el cambio es importante, te avisaremos por email antes de que se aplique. Las reservas ya hechas se rigen por las condiciones vigentes cuando las hiciste."
+        ]
+      },
+      {
+        "heading": "Ley aplicable y reclamaciones",
+        "paragraphs": [
+          "Estas condiciones se rigen por la ley española. Si tienes una queja, escríbenos primero a {email} y la atenderemos. Si eres consumidor, puedes acudir también a los organismos de consumo o a los tribunales de tu domicilio."
+        ]
+      }
+    ]
+  },
+  "cookies": {
+    "meta": {
+      "title": "Política de cookies",
+      "description": "Qué cookies usa Yaiwell: solo las técnicas imprescindibles, sin analítica ni publicidad."
+    },
+    "title": "Política de cookies",
+    "updated": "Última actualización: {date}",
+    "intro": "Las cookies son pequeños archivos que una web guarda en tu navegador. En Yaiwell solo usamos las imprescindibles para que la web funcione, así que no te pedimos consentimiento con un aviso.",
+    "sections": [
+      {
+        "heading": "Cookies que usamos",
+        "items": [
+          "Sesión (Clerk): mantienen tu sesión iniciada y protegen tu cuenta. Sin ellas no podrías entrar.",
+          "Pago (Stripe): solo en la página de pago, para prevenir el fraude con tarjetas.",
+          "Preferencias: recuerdan tu idioma, si prefieres el tema claro u oscuro y, si tienes un negocio, si estás viendo la web como cliente o como profesional."
+        ]
+      },
+      {
+        "heading": "Cookies que no usamos",
+        "paragraphs": [
+          "No usamos cookies de analítica, de publicidad ni de redes sociales, y no compartimos información de tu navegación con anunciantes."
+        ]
+      },
+      {
+        "heading": "Mapas",
+        "paragraphs": [
+          "Los mapas cargan imágenes desde los servidores de OpenStreetMap. No dejan cookies, pero esos servidores reciben tu dirección IP para poder enviarte las imágenes."
+        ]
+      },
+      {
+        "heading": "Cómo gestionarlas",
+        "paragraphs": [
+          "Puedes borrar o bloquear las cookies desde la configuración de tu navegador. Si bloqueas las de sesión o las de pago, no podrás iniciar sesión ni reservar. Para más detalle sobre cómo tratamos tus datos, consulta la política de privacidad."
+        ]
+      }
+    ]
   }
 }

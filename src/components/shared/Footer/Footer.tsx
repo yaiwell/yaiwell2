@@ -26,10 +26,9 @@ const CONTACT_EMAIL = 'hola@yaiwell.com';
  *  - **Empresa** (`about`, `blog`, `careers`): no hay ni "sobre
  *    nosotros", ni blog, ni página de empleo. Tres enlaces muertos
  *    valen menos que ninguna columna.
- *  - **Legal** (`terms`, `cookies`): decisión de producto del
- *    2026-09-24. La política de privacidad volvió el 2026-10-29 (la
- *    pedía Google para el inicio de sesión); términos y cookies vuelven
- *    el día que se redacten.
+ *  - **Legal**: retirada el 2026-09-24 porque los documentos no
+ *    existían; volvió el 2026-10-29 con privacidad, términos y cookies
+ *    (versión base pendiente de revisión legal).
  */
 const linkGroups: FooterLinkGroup[] = [
   {
@@ -44,9 +43,12 @@ const linkGroups: FooterLinkGroup[] = [
     ],
   },
   {
-    // Solo privacidad: términos y cookies vuelven cuando estén redactados.
     titleKey: 'legal',
-    links: [{ href: '/privacidad', labelKey: 'privacy' }],
+    links: [
+      { href: '/terminos', labelKey: 'terms' },
+      { href: '/privacidad', labelKey: 'privacy' },
+      { href: '/cookies', labelKey: 'cookies' },
+    ],
   },
 ];
 

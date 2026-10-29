@@ -18,7 +18,7 @@ export type FooterLinkGroup =
     }
   | {
       titleKey: 'legal';
-      links: ReadonlyArray<FooterLink<'privacy'>>;
+      links: ReadonlyArray<FooterLink<'terms' | 'privacy' | 'cookies'>>;
     };
 
 export interface FooterLink<TLabel extends string> {

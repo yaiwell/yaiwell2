@@ -75,7 +75,9 @@
     },
     "legal": {
       "title": "Legal",
-      "privacy": "Privacidad"
+      "terms": "Términos",
+      "privacy": "Privacidad",
+      "cookies": "Cookies"
     },
     "madeIn": "Hecho en {city}",
     "copyright": "© {year} Yaiwell",

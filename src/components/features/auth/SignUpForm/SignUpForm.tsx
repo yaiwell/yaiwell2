@@ -346,7 +346,7 @@ function FormPhase(props: {
               <label htmlFor={SIGN_UP_FIELD_IDS.acceptsTerms} className={s.termsLabel}>
                 {t.rich('termsLabel', {
                   terms: (chunks) => (
-                    <Link href="/" className={s.termsLink}>
+                    <Link href="/terminos" className={s.termsLink}>
                       {chunks}
                     </Link>
                   ),

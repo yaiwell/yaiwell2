@@ -72,5 +72,145 @@
         ]
       }
     ]
+  },
+  "terms": {
+    "meta": {
+      "title": "Termes i condicions",
+      "description": "Les condicions d’ús de Yaiwell per a clients i negocis: reserves, pagaments, cancel·lacions, valoracions i comissions."
+    },
+    "title": "Termes i condicions",
+    "updated": "Darrera actualització: {date}",
+    "intro": "Aquestes condicions regulen l’ús de Yaiwell, tant si reserves serveis com si els ofereixes. En crear un compte, les acceptes. Les hem escrit perquè s’entenguin; si alguna cosa no queda clara, escriu-nos a {email}.",
+    "sections": [
+      {
+        "heading": "Què és Yaiwell",
+        "paragraphs": [
+          "Yaiwell és una plataforma que connecta clients amb centres i professionals de bellesa, benestar i esport per reservar i pagar els seus serveis. El servei el presta sempre el centre o professional; Yaiwell actua com a intermediari i gestiona la reserva i el cobrament."
+        ]
+      },
+      {
+        "heading": "El teu compte",
+        "items": [
+          "Per reservar o oferir serveis necessites un compte amb dades reals i un correu electrònic que sigui teu.",
+          "Ets responsable del que es faci amb el teu compte. Si creus que algú hi ha entrat, avisa’ns.",
+          "Pots demanar que l’eliminem quan vulguis escrivint-nos a {email}."
+        ]
+      },
+      {
+        "heading": "Com funciona una reserva",
+        "items": [
+          "El preu que veus és el preu final que fixa el centre per a aquest servei.",
+          "En triar una hora te la guardem 30 minuts perquè completis el pagament. Si no pagues en aquest temps, l’hora torna a quedar lliure.",
+          "La reserva es confirma quan el pagament s’ha completat. T’enviem la confirmació per correu.",
+          "Només oferim hores que comencin com a mínim 30 minuts després del moment de reservar.",
+          "En reservar, el contracte del servei es forma entre tu i el centre o professional."
+        ]
+      },
+      {
+        "heading": "Pagaments",
+        "paragraphs": [
+          "El pagament es fa en línia en reservar, amb els mitjans que ofereix Stripe, el nostre proveïdor de pagaments. Yaiwell cobra l’import en nom del centre i l’hi transfereix descomptant-ne la comissió. No guardem les dades completes de la teva targeta."
+        ]
+      },
+      {
+        "heading": "Cancel·lacions i devolucions",
+        "items": [
+          "Si has fet una reserva, pots cancel·lar-la gratis fins a 2 hores abans de l’inici del servei escrivint-nos a {email}. Et retornem el 100 % de l’import.",
+          "Les reserves d’última hora, les que comencen menys de 2 hores després de fer-les, es paguen al moment i no admeten cancel·lació ni devolució. T’ho avisem abans de pagar.",
+          "Si no et presentes a una cita, no hi ha devolució.",
+          "El centre pot cancel·lar una reserva fins a 2 hores abans del seu inici. En aquest cas et retornem el 100 % de manera automàtica i t’avisem per correu.",
+          "Si el centre no et pot atendre per qualsevol altre motiu, també et retornem el 100 %: escriu-nos.",
+          "Si el teu pagament arriba quan l’hora ja no està disponible, no hi ha reserva i et retornem el 100 % de manera automàtica.",
+          "Les devolucions tornen al mateix mitjà de pagament. Segons el teu banc, poden trigar de 5 a 10 dies a aparèixer."
+        ]
+      },
+      {
+        "heading": "Hores amb descompte",
+        "paragraphs": [
+          "Un centre pot oferir amb descompte una hora que ha quedat lliure. El preu de referència és sempre el seu preu habitual i el descompte s’aplica a qui reservi aquesta hora, vingui d’on vingui. Aquestes reserves segueixen les mateixes regles d’antelació i cancel·lació que la resta."
+        ]
+      },
+      {
+        "heading": "Valoracions",
+        "items": [
+          "Només pots valorar un servei que hagis reservat i que el centre hagi marcat com a finalitzat, durant els 30 dies següents.",
+          "La teva valoració ha de ser sincera i sobre la teva experiència. No es permeten insults, dades personals de terceres persones ni contingut il·legal o publicitari.",
+          "Podem retirar les valoracions que incompleixin aquestes normes. El centre pot respondre públicament.",
+          "Una valoració publicada continua comptant encara que la reserva es reemborsi després."
+        ]
+      },
+      {
+        "heading": "Si ofereixes serveis",
+        "items": [
+          "Revisem a mà cada negoci abans de publicar-lo. Les dades que ens donis (nom, NIF, adreça, serveis, preus, horaris i fotos) han de ser veraces i estar al dia.",
+          "Et comprometes a atendre les reserves confirmades a l’hora i al preu publicats. Només pots cancel·lar fins a 2 hores abans; la clientela rep la devolució íntegra.",
+          "Yaiwell cobra una comissió per cada reserva, segons el pla que tinguis contractat, calculada sobre el que paga la clientela (amb descompte, si n’hi ha). Les tarifes vigents són a la pàgina per a professionals.",
+          "Reps els cobraments a través del teu compte de Stripe, que has de configurar i mantenir actiu.",
+          "Ets responsable de prestar el servei i de les teves obligacions fiscals i professionals.",
+          "Podem suspendre o retirar un negoci que incompleixi aquestes condicions o que acumuli cancel·lacions o queixes justificades."
+        ]
+      },
+      {
+        "heading": "Ús acceptable",
+        "paragraphs": [
+          "No facis servir Yaiwell per a res il·legal, per suplantar altres persones, per fer reserves falses ni per interferir en el funcionament de la plataforma. Podem suspendre els comptes que ho facin."
+        ]
+      },
+      {
+        "heading": "Responsabilitat",
+        "paragraphs": [
+          "Fem tot el que està a les nostres mans perquè la plataforma funcioni bé, però el servei el presta el centre o professional, que respon de la seva qualitat. Si tens un problema amb una cita, escriu-nos i t’ajudarem a resoldre’l. Res del que diuen aquestes condicions limita els drets que la llei et reconeix com a persona consumidora."
+        ]
+      },
+      {
+        "heading": "Canvis en aquestes condicions",
+        "paragraphs": [
+          "Si les canviem, publicarem la nova versió en aquesta pàgina amb la seva data. Si el canvi és important, t’avisarem per correu abans que s’apliqui. Les reserves ja fetes es regeixen per les condicions vigents quan les vas fer."
+        ]
+      },
+      {
+        "heading": "Llei aplicable i reclamacions",
+        "paragraphs": [
+          "Aquestes condicions es regeixen per la llei espanyola. Si tens una queixa, escriu-nos primer a {email} i l’atendrem. Si actues com a persona consumidora, també pots acudir als organismes de consum o als tribunals del teu domicili."
+        ]
+      }
+    ]
+  },
+  "cookies": {
+    "meta": {
+      "title": "Política de galetes",
+      "description": "Quines galetes fa servir Yaiwell: només les tècniques imprescindibles, sense analítica ni publicitat."
+    },
+    "title": "Política de galetes",
+    "updated": "Darrera actualització: {date}",
+    "intro": "Les galetes són petits fitxers que un web guarda al teu navegador. A Yaiwell només fem servir les imprescindibles perquè el web funcioni, així que no et demanem consentiment amb un avís.",
+    "sections": [
+      {
+        "heading": "Galetes que fem servir",
+        "items": [
+          "Sessió (Clerk): mantenen la teva sessió iniciada i protegeixen el teu compte. Sense elles no podries entrar.",
+          "Pagament (Stripe): només a la pàgina de pagament, per prevenir el frau amb targetes.",
+          "Preferències: recorden el teu idioma, si prefereixes el tema clar o fosc i, si tens un negoci, si estàs veient el web com a client o com a professional."
+        ]
+      },
+      {
+        "heading": "Galetes que no fem servir",
+        "paragraphs": [
+          "No fem servir galetes d’analítica, de publicitat ni de xarxes socials, i no compartim informació de la teva navegació amb anunciants."
+        ]
+      },
+      {
+        "heading": "Mapes",
+        "paragraphs": [
+          "Els mapes carreguen imatges des dels servidors d’OpenStreetMap. No deixen galetes, però aquests servidors reben la teva adreça IP per poder enviar-te les imatges."
+        ]
+      },
+      {
+        "heading": "Com gestionar-les",
+        "paragraphs": [
+          "Pots esborrar o bloquejar les galetes des de la configuració del teu navegador. Si bloqueges les de sessió o les de pagament, no podràs iniciar sessió ni reservar. Per a més detalls sobre com tractem les teves dades, consulta la política de privacitat."
+        ]
+      }
+    ]
   }
 }

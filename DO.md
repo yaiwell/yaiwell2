@@ -8,6 +8,12 @@
 
 ## 2026-10-29
 
+### 2026-10-29 — Términos y condiciones y política de cookies
+
+- **`/terminos`** y **`/cookies`** en los 4 idiomas, con el mismo componente (`LegalDocument`) y cargador (`getLegalDocument`) que `/privacidad`. Los términos recogen lo que la app hace hoy: intermediación y cobro por Stripe en nombre del centro, retención de 30 min y antelación mínima de 30 min, cancelación del cliente gratis hasta 2 h por soporte, última hora sin devolución, cancelación del centro ≥2 h con devolución íntegra, pagos tardíos devueltos, horas con descuento, valoraciones (solo `completed`, 30 días), condiciones para negocios (verificación, comisión por plan sobre lo cobrado, Stripe Connect, suspensión) y ley española. Cookies: solo técnicas (Clerk, Stripe en el pago, preferencias de idioma/tema/modo), sin banner.
+- Footer «Legal» con las tres páginas; el registro enlaza a `/terminos` y `/privacidad`; sitemap actualizado.
+- Versión base pendiente de revisión legal (ver TODO).
+
 ### 2026-10-29 — Política de privacidad y Clerk en producción (preparación)
 
 - **`/privacidad`** en los 4 idiomas (Google la exige para el inicio de sesión con credenciales propias): responsable, datos tratados, finalidades y bases legales, proveedores reales (Clerk, Google, Stripe, Supabase, Vercel, Resend, Sentry, Mapbox, OpenStreetMap), conservación, cookies técnicas y derechos. Textos en `src/messages/legal/`, aparte de los de la web para no mandarlos al navegador. Enlazada desde el registro, el footer (columna «Legal») y el sitemap. Versión base pendiente de revisión legal.
