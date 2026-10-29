@@ -54,14 +54,18 @@ export function feedbackMessageKey(feedback: RetryFeedback): FeedbackMessageKey 
       return 'feedback.failed';
     case 'not_applicable':
       return 'feedback.notApplicable';
+    case 'dismissed':
+      return 'feedback.dismissed';
     case 'error':
       return `feedback.errors.${feedback.code}`;
+    case 'dismiss-error':
+      return `feedback.dismissErrors.${feedback.code}`;
   }
 }
 
 /** Tono visual del aviso: éxito, advertencia o error. */
 export function feedbackTone(feedback: RetryFeedback): 'success' | 'warning' | 'error' {
-  if (feedback.kind === 'succeeded') return 'success';
+  if (feedback.kind === 'succeeded' || feedback.kind === 'dismissed') return 'success';
   if (feedback.kind === 'not_applicable') return 'warning';
   return 'error';
 }

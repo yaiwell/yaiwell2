@@ -55,6 +55,7 @@ export function BookingFlow({
     chooseAnotherSlot,
     completePayment,
     retryCheckout,
+    expireCheckout,
   } = useBookingFlow({ serviceId: service.id });
 
   // Estimación de "última hora" (< 2 h) con el reloj del navegador. Vale
@@ -203,6 +204,7 @@ export function BookingFlow({
             onSucceeded={completePayment}
             onRetry={retryCheckout}
             onChooseAnotherSlot={chooseAnotherSlot}
+            onHoldExpired={expireCheckout}
           />
         )}
       </div>

@@ -8,12 +8,14 @@ import {
 } from './RefundsQueue.logic';
 import { refundsQueueStyles as s } from './RefundsQueue.styles';
 import type { RefundsQueueItemProps } from './RefundsQueue.types';
+import { DismissRefundForm } from './DismissRefundForm';
 import { RetryRefundButton } from './RetryRefundButton';
 
 /**
  * Tarjeta de un reembolso fallido.
  *
- * Se renderiza en el servidor; solo el botón de reintento es cliente.
+ * Se renderiza en el servidor; solo los botones de reintento y de
+ * descarte son cliente.
  * Muestra lo que soporte necesita para decidir sin abrir la BD: quién,
  * cuánto, cuándo era la cita, cuándo falló y por qué.
  */
@@ -55,6 +57,12 @@ export function RefundsQueueItem({ refund, locale }: RefundsQueueItemProps) {
 
       <div className={s.cardActions}>
         <RetryRefundButton
+          bookingId={refund.bookingId}
+          providerName={refund.providerName}
+          locale={locale}
+        />
+        {/* Salida para entradas sin cobro real que el reintento nunca resolverá. */}
+        <DismissRefundForm
           bookingId={refund.bookingId}
           providerName={refund.providerName}
           locale={locale}

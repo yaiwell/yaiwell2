@@ -29,6 +29,7 @@ export function RefundsQueue({ refunds, locale }: RefundsQueueProps) {
           <p className={s.noticeTitle}>{t('notice.title')}</p>
           <p>{t('notice.noDoubleRefund')}</p>
           <p>{t('notice.stillFailing')}</p>
+          <p>{t('notice.dismiss')}</p>
         </div>
       </aside>
 

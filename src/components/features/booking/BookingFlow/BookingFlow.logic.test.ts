@@ -109,6 +109,19 @@ describe('useBookingFlow', () => {
     expect(result.current.step).toBe('summary');
   });
 
+  it('una retención vencida antes de pagar deja el checkout en HOLD_EXPIRED', async () => {
+    const { result } = renderFlow();
+    await advanceToPayment(result);
+    await waitFor(() => expect(result.current.checkout.status).toBe('ready'));
+
+    act(() => {
+      result.current.expireCheckout();
+    });
+
+    expect(result.current.checkout).toEqual({ status: 'error', code: 'HOLD_EXPIRED' });
+    expect(result.current.step).toBe('payment');
+  });
+
   it('no retrocede más allá del primer paso', () => {
     const { result } = renderFlow();
 
@@ -135,6 +148,7 @@ describe('useBookingFlow', () => {
     expect(result.current.draft.bookingId).toBe('bk-123');
     expect(result.current.checkout).toEqual({
       status: 'ready',
+      bookingId: 'bk-123',
       clientSecret: 'pi_123_secret_abc',
       amountCents: 4500,
       originalPriceCents: null,

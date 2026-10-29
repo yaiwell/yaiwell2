@@ -8,6 +8,17 @@
 
 ## 2026-10-29
 
+### 2026-10-29 — Pagos y reservas blindados
+
+P12 + P13 (`stripe-payments` implementa, `db-migration-guard` sobre la migración, `business-rules-auditor` + `conventions-reviewer`; P1 y casi todos los P2 aplicados).
+
+- **Migración 9d** (`9d_booking_overlap_guard`): `EXCLUDE USING gist` con `btree_gist` que impide dos `confirmed` solapadas del mismo profesional, `CHECK (endAt > startAt)`, `search_path` fijo en las dos funciones de trigger (WARN del advisor) y columnas `refundDismissedAt/By/Reason`. El pago tardío trata la violación 23P01 como franja ocupada y reembolsa (`isExclusionViolation`, forma real del error comprobada contra Supabase).
+- **`payment_failed` ya no cancela**: el cliente puede reintentar con otra tarjeta durante la retención; la caducidad libera la franja.
+- **Comprobación de la retención antes de cobrar** (`checkBookingPayable` + `verifyBookingPayableAction`), con 2 min de margen: si venció, se caduca en el acto y la UI ofrece elegir otro hueco.
+- **Webhooks perdidos**: el cron asienta los pagos cobrados sin webhook (pasada 1 h, misma lógica que el webhook, sin tocar cargos ya reembolsados), manda los mismos avisos y lo sube a Sentry como `error`. Los PaymentIntent aún abiertos (`requires_*`) se saltan sin aviso.
+- **Descartar entradas de `/admin/reembolsos`** con motivo y autor; bloqueado si Stripe dice que hay dinero cobrado sin devolver.
+- 1513 tests unitarios.
+
 ### 2026-10-29 — Correos: reembolso rechazado y reintentos
 
 P2 + `business-rules-auditor` (P1 y P2 aplicados).

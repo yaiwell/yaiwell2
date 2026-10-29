@@ -12,6 +12,10 @@ export { createBookingCheckout } from './checkout.service';
 export { cancelBookingByProviderWithRefund } from './checkout.refund.service';
 
 export { listPendingRefunds, retryBookingRefund } from './checkout.refund-queue.service';
+export { dismissBookingRefund } from './checkout.refund-dismiss.service';
+
+export { checkBookingPayable } from './checkout.hold-check.service';
+export type { BookingPayability } from './checkout.hold-check.service';
 
 export { expireAbandonedPendingBookings } from './checkout.expiry.service';
 
@@ -27,23 +31,28 @@ export { checkoutRepository } from './checkout.repository';
 
 export {
   BookingForCheckoutNotFoundError,
+  BookingHoldExpiredError,
   MissingBookingReferenceError,
   PaymentIntentCreationError,
   ProfessionalNotResolvedError,
   ProviderNotChargeableError,
   RefundFailedError,
   RefundNotApplicableError,
+  RefundNotDismissableError,
   RefundNotInQueueError,
 } from './checkout.errors';
 
 export {
   cancelBookingWithRefundSchema,
   createBookingCheckoutSchema,
+  dismissBookingRefundSchema,
   retryBookingRefundSchema,
+  verifyBookingPayableSchema,
 } from './checkout.validation';
 export type {
   CancelBookingWithRefundParsed,
   CreateBookingCheckoutParsed,
+  DismissBookingRefundParsed,
   RetryBookingRefundParsed,
 } from './checkout.validation';
 

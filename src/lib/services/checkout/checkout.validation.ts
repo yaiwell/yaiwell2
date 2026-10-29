@@ -9,6 +9,11 @@
 
 import { z } from 'zod';
 
+import {
+  REFUND_DISMISS_REASON_MAX_LENGTH,
+  REFUND_DISMISS_REASON_MIN_LENGTH,
+} from '@/lib/utils/refund-dismiss-reason';
+
 export const createBookingCheckoutSchema = z.object({
   serviceId: z.string().uuid(),
   /**
@@ -47,3 +52,28 @@ export const retryBookingRefundSchema = z.object({
 });
 
 export type RetryBookingRefundParsed = z.infer<typeof retryBookingRefundSchema>;
+
+/**
+ * Entrada de la comprobación previa al pago. El `bookingId` llega del
+ * navegador; la titularidad sale de la sesión en el borde.
+ */
+export const verifyBookingPayableSchema = z.object({
+  bookingId: z.string().uuid(),
+});
+
+/**
+ * Entrada del descarte de una entrada de la cola de reembolsos desde
+ * /admin. Quién descarta sale de la sesión, nunca del payload. El motivo
+ * es obligatorio porque es lo único que explica después, en una
+ * auditoría, por qué esa reserva salió de la cola sin `refundedAt`.
+ */
+export const dismissBookingRefundSchema = z.object({
+  bookingId: z.string().uuid(),
+  reason: z
+    .string()
+    .trim()
+    .min(REFUND_DISMISS_REASON_MIN_LENGTH)
+    .max(REFUND_DISMISS_REASON_MAX_LENGTH),
+});
+
+export type DismissBookingRefundParsed = z.infer<typeof dismissBookingRefundSchema>;

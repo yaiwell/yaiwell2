@@ -12,6 +12,7 @@ export { bookingRepository } from './booking.repository';
 
 export {
   PENDING_HOLD_MINUTES,
+  PENDING_HOLD_PAYMENT_MARGIN_MS,
   activeBookingWhere,
   getPendingHoldCutoff,
   isBookingHoldingSlot,

@@ -165,28 +165,64 @@ describe('confirmBookingPayment', () => {
   });
 });
 
-describe('failBookingPayment', () => {
-  it('cancela la reserva pendiente para liberar el hueco', async () => {
-    bookingMock.bookingRepository.findById.mockResolvedValue(bookingRow('pending'));
+describe('confirmBookingPayment ante reentregas del mismo evento', () => {
+  it('confirmada: la segunda entrega no cambia nada ni pide aviso', async () => {
+    bookingMock.bookingRepository.findById
+      .mockResolvedValueOnce(bookingRow('pending'))
+      .mockResolvedValueOnce(bookingRow('confirmed'));
 
-    repoMock.cancelIfPending.mockResolvedValue(true);
+    const first = await confirmBookingPayment(intent(), CLOCK);
+    const second = await confirmBookingPayment(intent(), CLOCK);
 
-    const result = await failBookingPayment(intent());
-
-    // Condicional: nunca un update a ciegas sobre la fila.
-    expect(repoMock.cancelIfPending).toHaveBeenCalledWith('bk-1', expect.any(Date));
-    expect(bookingMock.bookingRepository.updateStatus).not.toHaveBeenCalled();
-    expect(result).toEqual({ bookingId: 'bk-1', changed: true, status: 'cancelled' });
+    expect(first).toEqual({ bookingId: 'bk-1', changed: true, status: 'confirmed' });
+    // `changed: false` es lo que impide al route repetir el correo.
+    expect(second).toEqual({ bookingId: 'bk-1', changed: false, status: 'confirmed' });
+    expect(repoMock.confirmIfPending).toHaveBeenCalledTimes(1);
+    expect(stripeMock.refunds.create).not.toHaveBeenCalled();
   });
 
-  it('no pisa una reserva que se confirmó entre la lectura y la cancelación', async () => {
+  it('cancelada: la segunda entrega ve already_refunded y no pide otro aviso', async () => {
+    bookingMock.bookingRepository.findById.mockResolvedValue(bookingRow('cancelled'));
+    stripeMock.refunds.create
+      .mockResolvedValueOnce({ id: 're_late', status: 'succeeded' })
+      .mockRejectedValueOnce(
+        Object.assign(new Error('Charge has already been refunded.'), {
+          code: 'charge_already_refunded',
+        }),
+      );
+
+    const first = await confirmBookingPayment(intent(), CLOCK);
+    const second = await confirmBookingPayment(intent(), CLOCK);
+
+    expect(first).toMatchObject({ status: 'cancelled', lateRefund: 'issued' });
+    expect(second).toEqual({ bookingId: 'bk-1', changed: false, status: 'cancelled' });
+    expect(second).not.toHaveProperty('lateRefund');
+  });
+});
+
+describe('failBookingPayment', () => {
+  it('no cancela la pendiente: el cliente puede reintentar sobre el mismo intent', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
     bookingMock.bookingRepository.findById.mockResolvedValue(bookingRow('pending'));
-    repoMock.cancelIfPending.mockResolvedValue(false);
-    repoMock.findCheckoutRow.mockResolvedValue(bookingRow('confirmed'));
 
     const result = await failBookingPayment(intent());
 
-    expect(result).toEqual({ bookingId: 'bk-1', changed: false, status: 'confirmed' });
+    // La caducidad (retención de 30 min + cron) es quien la libera.
+    expect(repoMock.cancelIfPending).not.toHaveBeenCalled();
+    expect(bookingMock.bookingRepository.updateStatus).not.toHaveBeenCalled();
+    expect(result).toEqual({ bookingId: 'bk-1', changed: false, status: 'pending' });
+  });
+
+  it('un reintento que paga tras un fallo confirma la reserva', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+    bookingMock.bookingRepository.findById.mockResolvedValue(bookingRow('pending'));
+    await failBookingPayment(intent());
+
+    repoMock.confirmIfPending.mockResolvedValue(true);
+    const result = await confirmBookingPayment(intent(), CLOCK);
+
+    expect(result).toEqual({ bookingId: 'bk-1', changed: true, status: 'confirmed' });
+    expect(stripeMock.refunds.create).not.toHaveBeenCalled();
   });
 
   it('no toca una reserva ya confirmada', async () => {
@@ -195,6 +231,14 @@ describe('failBookingPayment', () => {
     const result = await failBookingPayment(intent());
 
     expect(bookingMock.bookingRepository.updateStatus).not.toHaveBeenCalled();
-    expect(result.changed).toBe(false);
+    expect(result).toEqual({ bookingId: 'bk-1', changed: false, status: 'confirmed' });
+  });
+
+  it('propaga la reserva no resoluble para que el route responda 200 sin tocar nada', async () => {
+    bookingMock.bookingRepository.findById.mockResolvedValue(null);
+
+    await expect(failBookingPayment(intent())).rejects.toBeInstanceOf(
+      BookingForCheckoutNotFoundError,
+    );
   });
 });

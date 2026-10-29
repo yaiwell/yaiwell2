@@ -9,7 +9,13 @@ import {
 } from '@stripe/stripe-js';
 import { useCallback, useState, type FormEvent } from 'react';
 
+import {
+  verifyBookingPayableAction,
+  type BookingPayableActionState,
+} from '@/app/[locale]/centro/[slugWithId]/reservar/hold-actions';
 import type { AppLocale } from '@/i18n/routing';
+
+import { resolveHoldCheck } from './StripePaymentStep.hold';
 
 /**
  * Lógica del paso de pago con Stripe Elements.
@@ -109,13 +115,22 @@ export interface StripePaymentFormState {
  * en sitio. Las que sí lo piden navegan a `returnUrl`, donde una página
  * dedicada lee el estado de la reserva desde BD.
  *
+ * Antes de cobrar pregunta al servidor si la reserva sigue reteniendo su
+ * franja (`verifyBookingPayableAction`): el formulario puede llevar
+ * abierto más de los 30 min de retención. Un intento fallido deja el
+ * error de Stripe en pantalla y el botón activo: el cliente puede
+ * reintentar con otra tarjeta sobre el mismo PaymentIntent, porque
+ * `payment_failed` ya no cancela la reserva.
+ *
  * Ojo con lo que este hook **no** hace: no confirma la reserva. El paso
  * a `confirmed` lo dicta el webhook `payment_intent.succeeded`. Aquí sólo
  * decidimos qué pantalla ve el usuario.
  */
 export function useStripePaymentForm(args: {
+  bookingId: string;
   returnUrl: string;
   onSucceeded: () => void;
+  onHoldExpired: () => void;
 }): StripePaymentFormState {
   const stripe = useStripe();
   const elements = useElements();
@@ -124,7 +139,7 @@ export function useStripePaymentForm(args: {
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const { returnUrl, onSucceeded } = args;
+  const { bookingId, returnUrl, onSucceeded, onHoldExpired } = args;
 
   const submit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -135,39 +150,59 @@ export function useStripePaymentForm(args: {
       setHasError(false);
       setErrorMessage(null);
 
-      void stripe
-        .confirmPayment({
+      // `error.message` viene localizado por Stripe según el `locale` de
+      // Elements, así que es apto para mostrar tal cual. Sin mensaje, la
+      // UI usa su copy genérico.
+      const fail = (message: string | null) => {
+        setHasError(true);
+        setErrorMessage(message);
+        setIsProcessing(false);
+      };
+
+      void (async () => {
+        // Validamos el formulario antes de cualquier llamada de red: los
+        // wallets (Apple/Google Pay) exigen abrirse dentro del gesto del
+        // usuario, y así un dato mal escrito no gasta una comprobación.
+        const { error: submitError } = await elements.submit();
+        if (submitError) {
+          fail(submitError.message ?? null);
+          return;
+        }
+
+        const decision = resolveHoldCheck(await verifyHold(bookingId));
+        if (decision === 'paid') {
+          onSucceeded();
+          return;
+        }
+        if (decision === 'expired') {
+          onHoldExpired();
+          return;
+        }
+
+        const { error, paymentIntent } = await stripe.confirmPayment({
           elements,
           confirmParams: { return_url: returnUrl },
           redirect: 'if_required',
-        })
-        .then(({ error, paymentIntent }) => {
-          if (error) {
-            // `error.message` viene localizado por Stripe según el
-            // `locale` de Elements, así que es apto para mostrar tal cual.
-            setHasError(true);
-            setErrorMessage(error.message ?? null);
-            setIsProcessing(false);
-            return;
-          }
-
-          // `processing` cuenta como éxito de cara al usuario: el cargo
-          // está en curso y el webhook confirmará la reserva. Bloquear la
-          // pantalla esperando `succeeded` sólo generaría abandono.
-          if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
-            onSucceeded();
-            return;
-          }
-
-          // Estados residuales (`requires_payment_method` tras un fallo
-          // silencioso, `canceled`): no hay mensaje de Stripe, usamos el
-          // copy genérico.
-          setHasError(true);
-          setErrorMessage(null);
-          setIsProcessing(false);
         });
+        if (error) {
+          fail(error.message ?? null);
+          return;
+        }
+
+        // `processing` cuenta como éxito de cara al usuario: el cargo
+        // está en curso y el webhook confirmará la reserva. Bloquear la
+        // pantalla esperando `succeeded` sólo generaría abandono.
+        if (paymentIntent?.status === 'succeeded' || paymentIntent?.status === 'processing') {
+          onSucceeded();
+          return;
+        }
+
+        // Estados residuales (`requires_payment_method` tras un fallo
+        // silencioso, `canceled`): no hay mensaje de Stripe.
+        fail(null);
+      })();
     },
-    [stripe, elements, isProcessing, returnUrl, onSucceeded],
+    [stripe, elements, isProcessing, bookingId, returnUrl, onSucceeded, onHoldExpired],
   );
 
   return {
@@ -177,4 +212,17 @@ export function useStripePaymentForm(args: {
     errorMessage,
     submit,
   };
+}
+
+/**
+ * Llama a la comprobación de la retención sin dejar que un fallo de red
+ * rompa el pago: `null` equivale a "no se pudo comprobar" (ver
+ * `resolveHoldCheck`).
+ */
+async function verifyHold(bookingId: string): Promise<BookingPayableActionState | null> {
+  try {
+    return await verifyBookingPayableAction({ bookingId });
+  } catch {
+    return null;
+  }
 }

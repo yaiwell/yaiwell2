@@ -1,5 +1,7 @@
 import 'server-only';
 
+import type Stripe from 'stripe';
+
 import { isSentryEnabled } from '@/lib/integrations/sentry';
 import { getStripeClient } from '@/lib/integrations/stripe';
 
@@ -27,11 +29,29 @@ const STRIPE_UNEXPECTED_STATE_CODE = 'payment_intent_unexpected_state';
 export type PaymentIntentCancelOutcome = 'canceled' | 'already_paid' | 'processing';
 
 /**
+ * Desenlace de la cancelación por caducidad. Añade `still_open` a los de
+ * `PaymentIntentCancelOutcome`: el intent sigue en `requires_*` aunque
+ * Stripe no nos dejase cancelarlo.
+ *
+ * Pasa cuando la clave `booking_expire_<id>` (compartida por el cron y la
+ * comprobación previa al pago) trae cacheado un "no cancelable" de cuando
+ * el intent estaba `processing` y el pago acabó fallando después. Stripe
+ * guarda esa respuesta 24 h: no hay cobro, y la reserva se reintenta al
+ * día siguiente, con la clave ya caducada.
+ */
+export type PaymentIntentExpiryOutcome = PaymentIntentCancelOutcome | 'still_open';
+
+/**
  * Cancela un PaymentIntent con la clave de idempotencia indicada.
  *
  * Ante `payment_intent_unexpected_state` consulta el estado real, porque
  * ese código cubre tanto "ya cancelado" (éxito) como "cobrado o
  * procesando" (no tocar).
+ *
+ * Un intent que sigue en `requires_*` cuenta aquí como `already_paid`:
+ * es el comportamiento histórico de la cancelación del proveedor, que
+ * ante la duda lo manda a reembolsar (y a la cola si no hay cargo). La
+ * caducidad usa `cancelPaymentIntentForExpiry`, que lo distingue.
  *
  * @param paymentIntentId — intent anclado a la reserva.
  * @param idempotencyKey — clave propia del camino que cancela.
@@ -41,6 +61,27 @@ export async function cancelBookingPaymentIntent(
   paymentIntentId: string,
   idempotencyKey: string,
 ): Promise<PaymentIntentCancelOutcome> {
+  const outcome = await cancelAndClassify(paymentIntentId, idempotencyKey);
+  return outcome === 'still_open' ? 'already_paid' : outcome;
+}
+
+/**
+ * Cancelación por caducidad: como `cancelBookingPaymentIntent`, pero
+ * devuelve `still_open` en vez de dar por cobrado un intent sin cargo.
+ *
+ * @throws cualquier error de Stripe que no sea "estado inesperado".
+ */
+export async function cancelPaymentIntentForExpiry(
+  paymentIntentId: string,
+  idempotencyKey: string,
+): Promise<PaymentIntentExpiryOutcome> {
+  return cancelAndClassify(paymentIntentId, idempotencyKey);
+}
+
+async function cancelAndClassify(
+  paymentIntentId: string,
+  idempotencyKey: string,
+): Promise<PaymentIntentExpiryOutcome> {
   const stripe = getStripeClient();
   try {
     await stripe.paymentIntents.cancel(
@@ -52,10 +93,19 @@ export async function cancelBookingPaymentIntent(
   } catch (err) {
     if (!isUnexpectedStateError(err)) throw err;
     const intent = await stripe.paymentIntents.retrieve(paymentIntentId);
-    if (intent.status === 'canceled') return 'canceled';
-    // `requires_capture` no se da hoy (captura automática), pero el
-    // dinero estaría retenido: lo tratamos como cobrado.
-    return intent.status === 'processing' ? 'processing' : 'already_paid';
+    switch (intent.status) {
+      case 'canceled':
+        return 'canceled';
+      case 'processing':
+        return 'processing';
+      case 'succeeded':
+      case 'requires_capture':
+        // `requires_capture` no se da hoy (captura automática), pero el
+        // dinero estaría retenido: lo tratamos como cobrado.
+        return 'already_paid';
+      default:
+        return 'still_open';
+    }
   }
 }
 
@@ -81,6 +131,26 @@ export async function classifyPaymentIntent(
     default:
       return 'inconclusive';
   }
+}
+
+/**
+ * Recupera un PaymentIntent con su último cargo expandido
+ * (`latest_charge`), o `charge: null` si no tiene ninguno.
+ *
+ * Del cargo salen el instante del cobro (`created`, lo más parecido al
+ * `event.created` que el webhook usa como `paidAt`) y lo ya reembolsado
+ * (`amount_refunded`).
+ *
+ * @throws cualquier error de Stripe al consultarlo.
+ */
+export async function retrievePaymentIntentWithCharge(
+  paymentIntentId: string,
+): Promise<{ intent: Stripe.PaymentIntent; charge: Stripe.Charge | null }> {
+  const intent = await getStripeClient().paymentIntents.retrieve(paymentIntentId, {
+    expand: ['latest_charge'],
+  });
+  const charge = intent.latest_charge;
+  return { intent, charge: charge && typeof charge === 'object' ? charge : null };
 }
 
 function isUnexpectedStateError(err: unknown): boolean {

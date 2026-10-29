@@ -867,6 +867,7 @@
       "errorSlotTooSoon": "Dieser Termin kann nicht mehr gebucht werden: Er beginnt in weniger als 30 Minuten. Bitte wähle eine andere Uhrzeit.",
       "errorProviderNotChargeable": "Dieses Studio akzeptiert noch keine Online-Zahlungen. Bitte nimm direkt Kontakt auf.",
       "errorPaymentFailed": "Wir konnten das Zahlungssystem nicht erreichen. Bitte versuche es in ein paar Sekunden erneut.",
+      "errorHoldExpired": "Deine Buchung ist abgelaufen: Wir halten den Termin 30 Minuten lang frei, während du bezahlst, und diese Zeit ist vorbei. Dir wurde nichts berechnet. Wähle die Uhrzeit erneut, um zu buchen.",
       "errorGeneric": "Etwas ist schiefgelaufen. Bitte versuche es in ein paar Sekunden erneut.",
       "retry": "Erneut versuchen",
       "signIn": "Anmelden",
@@ -1048,7 +1049,8 @@
       "notice": {
         "title": "Ein erneuter Versuch ist sicher",
         "noDoubleRefund": "Ein erneuter Versuch kann das Geld nicht doppelt erstatten: Die Erstattung erfolgt immer in voller Höhe, und Stripe lehnt eine zweite Erstattung für eine bereits erstattete Zahlung ab.",
-        "stillFailing": "Schlägt sie weiterhin fehl, prüfe die Ursache im Stripe-Dashboard, bevor du es erneut versuchst, zum Beispiel das Guthaben auf dem verbundenen Konto des Betriebs."
+        "stillFailing": "Schlägt sie weiterhin fehl, prüfe die Ursache im Stripe-Dashboard, bevor du es erneut versuchst, zum Beispiel das Guthaben auf dem verbundenen Konto des Betriebs.",
+        "dismiss": "Wenn ein Eintrag nie belastet wurde (zum Beispiel „pi_cancel_failed“, ohne bestätigte Zahlung in Stripe), verwirf ihn mit einer Begründung. Verwerfen erstattet kein Geld: Der Eintrag verschwindet nur aus der Warteschlange und wird mit deinem Benutzer protokolliert."
       },
       "queue": {
         "title": "Erstattungswarteschlange",
@@ -1071,10 +1073,21 @@
         "pending": "Wird erneut versucht…",
         "aria": "Erstattung für {provider} erneut versuchen"
       },
+      "dismiss": {
+        "label": "Verwerfen",
+        "aria": "Erstattung für {provider} aus der Warteschlange verwerfen",
+        "reasonLabel": "Grund für das Verwerfen",
+        "reasonHint": "Pflichtfeld, mindestens {min} Zeichen. Wird mit deinem Benutzer protokolliert.",
+        "reasonTooShort": "Gib einen Grund mit mindestens {min} Zeichen ein.",
+        "confirm": "Verwerfen bestätigen",
+        "pending": "Wird verworfen…",
+        "cancel": "Abbrechen"
+      },
       "feedback": {
         "succeeded": "Erstattung ausgelöst ({provider}). Stripe bestätigt sie in Kürze.",
         "failed": "Die Erstattung für {provider} schlägt weiterhin fehl. Aktualisierten Grund und Zahlung in Stripe prüfen.",
         "notApplicable": "Die Buchung bei {provider} hat keine Zahlung in Stripe, es gibt nichts zu erstatten. Bitte manuell prüfen.",
+        "dismissed": "Eintrag für {provider} verworfen. Er erscheint nicht mehr in der Warteschlange.",
         "dismiss": "Schließen",
         "errors": {
           "BOOKING_NOT_FOUND": "Die Buchung bei {provider} existiert nicht mehr.",
@@ -1082,6 +1095,15 @@
           "VALIDATION": "Die Erstattung für {provider} konnte nicht erneut versucht werden: ungültige Kennung.",
           "FORBIDDEN": "Deine Sitzung hat keine Admin-Rechte, um die Erstattung für {provider} erneut zu versuchen.",
           "INTERNAL": "Unerwarteter Fehler beim erneuten Versuch der Erstattung für {provider}. Bitte in ein paar Minuten noch einmal versuchen."
+        },
+        "dismissErrors": {
+          "BOOKING_NOT_FOUND": "Die Buchung bei {provider} existiert nicht mehr.",
+          "NOT_IN_QUEUE": "Die Erstattung für {provider} ist nicht mehr in der Warteschlange. Lade die Seite neu, um den aktuellen Stand zu sehen.",
+          "NOT_DISMISSABLE": "Die Buchung bei {provider} ist nicht storniert, daher kann die Erstattung nicht verworfen werden.",
+          "INVALID_REASON": "Der Grund für das Verwerfen der Erstattung für {provider} ist ungültig.",
+          "VALIDATION": "Die Erstattung für {provider} konnte nicht verworfen werden: ungültige Kennung.",
+          "FORBIDDEN": "Deine Sitzung hat keine Admin-Rechte, um die Erstattung für {provider} zu verwerfen.",
+          "INTERNAL": "Unerwarteter Fehler beim Verwerfen der Erstattung für {provider}. Versuche es in ein paar Minuten erneut."
         }
       }
     }

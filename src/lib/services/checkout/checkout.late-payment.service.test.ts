@@ -263,4 +263,34 @@ describe('settlePaymentOnPendingBooking', () => {
 
     expect(repoMock.attachPaymentIntent).toHaveBeenCalledWith('bk-1', 'pi_123');
   });
+
+  it('si la BD rechaza la confirmación por solape, reembolsa como franja ocupada', async () => {
+    repoMock.confirmIfPending.mockRejectedValue(
+      Object.assign(new Error('violates exclusion constraint'), { code: '23P01' }),
+    );
+
+    const result = await settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK);
+
+    expect(repoMock.cancelIfPending).toHaveBeenCalledWith('bk-1', NOW);
+    expect(issueMock.issueBookingRefund).toHaveBeenCalled();
+    expect(result).toMatchObject({ status: 'cancelled', lateRefund: 'issued' });
+  });
+
+  it('con la retención vigente, una violación de solape también reembolsa', async () => {
+    const fresh = row({ createdAt: new Date(NOW.getTime() - 5 * MINUTE) });
+    repoMock.confirmIfPending.mockRejectedValue({ meta: { code: '23P01' } });
+
+    const result = await settlePaymentOnPendingBooking(fresh, 'pi_123', LATE_CLOCK);
+
+    expect(issueMock.issueBookingRefund).toHaveBeenCalled();
+    expect(result.status).toBe('cancelled');
+  });
+
+  it('otros errores de BD se propagan para que Stripe reintente', async () => {
+    repoMock.confirmIfPending.mockRejectedValue(new Error('db down'));
+
+    await expect(settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK)).rejects.toThrow(
+      'db down',
+    );
+  });
 });

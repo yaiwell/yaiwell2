@@ -867,6 +867,7 @@
       "errorSlotTooSoon": "Aquest forat ja no es pot reservar: comença d'aquí a menys de 30 minuts. Tria una altra hora.",
       "errorProviderNotChargeable": "Aquest centre encara no accepta pagaments en línia. Posa-t’hi en contacte directament.",
       "errorPaymentFailed": "No hem pogut connectar amb la passarel·la de pagament. Torna-ho a provar d’aquí uns segons.",
+      "errorHoldExpired": "La teva reserva ha caducat: guardem el forat 30 minuts mentre pagues i aquest temps ha passat. No t’hem cobrat res. Torna a triar l'hora per reservar.",
       "errorGeneric": "Alguna cosa ha anat malament. Torna-ho a provar d’aquí uns segons.",
       "retry": "Torna-ho a provar",
       "signIn": "Iniciar sessió",
@@ -1048,7 +1049,8 @@
       "notice": {
         "title": "Tornar-ho a provar és segur",
         "noDoubleRefund": "Un reintent no pot retornar els diners dues vegades: el reemborsament és sempre íntegre i Stripe rebutja un segon reemborsament sobre un càrrec ja retornat.",
-        "stillFailing": "Si continua fallant, revisa'n la causa al dashboard de Stripe abans de tornar-ho a provar; per exemple, el saldo del compte connectat del centre."
+        "stillFailing": "Si continua fallant, revisa'n la causa al dashboard de Stripe abans de tornar-ho a provar; per exemple, el saldo del compte connectat del centre.",
+        "dismiss": "Si una entrada no va tenir mai cobrament (per exemple, «pi_cancel_failed» amb el pagament sense confirmar a Stripe), descarta-la amb un motiu. Descartar no retorna diners: només la treu de la cua i queda registrat amb el teu usuari."
       },
       "queue": {
         "title": "Cua de reemborsaments",
@@ -1071,10 +1073,21 @@
         "pending": "Tornant-ho a provar…",
         "aria": "Tornar a provar el reemborsament de {provider}"
       },
+      "dismiss": {
+        "label": "Descartar",
+        "aria": "Descartar de la cua el reemborsament de {provider}",
+        "reasonLabel": "Motiu del descart",
+        "reasonHint": "Obligatori, mínim {min} caràcters. Queda registrat amb el teu usuari.",
+        "reasonTooShort": "Escriu un motiu d'almenys {min} caràcters.",
+        "confirm": "Confirmar el descart",
+        "pending": "Descartant…",
+        "cancel": "Cancel·lar"
+      },
       "feedback": {
         "succeeded": "Reemborsament emès ({provider}). Stripe confirmarà la devolució d'aquí a poc.",
         "failed": "El reemborsament de {provider} continua fallant. Revisa el motiu actualitzat i el pagament a Stripe.",
         "notApplicable": "La reserva de {provider} no té cap pagament a Stripe: no hi ha res a reemborsar. Revisa-la manualment.",
+        "dismissed": "Entrada de {provider} descartada. Ja no apareix a la cua.",
         "dismiss": "Tancar",
         "errors": {
           "BOOKING_NOT_FOUND": "La reserva de {provider} ja no existeix.",
@@ -1082,6 +1095,15 @@
           "VALIDATION": "No s'ha pogut tornar a provar el reemborsament de {provider}: identificador no vàlid.",
           "FORBIDDEN": "La teva sessió no té permisos d'admin per tornar a provar el reemborsament de {provider}.",
           "INTERNAL": "Error inesperat en tornar a provar el reemborsament de {provider}. Torna-ho a intentar d'aquí a uns minuts."
+        },
+        "dismissErrors": {
+          "BOOKING_NOT_FOUND": "La reserva de {provider} ja no existeix.",
+          "NOT_IN_QUEUE": "El reemborsament de {provider} ja no és a la cua. Torna a carregar la pàgina per veure'n l'estat actual.",
+          "NOT_DISMISSABLE": "La reserva de {provider} no està cancel·lada: el seu reemborsament no es pot descartar.",
+          "INVALID_REASON": "El motiu per descartar el reemborsament de {provider} no és vàlid.",
+          "VALIDATION": "No s'ha pogut descartar el reemborsament de {provider}: identificador no vàlid.",
+          "FORBIDDEN": "La teva sessió no té permisos d'admin per descartar el reemborsament de {provider}.",
+          "INTERNAL": "Error inesperat en descartar el reemborsament de {provider}. Torna-ho a intentar d'aquí a uns minuts."
         }
       }
     }

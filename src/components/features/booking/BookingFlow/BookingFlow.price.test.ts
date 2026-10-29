@@ -13,6 +13,7 @@ const OFFER = { discountPct: 20, priceCents: 3600, originalPriceCents: 4500 };
 
 const READY: Extract<CheckoutState, { status: 'ready' }> = {
   status: 'ready',
+  bookingId: 'bk-1',
   clientSecret: 'pi_secret',
   // El tramo cambió entre elegir y reservar: el servidor cobra un 30 %.
   amountCents: 3150,

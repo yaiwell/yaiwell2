@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { prisma } from '@/lib/db/prisma';
+import { isExclusionViolation } from '@/lib/db/prisma-errors';
 import { bookingRepository, isBookingHoldingSlot } from '@/lib/services/booking';
 
 import { reportCheckoutWarning } from './checkout.payment-intent';
@@ -94,8 +95,10 @@ export async function settlePaymentOnPendingBooking(
   if (heldWhenPaid && isBookingHoldingSlot(booking, clock.now)) {
     // Retención vigente: nuestra `pending` aún cuenta como activa y
     // `createBooking` no puede dar la franja a otro; no hace falta bloqueo.
-    if (await checkoutRepository.confirmIfPending(booking.id)) return confirmed(booking);
-    return followCurrentState(booking, paymentIntentId);
+    const decision = await confirmGuarded(() => checkoutRepository.confirmIfPending(booking.id));
+    if (decision === 'confirmed') return confirmed(booking);
+    if (decision === 'not-pending') return followCurrentState(booking, paymentIntentId);
+    return cancelAndRefund(booking, paymentIntentId, clock.now, 'slot taken (db overlap guard)');
   }
 
   const decision = await confirmIfSlotFree(booking, clock.now);
@@ -124,6 +127,32 @@ type SlotDecision = 'confirmed' | 'taken' | 'not-pending';
  * acciones con Stripe las hace el llamador fuera de la transacción.
  */
 async function confirmIfSlotFree(booking: CheckoutBookingRow, now: Date): Promise<SlotDecision> {
+  try {
+    return await lockAndConfirm(booking, now);
+  } catch (err) {
+    if (isExclusionViolation(err, OVERLAP_CONSTRAINT)) return 'taken';
+    throw err;
+  }
+}
+
+/**
+ * Restricción de BD que impide dos `confirmed` solapadas del mismo
+ * profesional (migración 9d). Es la red bajo la comprobación de la app:
+ * si salta, la franja es de otro y el pago se devuelve.
+ */
+const OVERLAP_CONSTRAINT = 'bookings_no_overlap_confirmed';
+
+/** Confirma sin bloqueo; una violación de la restricción cuenta como franja ocupada. */
+async function confirmGuarded(confirm: () => Promise<boolean>): Promise<SlotDecision> {
+  try {
+    return (await confirm()) ? 'confirmed' : 'not-pending';
+  } catch (err) {
+    if (isExclusionViolation(err, OVERLAP_CONSTRAINT)) return 'taken';
+    throw err;
+  }
+}
+
+async function lockAndConfirm(booking: CheckoutBookingRow, now: Date): Promise<SlotDecision> {
   return prisma.$transaction(async (tx) => {
     await bookingRepository.lockProfessional(tx, booking.professionalId);
     const overlapping = await bookingRepository.findOverlapping(

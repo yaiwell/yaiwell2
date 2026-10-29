@@ -25,8 +25,23 @@ export interface PendingRefundRow {
   client: { email: string };
 }
 
-/** Condición única de "reembolso pendiente de soporte". */
-const PENDING_REFUND_WHERE = { refundFailedAt: { not: null }, refundedAt: null } as const;
+/**
+ * Condición única de "reembolso pendiente de soporte": falló, no se ha
+ * devuelto y nadie lo ha descartado a mano.
+ */
+const PENDING_REFUND_WHERE = {
+  refundFailedAt: { not: null },
+  refundedAt: null,
+  refundDismissedAt: null,
+} as const;
+
+/** Auditoría de un descarte manual de la cola. */
+export interface RefundDismissal {
+  dismissedAt: Date;
+  /** `User.id` interno del admin que descarta. */
+  dismissedBy: string;
+  reason: string;
+}
 
 export const refundRepository = {
   /**
@@ -51,11 +66,18 @@ export const refundRepository = {
     });
   },
 
-  /** Mete (o mantiene) la reserva en la cola de reembolsos fallidos. */
+  /**
+   * Mete (o mantiene) la reserva en la cola de reembolsos fallidos.
+   *
+   * Un fallo nuevo reabre una entrada descartada: si Stripe vuelve a
+   * fallar es que sí hay dinero en juego. Solo se limpia
+   * `refundDismissedAt` (lo que la saca de la cola); quién la descartó y
+   * por qué se conservan como rastro del último descarte.
+   */
   async recordFailed(bookingId: string, failedAt: Date, reason: string): Promise<void> {
     await prisma.booking.update({
       where: { id: bookingId },
-      data: { refundFailedAt: failedAt, refundFailureReason: reason },
+      data: { refundFailedAt: failedAt, refundFailureReason: reason, refundDismissedAt: null },
     });
   },
 
@@ -68,7 +90,13 @@ export const refundRepository = {
    * la verdad: cancelada y con el dinero aún sin devolver.
    */
   async recordAsyncFailure(bookingId: string, failedAt: Date, reason: string): Promise<void> {
-    const failure = { refundFailedAt: failedAt, refundFailureReason: reason, refundedAt: null };
+    // Como en `recordFailed`, un fallo nuevo reabre un descarte previo.
+    const failure = {
+      refundFailedAt: failedAt,
+      refundFailureReason: reason,
+      refundedAt: null,
+      refundDismissedAt: null,
+    };
     await prisma.booking.updateMany({
       where: { id: bookingId, status: 'refunded' },
       data: { ...failure, status: 'cancelled' },
@@ -112,13 +140,14 @@ export const refundRepository = {
     });
   },
 
-  /** Lo mínimo para decidir si una reserva puede reintentar su refund. */
+  /** Lo mínimo para decidir si una reserva puede reintentar o descartar su refund. */
   async findRefundState(bookingId: string): Promise<{
     id: string;
     status: string;
     stripePaymentIntentId: string | null;
     refundFailedAt: Date | null;
     refundedAt: Date | null;
+    refundDismissedAt: Date | null;
   } | null> {
     return prisma.booking.findUnique({
       where: { id: bookingId },
@@ -128,7 +157,28 @@ export const refundRepository = {
         stripePaymentIntentId: true,
         refundFailedAt: true,
         refundedAt: true,
+        refundDismissedAt: true,
       },
     });
+  },
+
+  /**
+   * Descarta la entrada de la cola **solo si sigue siendo descartable**
+   * (cancelada, en cola y sin devolver). Condicional para que un
+   * `charge.refunded` o un reintento en paralelo no queden tapados por
+   * un descarte basado en una lectura vieja.
+   *
+   * @returns `true` si esta llamada aplicó el descarte.
+   */
+  async dismissIfQueued(bookingId: string, dismissal: RefundDismissal): Promise<boolean> {
+    const { count } = await prisma.booking.updateMany({
+      where: { id: bookingId, status: 'cancelled', ...PENDING_REFUND_WHERE },
+      data: {
+        refundDismissedAt: dismissal.dismissedAt,
+        refundDismissedBy: dismissal.dismissedBy,
+        refundDismissReason: dismissal.reason,
+      },
+    });
+    return count > 0;
   },
 };

@@ -8,11 +8,15 @@ import { routing, type AppLocale } from '@/i18n/routing';
 import { requireRole } from '@/lib/auth/server';
 import {
   BookingForCheckoutNotFoundError,
+  RefundNotDismissableError,
   RefundNotInQueueError,
+  dismissBookingRefund,
+  dismissBookingRefundSchema,
   retryBookingRefund,
   type RetryRefundOutcome,
 } from '@/lib/services/checkout';
 import { notifyRefundCompleted, scheduleNotification } from '@/lib/services/notifications';
+import { ensureUserFromClerk } from '@/lib/services/user';
 
 /**
  * Códigos de error de `retryRefundAction`.
@@ -92,5 +96,79 @@ function mapRetryError(err: unknown): RetryRefundErrorCode {
   if (err instanceof BookingForCheckoutNotFoundError) return 'BOOKING_NOT_FOUND';
   if (err instanceof RefundNotInQueueError) return 'NOT_IN_QUEUE';
   console.error('[admin/reembolsos] retryRefundAction error:', err);
+  return 'INTERNAL';
+}
+
+/**
+ * Códigos de error de `dismissRefundAction`. `INVALID_REASON` va aparte
+ * de `VALIDATION` porque es el único que el admin puede corregir en el
+ * propio formulario.
+ */
+export type DismissRefundErrorCode =
+  | 'BOOKING_NOT_FOUND'
+  | 'NOT_IN_QUEUE'
+  | 'NOT_DISMISSABLE'
+  | 'INVALID_REASON'
+  | 'VALIDATION'
+  | 'FORBIDDEN'
+  | 'INTERNAL';
+
+/** Resultado serializable del descarte de una entrada de la cola. */
+export type DismissRefundActionState = { ok: true } | { ok: false; code: DismissRefundErrorCode };
+
+/**
+ * Descarta una entrada de la cola de reembolsos con un motivo obligatorio.
+ *
+ * Para las entradas sin salida (`pi_cancel_failed` sin cobro real). No
+ * mueve dinero ni cambia el estado de la reserva: la saca de la cola y
+ * deja auditado quién (`User.id` interno del admin), cuándo y por qué.
+ * Mismo doble guard de rol que `retryRefundAction`.
+ *
+ * @param locale — locale activo (para el guard y para revalidar la ruta).
+ * @param bookingId — reserva cuya entrada se descarta.
+ * @param reason — motivo libre, mínimo 5 caracteres sin contar espacios.
+ */
+export async function dismissRefundAction(
+  locale: AppLocale,
+  bookingId: string,
+  reason: string,
+): Promise<DismissRefundActionState> {
+  if (!hasLocale(routing.locales, locale)) {
+    return { ok: false, code: 'VALIDATION' };
+  }
+
+  let clerkUserId: string;
+  try {
+    ({ userId: clerkUserId } = await requireRole(['admin'], locale));
+  } catch {
+    return { ok: false, code: 'FORBIDDEN' };
+  }
+
+  // Validamos en el borde, antes de tocar BD: una server action es un
+  // endpoint público y el formulario puede saltarse.
+  const parsed = dismissBookingRefundSchema.safeParse({ bookingId, reason });
+  if (!parsed.success) {
+    const reasonIssue = parsed.error.issues.some((issue) => issue.path[0] === 'reason');
+    return { ok: false, code: reasonIssue ? 'INVALID_REASON' : 'VALIDATION' };
+  }
+
+  try {
+    const admin = await ensureUserFromClerk(clerkUserId);
+    await dismissBookingRefund(parsed.data, admin.id);
+  } catch (err) {
+    return { ok: false, code: mapDismissError(err) };
+  }
+
+  revalidatePath(`/${locale}/admin/reembolsos`);
+  return { ok: true };
+}
+
+/** Traduce los errores tipados del descarte a códigos estables para la UI. */
+function mapDismissError(err: unknown): DismissRefundErrorCode {
+  if (err instanceof ZodError) return 'VALIDATION';
+  if (err instanceof BookingForCheckoutNotFoundError) return 'BOOKING_NOT_FOUND';
+  if (err instanceof RefundNotInQueueError) return 'NOT_IN_QUEUE';
+  if (err instanceof RefundNotDismissableError) return 'NOT_DISMISSABLE';
+  console.error('[admin/reembolsos] dismissRefundAction error:', err);
   return 'INTERNAL';
 }

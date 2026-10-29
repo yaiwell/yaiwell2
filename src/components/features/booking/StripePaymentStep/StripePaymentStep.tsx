@@ -24,6 +24,7 @@ import type { StripePaymentStepProps } from './StripePaymentStep.types';
  */
 export function StripePaymentStep({
   clientSecret,
+  bookingId,
   amountCents,
   originalPriceCents,
   discountPct,
@@ -31,6 +32,7 @@ export function StripePaymentStep({
   isLastMinute,
   returnUrl,
   onSucceeded,
+  onHoldExpired,
 }: StripePaymentStepProps) {
   const t = useTranslations('booking.payment');
   const { resolved } = useTheme();
@@ -60,6 +62,7 @@ export function StripePaymentStep({
   return (
     <Elements stripe={stripePromise} options={options}>
       <StripePaymentForm
+        bookingId={bookingId}
         amountCents={amountCents}
         originalPriceCents={originalPriceCents}
         discountPct={discountPct}
@@ -67,6 +70,7 @@ export function StripePaymentStep({
         isLastMinute={isLastMinute}
         returnUrl={returnUrl}
         onSucceeded={onSucceeded}
+        onHoldExpired={onHoldExpired}
       />
     </Elements>
   );

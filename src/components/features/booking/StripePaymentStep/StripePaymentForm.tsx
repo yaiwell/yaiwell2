@@ -23,6 +23,7 @@ const LAST_MINUTE_NOTICE_ID = 'booking-payment-last-minute-notice';
  * los aporta `useStripePaymentForm`.
  */
 export function StripePaymentForm({
+  bookingId,
   amountCents,
   originalPriceCents,
   discountPct,
@@ -30,11 +31,14 @@ export function StripePaymentForm({
   isLastMinute,
   returnUrl,
   onSucceeded,
+  onHoldExpired,
 }: StripePaymentFormProps) {
   const t = useTranslations('booking.payment');
   const { isReady, isProcessing, hasError, errorMessage, submit } = useStripePaymentForm({
+    bookingId,
     returnUrl,
     onSucceeded,
+    onHoldExpired,
   });
 
   return (

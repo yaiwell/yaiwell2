@@ -1,7 +1,15 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { expireAbandonedPendingBookings } from '@/lib/services/checkout';
-import { sendTomorrowReminders } from '@/lib/services/notifications';
+import {
+  expireAbandonedPendingBookings,
+  type BookingTransitionResult,
+} from '@/lib/services/checkout';
+import {
+  notifyBookingConfirmed,
+  notifyLatePaymentRefunded,
+  scheduleNotification,
+  sendTomorrowReminders,
+} from '@/lib/services/notifications';
 import { verifyCronAuthorization } from '@/lib/utils/cron-auth';
 
 /**
@@ -32,7 +40,7 @@ export const maxDuration = 60;
  *   distinguir a Vercel de cualquier otro. El cuerpo es genérico para no
  *   revelar configuración; el detalle va solo al log.
  * - 401 si la cabecera `Authorization: Bearer <CRON_SECRET>` no coincide.
- * - 200 con el resumen `{ scanned, expired, skipped, failed, reminders }`.
+ * - 200 con el resumen `{ scanned, expired, settled, skipped, failed, reminders }`.
  *   Los fallos por reserva van dentro del resumen, no como 500: se
  *   reintentan solos al día siguiente.
  * - 500 solo si falla la consulta inicial de alguno de los dos (BD caída).
@@ -63,5 +71,39 @@ export async function GET(request: NextRequest) {
   if (expiry.status === 'rejected' || reminders.status === 'rejected') {
     return NextResponse.json({ error: 'Daily sweep failed.' }, { status: 500 });
   }
-  return NextResponse.json({ ...expiry.value, reminders: reminders.value }, { status: 200 });
+  // Las transiciones van a los avisos, no a la respuesta: el resumen es
+  // solo recuento.
+  const { settlements, ...expirySummary } = expiry.value;
+  notifySettlements(settlements);
+  return NextResponse.json({ ...expirySummary, reminders: reminders.value }, { status: 200 });
+}
+
+/**
+ * Avisa al cliente de los pagos que el barrido ha asentado por haberse
+ * perdido su webhook, con los mismos correos y criterios que el webhook
+ * `payment_intent.succeeded`.
+ *
+ * Por qué un webhook que llegue después no repite el correo: hay dos
+ * ventanas de 24 h encadenadas.
+ *  - Durante 24 h, Stripe devuelve la respuesta cacheada de la clave
+ *    `booking_refund_<id>` (`issued` otra vez, y por tanto `lateRefund`),
+ *    pero Resend también recuerda 24 h la clave del aviso
+ *    (`<kind>/<bookingId>`) y descarta el duplicado.
+ *  - Pasadas las 24 h, la clave de Stripe ha caducado: un refund nuevo
+ *    responde `charge_already_refunded` → `already_refunded`, que no
+ *    lleva `lateRefund`, así que no se programa ningún aviso.
+ * Si alguna de las dos ventanas cambia (otra clave de idempotencia en
+ * los reembolsos o en los correos), revisar este razonamiento.
+ * La confirmación no depende de esto: solo avisa con `changed: true`.
+ */
+function notifySettlements(settlements: BookingTransitionResult[]): void {
+  for (const result of settlements) {
+    if (result.changed && result.status === 'confirmed') {
+      scheduleNotification(() => notifyBookingConfirmed(result.bookingId));
+    }
+    const { lateRefund } = result;
+    if (lateRefund) {
+      scheduleNotification(() => notifyLatePaymentRefunded(result.bookingId, lateRefund));
+    }
+  }
 }

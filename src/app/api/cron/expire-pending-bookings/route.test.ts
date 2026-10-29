@@ -8,13 +8,20 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { expireMock, remindMock } = vi.hoisted(() => ({
+const { expireMock, remindMock, confirmedMock, lateRefundMock } = vi.hoisted(() => ({
   expireMock: vi.fn(),
   remindMock: vi.fn(),
+  confirmedMock: vi.fn(async () => {}),
+  lateRefundMock: vi.fn(async () => {}),
 }));
 
 vi.mock('@/lib/services/checkout', () => ({ expireAbandonedPendingBookings: expireMock }));
-vi.mock('@/lib/services/notifications', () => ({ sendTomorrowReminders: remindMock }));
+vi.mock('@/lib/services/notifications', () => ({
+  sendTomorrowReminders: remindMock,
+  notifyBookingConfirmed: confirmedMock,
+  notifyLatePaymentRefunded: lateRefundMock,
+  scheduleNotification: (task: () => Promise<void>) => void task(),
+}));
 
 import { GET } from './route';
 
@@ -32,7 +39,14 @@ beforeEach(() => {
   vi.clearAllMocks();
   vi.stubEnv('CRON_SECRET', SECRET);
   vi.spyOn(console, 'error').mockImplementation(() => undefined);
-  expireMock.mockResolvedValue({ scanned: 2, expired: 1, skipped: 1, failed: 0 });
+  expireMock.mockResolvedValue({
+    scanned: 2,
+    expired: 1,
+    settled: 0,
+    skipped: 1,
+    failed: 0,
+    settlements: [],
+  });
   remindMock.mockResolvedValue({ scanned: 3, sent: 3, truncated: false });
 });
 
@@ -73,6 +87,7 @@ describe('GET /api/cron/expire-pending-bookings', () => {
     expect(await response.json()).toEqual({
       scanned: 2,
       expired: 1,
+      settled: 0,
       skipped: 1,
       failed: 0,
       reminders: { scanned: 3, sent: 3, truncated: false },
@@ -95,6 +110,30 @@ describe('GET /api/cron/expire-pending-bookings', () => {
 
     expect(response.status).toBe(500);
     expect(expireMock).toHaveBeenCalledOnce();
+  });
+
+  it('avisa de los pagos asentados por webhook perdido, sin incluirlos en la respuesta', async () => {
+    expireMock.mockResolvedValue({
+      scanned: 2,
+      expired: 0,
+      settled: 2,
+      skipped: 0,
+      failed: 0,
+      settlements: [
+        { bookingId: 'bk-ok', changed: true, status: 'confirmed' },
+        { bookingId: 'bk-late', changed: true, status: 'cancelled', lateRefund: 'issued' },
+      ],
+    });
+
+    const response = await GET(request(`Bearer ${SECRET}`));
+    const body = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(body).not.toHaveProperty('settlements');
+    expect(body.settled).toBe(2);
+    expect(confirmedMock).toHaveBeenCalledWith('bk-ok');
+    expect(lateRefundMock).toHaveBeenCalledWith('bk-late', 'issued');
+    expect(confirmedMock).toHaveBeenCalledTimes(1);
   });
 
   it('sin autorización no envía recordatorios', async () => {

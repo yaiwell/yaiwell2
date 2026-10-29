@@ -142,3 +142,33 @@ export class RefundNotInQueueError extends Error {
     this.name = 'RefundNotInQueueError';
   }
 }
+
+/**
+ * Se intentó pagar una reserva que ya no retiene su franja: la `pending`
+ * venció su retención de `PENDING_HOLD_MINUTES` o ya no está `pending`
+ * (caducada, cancelada). Cobrarla acabaría, como mucho, en un reembolso
+ * automático si otro cliente cogió el hueco; mejor no dejar pagar.
+ */
+export class BookingHoldExpiredError extends Error {
+  readonly code = 'BOOKING_HOLD_EXPIRED';
+
+  constructor(message = 'La reserva ya no retiene su franja; elige otra hora.') {
+    super(message);
+    this.name = 'BookingHoldExpiredError';
+  }
+}
+
+/**
+ * Se pidió descartar de la cola de reembolsos una reserva que no puede
+ * descartarse: no está `cancelled`, ya tiene `refundedAt` o ya estaba
+ * descartada. Si la reserva ni existe se lanza
+ * `BookingForCheckoutNotFoundError`.
+ */
+export class RefundNotDismissableError extends Error {
+  readonly code = 'REFUND_NOT_DISMISSABLE';
+
+  constructor(message = 'La reserva no admite descartar su reembolso.') {
+    super(message);
+    this.name = 'RefundNotDismissableError';
+  }
+}

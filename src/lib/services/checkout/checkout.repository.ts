@@ -121,6 +121,21 @@ export const checkoutRepository = {
     return count > 0;
   },
 
+  /**
+   * Reserva del cliente indicado, o `null` si no existe o es de otro.
+   * La titularidad va en el `where`: la comprobación previa al pago
+   * recibe el id del navegador y no debe revelar reservas ajenas.
+   */
+  async findOwnedCheckoutRow(
+    bookingId: string,
+    clientId: string,
+  ): Promise<CheckoutBookingRow | null> {
+    return prisma.booking.findFirst({
+      where: { id: bookingId, clientId },
+      select: CHECKOUT_BOOKING_SELECT,
+    });
+  },
+
   /** Relectura de la fila tras perder una escritura condicional. */
   async findCheckoutRow(bookingId: string): Promise<CheckoutBookingRow | null> {
     return prisma.booking.findUnique({

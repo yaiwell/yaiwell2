@@ -7,7 +7,6 @@ import {
   refundPaymentOnCancelledBooking,
   settlePaymentOnPendingBooking,
 } from './checkout.late-payment.service';
-import { checkoutRepository } from './checkout.repository';
 import type { BookingTransitionResult } from './checkout.types';
 
 /**
@@ -77,26 +76,32 @@ export async function confirmBookingPayment(
 }
 
 /**
- * Cancela la reserva asociada a un `payment_intent.payment_failed`.
+ * Registra un `payment_intent.payment_failed` **sin cancelar** la reserva.
  *
- * Liberar el slot es lo correcto aquí: la reserva nunca llegó a pagarse,
- * y mantener el `pending` bloquearía la franja para el resto de clientes
- * que sí pueden pagarla. Si el cliente reintenta, crea una reserva nueva.
+ * Un intento fallido no es el final del pago: el Payment Element deja al
+ * cliente reintentar con otra tarjeta sobre el **mismo** PaymentIntent.
+ * Si cancelásemos aquí, ese segundo intento cobraría sobre una reserva ya
+ * cancelada y acabaría en reembolso automático: el dinero vuelve, pero
+ * el cliente pierde la cita que acaba de pagar.
+ *
+ * Dejar la `pending` viva no bloquea la franja más de la cuenta: deja de
+ * retenerla al vencer `PENDING_HOLD_MINUTES` (`isBookingHoldingSlot`), la
+ * página de pago no deja pagar una reserva vencida y el cron de
+ * caducidad la cancela junto con su PaymentIntent.
+ *
+ * Se sigue resolviendo la reserva para que un evento ajeno al
+ * marketplace responda `handled: false` igual que el resto.
  */
 export async function failBookingPayment(
   intent: Stripe.PaymentIntent,
 ): Promise<BookingTransitionResult> {
   const booking = await resolveBooking(intent.metadata?.bookingId, intent.id);
-
-  if (booking.status !== 'pending') {
-    return { bookingId: booking.id, changed: false, status: booking.status };
+  if (booking.status === 'pending') {
+    // Solo el código de Stripe: el mensaje puede incluir datos de la tarjeta.
+    console.warn(
+      `[checkout/webhook] payment attempt failed (${intent.last_payment_error?.code ?? 'unknown'}); booking stays pending for retry:`,
+      booking.id,
+    );
   }
-
-  // Condicional: si otro camino (pago confirmado en paralelo) movió la
-  // fila desde nuestra lectura, no la pisamos.
-  if (await checkoutRepository.cancelIfPending(booking.id, new Date())) {
-    return { bookingId: booking.id, changed: true, status: 'cancelled' };
-  }
-  const current = await checkoutRepository.findCheckoutRow(booking.id);
-  return { bookingId: booking.id, changed: false, status: current?.status ?? booking.status };
+  return { bookingId: booking.id, changed: false, status: booking.status };
 }

@@ -4,7 +4,8 @@
  * Lo crítico es la asimetría con el dinero: si Stripe dice que el
  * PaymentIntent ya no es cancelable porque se cobró, la reserva NO se
  * cancela (la resuelve el webhook). Y un fallo en una reserva no puede
- * abortar el resto del barrido.
+ * abortar el resto del barrido. Si el pago se cobró y su webhook se
+ * perdió, el barrido delega en el asentamiento y lo cuenta como `settled`.
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -25,6 +26,14 @@ vi.mock('@/lib/services/booking', async () => {
 const repoMock = vi.hoisted(() => ({ findExpiredPending: vi.fn(), cancelIfPending: vi.fn() }));
 
 vi.mock('./checkout.repository', () => ({ checkoutRepository: repoMock }));
+
+const lostWebhookMock = vi.hoisted(() => ({
+  settleLostWebhookPayment: vi.fn(),
+  reportStuckPendingBooking: vi.fn(),
+}));
+
+// El asentamiento tiene sus propios tests (`checkout.lost-webhook.service.test.ts`).
+vi.mock('./checkout.lost-webhook.service', () => lostWebhookMock);
 
 import { expireAbandonedPendingBookings } from './checkout.expiry.service';
 
@@ -53,6 +62,7 @@ beforeEach(() => {
   vi.spyOn(console, 'error').mockImplementation(() => undefined);
   stripeMock.paymentIntents.cancel.mockResolvedValue({ status: 'canceled' });
   repoMock.cancelIfPending.mockResolvedValue(true);
+  lostWebhookMock.settleLostWebhookPayment.mockResolvedValue(null);
 });
 
 describe('expireAbandonedPendingBookings', () => {
@@ -71,7 +81,14 @@ describe('expireAbandonedPendingBookings', () => {
       { idempotencyKey: 'booking_expire_bk-1' },
     );
     expect(repoMock.cancelIfPending).toHaveBeenCalledWith('bk-1', NOW);
-    expect(summary).toEqual({ scanned: 1, expired: 1, skipped: 0, failed: 0 });
+    expect(summary).toEqual({
+      scanned: 1,
+      expired: 1,
+      settled: 0,
+      skipped: 0,
+      failed: 0,
+      settlements: [],
+    });
   });
 
   it('no cancela la reserva si Stripe rechaza cancelar un intent ya pagado', async () => {
@@ -82,7 +99,35 @@ describe('expireAbandonedPendingBookings', () => {
     const summary = await expireAbandonedPendingBookings({ now: NOW });
 
     expect(repoMock.cancelIfPending).not.toHaveBeenCalled();
-    expect(summary).toEqual({ scanned: 1, expired: 0, skipped: 1, failed: 0 });
+    expect(lostWebhookMock.settleLostWebhookPayment).toHaveBeenCalledWith(pending('bk-1'), NOW);
+    expect(summary).toEqual({
+      scanned: 1,
+      expired: 0,
+      settled: 0,
+      skipped: 1,
+      failed: 0,
+      settlements: [],
+    });
+  });
+
+  it('asienta el pago de un webhook perdido y devuelve la transición', async () => {
+    repoMock.findExpiredPending.mockResolvedValue([pending('bk-1')]);
+    stripeMock.paymentIntents.cancel.mockRejectedValue(unexpectedState());
+    stripeMock.paymentIntents.retrieve.mockResolvedValue({ status: 'succeeded' });
+    const transition = { bookingId: 'bk-1', changed: true, status: 'confirmed' };
+    lostWebhookMock.settleLostWebhookPayment.mockResolvedValue(transition);
+
+    const summary = await expireAbandonedPendingBookings({ now: NOW });
+
+    expect(repoMock.cancelIfPending).not.toHaveBeenCalled();
+    expect(summary).toEqual({
+      scanned: 1,
+      expired: 0,
+      settled: 1,
+      skipped: 0,
+      failed: 0,
+      settlements: [transition],
+    });
   });
 
   it('tampoco la cancela si el pago se está procesando', async () => {
@@ -93,7 +138,29 @@ describe('expireAbandonedPendingBookings', () => {
     const summary = await expireAbandonedPendingBookings({ now: NOW });
 
     expect(repoMock.cancelIfPending).not.toHaveBeenCalled();
+    expect(lostWebhookMock.settleLostWebhookPayment).not.toHaveBeenCalled();
+    // Métodos asíncronos (SEPA) tardan días: solo aviso, y solo si lleva >24 h.
+    expect(lostWebhookMock.reportStuckPendingBooking).toHaveBeenCalledWith(
+      pending('bk-1'),
+      NOW,
+      expect.any(String),
+      'warning',
+    );
     expect(summary.skipped).toBe(1);
+  });
+
+  it('salta sin avisar un intent aún abierto que Stripe no deja cancelar (clave cacheada)', async () => {
+    repoMock.findExpiredPending.mockResolvedValue([pending('bk-1')]);
+    stripeMock.paymentIntents.cancel.mockRejectedValue(unexpectedState());
+    stripeMock.paymentIntents.retrieve.mockResolvedValue({ status: 'requires_payment_method' });
+
+    const summary = await expireAbandonedPendingBookings({ now: NOW });
+
+    expect(summary.skipped).toBe(1);
+    expect(repoMock.cancelIfPending).not.toHaveBeenCalled();
+    // Ni se intenta asentar ni se reporta «sin cargo asentable».
+    expect(lostWebhookMock.settleLostWebhookPayment).not.toHaveBeenCalled();
+    expect(lostWebhookMock.reportStuckPendingBooking).not.toHaveBeenCalled();
   });
 
   it('caduca la reserva si su intent ya estaba cancelado (idempotente)', async () => {
@@ -122,7 +189,14 @@ describe('expireAbandonedPendingBookings', () => {
 
     const summary = await expireAbandonedPendingBookings({ now: NOW });
 
-    expect(summary).toEqual({ scanned: 1, expired: 0, skipped: 1, failed: 0 });
+    expect(summary).toEqual({
+      scanned: 1,
+      expired: 0,
+      settled: 0,
+      skipped: 1,
+      failed: 0,
+      settlements: [],
+    });
   });
 
   it('un fallo en una reserva no aborta el resto del barrido', async () => {
@@ -135,6 +209,13 @@ describe('expireAbandonedPendingBookings', () => {
 
     expect(repoMock.cancelIfPending).toHaveBeenCalledTimes(1);
     expect(repoMock.cancelIfPending).toHaveBeenCalledWith('bk-2', NOW);
-    expect(summary).toEqual({ scanned: 2, expired: 1, skipped: 0, failed: 1 });
+    expect(summary).toEqual({
+      scanned: 2,
+      expired: 1,
+      settled: 0,
+      skipped: 0,
+      failed: 1,
+      settlements: [],
+    });
   });
 });

@@ -18,9 +18,10 @@ import { retryBookingRefundSchema } from './checkout.validation';
  */
 
 /**
- * Lista las reservas con un reembolso fallido y aún no confirmado por
- * Stripe (`refundFailedAt != null && refundedAt == null`), las más
- * antiguas primero: es el dinero que más tiempo lleva esperando.
+ * Lista las reservas con un reembolso fallido, aún no confirmado por
+ * Stripe y no descartado por soporte (`refundFailedAt != null &&
+ * refundedAt == null && refundDismissedAt == null`), las más antiguas
+ * primero: es el dinero que más tiempo lleva esperando.
  */
 export async function listPendingRefunds(): Promise<PendingRefundSummary[]> {
   const rows = await refundRepository.findPending();
@@ -71,7 +72,9 @@ export async function retryBookingRefund(input: unknown): Promise<RetryRefundRes
   if (!state) {
     throw new BookingForCheckoutNotFoundError('La reserva no existe.');
   }
-  if (!state.refundFailedAt || state.refundedAt) {
+  // Una entrada descartada por soporte ya no se reintenta: si hubiera
+  // que devolver algo, el siguiente fallo real la reabre.
+  if (!state.refundFailedAt || state.refundedAt || state.refundDismissedAt) {
     throw new RefundNotInQueueError();
   }
   // Un refund íntegro solo tiene sentido sobre una reserva muerta. Si la

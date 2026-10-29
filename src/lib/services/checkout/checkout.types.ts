@@ -117,16 +117,22 @@ export interface ProviderCancellationResult {
  *
  *  - `scanned`: candidatas leídas (pending más antiguas que la retención).
  *  - `expired`: canceladas en esta ejecución.
- *  - `skipped`: no se tocan a propósito: Stripe dice que el pago ya se
- *    cobró o se está procesando (lo resolverá el webhook), o la fila
- *    cambió de estado en paralelo.
+ *  - `settled`: cobradas en Stripe con el webhook perdido; asentadas con
+ *    la lógica del webhook (confirmadas, o canceladas y reembolsadas).
+ *  - `skipped`: no se tocan a propósito: el pago se está procesando, se
+ *    cobró hace muy poco (le damos margen al webhook), o la fila cambió
+ *    de estado en paralelo.
  *  - `failed`: error inesperado; se reintentará en la próxima ejecución.
+ *  - `settlements`: transiciones de las `settled`, para que el route
+ *    mande los mismos avisos que habría mandado el webhook.
  */
 export interface ExpirePendingSummary {
   scanned: number;
   expired: number;
+  settled: number;
   skipped: number;
   failed: number;
+  settlements: BookingTransitionResult[];
 }
 
 /**

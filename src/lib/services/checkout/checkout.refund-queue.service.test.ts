@@ -36,6 +36,7 @@ function queuedState(overrides: Record<string, unknown> = {}) {
     stripePaymentIntentId: 'pi_123',
     refundFailedAt: FAILED_AT,
     refundedAt: null,
+    refundDismissedAt: null,
     ...overrides,
   };
 }
@@ -149,6 +150,17 @@ describe('retryBookingRefund', () => {
     await expect(retryBookingRefund({ bookingId: BOOKING_ID })).rejects.toBeInstanceOf(
       RefundNotInQueueError,
     );
+  });
+
+  it('no reintenta una entrada descartada por soporte', async () => {
+    refundRepoMock.findRefundState.mockResolvedValue(
+      queuedState({ refundDismissedAt: new Date('2026-10-26T09:00:00.000Z') }),
+    );
+
+    await expect(retryBookingRefund({ bookingId: BOOKING_ID })).rejects.toBeInstanceOf(
+      RefundNotInQueueError,
+    );
+    expect(stripeMock.refunds.create).not.toHaveBeenCalled();
   });
 
   it('lanza RefundNotInQueueError si la reserva sigue viva (no emite refund íntegro)', async () => {

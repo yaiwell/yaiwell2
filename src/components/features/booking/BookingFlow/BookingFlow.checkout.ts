@@ -44,6 +44,7 @@ export function readyCheckout(
 ): CheckoutState {
   return {
     status: 'ready',
+    bookingId: result.bookingId,
     clientSecret: result.clientSecret,
     amountCents: result.amountCents,
     originalPriceCents: result.originalPriceCents,

@@ -28,6 +28,15 @@ export const PENDING_HOLD_MINUTES = 30;
 const PENDING_HOLD_MS = PENDING_HOLD_MINUTES * 60 * 1000;
 
 /**
+ * Margen al final de la retención en el que ya no se deja **empezar** a
+ * pagar: un 3D Secure o un webhook lento pueden tardar más que lo que
+ * queda, y el pago acabaría evaluándose con la retención vencida (con
+ * reembolso automático si la franja se ocupó entretanto). Lo usa la
+ * comprobación previa al pago de `checkout`.
+ */
+export const PENDING_HOLD_PAYMENT_MARGIN_MS = 2 * 60 * 1000;
+
+/**
  * Instante de corte: una `pending` creada **antes** de este momento ya
  * no retiene su franja.
  *

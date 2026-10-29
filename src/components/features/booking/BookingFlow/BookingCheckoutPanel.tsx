@@ -34,6 +34,8 @@ interface BookingCheckoutPanelProps {
   onRetry: () => void;
   /** Descarta el hueco actual y vuelve al calendario. */
   onChooseAnotherSlot: () => void;
+  /** La retención de la reserva venció antes de pagar. */
+  onHoldExpired: () => void;
 }
 
 /**
@@ -51,6 +53,7 @@ export function BookingCheckoutPanel({
   onSucceeded,
   onRetry,
   onChooseAnotherSlot,
+  onHoldExpired,
 }: BookingCheckoutPanelProps) {
   const t = useTranslations('booking.checkout');
 
@@ -68,6 +71,7 @@ export function BookingCheckoutPanel({
         />
         <StripePaymentStep
           clientSecret={checkout.clientSecret}
+          bookingId={checkout.bookingId}
           amountCents={checkout.amountCents}
           originalPriceCents={checkout.originalPriceCents}
           discountPct={checkout.discountPct}
@@ -75,6 +79,7 @@ export function BookingCheckoutPanel({
           isLastMinute={checkout.isLastMinute}
           returnUrl={returnUrl}
           onSucceeded={onSucceeded}
+          onHoldExpired={onHoldExpired}
         />
       </>
     );
@@ -109,10 +114,12 @@ export function BookingCheckoutPanel({
               {t('signIn')}
             </Link>
           </>
-        ) : checkout.code === 'SLOT_UNAVAILABLE' || checkout.code === 'SLOT_TOO_SOON' ? (
-          // Reintentar el mismo hueco fallaría siempre: otro cliente se
-          // lo ha quedado o ya no respeta la antelación mínima. La única
-          // acción útil es elegir otro.
+        ) : checkout.code === 'SLOT_UNAVAILABLE' ||
+          checkout.code === 'SLOT_TOO_SOON' ||
+          checkout.code === 'HOLD_EXPIRED' ? (
+          // Reintentar el mismo checkout fallaría siempre: otro cliente se
+          // ha quedado el hueco, ya no respeta la antelación mínima o la
+          // retención de la reserva venció. Toca elegir hora de nuevo.
           <button
             type="button"
             onClick={onChooseAnotherSlot}
@@ -166,6 +173,8 @@ function resolveErrorMessage(
       return t('errorProviderNotChargeable');
     case 'PAYMENT_FAILED':
       return t('errorPaymentFailed');
+    case 'HOLD_EXPIRED':
+      return t('errorHoldExpired');
     case 'VALIDATION':
     case 'INTERNAL':
       return t('errorGeneric');

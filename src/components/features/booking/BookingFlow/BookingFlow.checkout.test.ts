@@ -37,6 +37,7 @@ describe('readyCheckout', () => {
     );
     expect(state).toEqual({
       status: 'ready',
+      bookingId: 'bk-1',
       clientSecret: 'pi_secret',
       amountCents: 4500,
       originalPriceCents: null,

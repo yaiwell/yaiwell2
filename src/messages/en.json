@@ -867,6 +867,7 @@
       "errorSlotTooSoon": "This slot can no longer be booked: it starts in less than 30 minutes. Please pick another time.",
       "errorProviderNotChargeable": "This centre doesn't accept online payments yet. Please contact them directly.",
       "errorPaymentFailed": "We couldn't reach the payment gateway. Please try again in a moment.",
+      "errorHoldExpired": "Your booking has expired: we hold the slot for 30 minutes while you pay and that time has passed. You have not been charged. Choose the time again to book.",
       "errorGeneric": "Something went wrong. Please try again in a moment.",
       "retry": "Try again",
       "signIn": "Sign in",
@@ -1048,7 +1049,8 @@
       "notice": {
         "title": "Retrying is safe",
         "noDoubleRefund": "A retry cannot refund the money twice: the refund is always for the full amount and Stripe rejects a second refund on a charge that has already been refunded.",
-        "stillFailing": "If it keeps failing, check the cause in the Stripe dashboard before trying again; for example, the balance of the business's connected account."
+        "stillFailing": "If it keeps failing, check the cause in the Stripe dashboard before trying again; for example, the balance of the business's connected account.",
+        "dismiss": "If an entry was never charged (for example, \"pi_cancel_failed\" with the payment never confirmed in Stripe), dismiss it with a reason. Dismissing does not refund any money: it only removes the entry from the queue and is logged under your user."
       },
       "queue": {
         "title": "Refund queue",
@@ -1071,10 +1073,21 @@
         "pending": "Retrying…",
         "aria": "Retry the refund for {provider}"
       },
+      "dismiss": {
+        "label": "Dismiss",
+        "aria": "Dismiss the refund for {provider} from the queue",
+        "reasonLabel": "Reason for dismissing",
+        "reasonHint": "Required, at least {min} characters. Logged under your user.",
+        "reasonTooShort": "Write a reason of at least {min} characters.",
+        "confirm": "Confirm dismissal",
+        "pending": "Dismissing…",
+        "cancel": "Cancel"
+      },
       "feedback": {
         "succeeded": "Refund issued ({provider}). Stripe will confirm it shortly.",
         "failed": "The refund for {provider} is still failing. Check the updated reason and the payment in Stripe.",
         "notApplicable": "The booking with {provider} has no payment in Stripe, so there is nothing to refund. Review it manually.",
+        "dismissed": "Entry for {provider} dismissed. It no longer appears in the queue.",
         "dismiss": "Dismiss",
         "errors": {
           "BOOKING_NOT_FOUND": "The booking with {provider} no longer exists.",
@@ -1082,6 +1095,15 @@
           "VALIDATION": "Could not retry the refund for {provider}: invalid identifier.",
           "FORBIDDEN": "Your session does not have admin permissions to retry the refund for {provider}.",
           "INTERNAL": "Unexpected error while retrying the refund for {provider}. Please try again in a few minutes."
+        },
+        "dismissErrors": {
+          "BOOKING_NOT_FOUND": "The booking for {provider} no longer exists.",
+          "NOT_IN_QUEUE": "The refund for {provider} is no longer in the queue. Reload the page to see its current status.",
+          "NOT_DISMISSABLE": "The booking for {provider} is not cancelled: its refund cannot be dismissed.",
+          "INVALID_REASON": "The reason for dismissing the refund for {provider} is not valid.",
+          "VALIDATION": "Could not dismiss the refund for {provider}: invalid identifier.",
+          "FORBIDDEN": "Your session does not have admin permissions to dismiss the refund for {provider}.",
+          "INTERNAL": "Unexpected error while dismissing the refund for {provider}. Try again in a few minutes."
         }
       }
     }

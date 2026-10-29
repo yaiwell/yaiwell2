@@ -371,6 +371,10 @@ model Service {
 /// - El profesional marca `completed` desde su panel; solo entonces se
 ///   habilita la valoración para el cliente.
 /// - El proveedor puede cancelar solo si `startAt - now() >= 2h`.
+/// Restricción fuera de Prisma: `bookings_no_overlap_confirmed` (EXCLUDE con
+/// btree_gist, migración 9d) impide dos `confirmed` solapadas del mismo
+/// profesional. No usar `migrate dev` ni `db push` contra el remoto: la
+/// borrarían al no estar en este modelo.
 model Booking {
   id                    String        @id @default(uuid())
   clientId              String
@@ -404,6 +408,12 @@ model Booking {
   refundFailedAt        DateTime?
   /// Motivo técnico del último fallo (código y mensaje de Stripe).
   refundFailureReason   String?
+  /// Entrada de la cola de reembolsos descartada a mano por soporte (p. ej.
+  /// `pi_cancel_failed` sin cobro real). Sale de la cola sin `refundedAt`:
+  /// no hubo dinero que devolver. Quién y por qué quedan para auditoría.
+  refundDismissedAt     DateTime?
+  refundDismissedBy     String?
+  refundDismissReason   String?
   /// Oferta de hueco liberado con la que se reservó. Con ella se congelan
   /// el precio de referencia y el descuento aplicado: `priceCents` sigue
   /// siendo lo cobrado, y la comisión se calcula sobre ese importe.

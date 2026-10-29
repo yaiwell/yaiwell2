@@ -867,6 +867,7 @@
       "errorSlotTooSoon": "Este hueco ya no se puede reservar: empieza en menos de 30 minutos. Elige otra hora.",
       "errorProviderNotChargeable": "Este centro todavía no acepta pagos online. Ponte en contacto con él directamente.",
       "errorPaymentFailed": "No hemos podido conectar con la pasarela de pago. Vuelve a intentarlo en unos segundos.",
+      "errorHoldExpired": "Tu reserva ha caducado: guardamos el hueco 30 minutos mientras pagas y ese tiempo ha pasado. No te hemos cobrado nada. Elige la hora de nuevo para reservar.",
       "errorGeneric": "Algo ha ido mal. Vuelve a intentarlo en unos segundos.",
       "retry": "Reintentar",
       "signIn": "Iniciar sesión",
@@ -1048,7 +1049,8 @@
       "notice": {
         "title": "Reintentar es seguro",
         "noDoubleRefund": "Un reintento no puede devolver el dinero dos veces: el reembolso es siempre íntegro y Stripe rechaza un segundo reembolso sobre un cargo ya devuelto.",
-        "stillFailing": "Si sigue fallando, revisa la causa en el dashboard de Stripe antes de volver a intentarlo; por ejemplo, el saldo de la cuenta conectada del centro."
+        "stillFailing": "Si sigue fallando, revisa la causa en el dashboard de Stripe antes de volver a intentarlo; por ejemplo, el saldo de la cuenta conectada del centro.",
+        "dismiss": "Si una entrada nunca tuvo cobro (por ejemplo, «pi_cancel_failed» con el pago sin confirmar en Stripe), descártala con un motivo. Descartar no devuelve dinero: solo la saca de la cola y queda registrado con tu usuario."
       },
       "queue": {
         "title": "Cola de reembolsos",
@@ -1071,10 +1073,21 @@
         "pending": "Reintentando…",
         "aria": "Reintentar el reembolso de {provider}"
       },
+      "dismiss": {
+        "label": "Descartar",
+        "aria": "Descartar el reembolso de {provider} de la cola",
+        "reasonLabel": "Motivo del descarte",
+        "reasonHint": "Obligatorio, mínimo {min} caracteres. Queda registrado con tu usuario.",
+        "reasonTooShort": "Escribe un motivo de al menos {min} caracteres.",
+        "confirm": "Confirmar descarte",
+        "pending": "Descartando…",
+        "cancel": "Cancelar"
+      },
       "feedback": {
         "succeeded": "Reembolso emitido ({provider}). Stripe confirmará la devolución en breve.",
         "failed": "El reembolso de {provider} sigue fallando. Revisa el motivo actualizado y el pago en Stripe.",
         "notApplicable": "La reserva de {provider} no tiene pago en Stripe: no hay nada que reembolsar. Revísala a mano.",
+        "dismissed": "Entrada de {provider} descartada. Ya no aparece en la cola.",
         "dismiss": "Cerrar",
         "errors": {
           "BOOKING_NOT_FOUND": "La reserva de {provider} ya no existe.",
@@ -1082,6 +1095,15 @@
           "VALIDATION": "No se ha podido reintentar el reembolso de {provider}: identificador no válido.",
           "FORBIDDEN": "Tu sesión no tiene permisos de admin para reintentar el reembolso de {provider}.",
           "INTERNAL": "Error inesperado al reintentar el reembolso de {provider}. Vuelve a intentarlo en unos minutos."
+        },
+        "dismissErrors": {
+          "BOOKING_NOT_FOUND": "La reserva de {provider} ya no existe.",
+          "NOT_IN_QUEUE": "El reembolso de {provider} ya no está en la cola. Recarga la página para ver el estado actual.",
+          "NOT_DISMISSABLE": "La reserva de {provider} no está cancelada: su reembolso no se puede descartar.",
+          "INVALID_REASON": "El motivo para descartar el reembolso de {provider} no es válido.",
+          "VALIDATION": "No se ha podido descartar el reembolso de {provider}: identificador no válido.",
+          "FORBIDDEN": "Tu sesión no tiene permisos de admin para descartar el reembolso de {provider}.",
+          "INTERNAL": "Error inesperado al descartar el reembolso de {provider}. Vuelve a intentarlo en unos minutos."
         }
       }
     }

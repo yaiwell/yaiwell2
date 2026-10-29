@@ -197,6 +197,12 @@ export function useBookingFlow(args: { serviceId: string }) {
     setStep('slot');
   }, [setDraft, setSlotExpired]);
 
+  /** Retención vencida antes de pagar (nada cobrado): el panel ofrece otra hora. */
+  const expireCheckout = useCallback(() => {
+    checkoutRef.current = { status: 'error', code: 'HOLD_EXPIRED' };
+    setCheckout(checkoutRef.current);
+  }, []);
+
   /**
    * Avanza a la confirmación tras un pago resuelto sin redirección.
    *
@@ -240,5 +246,6 @@ export function useBookingFlow(args: { serviceId: string }) {
     chooseAnotherSlot,
     completePayment,
     retryCheckout,
+    expireCheckout,
   };
 }

@@ -30,6 +30,9 @@ vi.mock('@/lib/services/checkout', () => ({
   RefundNotInQueueError: errors.RefundNotInQueueError,
 }));
 
+// El descarte tiene sus tests en `actions.dismiss.test.ts`.
+vi.mock('@/lib/services/user', () => ({ ensureUserFromClerk: vi.fn() }));
+
 vi.mock('@/lib/services/notifications', () => ({
   scheduleNotification: (task: () => Promise<void>) => void task(),
   notifyRefundCompleted: notifyMock,

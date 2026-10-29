@@ -45,6 +45,11 @@ export type CheckoutErrorCode =
   | 'SLOT_TOO_SOON'
   | 'PROVIDER_NOT_CHARGEABLE'
   | 'PAYMENT_FAILED'
+  // No lo devuelve `createBookingCheckoutAction` (una reserva recién
+  // creada siempre retiene su franja): lo fija el flujo cuando la
+  // comprobación previa al pago (`verifyBookingPayableAction`) dice que
+  // la retención venció. Comparte unión para que la UI lo pinte igual.
+  | 'HOLD_EXPIRED'
   | 'INTERNAL';
 
 /**

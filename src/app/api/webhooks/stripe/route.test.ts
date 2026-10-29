@@ -212,16 +212,19 @@ describe('POST /api/webhooks/stripe', () => {
     expect(notifyConfirmedMock).not.toHaveBeenCalled();
   });
 
-  it('cancela la reserva ante payment_intent.payment_failed', async () => {
+  it('deja la reserva en pending ante payment_intent.payment_failed', async () => {
     const intent = { id: 'pi_test', metadata: { bookingId: 'bk-2' } };
     verifyMock.mockReturnValue({ type: 'payment_intent.payment_failed', data: { object: intent } });
-    failMock.mockResolvedValue({ bookingId: 'bk-2', changed: true, status: 'cancelled' });
+    failMock.mockResolvedValue({ bookingId: 'bk-2', changed: false, status: 'pending' });
 
     const res = await POST(buildRequest());
+    const body = await res.json();
 
     expect(res.status).toBe(200);
     expect(failMock).toHaveBeenCalledWith(intent);
-    expect((await res.json()).status).toBe('cancelled');
+    // El cliente puede reintentar con otra tarjeta: la reserva sigue viva.
+    expect(body).toMatchObject({ status: 'pending', handled: false });
+    expect(notifyConfirmedMock).not.toHaveBeenCalled();
   });
 
   it('encola el refund ante charge.refund.updated', async () => {

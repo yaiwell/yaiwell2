@@ -59,6 +59,8 @@ export type CheckoutState =
     }
   | {
       status: 'ready';
+      /** Reserva `pending` que paga este checkout. */
+      bookingId: string;
       clientSecret: string;
       amountCents: number;
       /** Precio de referencia congelado en la reserva; `null` sin descuento. */

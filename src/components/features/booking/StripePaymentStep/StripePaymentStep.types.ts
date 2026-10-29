@@ -13,6 +13,8 @@ import type { AppLocale } from '@/i18n/routing';
  */
 export interface StripePaymentStepProps {
   clientSecret: string;
+  /** Reserva que paga este intent: la usa la comprobación de la retención. */
+  bookingId: string;
   amountCents: number;
   /** Precio de referencia congelado en la reserva; `null` sin descuento. */
   originalPriceCents: number | null;
@@ -28,6 +30,8 @@ export interface StripePaymentStepProps {
   returnUrl: string;
   /** Se dispara cuando el pago se resuelve sin redirección. */
   onSucceeded: () => void;
+  /** El servidor dice que la retención venció: no se cobra. */
+  onHoldExpired: () => void;
 }
 
 /**
@@ -36,6 +40,7 @@ export interface StripePaymentStepProps {
  * `<Elements>`.
  */
 export interface StripePaymentFormProps {
+  bookingId: string;
   amountCents: number;
   originalPriceCents: number | null;
   discountPct: number | null;
@@ -43,4 +48,5 @@ export interface StripePaymentFormProps {
   isLastMinute: boolean;
   returnUrl: string;
   onSucceeded: () => void;
+  onHoldExpired: () => void;
 }

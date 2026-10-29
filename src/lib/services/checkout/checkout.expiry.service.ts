@@ -2,9 +2,13 @@ import 'server-only';
 
 import { getPendingHoldCutoff } from '@/lib/services/booking';
 
-import { cancelBookingPaymentIntent } from './checkout.payment-intent';
+import { tryExpirePendingBooking } from './checkout.expire-one';
+import {
+  reportStuckPendingBooking,
+  settleLostWebhookPayment,
+} from './checkout.lost-webhook.service';
 import { checkoutRepository, type CheckoutBookingRow } from './checkout.repository';
-import type { ExpirePendingSummary } from './checkout.types';
+import type { BookingTransitionResult, ExpirePendingSummary } from './checkout.types';
 
 /**
  * Barrido de reservas `pending` abandonadas.
@@ -16,6 +20,10 @@ import type { ExpirePendingSummary } from './checkout.types';
  * y cancela el PaymentIntent para que el cliente no pueda pagar una
  * reserva que ya no existe. Si aun así llega un pago (carrera con el
  * cron), el webhook lo devuelve en automático.
+ *
+ * Desde la auditoría N6 también es la red de los webhooks perdidos: una
+ * `pending` cobrada en Stripe y sin `succeeded` procesado se asienta
+ * aquí en vez de saltarse cada día para siempre.
  */
 
 /**
@@ -26,7 +34,10 @@ import type { ExpirePendingSummary } from './checkout.types';
  */
 const EXPIRY_BATCH_LIMIT = 200;
 
-type ExpiryOutcome = 'expired' | 'skipped' | 'failed';
+/** Desenlace de una reserva del barrido. */
+type ExpiryOutcome =
+  | { kind: 'expired' | 'skipped' | 'failed' }
+  | { kind: 'settled'; result: BookingTransitionResult };
 
 /**
  * Caduca las reservas `pending` creadas hace más de `PENDING_HOLD_MINUTES`.
@@ -35,8 +46,13 @@ type ExpiryOutcome = 'expired' | 'skipped' | 'failed';
  * separado, un error en una no aborta el resto, y repetir la ejecución
  * solo vuelve a intentar las que quedaron en `pending`.
  *
+ * Las que Stripe da por cobradas y siguen en `pending` tienen el webhook
+ * perdido: se asientan con la lógica del webhook (ver
+ * `checkout.lost-webhook.service`) y salen en `settlements` para que el
+ * route avise al cliente igual que lo habría hecho el webhook.
+ *
  * @param options.now — instante de referencia; inyectable para tests.
- * @returns recuento de lo escaneado, caducado, omitido y fallido.
+ * @returns recuento de lo escaneado, caducado, asentado, omitido y fallido.
  */
 export async function expireAbandonedPendingBookings(
   options: { now?: Date } = {},
@@ -50,45 +66,52 @@ export async function expireAbandonedPendingBookings(
   const summary: ExpirePendingSummary = {
     scanned: candidates.length,
     expired: 0,
+    settled: 0,
     skipped: 0,
     failed: 0,
+    settlements: [],
   };
 
   // Secuencial a propósito: el volumen es pequeño y así no disparamos
   // ráfagas contra el rate limit de Stripe ni contra el pooler de BD.
   for (const booking of candidates) {
     const outcome = await expireOne(booking, now);
-    summary[outcome] += 1;
+    summary[outcome.kind] += 1;
+    if (outcome.kind === 'settled') summary.settlements.push(outcome.result);
   }
 
   return summary;
 }
 
 /**
- * Caduca una reserva: primero Stripe, luego BD.
+ * Caduca una reserva o, si Stripe ya la cobró, intenta asentar el pago.
  *
- * El orden importa. Si cancelásemos en BD y Stripe dijese después que
- * el intent ya estaba cobrado, tendríamos una reserva muerta con dinero
- * dentro. Cancelando antes el intent, el "no cancelable" de Stripe nos
- * avisa a tiempo de dejar la reserva en paz para el webhook.
+ * `processing` se deja estar: algunos métodos (adeudos SEPA) tardan días
+ * en resolverse y su webhook llegará. Solo se avisa a Sentry, como
+ * `warning`, si la reserva lleva más de un día así.
  */
 async function expireOne(booking: CheckoutBookingRow, now: Date): Promise<ExpiryOutcome> {
   try {
-    if (booking.stripePaymentIntentId) {
-      // Clave propia por reserva: si un día BD falló tras cancelar en
-      // Stripe, el reintento del día siguiente recibe el mismo resultado.
-      const outcome = await cancelBookingPaymentIntent(
-        booking.stripePaymentIntentId,
-        `booking_expire_${booking.id}`,
-      );
-      // Cobrado o procesando: la reserva queda para el webhook.
-      if (outcome !== 'canceled') return 'skipped';
+    const attempt = await tryExpirePendingBooking(booking, now);
+    switch (attempt) {
+      case 'expired':
+        return { kind: 'expired' };
+      case 'not_pending':
+      // Sin cobro y sin poder cancelar hoy (clave con un "no cancelable"
+      // cacheado): mañana la clave habrá caducado. Nada que avisar.
+      case 'still_open':
+        return { kind: 'skipped' };
+      case 'processing':
+        reportStuckPendingBooking(booking, now, 'PaymentIntent still processing', 'warning');
+        return { kind: 'skipped' };
+      case 'already_paid': {
+        const result = await settleLostWebhookPayment(booking, now);
+        return result ? { kind: 'settled', result } : { kind: 'skipped' };
+      }
     }
-    // Condicional: si el webhook la confirmó en paralelo, no la pisamos.
-    const applied = await checkoutRepository.cancelIfPending(booking.id, now);
-    return applied ? 'expired' : 'skipped';
   } catch (err) {
     console.error('[checkout/expiry] failed to expire booking:', booking.id, err);
-    return 'failed';
+    reportStuckPendingBooking(booking, now, 'expiry sweep failed');
+    return { kind: 'failed' };
   }
 }
