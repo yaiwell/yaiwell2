@@ -247,6 +247,7 @@ model Provider {
   reviews              Review[]
   categories           ProviderCategory[]
   verificationRequests VerificationRequest[]
+  billing              ProviderBilling?
 
   @@index([userId])
   @@index([planId])
@@ -319,7 +320,7 @@ model Professional {
 /// `professionalId` puede ser null y el motor de availability elige el
 /// hueco entre los disponibles.
 model Service {
-  id              String  @id @default(uuid())
+  id              String    @id @default(uuid())
   providerId      String
   professionalId  String?
   categoryId      String
@@ -332,7 +333,11 @@ model Service {
   /// `true` → publicado y reservable. `false` → pausado por el provider
   /// (oculto en búsqueda y bookings, sigue contando en métricas históricas).
   /// Default `true` para que servicios existentes y nuevos arranquen activos.
-  isActive        Boolean @default(true)
+  isActive        Boolean   @default(true)
+  /// Cuándo lo ocultó el límite del plan (bajada o impago). Con `isActive`
+  /// a `false`; distingue «lo pausé yo» (null) de «lo ocultó el plan»: al
+  /// volver a pagar solo se reactivan estos.
+  pausedByPlanAt  DateTime?
   /// Generated `tsvector` para FTS sobre servicio (name, description,
   /// category_label_cache). La columna se materializa via migración SQL
   /// (`migrations/2_fts_search/`); Prisma no la conoce, las queries de
@@ -569,7 +574,59 @@ model Plan {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  providers Provider[]
+  providers         Provider[]
+  billingSubscribed ProviderBilling[] @relation("BillingSubscribedPlan")
+  billingScheduled  ProviderBilling[] @relation("BillingScheduledPlan")
 
   @@map("plans")
+}
+
+/// Estado de la suscripción en Stripe (espejo de `Subscription.status`).
+enum BillingSubscriptionStatus {
+  incomplete
+  incomplete_expired
+  trialing
+  active
+  past_due
+  canceled
+  unpaid
+  paused
+}
+
+/// Facturación del negocio en Stripe Billing (1:1 con Provider).
+///
+/// Tabla aparte y sin lectura pública (RLS sin policies, migración 9e):
+/// la policy pública de `providers` expone todas sus columnas. El plan
+/// efectivo sigue en `Provider.planId`; aquí solo el espejo de Stripe.
+/// La fila nace al crear el Customer, que sirve a cualquier plan (también
+/// para cobrar en el futuro las comisiones del pago en el local).
+model ProviderBilling {
+  id                     String                     @id @default(uuid())
+  providerId             String                     @unique
+  stripeCustomerId       String                     @unique
+  /// Suscripción en curso (la última sincronizada).
+  stripeSubscriptionId   String?                    @unique
+  subscriptionStatus     BillingSubscriptionStatus?
+  /// Plan que paga según Stripe; en impago puede no coincidir con el efectivo.
+  subscribedPlanId       String?
+  currentPeriodEnd       DateTime?
+  cancelAtPeriodEnd      Boolean                    @default(false)
+  /// Bajada programada a fin de periodo.
+  scheduledPlanId        String?
+  scheduledChangeAt      DateTime?
+  lastPaymentFailedAt    DateTime?
+  /// `${invoiceId}:${attempt}`: evita repetir el aviso si Stripe reenvía el evento.
+  lastFailureNotifiedKey String?
+  lastSyncedAt           DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  provider       Provider @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  subscribedPlan Plan?    @relation("BillingSubscribedPlan", fields: [subscribedPlanId], references: [id], onDelete: Restrict)
+  scheduledPlan  Plan?    @relation("BillingScheduledPlan", fields: [scheduledPlanId], references: [id], onDelete: Restrict)
+
+  @@index([subscribedPlanId])
+  @@index([scheduledPlanId])
+  @@map("provider_billing")
 }
