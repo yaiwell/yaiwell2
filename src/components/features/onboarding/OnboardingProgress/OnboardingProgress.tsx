@@ -26,7 +26,7 @@ export function OnboardingProgress({ current, total }: OnboardingProgressProps) 
 
   // Etiquetas i18n por paso. Usamos un objeto de claves para que
   // `useTranslations` valide cada acceso.
-  const labelKey = (step: number): 'step1' | 'step2' | 'step3' | 'step4' | 'step5' => {
+  const labelKey = (step: number): 'step1' | 'step2' | 'step3' | 'step4' | 'step5' | 'step6' => {
     switch (step) {
       case 1:
         return 'step1';
@@ -36,8 +36,10 @@ export function OnboardingProgress({ current, total }: OnboardingProgressProps) 
         return 'step3';
       case 4:
         return 'step4';
-      default:
+      case 5:
         return 'step5';
+      default:
+        return 'step6';
     }
   };
 

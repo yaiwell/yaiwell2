@@ -13,7 +13,7 @@
  *  - updateProviderPhotos: ownership OK, ownership fail, validación 0-6.
  *  - createFirstServiceForProvider: happy, categoría inexistente,
  *    ownership fail.
- *  - selectPlan: happy, tier inexistente.
+ *  - selectPlan: no-op (nunca escribe planId), propiedad, tier inexistente.
  *  - loadOnboardingState: estado completo, parcial, sin Provider.
  */
 
@@ -30,6 +30,9 @@ const repoMock = vi.hoisted(() => ({
   createProfessional: vi.fn(),
   findFirstProfessional: vi.fn(),
   createService: vi.fn(),
+  // La transacción ejecuta el callback con un cliente falso: el límite del
+  // plan va mockeado aparte y aquí solo importa que el alta pase por él.
+  runInTransaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>) => fn({ tx: true })),
   updatePlan: vi.fn(),
   findPlanByTier: vi.fn(),
   findCategoryById: vi.fn(),
@@ -38,6 +41,16 @@ const repoMock = vi.hoisted(() => ({
 
 vi.mock('./provider-onboarding.repository', () => ({
   providerOnboardingRepository: repoMock,
+}));
+
+const { assertCanPublishServiceMock, LimitError } = vi.hoisted(() => ({
+  assertCanPublishServiceMock: vi.fn(),
+  LimitError: class PlanServiceLimitReachedError extends Error {},
+}));
+
+vi.mock('@/lib/services/billing/billing.plan-limits', () => ({
+  assertCanPublishService: assertCanPublishServiceMock,
+  PlanServiceLimitReachedError: LimitError,
 }));
 
 import {
@@ -247,6 +260,31 @@ describe('createFirstServiceForProvider', () => {
     expect(args.providerId).toBe(PROVIDER_ID);
   });
 
+  it('comprueba el límite del plan dentro de la misma transacción que el alta', async () => {
+    repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
+    repoMock.findCategoryById.mockResolvedValue({ id: CATEGORY_ID });
+    repoMock.findFirstProfessional.mockResolvedValue({ id: PROFESSIONAL_ID });
+    repoMock.createService.mockResolvedValue({ id: 'service-1' });
+    assertCanPublishServiceMock.mockResolvedValueOnce({ activeCount: 0, maxServices: 1 });
+
+    await createFirstServiceForProvider(PROVIDER_ID, baseInput, OWNER_ID);
+
+    expect(assertCanPublishServiceMock).toHaveBeenCalledWith({ tx: true }, PROVIDER_ID);
+    expect(repoMock.createService.mock.calls[0][1]).toEqual({ tx: true });
+  });
+
+  it('no crea el servicio si el plan ya está en el límite', async () => {
+    repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
+    repoMock.findCategoryById.mockResolvedValue({ id: CATEGORY_ID });
+    repoMock.findFirstProfessional.mockResolvedValue({ id: PROFESSIONAL_ID });
+    assertCanPublishServiceMock.mockRejectedValueOnce(new LimitError());
+
+    await expect(
+      createFirstServiceForProvider(PROVIDER_ID, baseInput, OWNER_ID),
+    ).rejects.toBeInstanceOf(LimitError);
+    expect(repoMock.createService).not.toHaveBeenCalled();
+  });
+
   it('rechaza con CategoryNotFoundError si la categoría no existe', async () => {
     repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
     repoMock.findCategoryById.mockResolvedValue(null);
@@ -272,14 +310,30 @@ describe('createFirstServiceForProvider', () => {
 // ============================================================================
 
 describe('selectPlan', () => {
-  it('cambia el plan cuando el tier existe', async () => {
-    repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
-    repoMock.findPlanByTier.mockResolvedValue({ id: 'new-plan-id' });
+  it('confirmar Gratis es un no-op: el negocio ya nace en Gratis', async () => {
+    repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: 'free-plan-id' });
+    repoMock.findPlanByTier.mockResolvedValue({ id: 'free-plan-id' });
 
     await selectPlan(PROVIDER_ID, { planTier: 'free' }, OWNER_ID);
 
     expect(repoMock.findPlanByTier).toHaveBeenCalledWith('free');
-    expect(repoMock.updatePlan).toHaveBeenCalledWith(PROVIDER_ID, 'new-plan-id');
+    expect(repoMock.updatePlan).not.toHaveBeenCalled();
+  });
+
+  it('nunca baja a Gratis un negocio que ya paga un plan', async () => {
+    repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: 'pro-plan-id' });
+    repoMock.findPlanByTier.mockResolvedValue({ id: 'free-plan-id' });
+
+    await expect(selectPlan(PROVIDER_ID, { planTier: 'free' }, OWNER_ID)).resolves.toBeUndefined();
+    expect(repoMock.updatePlan).not.toHaveBeenCalled();
+  });
+
+  it('rechaza si el negocio no es del usuario', async () => {
+    repoMock.findProviderByOwner.mockResolvedValue({ id: 'otro', planId: 'free-plan-id' });
+
+    await expect(selectPlan(PROVIDER_ID, { planTier: 'free' }, OWNER_ID)).rejects.toBeInstanceOf(
+      ProviderForOnboardingNotFoundError,
+    );
   });
 
   it('rechaza con PlanTierNotFoundError si el tier no está en BD', async () => {

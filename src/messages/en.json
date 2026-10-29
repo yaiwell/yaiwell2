@@ -560,6 +560,13 @@
           "forbidden": "You don't have permission to delete this service.",
           "internal": "Couldn't delete. Try again in a few seconds."
         }
+      },
+      "planLimit": {
+        "counter": "{active}/{max} services published",
+        "counterUnlimited": "{active} services published · Unlimited",
+        "hiddenBadge": "Hidden by your plan",
+        "reached": "You have reached the maximum number of published services on your plan. Upgrade your plan to publish more.",
+        "upgradeCta": "Upgrade your plan"
       }
     },
     "addService": {
@@ -601,7 +608,8 @@
         "PROVIDER_NOT_FOUND": "We couldn't find your business. Please reload the page.",
         "SERVICE_NOT_FOUND": "This service no longer exists.",
         "FORBIDDEN": "You don't have permission to edit this service.",
-        "INTERNAL": "Couldn't save. Try again in a few seconds."
+        "INTERNAL": "Couldn't save. Try again in a few seconds.",
+        "PLAN_LIMIT_REACHED": "Your plan does not allow more published services. Upgrade your plan to publish more."
       }
     },
     "settings": {
@@ -769,6 +777,102 @@
         "STRIPE_FAILED": "Stripe didn't respond. Please try again in a few seconds.",
         "INTERNAL": "Something went wrong. Please try again.",
         "ALREADY_CONNECTED": "A Stripe account already exists as \"{type}\". If you need to change it, email us at hola@yaiwell.com."
+      }
+    },
+    "plan": {
+      "title": "Your plan",
+      "subtitle": "Choose how many services you publish and the commission you pay per booking.",
+      "tierNames": {
+        "free": "Free",
+        "basic": "Basic",
+        "pro": "Pro",
+        "premium": "Premium"
+      },
+      "card": {
+        "free": "Free",
+        "perMonth": "/month",
+        "vatIncluded": "VAT included",
+        "services": "{count, plural, one {# published service} other {# published services}}",
+        "unlimitedServices": "Unlimited services",
+        "commission": "{rate} commission per booking",
+        "currentBadge": "Your plan",
+        "selectedBadge": "Selected"
+      },
+      "cta": {
+        "current": "Your current plan",
+        "subscribe": "Get {plan}",
+        "change": "Switch to {plan}",
+        "downgrade_free": "Switch to Free",
+        "scheduled": "Change scheduled",
+        "locked": "Not available right now",
+        "fix_payment": "Update your card",
+        "unavailable": "Contact support",
+        "loading": "Opening Stripe…"
+      },
+      "picker": {
+        "title": "Plans",
+        "subtitle": "Monthly prices, VAT included. Change or cancel whenever you like.",
+        "stripeHint": "Payments and plan changes are confirmed on Stripe’s secure page. If you move to a lower plan, the change applies at the end of the period you have already paid for.",
+        "lockedHint": "You already have a plan change scheduled. You can pick another once it applies, or undo it from “Invoices and card”."
+      },
+      "summary": {
+        "title": "Your plan",
+        "priceLabel": "Fee",
+        "priceValue": "{price}/month, VAT included",
+        "commissionLabel": "Commission per booking",
+        "servicesLabel": "Published services",
+        "servicesUsage": "{used} of {max}",
+        "servicesUnlimited": "{used} · Unlimited",
+        "renewsOn": "Renews on {date}.",
+        "endsOn": "Ends on {date}. After that you will move to Free.",
+        "pausedByPlan": "{count, plural, one {# service is hidden} other {# services are hidden}} by your plan’s limit.",
+        "changePlan": "Change plan",
+        "invoices": "Invoices and card"
+      },
+      "banner": {
+        "viewPlan": "View my plan",
+        "activating": {
+          "title": "Activating your plan…",
+          "body": "Stripe is confirming the payment. This takes a few seconds.",
+          "slowBody": "This is taking longer than usual. Your plan will activate as soon as Stripe confirms the payment; you can keep using the dashboard."
+        },
+        "activated": {
+          "title": "Your {plan} plan is now active",
+          "body": "You can now publish more services. You will receive the invoice by email."
+        },
+        "past_due": {
+          "title": "We could not charge your {plan} plan",
+          "body": "Update your card to keep it. If the retries fail, you will move to Free and services over the limit will be hidden.",
+          "cta": "Update card"
+        },
+        "action_required": {
+          "title": "Your {plan} plan payment needs confirming",
+          "body": "Your bank is asking for confirmation. Complete it to activate the plan.",
+          "cta": "Complete payment"
+        },
+        "cancel_scheduled": {
+          "title": "Your {plan} plan ends on {date}",
+          "body": "After that you will move to Free. If you change your mind, you can keep it.",
+          "cta": "Keep my plan"
+        },
+        "downgrade_scheduled": {
+          "title": "You will move to {plan} on {date}",
+          "body": "Until then you keep your current plan."
+        }
+      },
+      "notices": {
+        "checkoutCancelled": "You left the payment page. You have not been charged.",
+        "checkoutFailed": "We could not open the payment for the {plan} plan. Your business is already published on Free; you can get the plan from here.",
+        "confirmFailed": "We could not confirm that payment. If you were charged, the plan will activate in a few minutes."
+      },
+      "errors": {
+        "INVALID_INPUT": "Something is off with the request. Reload the page and try again.",
+        "FORBIDDEN": "Your session cannot access this business’s billing. Please sign in again.",
+        "PLAN_NOT_PURCHASABLE": "This plan cannot be purchased this way.",
+        "SUBSCRIPTION_NOT_FOUND": "We could not find an active subscription. If you have just paid, wait a few seconds and reload.",
+        "PLAN_UNAVAILABLE": "This plan is not available right now. Try again later or contact support.",
+        "STRIPE_FAILED": "We could not reach Stripe. Try again in a few minutes.",
+        "INTERNAL": "Something went wrong. Try again in a few minutes."
       }
     }
   },
@@ -1370,7 +1474,7 @@
   "onboarding": {
     "meta": {
       "title": "Set up your business",
-      "description": "Set up your business on Yaiwell in 5 steps: type, details, location, first service and review."
+      "description": "Set up your business on Yaiwell in 6 steps: type, details, location, first service, plan and review."
     },
     "badge": "Provider onboarding",
     "title": "Set up your business",
@@ -1380,7 +1484,8 @@
       "step2": "Details",
       "step3": "Location",
       "step4": "Service",
-      "step5": "Confirm",
+      "step5": "Plan",
+      "step6": "Confirm",
       "current": "Step {current} of {total}"
     },
     "common": {
@@ -1388,7 +1493,8 @@
       "back": "Back",
       "saving": "Saving…",
       "publishCta": "Publish and open my dashboard",
-      "requiredField": "Required field"
+      "requiredField": "Required field",
+      "publishAndPayCta": "Publish and go to payment"
     },
     "syncing": {
       "title": "Syncing your account…",
@@ -1469,8 +1575,17 @@
       "sections": {
         "business": "Business",
         "location": "Location",
-        "service": "First service"
+        "service": "First service",
+        "plan": "Plan"
       }
+    },
+    "planStep": {
+      "title": "Choose your plan",
+      "subtitle": "Monthly prices, VAT included. You can change or cancel it from your dashboard at any time.",
+      "legend": "Available plans",
+      "freeNote": "You start with no fee. If you need more services later, upgrade your plan from the dashboard.",
+      "paidNote": "When you publish, we will take you to Stripe’s secure page to pay for the plan. Your business goes live on Free and the plan activates as soon as you pay.",
+      "unavailable": "We cannot show the plans right now. You will start on Free and can change it from the dashboard."
     }
   },
   "signUp": {

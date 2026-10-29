@@ -246,9 +246,24 @@ export const providerOnboardingRepository = {
     });
   },
 
-  /** Crea un Service del catálogo del proveedor. */
-  async createService(args: CreateServiceArgs): Promise<{ id: string }> {
-    const row = await prisma.service.create({
+  /**
+   * Ejecuta `fn` en una transacción. Lo usa el alta de servicio para
+   * comprobar el límite del plan y crear bajo el mismo bloqueo.
+   */
+  async runInTransaction<T>(fn: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
+    return prisma.$transaction(fn);
+  },
+
+  /**
+   * Crea un Service del catálogo del proveedor.
+   *
+   * @param db — cliente de la transacción en curso; por defecto el global.
+   */
+  async createService(
+    args: CreateServiceArgs,
+    db: Prisma.TransactionClient = prisma,
+  ): Promise<{ id: string }> {
+    const row = await db.service.create({
       data: {
         providerId: args.providerId,
         categoryId: args.categoryId,

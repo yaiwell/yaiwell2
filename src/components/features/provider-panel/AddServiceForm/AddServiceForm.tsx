@@ -2,18 +2,15 @@
 
 import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState, useTransition, type FormEvent } from 'react';
 
-import {
-  createServiceAction,
-  updateServiceAction,
-} from '@/app/[locale]/panel/servicios/nuevo/actions';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
-import { pickLocalized } from '@/lib/i18n';
 import type { AppLocale } from '@/i18n/routing';
+import { pickLocalized } from '@/lib/i18n';
 
-import { useAddServiceForm } from './AddServiceForm.logic';
+import { PlanLimitNotice } from '../PlanLimitNotice';
+
+import { useAddServiceForm, useAddServiceSubmit } from './AddServiceForm.logic';
 import { addServiceFormStyles as s } from './AddServiceForm.styles';
 import type { AddServiceFormProps } from './AddServiceForm.types';
 
@@ -24,14 +21,16 @@ import type { AddServiceFormProps } from './AddServiceForm.types';
  * selects controlados y resetea hijos cuando cambia el padre. La
  * lógica vive en `useAddServiceForm`.
  *
- * El envío todavía no persiste nada (mock visual). Cuando exista API
- * real bastará con cambiar el handler `onSubmit` por una server action.
+ * El envío lo gestiona `useAddServiceSubmit` (server actions de alta y
+ * edición). Si el plan no admite más servicios, en lugar del error de
+ * texto se muestra el aviso con enlace a mejorar el plan.
  */
 export function AddServiceForm({
   locale,
   categoriesTree,
   serviceId,
   initialValues,
+  planLimitReached: initialPlanLimitReached,
 }: AddServiceFormProps) {
   const t = useTranslations('providerPanel.addService');
   const {
@@ -51,40 +50,13 @@ export function AddServiceForm({
   // duplicar; los específicos de edit tienen prefijo `edit*`).
   const isEditing = Boolean(serviceId);
 
-  // Estado para feedback del submit. `isPending` activa loading del CTA
-  // y `submitError` enseña un banner inline si la action devuelve `ok: false`.
-  const [isPending, startTransition] = useTransition();
-  const [submitError, setSubmitError] = useState<string | null>(null);
-
-  /**
-   * Disparador del alta real: empaqueta el draft y lo manda a la
-   * server action `createServiceAction`. Si triunfa, la action hace
-   * `redirect` server-side a `/panel/servicios` y este handler nunca
-   * llega a ver `ok: true` (la promesa se aborta). Si falla, mostramos
-   * el mensaje localizado tipo `errors.{code}`.
-   */
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSubmitError(null);
-    startTransition(async () => {
-      const payload = {
-        rootCategoryId: draft.rootCategoryId,
-        typeId: draft.typeId,
-        subtypeId: draft.subtypeId,
-        name: draft.name,
-        description: draft.description,
-        durationMinutes: draft.durationMinutes,
-        priceEuros: draft.priceEuros,
-      };
-      const result = serviceId
-        ? await updateServiceAction(serviceId, locale as AppLocale, payload)
-        : await createServiceAction(locale as AppLocale, payload);
-      if (result && !result.ok) {
-        const key = `errors.${result.code}` as const;
-        setSubmitError(result.message ?? t(key));
-      }
-    });
-  }
+  const { isPending, submitError, planLimitReached, handleSubmit } = useAddServiceSubmit({
+    locale: locale as AppLocale,
+    serviceId,
+    draft,
+    translateError: (code) => t(`errors.${code}`),
+    initialPlanLimitReached,
+  });
 
   return (
     <form className={s.root} onSubmit={handleSubmit} data-component="add-service-form">
@@ -244,6 +216,8 @@ export function AddServiceForm({
           </div>
         </div>
       </section>
+
+      {planLimitReached ? <PlanLimitNotice /> : null}
 
       {submitError ? (
         <p className={s.notice} role="alert" data-component="add-service-error">

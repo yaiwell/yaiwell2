@@ -78,5 +78,25 @@
     "intro": "We have reviewed {provider} and cannot publish it yet. This is the reason:",
     "next": "Update your details from your dashboard and we will review it again.",
     "cta": "Go to my dashboard"
+  },
+  "planNames": {
+    "free": "Free",
+    "basic": "Basic",
+    "pro": "Pro",
+    "premium": "Premium"
+  },
+  "planPaymentFailed": {
+    "subject": "We couldn't collect the plan payment for {provider}",
+    "heading": "Check your payment method",
+    "intro": "We tried to collect the plan fee for {provider} and the payment didn't go through. We will try again over the next few days.",
+    "next": "If we cannot collect it, {provider} will move to the Free plan and any services above its limit will be hidden until the plan is paid again.",
+    "cta": "Review the payment"
+  },
+  "planDowngraded": {
+    "subject": "{provider} has moved to the Free plan",
+    "heading": "Your plan has changed",
+    "intro": "The {plan} plan subscription for {provider} has ended and the business has moved to the Free plan.",
+    "next": "If you had more published services than the Free plan allows, we have hidden the extra ones. They will show again as soon as you take out a paid plan.",
+    "cta": "See the plans"
   }
 }

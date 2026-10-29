@@ -28,12 +28,26 @@ export interface PanelService {
   durationMinutes: number;
   priceCents: number;
   status: PanelServiceStatus;
+  /**
+   * `true` si lo ocultó el límite del plan (`Service.pausedByPlanAt`), no
+   * el negocio. Se pinta con su propia insignia para que se entienda por
+   * qué no está publicado.
+   */
+  pausedByPlan: boolean;
   /** Número de reservas en los últimos 30 días. */
   bookingsLast30Days: number;
+}
+
+/** Uso del cupo de servicios del plan: publicados frente al máximo. */
+export interface PanelServiceUsage {
+  activeCount: number;
+  maxServices: number;
 }
 
 /** Props del listado de servicios del panel. */
 export interface ServicesListProps {
   services: PanelService[];
   locale: SupportedLocale;
+  /** Cupo del plan; `null` oculta el contador (negocio sin plan legible). */
+  usage?: PanelServiceUsage | null;
 }

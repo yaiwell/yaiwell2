@@ -25,42 +25,8 @@ export const PLAN_PRESENTATION: Record<PricingPlanId, PricingPlanPresentation> =
 };
 
 /**
- * Convierte basis points a porcentaje localizado.
- *
- * 1200 → "12 %" en es, "12%" en en. Usamos `style: 'percent'` en lugar
- * de concatenar "%" para que el separador decimal y el espacio duro
- * antes del signo los ponga Intl según el locale (en castellano la
- * norma es "12 %", en inglés "12%").
- *
- * `maximumFractionDigits: 2` contempla comisiones con medio punto
- * (950 → "9,5 %") sin ensuciar las enteras con ceros de relleno.
- *
- * @param bps — comisión en basis points tal cual está en BD.
- * @param locale — locale activo de next-intl.
+ * El formato de cuota y comisión vive en `@/lib/utils/plan-format`
+ * (lo comparten el panel y el onboarding). Se reexporta aquí para no
+ * romper a quien lo importaba desde la landing.
  */
-export function formatCommissionRate(bps: number, locale: string): string {
-  return new Intl.NumberFormat(locale, {
-    style: 'percent',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(bps / 10_000);
-}
-
-/**
- * Convierte céntimos a la cifra de la cuota mensual, sin símbolo de
- * moneda: el "€" lo pinta el markup como elemento tipográfico aparte
- * (queda a un tamaño distinto del número).
- *
- * 1900 → "19"; 1950 → "19,50" en es.
- */
-export function formatMonthlyPrice(cents: number, locale: string): string {
-  const euros = cents / 100;
-  // Si la cuota tiene céntimos queremos los dos dígitos ("19,50",
-  // nunca "19,5"); si es redonda, ninguno ("19", nunca "19,00").
-  const hasCents = !Number.isInteger(euros);
-
-  return new Intl.NumberFormat(locale, {
-    minimumFractionDigits: hasCents ? 2 : 0,
-    maximumFractionDigits: 2,
-  }).format(euros);
-}
+export { formatCommissionRate, formatMonthlyPrice } from '@/lib/utils/plan-format';

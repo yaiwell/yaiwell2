@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react';
 import { NextIntlClientProvider } from 'next-intl';
 import type { ReactNode } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { fakePanelBookings } from '@/lib/fake-data/panel-bookings';
 import { toPreviewBookingActions } from '@/lib/services/provider-panel/panel-calendar.service';
@@ -36,6 +36,17 @@ vi.mock('@/lib/db/prisma', () => ({ prisma: {} }));
 
 /** Martes 27 de octubre de 2026, 10:00 en Madrid. */
 const NOW = new Date('2026-10-27T09:00:00.000Z');
+
+// El detalle decide si se puede cancelar con el reloj real (regla de 2 h):
+// lo fijamos en NOW para que el test no caduque cuando pasen las fechas.
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] });
+  vi.setSystemTime(NOW);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 function confirmedBooking(overrides: Partial<PanelBookingAction> = {}): PanelBookingAction {
   return {

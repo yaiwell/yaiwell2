@@ -1,16 +1,26 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { OnboardingWizard } from '@/components/features/onboarding/OnboardingWizard';
-import type { OnboardingApiState, RootCategory } from '@/components/features/onboarding/shared';
+import type {
+  OnboardingApiState,
+  PlanTierChoice,
+  RootCategory,
+} from '@/components/features/onboarding/shared';
 import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import type { AppLocale } from '@/i18n/routing';
 import { requireRole } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
+import {
+  isPlanTierId,
+  listPublicPlans,
+  PlansNotSeededError,
+  type PublicPlan,
+} from '@/lib/services/plans';
 import { loadOnboardingState } from '@/lib/services/provider-onboarding';
 import { ensureUserFromClerk, MissingPrimaryEmailError } from '@/lib/services/user';
 
@@ -24,6 +34,7 @@ interface OnboardingPageProps {
  *
  * Server Component que pre-carga:
  *  - Categorías raíz (parentId: null) para el paso 4.
+ *  - Catálogo de planes y plan elegido en el registro para el paso 5.
  *  - Estado actual del onboarding (`OnboardingApiState`) para hidratar.
  *  - Flag `userPending` cuando la sincronización Clerk→DB aún no ha
  *    propagado el `User` interno.
@@ -41,6 +52,33 @@ export async function generateMetadata({ params }: OnboardingPageProps): Promise
     description: t('description'),
     robots: { index: false, follow: false },
   };
+}
+
+/**
+ * Plan elegido en el registro. Viaja en `unsafeMetadata.selectedPlan`
+ * (lo escribe el propio navegador al darse de alta), así que se valida
+ * contra el catálogo: cualquier otra cosa empieza en Gratis.
+ */
+async function readSelectedPlan(): Promise<PlanTierChoice> {
+  const user = await currentUser();
+  const raw: unknown = user?.unsafeMetadata?.selectedPlan;
+  return isPlanTierId(raw) ? raw : 'free';
+}
+
+/**
+ * Catálogo para el paso de plan. Si la tabla está vacía el wizard sigue
+ * (el negocio nace en Gratis igualmente) y el paso muestra un aviso.
+ */
+async function loadPlans(): Promise<PublicPlan[]> {
+  try {
+    return await listPublicPlans();
+  } catch (err) {
+    if (err instanceof PlansNotSeededError) {
+      console.error('[onboarding] plans not seeded:', err);
+      return [];
+    }
+    throw err;
+  }
 }
 
 export default async function OnboardingPage({ params }: OnboardingPageProps) {
@@ -102,11 +140,20 @@ export default async function OnboardingPage({ params }: OnboardingPageProps) {
 
   // Pre-carga de categorías raíz para el paso 4. Ordenadas por nombre
   // estable; el componente las muestra en el locale activo.
-  const rawCategories = await prisma.category.findMany({
-    where: { parentId: null },
-    select: { id: true, slug: true, name: true, icon: true },
-    orderBy: { slug: 'asc' },
-  });
+  // El plan y el catálogo van en paralelo con las categorías.
+  const [rawCategories, plans, selectedPlan] = await Promise.all([
+    prisma.category.findMany({
+      where: { parentId: null },
+      select: { id: true, slug: true, name: true, icon: true },
+      orderBy: { slug: 'asc' },
+    }),
+    loadPlans(),
+    readSelectedPlan(),
+  ]);
+  // Sin catálogo no se puede contratar nada: se empieza en Gratis.
+  const initialPlan: PlanTierChoice = plans.some((plan) => plan.tier === selectedPlan)
+    ? selectedPlan
+    : 'free';
 
   // El campo `name` es Json en Prisma; lo normalizamos al shape que
   // espera la UI sin acoplarla a tipos de Prisma.
@@ -125,6 +172,8 @@ export default async function OnboardingPage({ params }: OnboardingPageProps) {
       categoriesPreloaded={categoriesPreloaded}
       locale={locale as AppLocale}
       userPending={userPending}
+      plans={plans}
+      initialPlan={initialPlan}
     />
   );
 }

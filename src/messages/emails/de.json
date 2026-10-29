@@ -78,5 +78,25 @@
     "intro": "Wir haben {provider} geprüft und können es noch nicht veröffentlichen. Das ist der Grund:",
     "next": "Korrigiere die Angaben in deinem Dashboard, dann prüfen wir erneut.",
     "cta": "Zu meinem Dashboard"
+  },
+  "planNames": {
+    "free": "Kostenlos",
+    "basic": "Basis",
+    "pro": "Pro",
+    "premium": "Premium"
+  },
+  "planPaymentFailed": {
+    "subject": "Wir konnten den Tarif von {provider} nicht abbuchen",
+    "heading": "Prüfe deine Zahlungsmethode",
+    "intro": "Wir haben versucht, die Tarifgebühr von {provider} abzubuchen, aber die Zahlung ist fehlgeschlagen. Wir versuchen es in den nächsten Tagen erneut.",
+    "next": "Wenn die Zahlung nicht gelingt, wechselt {provider} in den Tarif Kostenlos und Leistungen über dessen Limit werden ausgeblendet, bis wieder bezahlt wird.",
+    "cta": "Zahlung prüfen"
+  },
+  "planDowngraded": {
+    "subject": "{provider} ist jetzt im Tarif Kostenlos",
+    "heading": "Dein Tarif hat sich geändert",
+    "intro": "Das Abo für den Tarif {plan} von {provider} ist beendet und das Unternehmen ist in den Tarif Kostenlos gewechselt.",
+    "next": "Wenn du mehr Leistungen veröffentlicht hattest, als der Tarif Kostenlos erlaubt, haben wir die überzähligen ausgeblendet. Sie erscheinen wieder, sobald du einen kostenpflichtigen Tarif buchst.",
+    "cta": "Tarife ansehen"
   }
 }

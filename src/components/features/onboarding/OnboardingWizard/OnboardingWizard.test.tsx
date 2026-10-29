@@ -43,6 +43,14 @@ vi.mock('../shared/onboarding.api', () => ({
   })),
 }));
 
+// La action del plan arrastra Stripe y Prisma: en estos tests no se llama.
+vi.mock('@/app/[locale]/panel/plan/actions', () => ({
+  startPlanCheckoutAction: vi.fn(),
+  openBillingPortalAction: vi.fn(),
+}));
+
+import es from '@/messages/es.json';
+
 import { OnboardingWizard } from './OnboardingWizard';
 import type { OnboardingWizardProps } from './OnboardingWizard.types';
 import { DRAFT_STORAGE_KEY } from '../shared';
@@ -58,7 +66,8 @@ const messages = {
       step2: 'Datos',
       step3: 'Ubicación',
       step4: 'Categoría',
-      step5: 'Confirmación',
+      step5: 'Plan',
+      step6: 'Confirmación',
       current: 'Paso {current} de {total}',
     },
     common: {
@@ -70,6 +79,7 @@ const messages = {
       skipForNow: 'Saltar',
       requiredField: 'Campo obligatorio',
     },
+    planStep: es.onboarding.planStep,
     syncing: {
       title: 'Sincronizando',
       subtitle: 'Esperando webhook…',
@@ -153,6 +163,7 @@ const messages = {
     no_results: 'Sin resultados',
     clear: 'Borrar',
   },
+  providerPanel: { plan: es.providerPanel.plan },
 } as const;
 
 // Tipamos explícitamente como `OnboardingWizardProps` para que los
@@ -176,6 +187,13 @@ const baseProps: OnboardingWizardProps = {
   ],
   locale: 'es',
   userPending: false,
+  plans: [
+    { tier: 'free', monthlyPriceCents: 0, commissionRateBps: 1200, maxServices: 1 },
+    { tier: 'basic', monthlyPriceCents: 1900, commissionRateBps: 1000, maxServices: 10 },
+    { tier: 'pro', monthlyPriceCents: 4900, commissionRateBps: 800, maxServices: 50 },
+    { tier: 'premium', monthlyPriceCents: 9900, commissionRateBps: 600, maxServices: 999 },
+  ],
+  initialPlan: 'free',
 };
 
 function renderWizard(overrides?: Partial<typeof baseProps>) {
@@ -231,5 +249,19 @@ describe('OnboardingWizard', () => {
       expect(raw).not.toBeNull();
       expect(raw).toMatch(/"businessType":"centro"/);
     });
+  });
+
+  it('el paso 5 muestra los planes con el del registro preseleccionado', async () => {
+    window.sessionStorage.setItem(
+      DRAFT_STORAGE_KEY,
+      JSON.stringify({ step: 5, locale: 'es', businessType: 'centro' }),
+    );
+    renderWizard({ initialPlan: 'pro' });
+    expect(
+      await screen.findByRole('heading', { name: es.onboarding.planStep.title }),
+    ).toBeInTheDocument();
+    expect(screen.getByTestId('onboarding-plan-pro')).toBeChecked();
+    expect(screen.getByText(es.onboarding.planStep.paidNote)).toBeInTheDocument();
+    expect(screen.getByTestId('onboarding-next')).not.toBeDisabled();
   });
 });

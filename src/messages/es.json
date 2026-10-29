@@ -560,6 +560,13 @@
           "forbidden": "No tienes permiso para eliminar este servicio.",
           "internal": "No se ha podido eliminar. Inténtalo de nuevo en unos segundos."
         }
+      },
+      "planLimit": {
+        "counter": "{active}/{max} servicios publicados",
+        "counterUnlimited": "{active} servicios publicados · Ilimitados",
+        "hiddenBadge": "Oculto por tu plan",
+        "reached": "Has llegado al máximo de servicios publicados de tu plan. Mejora tu plan para publicar más.",
+        "upgradeCta": "Mejora tu plan"
       }
     },
     "addService": {
@@ -601,7 +608,8 @@
         "PROVIDER_NOT_FOUND": "No hemos podido localizar tu negocio. Recarga la página.",
         "SERVICE_NOT_FOUND": "Este servicio ya no existe.",
         "FORBIDDEN": "No tienes permiso para editar este servicio.",
-        "INTERNAL": "No se ha podido guardar. Inténtalo de nuevo en unos segundos."
+        "INTERNAL": "No se ha podido guardar. Inténtalo de nuevo en unos segundos.",
+        "PLAN_LIMIT_REACHED": "Tu plan no admite más servicios publicados. Mejora tu plan para publicar más."
       }
     },
     "settings": {
@@ -769,6 +777,102 @@
         "STRIPE_FAILED": "Stripe no ha respondido. Inténtalo de nuevo en unos segundos.",
         "INTERNAL": "Algo ha fallado. Inténtalo de nuevo.",
         "ALREADY_CONNECTED": "Ya hay una cuenta de Stripe creada como «{type}». Si necesitas cambiarla, escríbenos a hola@yaiwell.com."
+      }
+    },
+    "plan": {
+      "title": "Tu plan",
+      "subtitle": "Elige cuántos servicios publicas y qué comisión pagas por reserva.",
+      "tierNames": {
+        "free": "Gratis",
+        "basic": "Básico",
+        "pro": "Pro",
+        "premium": "Premium"
+      },
+      "card": {
+        "free": "Gratis",
+        "perMonth": "/mes",
+        "vatIncluded": "IVA incluido",
+        "services": "{count, plural, one {# servicio publicado} other {# servicios publicados}}",
+        "unlimitedServices": "Servicios ilimitados",
+        "commission": "{rate} de comisión por reserva",
+        "currentBadge": "Tu plan",
+        "selectedBadge": "Elegido"
+      },
+      "cta": {
+        "current": "Tu plan actual",
+        "subscribe": "Contratar {plan}",
+        "change": "Cambiar a {plan}",
+        "downgrade_free": "Pasar a Gratis",
+        "scheduled": "Cambio programado",
+        "locked": "No disponible ahora",
+        "fix_payment": "Actualiza tu tarjeta",
+        "unavailable": "Habla con soporte",
+        "loading": "Abriendo Stripe…"
+      },
+      "picker": {
+        "title": "Planes",
+        "subtitle": "Precios al mes con IVA incluido. Puedes cambiar o cancelar cuando quieras.",
+        "stripeHint": "El pago y los cambios de plan se confirman en la página segura de Stripe. Al bajar de plan, el cambio se aplica al final del periodo ya pagado.",
+        "lockedHint": "Ya tienes un cambio de plan programado. Podrás elegir otro cuando se aplique, o deshacerlo desde «Facturas y tarjeta»."
+      },
+      "summary": {
+        "title": "Tu plan",
+        "priceLabel": "Cuota",
+        "priceValue": "{price}/mes, IVA incluido",
+        "commissionLabel": "Comisión por reserva",
+        "servicesLabel": "Servicios publicados",
+        "servicesUsage": "{used} de {max}",
+        "servicesUnlimited": "{used} · Ilimitados",
+        "renewsOn": "Se renueva el {date}.",
+        "endsOn": "Termina el {date}. Después pasarás a Gratis.",
+        "pausedByPlan": "{count, plural, one {# servicio está oculto} other {# servicios están ocultos}} por el límite de tu plan.",
+        "changePlan": "Cambiar plan",
+        "invoices": "Facturas y tarjeta"
+      },
+      "banner": {
+        "viewPlan": "Ver mi plan",
+        "activating": {
+          "title": "Activando tu plan…",
+          "body": "Stripe está confirmando el pago. Esto tarda unos segundos.",
+          "slowBody": "Está tardando más de lo normal. Tu plan se activará en cuanto Stripe confirme el pago; puedes seguir usando el panel."
+        },
+        "activated": {
+          "title": "Tu plan {plan} ya está activo",
+          "body": "Ya puedes publicar más servicios. Recibirás la factura por email."
+        },
+        "past_due": {
+          "title": "No hemos podido cobrar tu plan {plan}",
+          "body": "Actualiza tu tarjeta para no perderlo. Si los reintentos fallan, pasarás a Gratis y se ocultarán los servicios que superen el límite.",
+          "cta": "Actualizar tarjeta"
+        },
+        "action_required": {
+          "title": "Falta confirmar el pago de tu plan {plan}",
+          "body": "Tu banco pide una confirmación. Complétala para activar el plan.",
+          "cta": "Completar el pago"
+        },
+        "cancel_scheduled": {
+          "title": "Tu plan {plan} termina el {date}",
+          "body": "Después pasarás a Gratis. Si cambias de idea, puedes mantenerlo.",
+          "cta": "Mantener mi plan"
+        },
+        "downgrade_scheduled": {
+          "title": "Pasarás a {plan} el {date}",
+          "body": "Hasta entonces conservas tu plan actual."
+        }
+      },
+      "notices": {
+        "checkoutCancelled": "Has salido del pago. No se te ha cobrado nada.",
+        "checkoutFailed": "No hemos podido abrir el pago del plan {plan}. Tu negocio ya está publicado en Gratis; puedes contratarlo desde aquí.",
+        "confirmFailed": "No hemos podido confirmar ese pago. Si se te ha cobrado, el plan se activará en unos minutos."
+      },
+      "errors": {
+        "INVALID_INPUT": "Algo no cuadra en la petición. Recarga la página e inténtalo de nuevo.",
+        "FORBIDDEN": "Tu sesión no tiene acceso a la facturación de este negocio. Vuelve a iniciar sesión.",
+        "PLAN_NOT_PURCHASABLE": "Este plan no se puede contratar así.",
+        "SUBSCRIPTION_NOT_FOUND": "No encontramos una suscripción activa. Si acabas de pagar, espera unos segundos y recarga.",
+        "PLAN_UNAVAILABLE": "Este plan no está disponible ahora mismo. Inténtalo más tarde o habla con soporte.",
+        "STRIPE_FAILED": "No hemos podido conectar con Stripe. Inténtalo de nuevo en unos minutos.",
+        "INTERNAL": "Algo ha ido mal. Inténtalo de nuevo en unos minutos."
       }
     }
   },
@@ -1370,7 +1474,7 @@
   "onboarding": {
     "meta": {
       "title": "Da de alta tu negocio",
-      "description": "Da de alta tu negocio en Yaiwell en 5 pasos: tipo, datos, ubicación, primer servicio y revisión."
+      "description": "Da de alta tu negocio en Yaiwell en 6 pasos: tipo, datos, ubicación, primer servicio, plan y revisión."
     },
     "badge": "Onboarding del proveedor",
     "title": "Da de alta tu negocio",
@@ -1380,7 +1484,8 @@
       "step2": "Datos",
       "step3": "Ubicación",
       "step4": "Servicio",
-      "step5": "Confirmar",
+      "step5": "Plan",
+      "step6": "Confirmar",
       "current": "Paso {current} de {total}"
     },
     "common": {
@@ -1388,7 +1493,8 @@
       "back": "Atrás",
       "saving": "Guardando…",
       "publishCta": "Publicar y entrar al panel",
-      "requiredField": "Campo obligatorio"
+      "requiredField": "Campo obligatorio",
+      "publishAndPayCta": "Publicar e ir al pago"
     },
     "syncing": {
       "title": "Sincronizando tu cuenta…",
@@ -1469,8 +1575,17 @@
       "sections": {
         "business": "Negocio",
         "location": "Ubicación",
-        "service": "Primer servicio"
+        "service": "Primer servicio",
+        "plan": "Plan"
       }
+    },
+    "planStep": {
+      "title": "Elige tu plan",
+      "subtitle": "Precios al mes con IVA incluido. Puedes cambiarlo o cancelarlo cuando quieras desde el panel.",
+      "legend": "Planes disponibles",
+      "freeNote": "Empiezas sin cuota. Si más adelante necesitas más servicios, mejora tu plan desde el panel.",
+      "paidNote": "Al publicar te llevaremos a la página segura de Stripe para pagar el plan. Tu negocio se publica en Gratis y el plan se activa en cuanto pagues.",
+      "unavailable": "Ahora mismo no podemos mostrar los planes. Empezarás en Gratis y podrás cambiarlo desde el panel."
     }
   },
   "signUp": {

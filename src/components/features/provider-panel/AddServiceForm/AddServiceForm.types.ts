@@ -1,3 +1,4 @@
+import type { CreateServiceActionState } from '@/app/[locale]/panel/servicios/nuevo/actions';
 import type { LocalizedText } from '@/types/domain';
 
 /** Locales soportados en la UI del panel. */
@@ -61,4 +62,12 @@ export interface AddServiceFormProps {
    * computa). En modo creación, undefined y el form arranca vacío.
    */
   initialValues?: AddServiceDraft;
+  /**
+   * `true` si el plan ya está en su límite de servicios al abrir el alta:
+   * el aviso para mejorar el plan sale desde el principio.
+   */
+  planLimitReached?: boolean;
 }
+
+/** Códigos de error que puede devolver la action de alta/edición. */
+export type CreateServiceErrorCode = Extract<CreateServiceActionState, { ok: false }>['code'];

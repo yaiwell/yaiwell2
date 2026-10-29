@@ -23,6 +23,8 @@ import 'server-only';
  *    upgrade real (checkout de suscripción) lo dispara el caller.
  */
 
+import { assertCanPublishService } from '@/lib/services/billing/billing.plan-limits';
+
 import {
   CategoryNotFoundError,
   FreePlanNotSeededError,
@@ -187,9 +189,13 @@ export async function updateProviderPhotos(
  *  - Heredamos el `professionalId` del Professional inicial (existe
  *    tanto en `autonomo` como en `centro`) para que el servicio quede
  *    atado a un horario desde el primer día.
+ *  - Respeta el límite de servicios del plan (`Plan.maxServices`): la
+ *    comprobación y el alta van en la misma transacción, con la fila del
+ *    negocio bloqueada, para que dos altas simultáneas no lo superen.
  *
  * @throws ProviderForOnboardingNotFoundError
  * @throws CategoryNotFoundError
+ * @throws PlanServiceLimitReachedError si el plan ya no admite más servicios.
  */
 export async function createFirstServiceForProvider(
   providerId: string,
@@ -210,18 +216,24 @@ export async function createFirstServiceForProvider(
   // motor de availability resuelve por provider.
   const initialProfessional = await providerOnboardingRepository.findFirstProfessional(providerId);
 
-  const created = await providerOnboardingRepository.createService({
-    providerId,
-    categoryId: data.categoryId,
-    professionalId: initialProfessional?.id ?? null,
-    name: data.name,
-    // Para evitar columnas Json vacías en BD (NOT NULL en el schema),
-    // si la UI no manda descripción persistimos un objeto vacío con la
-    // clave del primer idioma del nombre. Mantiene la forma `{es, ca}`
-    // que el resto del dominio espera.
-    description: data.description ?? data.name,
-    durationMinutes: data.durationMinutes,
-    priceCents: data.priceCents,
+  const created = await providerOnboardingRepository.runInTransaction(async (tx) => {
+    await assertCanPublishService(tx, providerId);
+    return providerOnboardingRepository.createService(
+      {
+        providerId,
+        categoryId: data.categoryId,
+        professionalId: initialProfessional?.id ?? null,
+        name: data.name,
+        // Para evitar columnas Json vacías en BD (NOT NULL en el schema),
+        // si la UI no manda descripción persistimos un objeto vacío con la
+        // clave del primer idioma del nombre. Mantiene la forma `{es, ca}`
+        // que el resto del dominio espera.
+        description: data.description ?? data.name,
+        durationMinutes: data.durationMinutes,
+        priceCents: data.priceCents,
+      },
+      tx,
+    );
   });
 
   return { serviceId: created.id };
@@ -232,14 +244,18 @@ export async function createFirstServiceForProvider(
 // ============================================================================
 
 /**
- * Cambia el plan asociado al Provider.
+ * Paso 5 del wizard: confirmar el plan Gratis.
  *
- * Stripe Billing (#61) gestionará el checkout real; aquí solo actualizamos
- * `planId`. Cuando el caller invoque este servicio para un tier de pago,
- * debe haber confirmado antes el `checkout.session.completed` del webhook.
+ * Es un no-op seguro: el negocio ya nace en Gratis (`createProvider`) y
+ * los planes de pago se contratan desde `/panel/plan` con Stripe Billing,
+ * cuya sincronización es la única que escribe `planId`. Por eso aquí
+ * nunca se escribe: si el negocio sigue en Gratis no hay nada que hacer,
+ * y si ya tiene otro plan (lo pagó) tampoco: bajarlo dejaría de cobrar
+ * su comisión y le saltaría los límites. No lanzamos en ese caso para no
+ * romper el último paso del wizard con un 500 (la ruta no lo mapea).
  *
- * @throws ProviderForOnboardingNotFoundError
- * @throws PlanTierNotFoundError
+ * @throws ProviderForOnboardingNotFoundError — si no es su negocio.
+ * @throws PlanTierNotFoundError — si no existe el plan Gratis en BD.
  */
 export async function selectPlan(
   providerId: string,
@@ -253,8 +269,7 @@ export async function selectPlan(
   if (!plan) {
     throw new PlanTierNotFoundError();
   }
-
-  await providerOnboardingRepository.updatePlan(providerId, plan.id);
+  // Sin escritura a propósito (ver JSDoc): el plan solo lo cambia Stripe.
 }
 
 // ============================================================================

@@ -78,5 +78,25 @@
     "intro": "Hemos revisado {provider} y por ahora no podemos publicarlo. Este es el motivo:",
     "next": "Corrige los datos desde tu panel y volveremos a revisarlo.",
     "cta": "Ir a mi panel"
+  },
+  "planNames": {
+    "free": "Gratis",
+    "basic": "Básico",
+    "pro": "Pro",
+    "premium": "Premium"
+  },
+  "planPaymentFailed": {
+    "subject": "No hemos podido cobrar el plan de {provider}",
+    "heading": "Revisa tu método de pago",
+    "intro": "Hemos intentado cobrar la cuota del plan de {provider} y el pago no ha salido adelante. Lo volveremos a intentar en los próximos días.",
+    "next": "Si no conseguimos cobrarlo, {provider} pasará al plan Gratis y los servicios que superen su límite dejarán de mostrarse hasta que se vuelva a pagar.",
+    "cta": "Revisar el pago"
+  },
+  "planDowngraded": {
+    "subject": "{provider} ha pasado al plan Gratis",
+    "heading": "Tu plan ha cambiado",
+    "intro": "La suscripción al plan {plan} de {provider} ha terminado y el negocio ha pasado al plan Gratis.",
+    "next": "Si tenías más servicios publicados de los que permite el plan Gratis, hemos ocultado los que sobran. Volverán a mostrarse en cuanto contrates de nuevo un plan de pago.",
+    "cta": "Ver los planes"
   }
 }

@@ -158,6 +158,7 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
 - Planes vigentes: Gratis (1 servicio, 12 %), Básico (19 €/mes, 10 servicios, 10 %), Pro (49 €/mes, 50 servicios, 8 %), Premium (99 €/mes, ilimitado, 6 %). Precios **con IVA incluido** (Stripe `tax_behavior: inclusive`).
 - Si un negocio deja de pagar su plan, tras los reintentos de Stripe **pasa a Gratis**; los servicios que superen el límite quedan ocultos hasta que vuelva a pagar.
 - Un profesional que entra por primera vez con Google puede crear su perfil profesional igual que con email.
+- Los negocios que ya tenían más servicios publicados que su límite antes de aplicarlo (2026-10-29) se respetan como están: el límite solo impide publicar o reactivar por encima a partir de ahora. Al cambiar de plan sí se aplica.
 
 ### Antelación mínima y reservas de última hora (decidido 2026-10-27)
 - Se puede reservar **hasta 30 minutos antes** del inicio, si hay hueco. El motor de disponibilidad no ofrece huecos por debajo de ese margen: todo lo que se muestra debe poder reservarse.

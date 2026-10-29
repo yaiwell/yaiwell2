@@ -10,6 +10,7 @@ export const servicesListStyles = {
   root: 'flex flex-col gap-6',
   header: 'flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between',
   headerText: 'flex flex-col gap-1',
+  usageCounter: 'text-xs font-medium text-muted-foreground',
   title: 'font-display text-2xl text-foreground',
   subtitle: 'text-sm text-muted-foreground',
 
@@ -27,6 +28,8 @@ export const servicesListStyles = {
     'inline-flex items-center rounded-full bg-status-now px-2 py-0.5 text-xs font-medium text-status-now-foreground',
   cardStatusPaused:
     'inline-flex items-center rounded-full bg-status-soon px-2 py-0.5 text-xs font-medium text-status-soon-foreground',
+  cardStatusPausedByPlan:
+    'inline-flex items-center rounded-full border border-border bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground',
   cardDescription: 'text-sm leading-relaxed text-muted-foreground',
   cardMeta: 'flex flex-wrap items-center gap-3 text-xs text-muted-foreground',
   cardMetaIcon: 'size-3.5',

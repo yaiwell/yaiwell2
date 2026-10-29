@@ -7,6 +7,7 @@ import {
   StripeWebhookSignatureError,
   verifyStripeWebhook,
 } from '@/lib/integrations/stripe';
+import { isBillingEvent } from '@/lib/services/billing';
 import {
   BookingForCheckoutNotFoundError,
   MissingBookingReferenceError,
@@ -22,6 +23,8 @@ import {
   notifyRefundDelayed,
   scheduleNotification,
 } from '@/lib/services/notifications';
+
+import { respondToBillingEvent } from './billing-webhook';
 
 /**
  * Webhook de Stripe → Yaiwell.
@@ -43,10 +46,13 @@ import {
  * - 500 sólo ante fallos transitorios nuestros (BD caída): es la señal
  *   para que Stripe reintente con backoff y no perdamos el evento.
  *
+ * **Planes de negocio** (Stripe Billing): `checkout.session.completed`
+ * de suscripción, `customer.subscription.*` e `invoice.*` van a
+ * `billing-webhook.ts`, con la misma política de respuestas.
+ *
  * **Eventos aún sin cablear** (llegan como `handled: false`):
  *  - `account.updated` → sync del onboarding Connect del proveedor.
  *  - `account.application.deauthorized` → bloquear cobros futuros.
- *  - `customer.subscription.*` / `invoice.payment_failed` → planes.
  */
 
 /** Eventos que este endpoint transforma en cambios de estado. */
@@ -91,6 +97,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     throw error;
+  }
+
+  if (isBillingEvent(event.type)) {
+    return respondToBillingEvent(event);
   }
 
   if (!isHandledEvent(event.type)) {

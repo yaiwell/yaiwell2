@@ -12,6 +12,7 @@ import {
   CategoriesServiceStep,
   ConfirmStep,
   LocationStep,
+  PlanStep,
 } from '../steps';
 
 import { useOnboardingWizard } from './OnboardingWizard.logic';
@@ -29,7 +30,7 @@ import type { OnboardingWizardProps } from './OnboardingWizard.types';
  * encima del cuerpo del paso.
  */
 export function OnboardingWizard(props: OnboardingWizardProps) {
-  const { initialState, categoriesPreloaded, locale, userPending } = props;
+  const { initialState, categoriesPreloaded, locale, userPending, plans, initialPlan } = props;
   const t = useTranslations('onboarding');
   const tCommon = useTranslations('onboarding.common');
   const tErrors = useTranslations('onboarding.errors');
@@ -53,7 +54,8 @@ export function OnboardingWizard(props: OnboardingWizardProps) {
     initialState,
     locale,
     userPending,
-    onComplete: () => router.push('/panel'),
+    initialPlan,
+    onComplete: (href) => router.push(href),
   });
 
   // Pantalla de "syncing…" si el usuario aún no llegó por webhook de Clerk.
@@ -111,7 +113,10 @@ export function OnboardingWizard(props: OnboardingWizardProps) {
   // Etiquetas dinámicas del CTA principal.
   const nextLabel = (() => {
     if (isMutating) return tCommon('saving');
-    if (draft.step === 5) return tCommon('publishCta');
+    if (draft.step === 6) {
+      const paid = (draft.selectedPlan ?? 'free') !== 'free';
+      return paid ? tCommon('publishAndPayCta') : tCommon('publishCta');
+    }
     return tCommon('next');
   })();
 
@@ -179,6 +184,14 @@ export function OnboardingWizard(props: OnboardingWizardProps) {
             />
           )}
           {draft.step === 5 && (
+            <PlanStep
+              plans={plans}
+              value={draft.selectedPlan ?? 'free'}
+              onChange={(selectedPlan) => updateDraft({ selectedPlan })}
+              locale={locale}
+            />
+          )}
+          {draft.step === 6 && (
             <ConfirmStep
               summary={{
                 type: draft.businessType ?? 'autonomo',
@@ -192,6 +205,7 @@ export function OnboardingWizard(props: OnboardingWizardProps) {
                 serviceName: draft.serviceName ?? '',
                 serviceDurationMinutes: draft.serviceDurationMinutes ?? 30,
                 servicePriceEuros: draft.servicePriceEuros ?? 0,
+                planTier: draft.selectedPlan ?? 'free',
               }}
               categories={categoriesPreloaded}
               locale={locale}
@@ -222,7 +236,9 @@ export function OnboardingWizard(props: OnboardingWizardProps) {
               data-testid="onboarding-next"
             >
               {nextLabel}
-              {!isMutating && draft.step < 5 && <ArrowRight className="size-4" aria-hidden />}
+              {!isMutating && draft.step < totalSteps && (
+                <ArrowRight className="size-4" aria-hidden />
+              )}
             </button>
           </div>
         </footer>

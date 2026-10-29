@@ -1,6 +1,6 @@
 import type { AppLocale } from '@/i18n/routing';
 
-import type { BusinessType, PriceRangeChoice, RootCategory } from '../../shared';
+import type { BusinessType, PlanTierChoice, PriceRangeChoice, RootCategory } from '../../shared';
 
 /**
  * Vista resumen — solo lectura. El orquestador pasa los datos finales
@@ -19,6 +19,8 @@ export interface ConfirmStepSummary {
   serviceName: string;
   serviceDurationMinutes: number;
   servicePriceEuros: number;
+  /** Plan elegido en el paso 5. */
+  planTier: PlanTierChoice;
 }
 
 export interface ConfirmStepProps {

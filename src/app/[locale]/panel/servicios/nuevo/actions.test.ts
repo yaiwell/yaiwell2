@@ -20,7 +20,9 @@ const {
   createFirstServiceMock,
   prismaMock,
   redirectMock,
+  LimitError,
 } = vi.hoisted(() => ({
+  LimitError: class PlanServiceLimitReachedError extends Error {},
   authMock: vi.fn(),
   ensureUserMock: vi.fn(),
   requireCurrentProviderMock: vi.fn(),
@@ -38,6 +40,9 @@ vi.mock('@/i18n/navigation', () => ({ redirect: redirectMock }));
 vi.mock('@/lib/auth/server', () => ({ requireCurrentProvider: requireCurrentProviderMock }));
 vi.mock('@/lib/db/prisma', () => ({ prisma: prismaMock }));
 vi.mock('@/lib/services/user', () => ({ ensureUserFromClerk: ensureUserMock }));
+vi.mock('@/lib/services/billing/billing.plan-limits', () => ({
+  PlanServiceLimitReachedError: LimitError,
+}));
 vi.mock('@/lib/services/provider-onboarding', () => ({
   createFirstServiceForProvider: createFirstServiceMock,
   CategoryNotFoundError: class CategoryNotFoundError extends Error {},
@@ -90,6 +95,15 @@ describe('createServiceAction', () => {
 
     const [, payload] = createFirstServiceMock.mock.calls[0];
     expect(payload.name).toEqual({ es: 'Corte de pelo' });
+  });
+
+  it('devuelve PLAN_LIMIT_REACHED si el plan ya no admite más servicios', async () => {
+    createFirstServiceMock.mockRejectedValueOnce(new LimitError());
+
+    const result = await createServiceAction('es', RAW);
+
+    expect(result).toEqual({ ok: false, code: 'PLAN_LIMIT_REACHED' });
+    expect(redirectMock).not.toHaveBeenCalled();
   });
 
   it('rechaza un nombre vacío sin llegar al service', async () => {

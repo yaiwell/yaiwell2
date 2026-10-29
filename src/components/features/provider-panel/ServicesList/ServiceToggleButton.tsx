@@ -1,10 +1,13 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useState, useTransition } from 'react';
 
 import { toggleServiceActiveAction } from '@/app/[locale]/panel/servicios/actions';
 import { Button } from '@/components/ui/button';
 import type { AppLocale } from '@/i18n/routing';
+
+import { PlanLimitNotice } from '../PlanLimitNotice';
+import { serviceToggleButtonStyles as s } from './ServiceToggleButton.styles';
 
 interface ServiceToggleButtonProps {
   locale: AppLocale;
@@ -22,6 +25,9 @@ interface ServiceToggleButtonProps {
  * `useTransition` para el estado de loading. Recibe los labels ya
  * traducidos desde el server para no doblar la dependencia de i18n
  * en el cliente.
+ *
+ * Si reactivar choca con el límite del plan (`PLAN_LIMIT_REACHED`),
+ * muestra el aviso con el enlace para mejorarlo.
  */
 export function ServiceToggleButton({
   locale,
@@ -32,22 +38,32 @@ export function ServiceToggleButton({
   pendingLabel,
 }: ServiceToggleButtonProps) {
   const [isPending, startTransition] = useTransition();
+  const [planLimitReached, setPlanLimitReached] = useState(false);
 
   function handleClick() {
+    setPlanLimitReached(false);
     startTransition(async () => {
-      await toggleServiceActiveAction(locale, serviceId, !isActive);
+      const result = await toggleServiceActiveAction(locale, serviceId, !isActive);
+      setPlanLimitReached(!result.ok && result.code === 'PLAN_LIMIT_REACHED');
     });
   }
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      disabled={isPending}
-      onClick={handleClick}
-      data-component={`services-list-toggle-${serviceId}`}
-    >
-      {isPending ? pendingLabel : isActive ? pauseLabel : resumeLabel}
-    </Button>
+    <>
+      <Button
+        variant="ghost"
+        size="sm"
+        disabled={isPending}
+        onClick={handleClick}
+        data-component={`services-list-toggle-${serviceId}`}
+      >
+        {isPending ? pendingLabel : isActive ? pauseLabel : resumeLabel}
+      </Button>
+      {planLimitReached ? (
+        <div className={s.noticeWrapper}>
+          <PlanLimitNotice />
+        </div>
+      ) : null}
+    </>
   );
 }

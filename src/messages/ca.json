@@ -560,6 +560,13 @@
           "forbidden": "No tens permís per eliminar aquest servei.",
           "internal": "No s'ha pogut eliminar. Torna-ho a provar en uns segons."
         }
+      },
+      "planLimit": {
+        "counter": "{active}/{max} serveis publicats",
+        "counterUnlimited": "{active} serveis publicats · Il·limitats",
+        "hiddenBadge": "Ocult pel teu pla",
+        "reached": "Has arribat al màxim de serveis publicats del teu pla. Millora el teu pla per publicar-ne més.",
+        "upgradeCta": "Millora el teu pla"
       }
     },
     "addService": {
@@ -601,7 +608,8 @@
         "PROVIDER_NOT_FOUND": "No hem pogut localitzar el teu negoci. Recarrega la pàgina.",
         "SERVICE_NOT_FOUND": "Aquest servei ja no existeix.",
         "FORBIDDEN": "No tens permís per editar aquest servei.",
-        "INTERNAL": "No s'ha pogut desar. Torna-ho a provar en uns segons."
+        "INTERNAL": "No s'ha pogut desar. Torna-ho a provar en uns segons.",
+        "PLAN_LIMIT_REACHED": "El teu pla no admet més serveis publicats. Millora el teu pla per publicar-ne més."
       }
     },
     "settings": {
@@ -769,6 +777,102 @@
         "STRIPE_FAILED": "Stripe no ha respost. Torna-ho a provar d'aquí a uns segons.",
         "INTERNAL": "Alguna cosa ha fallat. Torna-ho a provar.",
         "ALREADY_CONNECTED": "Ja hi ha un compte de Stripe creat com a «{type}». Si necessites canviar-lo, escriu-nos a hola@yaiwell.com."
+      }
+    },
+    "plan": {
+      "title": "El teu pla",
+      "subtitle": "Tria quants serveis publiques i quina comissió pagues per reserva.",
+      "tierNames": {
+        "free": "Gratis",
+        "basic": "Bàsic",
+        "pro": "Pro",
+        "premium": "Premium"
+      },
+      "card": {
+        "free": "Gratis",
+        "perMonth": "/mes",
+        "vatIncluded": "IVA inclòs",
+        "services": "{count, plural, one {# servei publicat} other {# serveis publicats}}",
+        "unlimitedServices": "Serveis il·limitats",
+        "commission": "{rate} de comissió per reserva",
+        "currentBadge": "El teu pla",
+        "selectedBadge": "Triat"
+      },
+      "cta": {
+        "current": "El teu pla actual",
+        "subscribe": "Contractar {plan}",
+        "change": "Canviar a {plan}",
+        "downgrade_free": "Passar a Gratis",
+        "scheduled": "Canvi programat",
+        "locked": "No disponible ara",
+        "fix_payment": "Actualitza la targeta",
+        "unavailable": "Parla amb suport",
+        "loading": "Obrint Stripe…"
+      },
+      "picker": {
+        "title": "Plans",
+        "subtitle": "Preus al mes amb IVA inclòs. Pots canviar o cancel·lar quan vulguis.",
+        "stripeHint": "El pagament i els canvis de pla es confirmen a la pàgina segura de Stripe. Si baixes de pla, el canvi s’aplica al final del període ja pagat.",
+        "lockedHint": "Ja tens un canvi de pla programat. En podràs triar un altre quan s’apliqui, o desfer-lo des de «Factures i targeta»."
+      },
+      "summary": {
+        "title": "El teu pla",
+        "priceLabel": "Quota",
+        "priceValue": "{price}/mes, IVA inclòs",
+        "commissionLabel": "Comissió per reserva",
+        "servicesLabel": "Serveis publicats",
+        "servicesUsage": "{used} de {max}",
+        "servicesUnlimited": "{used} · Il·limitats",
+        "renewsOn": "Es renova el {date}.",
+        "endsOn": "S’acaba el {date}. Després passaràs a Gratis.",
+        "pausedByPlan": "{count, plural, one {# servei està ocult} other {# serveis estan ocults}} pel límit del teu pla.",
+        "changePlan": "Canviar de pla",
+        "invoices": "Factures i targeta"
+      },
+      "banner": {
+        "viewPlan": "Veure el meu pla",
+        "activating": {
+          "title": "Activant el teu pla…",
+          "body": "Stripe està confirmant el pagament. Triga uns segons.",
+          "slowBody": "Està trigant més del normal. El teu pla s’activarà quan Stripe confirmi el pagament; pots continuar fent servir el panell."
+        },
+        "activated": {
+          "title": "El teu pla {plan} ja està actiu",
+          "body": "Ja pots publicar més serveis. Rebràs la factura per correu electrònic."
+        },
+        "past_due": {
+          "title": "No hem pogut cobrar el teu pla {plan}",
+          "body": "Actualitza la targeta per no perdre’l. Si els reintents fallen, passaràs a Gratis i s’ocultaran els serveis que superin el límit.",
+          "cta": "Actualitzar la targeta"
+        },
+        "action_required": {
+          "title": "Falta confirmar el pagament del teu pla {plan}",
+          "body": "El teu banc demana una confirmació. Completa-la per activar el pla.",
+          "cta": "Completar el pagament"
+        },
+        "cancel_scheduled": {
+          "title": "El teu pla {plan} s’acaba el {date}",
+          "body": "Després passaràs a Gratis. Si canvies d’idea, el pots mantenir.",
+          "cta": "Mantenir el meu pla"
+        },
+        "downgrade_scheduled": {
+          "title": "Passaràs a {plan} el {date}",
+          "body": "Fins aleshores conserves el teu pla actual."
+        }
+      },
+      "notices": {
+        "checkoutCancelled": "Has sortit del pagament. No se t’ha cobrat res.",
+        "checkoutFailed": "No hem pogut obrir el pagament del pla {plan}. El teu negoci ja està publicat en Gratis; el pots contractar des d’aquí.",
+        "confirmFailed": "No hem pogut confirmar aquest pagament. Si se t’ha cobrat, el pla s’activarà en uns minuts."
+      },
+      "errors": {
+        "INVALID_INPUT": "Alguna cosa no quadra en la petició. Recarrega la pàgina i torna-ho a provar.",
+        "FORBIDDEN": "La teva sessió no té accés a la facturació d’aquest negoci. Torna a iniciar sessió.",
+        "PLAN_NOT_PURCHASABLE": "Aquest pla no es pot contractar així.",
+        "SUBSCRIPTION_NOT_FOUND": "No trobem cap subscripció activa. Si acabes de pagar, espera uns segons i recarrega.",
+        "PLAN_UNAVAILABLE": "Aquest pla no està disponible ara mateix. Torna-ho a provar més tard o parla amb suport.",
+        "STRIPE_FAILED": "No hem pogut connectar amb Stripe. Torna-ho a provar d’aquí a uns minuts.",
+        "INTERNAL": "Alguna cosa ha anat malament. Torna-ho a provar d’aquí a uns minuts."
       }
     }
   },
@@ -1370,7 +1474,7 @@
   "onboarding": {
     "meta": {
       "title": "Dona d'alta el teu negoci",
-      "description": "Dona d'alta el teu negoci a Yaiwell en 5 passos: tipus, dades, ubicació, primer servei i revisió."
+      "description": "Dona d’alta el teu negoci a Yaiwell en 6 passos: tipus, dades, ubicació, primer servei, pla i revisió."
     },
     "badge": "Onboarding del proveïdor",
     "title": "Dona d'alta el teu negoci",
@@ -1380,7 +1484,8 @@
       "step2": "Dades",
       "step3": "Ubicació",
       "step4": "Servei",
-      "step5": "Confirmar",
+      "step5": "Pla",
+      "step6": "Confirmar",
       "current": "Pas {current} de {total}"
     },
     "common": {
@@ -1388,7 +1493,8 @@
       "back": "Enrere",
       "saving": "Desant…",
       "publishCta": "Publicar i entrar al panell",
-      "requiredField": "Camp obligatori"
+      "requiredField": "Camp obligatori",
+      "publishAndPayCta": "Publicar i anar al pagament"
     },
     "syncing": {
       "title": "Sincronitzant el teu compte…",
@@ -1469,8 +1575,17 @@
       "sections": {
         "business": "Negoci",
         "location": "Ubicació",
-        "service": "Primer servei"
+        "service": "Primer servei",
+        "plan": "Pla"
       }
+    },
+    "planStep": {
+      "title": "Tria el teu pla",
+      "subtitle": "Preus al mes amb IVA inclòs. El pots canviar o cancel·lar quan vulguis des del panell.",
+      "legend": "Plans disponibles",
+      "freeNote": "Comences sense quota. Si més endavant necessites més serveis, millora el pla des del panell.",
+      "paidNote": "En publicar et portarem a la pàgina segura de Stripe per pagar el pla. El teu negoci es publica en Gratis i el pla s’activa quan paguis.",
+      "unavailable": "Ara mateix no podem mostrar els plans. Començaràs en Gratis i el podràs canviar des del panell."
     }
   },
   "signUp": {

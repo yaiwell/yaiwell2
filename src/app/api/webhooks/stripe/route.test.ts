@@ -41,6 +41,14 @@ vi.mock('@/lib/integrations/stripe', () => ({
   StripeWebhookSignatureError: StripeWebhookSignatureErrorStub,
 }));
 
+// La rama de planes tiene su propio test (`route.billing.test.ts`); aquí
+// ningún evento de reservas debe acabar en ella.
+vi.mock('@/lib/services/billing', () => ({
+  isBillingEvent: () => false,
+  handleBillingEvent: vi.fn(),
+  BillingProviderNotFoundError: class extends Error {},
+}));
+
 const { confirmMock, failMock, refundMock, refundUpdatedMock, NotFoundStub, MissingRefStub } =
   vi.hoisted(() => {
     class NotFoundStub extends Error {

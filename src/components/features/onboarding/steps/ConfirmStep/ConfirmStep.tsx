@@ -9,16 +9,17 @@ import { confirmStepStyles as s } from './ConfirmStep.styles';
 import type { ConfirmStepProps } from './ConfirmStep.types';
 
 /**
- * Paso 5 del wizard — resumen read-only + aceptación de términos.
+ * Paso 6 del wizard — resumen read-only + aceptación de términos.
  *
  * Muestra los datos en bloques temáticos (negocio, ubicación, primer
- * servicio) y un checkbox de términos. La CTA real ("Publicar y entrar
+ * servicio, plan) y un checkbox de términos. La CTA real ("Publicar y entrar
  * al panel") vive en el footer del orquestador, que es quien dispara
  * las mutaciones.
  */
 export function ConfirmStep(props: ConfirmStepProps) {
   const { summary, categories, locale, termsAccepted, onTermsChange } = props;
   const t = useTranslations('onboarding.confirm');
+  const tPlans = useTranslations('providerPanel.plan.tierNames');
   const termsId = useId();
 
   // Helpers para pintar etiquetas localizadas a partir de IDs.
@@ -87,6 +88,13 @@ export function ConfirmStep(props: ConfirmStepProps) {
           <div className={s.row}>
             <span className={s.rowLabel}>{summary.serviceDurationMinutes} min</span>
             <span className={s.rowValue}>{priceFormatter.format(summary.servicePriceEuros)}</span>
+          </div>
+        </div>
+        {/* Bloque plan */}
+        <div className={s.section}>
+          <span className={s.sectionHeading}>{t('sections.plan')}</span>
+          <div className={s.row}>
+            <span className={s.rowValue}>{tPlans(summary.planTier)}</span>
           </div>
         </div>
       </div>

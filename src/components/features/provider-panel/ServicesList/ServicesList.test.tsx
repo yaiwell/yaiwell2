@@ -27,6 +27,13 @@ const messages = {
       resume: 'Reactivar',
       updating: 'Actualizando…',
       empty: 'Sin servicios.',
+      planLimit: {
+        counter: '{active}/{max} servicios publicados',
+        counterUnlimited: '{active} servicios publicados · Ilimitados',
+        hiddenBadge: 'Oculto por tu plan',
+        reached: 'Has llegado al máximo de servicios publicados de tu plan.',
+        upgradeCta: 'Mejora tu plan',
+      },
       delete: {
         button: 'Eliminar',
         confirmTitle: '¿Eliminar servicio?',
@@ -83,6 +90,43 @@ describe('ServicesList', () => {
     const cta = screen.getByRole('link', { name: /Añadir servicio/i });
 
     expect(cta).toHaveAttribute('href', expect.stringContaining('/panel/servicios/nuevo'));
+  });
+
+  it('muestra el contador del plan y el aviso para mejorarlo al llegar al límite', () => {
+    renderWithIntl(
+      <ServicesList
+        services={fakePanelServices}
+        locale="es"
+        usage={{ activeCount: 1, maxServices: 1 }}
+      />,
+    );
+
+    expect(screen.getByText('1/1 servicios publicados')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Mejora tu plan/i })).toHaveAttribute(
+      'href',
+      expect.stringContaining('/panel/plan'),
+    );
+  });
+
+  it('muestra «Ilimitados» con Premium y no avisa del límite', () => {
+    renderWithIntl(
+      <ServicesList
+        services={fakePanelServices}
+        locale="es"
+        usage={{ activeCount: 12, maxServices: 999 }}
+      />,
+    );
+
+    expect(screen.getByText('12 servicios publicados · Ilimitados')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Mejora tu plan/i })).not.toBeInTheDocument();
+  });
+
+  it('marca los servicios ocultos por el plan con su propia insignia', () => {
+    const [first, ...rest] = fakePanelServices;
+    const services = [{ ...first, status: 'paused' as const, pausedByPlan: true }, ...rest];
+    renderWithIntl(<ServicesList services={services} locale="es" />);
+
+    expect(screen.getByText('Oculto por tu plan')).toBeInTheDocument();
   });
 
   it('pinta un botón "Eliminar" por servicio (trigger del diálogo de confirmación)', () => {

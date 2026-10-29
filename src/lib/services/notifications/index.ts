@@ -13,6 +13,7 @@ export {
   notifyRefundCompleted,
   notifyRefundDelayed,
 } from './notifications.service';
+export { notifyPlanDowngraded, notifyPlanPaymentFailed } from './notifications.billing';
 export { sendTomorrowReminders, type ReminderSweepSummary } from './notifications.reminders';
 export { scheduleNotification } from './notifications.schedule';
 export { toCancellationRefundState } from './notifications.refund-state';

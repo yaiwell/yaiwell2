@@ -1,17 +1,18 @@
 /**
  * Tipos compartidos del wizard de onboarding del proveedor (#57 UI).
  *
- * Convención clave: el wizard tiene 5 pasos en UI que mapean a 4
+ * Convención clave: el wizard tiene 6 pasos en UI que mapean a 4
  * mutaciones independientes (estrategia idempotente). Los tipos viven
  * aquí para que los hooks de cada paso, el orquestador y la API client
  * compartan el mismo contrato.
  */
 
 import type { AppLocale } from '@/i18n/routing';
+import type { PublicPlan } from '@/lib/services/plans';
 import type { LocalizedText } from '@/types/domain';
 
 /** Pasos del wizard. */
-export type OnboardingStep = 1 | 2 | 3 | 4 | 5;
+export type OnboardingStep = 1 | 2 | 3 | 4 | 5 | 6;
 
 /** Tipo de proveedor que se está dando de alta. */
 export type BusinessType = 'autonomo' | 'centro';
@@ -19,7 +20,10 @@ export type BusinessType = 'autonomo' | 'centro';
 /** Rango de precio cualitativo del paso 2. */
 export type PriceRangeChoice = '€' | '€€' | '€€€';
 
-/** Tier de plan disponible (el wizard solo asigna 'free'). */
+/**
+ * Tier de plan que elige el paso 5. El alta siempre crea el negocio en
+ * Gratis; si el elegido es de pago, al publicar se abre el Checkout.
+ */
 export type PlanTierChoice = 'free' | 'basic' | 'pro' | 'premium';
 
 /**
@@ -50,7 +54,9 @@ export interface OnboardingDraft {
   serviceDescription?: string;
   serviceDurationMinutes?: number;
   servicePriceEuros?: number;
-  // Paso 5 — acepta términos antes de publicar.
+  // Paso 5 — plan elegido (preseleccionado desde el registro).
+  selectedPlan?: PlanTierChoice;
+  // Paso 6 — acepta términos antes de publicar.
   termsAccepted?: boolean;
 }
 
@@ -104,4 +110,8 @@ export interface OnboardingInitialProps {
    * "syncing…" con retry automático.
    */
   userPending: boolean;
+  /** Catálogo de planes para el paso 5 (vacío si no se pudo leer). */
+  plans: PublicPlan[];
+  /** Plan elegido en el registro (`unsafeMetadata.selectedPlan`) o Gratis. */
+  initialPlan: PlanTierChoice;
 }

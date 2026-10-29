@@ -78,5 +78,25 @@
     "intro": "Hem revisat {provider} i de moment no el podem publicar. Aquest és el motiu:",
     "next": "Corregeix les dades des del teu panell i el tornarem a revisar.",
     "cta": "Anar al meu panell"
+  },
+  "planNames": {
+    "free": "Gratis",
+    "basic": "Bàsic",
+    "pro": "Pro",
+    "premium": "Premium"
+  },
+  "planPaymentFailed": {
+    "subject": "No hem pogut cobrar el pla de {provider}",
+    "heading": "Revisa el teu mètode de pagament",
+    "intro": "Hem intentat cobrar la quota del pla de {provider} i el pagament no ha anat bé. Ho tornarem a intentar en els propers dies.",
+    "next": "Si no aconseguim cobrar-lo, {provider} passarà al pla Gratis i els serveis que superin el seu límit deixaran de mostrar-se fins que es torni a pagar.",
+    "cta": "Revisar el pagament"
+  },
+  "planDowngraded": {
+    "subject": "{provider} ha passat al pla Gratis",
+    "heading": "El teu pla ha canviat",
+    "intro": "La subscripció al pla {plan} de {provider} ha acabat i el negoci ha passat al pla Gratis.",
+    "next": "Si tenies més serveis publicats dels que permet el pla Gratis, hem amagat els que sobren. Es tornaran a mostrar tan bon punt tornis a contractar un pla de pagament.",
+    "cta": "Veure els plans"
   }
 }

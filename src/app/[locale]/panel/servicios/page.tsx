@@ -6,6 +6,7 @@ import { ServicesList } from '@/components/features/provider-panel/ServicesList'
 import type { PanelService } from '@/components/features/provider-panel/ServicesList/ServicesList.types';
 import { requireCurrentProvider } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
+import { getServiceUsage } from '@/lib/services/billing/billing.plan-limits';
 import type { LocalizedText } from '@/types/domain';
 
 interface PanelServicesPageProps {
@@ -26,6 +27,10 @@ interface PanelServicesPageProps {
  * `6_service_is_active`, 2026-06-12) y se pinta como badge en el listado.
  * El provider lo alterna desde el botón Pausar/Reactivar, cableado a
  * la server action `toggleServiceActiveAction`.
+ *
+ * También lee el cupo del plan (`Plan.maxServices`) para el contador
+ * «X/Y publicados», y `pausedByPlanAt` para marcar los servicios que
+ * ocultó el límite del plan en vez del propio negocio.
  */
 export default async function PanelServicesPage({ params }: PanelServicesPageProps) {
   const { locale } = await params;
@@ -41,29 +46,33 @@ export default async function PanelServicesPage({ params }: PanelServicesPagePro
   const since = new Date();
   since.setDate(since.getDate() - 30);
 
-  const records = await prisma.service.findMany({
-    where: { providerId, deletedAt: null },
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      durationMinutes: true,
-      priceCents: true,
-      isActive: true,
-      category: { select: { name: true } },
-      _count: {
-        select: {
-          bookings: {
-            where: {
-              startAt: { gte: since },
-              status: { in: ['confirmed', 'completed'] },
+  const [records, usage] = await Promise.all([
+    prisma.service.findMany({
+      where: { providerId, deletedAt: null },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        durationMinutes: true,
+        priceCents: true,
+        isActive: true,
+        pausedByPlanAt: true,
+        category: { select: { name: true } },
+        _count: {
+          select: {
+            bookings: {
+              where: {
+                startAt: { gte: since },
+                status: { in: ['confirmed', 'completed'] },
+              },
             },
           },
         },
       },
-    },
-    orderBy: { createdAt: 'asc' },
-  });
+      orderBy: { createdAt: 'asc' },
+    }),
+    getServiceUsage(prisma, providerId),
+  ]);
 
   // Adaptación BD → view-model. Casteamos los JSON a LocalizedText
   // porque sabemos que el wizard y el seed los escriben con esa forma.
@@ -75,10 +84,11 @@ export default async function PanelServicesPage({ params }: PanelServicesPagePro
     durationMinutes: r.durationMinutes,
     priceCents: r.priceCents,
     status: r.isActive ? 'active' : 'paused',
+    pausedByPlan: !r.isActive && r.pausedByPlanAt !== null,
     bookingsLast30Days: r._count.bookings,
   }));
 
   const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
 
-  return <ServicesList services={services} locale={panelLocale} />;
+  return <ServicesList services={services} locale={panelLocale} usage={usage} />;
 }

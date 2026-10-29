@@ -37,6 +37,7 @@ export const fakePanelServices: PanelService[] = [
     durationMinutes: 60,
     priceCents: 5500,
     status: 'active',
+    pausedByPlan: false,
     bookingsLast30Days: 58,
   },
   {
@@ -50,6 +51,7 @@ export const fakePanelServices: PanelService[] = [
     durationMinutes: 45,
     priceCents: 3800,
     status: 'active',
+    pausedByPlan: false,
     bookingsLast30Days: 47,
   },
   {
@@ -63,6 +65,7 @@ export const fakePanelServices: PanelService[] = [
     durationMinutes: 30,
     priceCents: 2500,
     status: 'active',
+    pausedByPlan: false,
     bookingsLast30Days: 22,
   },
   {
@@ -76,6 +79,7 @@ export const fakePanelServices: PanelService[] = [
     durationMinutes: 120,
     priceCents: 9500,
     status: 'active',
+    pausedByPlan: false,
     bookingsLast30Days: 31,
   },
   {
@@ -89,6 +93,7 @@ export const fakePanelServices: PanelService[] = [
     durationMinutes: 150,
     priceCents: 12500,
     status: 'active',
+    pausedByPlan: false,
     bookingsLast30Days: 18,
   },
   {
@@ -102,6 +107,7 @@ export const fakePanelServices: PanelService[] = [
     durationMinutes: 75,
     priceCents: 6500,
     status: 'active',
+    pausedByPlan: false,
     bookingsLast30Days: 12,
   },
   {
@@ -115,6 +121,7 @@ export const fakePanelServices: PanelService[] = [
     durationMinutes: 45,
     priceCents: 4200,
     status: 'active',
+    pausedByPlan: false,
     bookingsLast30Days: 25,
   },
   {
@@ -128,6 +135,7 @@ export const fakePanelServices: PanelService[] = [
     durationMinutes: 180,
     priceCents: 15000,
     status: 'active',
+    pausedByPlan: false,
     bookingsLast30Days: 9,
   },
   {
@@ -141,6 +149,7 @@ export const fakePanelServices: PanelService[] = [
     durationMinutes: 90,
     priceCents: 8500,
     status: 'paused',
+    pausedByPlan: false,
     bookingsLast30Days: 0,
   },
   {
@@ -154,6 +163,7 @@ export const fakePanelServices: PanelService[] = [
     durationMinutes: 120,
     priceCents: 11000,
     status: 'paused',
+    pausedByPlan: false,
     bookingsLast30Days: 0,
   },
 ];

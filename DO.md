@@ -8,6 +8,18 @@
 
 ## 2026-10-29
 
+### 2026-10-29 — Planes de negocio con Stripe Billing
+
+P4 + P12 + P13 (`Plan` → migración con `db-migration-guard` → `stripe-payments` y dos `general-purpose` en paralelo → `business-rules-auditor` + `conventions-reviewer`; P1 y P2 aplicados).
+
+- **Arreglo de seguridad** (subido antes): el alta solo acepta `free`; ningún negocio puede ponerse un plan de pago sin cobro.
+- **Migración 9e** (aplicada): tabla privada `provider_billing` (RLS sin policies) y `services.pausedByPlanAt`.
+- **Módulo `lib/services/billing/`**: Customer por negocio, Checkout de suscripción (precios por `lookup_key`, comprobados contra `Plan.monthlyPriceCents`), IVA 21 % inclusivo (Tax Rate), Customer Portal con configuración en código (subidas con cobro inmediato, bajadas y cancelación a fin de periodo), sincronización desde Stripe siempre releyendo el estado (orden de eventos, duplicadas reembolsadas y canceladas, `deleted` tardío ignorado, `trialing` no concede plan), impago → Gratis al cancelar Stripe tras los reintentos, avisos por email de pago fallido y de bajada.
+- **Límites de servicios** por plan al crear y reactivar, y al cambiar de plan (oculta los más nuevos, reactiva solo los ocultos por el plan). Los negocios existentes por encima del límite se respetan.
+- **UI**: `/panel/plan` (tarjetas, contratar, cambiar, pasar a Gratis, banners de estado), tarjeta de plan en `/panel/centro`, contador y avisos en `/panel/servicios`, y paso de plan en el alta (6 pasos) preseleccionado desde `/profesionales`.
+- **Stripe test**: `npm run stripe:sync-plans` creó productos, prices, Tax Rate y configuración del portal.
+- 1757 tests unitarios.
+
 ### 2026-10-29 — Términos y condiciones y política de cookies
 
 - **`/terminos`** y **`/cookies`** en los 4 idiomas, con el mismo componente (`LegalDocument`) y cargador (`getLegalDocument`) que `/privacidad`. Los términos recogen lo que la app hace hoy: intermediación y cobro por Stripe en nombre del centro, retención de 30 min y antelación mínima de 30 min, cancelación del cliente gratis hasta 2 h por soporte, última hora sin devolución, cancelación del centro ≥2 h con devolución íntegra, pagos tardíos devueltos, horas con descuento, valoraciones (solo `completed`, 30 días), condiciones para negocios (verificación, comisión por plan sobre lo cobrado, Stripe Connect, suspensión) y ley española. Cookies: solo técnicas (Clerk, Stripe en el pago, preferencias de idioma/tema/modo), sin banner.

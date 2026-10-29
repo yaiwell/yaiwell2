@@ -2,9 +2,13 @@
 
 import { revalidatePath } from 'next/cache';
 
+import type { AppLocale } from '@/i18n/routing';
 import { requireCurrentProvider } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
-import type { AppLocale } from '@/i18n/routing';
+import {
+  assertCanPublishService,
+  PlanServiceLimitReachedError,
+} from '@/lib/services/billing/billing.plan-limits';
 
 /**
  * Resultado serializable de las server actions del listado de servicios.
@@ -15,7 +19,13 @@ export type ServicesActionState =
   | { ok: true }
   | {
       ok: false;
-      code: 'PROVIDER_NOT_FOUND' | 'SERVICE_NOT_FOUND' | 'FORBIDDEN' | 'INTERNAL';
+      code:
+        | 'PROVIDER_NOT_FOUND'
+        | 'SERVICE_NOT_FOUND'
+        | 'FORBIDDEN'
+        // Reactivar superaría el límite de servicios del plan.
+        | 'PLAN_LIMIT_REACHED'
+        | 'INTERNAL';
     };
 
 /**
@@ -28,6 +38,11 @@ export type ServicesActionState =
  *  - Soft-pause: `isActive=false` oculta el servicio en búsqueda pública
  *    y en el flujo de reserva, pero las métricas históricas (dashboard,
  *    bookings pasadas) siguen funcionando porque no tocamos `deletedAt`.
+ *  - Activar respeta el límite de servicios del plan: se comprueba y se
+ *    escribe en la misma transacción, con la fila del negocio bloqueada.
+ *  - Tanto activar como pausar a mano limpian `pausedByPlanAt`: la
+ *    decisión del negocio manda sobre la del plan, y un servicio que él
+ *    pausó no debe reactivarse solo al subir de plan.
  */
 export async function toggleServiceActiveAction(
   locale: AppLocale,
@@ -45,6 +60,8 @@ export async function toggleServiceActiveAction(
   // Ownership: el service debe ser del provider activo.
   const existing = await prisma.service.findUnique({
     where: { id: serviceId },
+    // `isActive` no se lee aquí: fuera de la transacción puede estar
+    // desfasado (el sync del plan pudo ocultarlo entre medias).
     select: { id: true, providerId: true, deletedAt: true },
   });
   if (!existing || existing.deletedAt) {
@@ -55,11 +72,31 @@ export async function toggleServiceActiveAction(
   }
 
   try {
-    await prisma.service.update({
-      where: { id: serviceId },
-      data: { isActive: nextValue },
+    await prisma.$transaction(async (tx) => {
+      if (nextValue) {
+        // Reenviar «activar» sobre uno ya activo es idempotente y no
+        // cuenta contra el cupo. Lo comprobamos con una escritura
+        // condicional dentro de la transacción: si el sync del plan lo
+        // ocultó entre medias, no casa (o espera a su commit y ya no
+        // casa) y pasamos por el cupo como cualquier reactivación.
+        const stillActive = await tx.service.updateMany({
+          where: { id: serviceId, isActive: true, deletedAt: null },
+          data: { pausedByPlanAt: null },
+        });
+        if (stillActive.count > 0) return;
+        // Pasar de pausado a activo cuenta contra el cupo, con la fila
+        // del negocio bloqueada hasta el commit.
+        await assertCanPublishService(tx, providerId);
+      }
+      await tx.service.update({
+        where: { id: serviceId },
+        data: { isActive: nextValue, pausedByPlanAt: null },
+      });
     });
   } catch (err) {
+    if (err instanceof PlanServiceLimitReachedError) {
+      return { ok: false, code: 'PLAN_LIMIT_REACHED' };
+    }
     console.error('[panel/servicios] toggleServiceActiveAction error:', err);
     return { ok: false, code: 'INTERNAL' };
   }

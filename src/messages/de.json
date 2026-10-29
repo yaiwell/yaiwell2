@@ -560,6 +560,13 @@
           "forbidden": "Du hast keine Berechtigung, diesen Service zu löschen.",
           "internal": "Konnte nicht gelöscht werden. Versuche es in einigen Sekunden erneut."
         }
+      },
+      "planLimit": {
+        "counter": "{active}/{max} Leistungen veröffentlicht",
+        "counterUnlimited": "{active} Leistungen veröffentlicht · Unbegrenzt",
+        "hiddenBadge": "Durch deinen Tarif ausgeblendet",
+        "reached": "Du hast die maximale Anzahl veröffentlichter Leistungen deines Tarifs erreicht. Wechsle in einen höheren Tarif, um mehr zu veröffentlichen.",
+        "upgradeCta": "Tarif upgraden"
       }
     },
     "addService": {
@@ -601,7 +608,8 @@
         "PROVIDER_NOT_FOUND": "Wir konnten dein Geschäft nicht finden. Bitte lade die Seite neu.",
         "SERVICE_NOT_FOUND": "Dieser Service existiert nicht mehr.",
         "FORBIDDEN": "Du hast keine Berechtigung, diesen Service zu bearbeiten.",
-        "INTERNAL": "Konnte nicht gespeichert werden. Versuche es in einigen Sekunden erneut."
+        "INTERNAL": "Konnte nicht gespeichert werden. Versuche es in einigen Sekunden erneut.",
+        "PLAN_LIMIT_REACHED": "Dein Tarif erlaubt keine weiteren veröffentlichten Leistungen. Wechsle in einen höheren Tarif, um mehr zu veröffentlichen."
       }
     },
     "settings": {
@@ -769,6 +777,102 @@
         "STRIPE_FAILED": "Stripe hat nicht geantwortet. Versuche es in ein paar Sekunden noch einmal.",
         "INTERNAL": "Etwas ist schiefgelaufen. Bitte versuche es noch einmal.",
         "ALREADY_CONNECTED": "Es gibt bereits ein Stripe-Konto als „{type}“. Wenn du es ändern musst, schreib uns an hola@yaiwell.com."
+      }
+    },
+    "plan": {
+      "title": "Dein Tarif",
+      "subtitle": "Wähle, wie viele Leistungen du veröffentlichst und welche Provision du pro Buchung zahlst.",
+      "tierNames": {
+        "free": "Kostenlos",
+        "basic": "Basis",
+        "pro": "Pro",
+        "premium": "Premium"
+      },
+      "card": {
+        "free": "Kostenlos",
+        "perMonth": "/Monat",
+        "vatIncluded": "inkl. MwSt.",
+        "services": "{count, plural, one {# veröffentlichte Leistung} other {# veröffentlichte Leistungen}}",
+        "unlimitedServices": "Unbegrenzte Leistungen",
+        "commission": "{rate} Provision pro Buchung",
+        "currentBadge": "Dein Tarif",
+        "selectedBadge": "Ausgewählt"
+      },
+      "cta": {
+        "current": "Dein aktueller Tarif",
+        "subscribe": "{plan} buchen",
+        "change": "Zu {plan} wechseln",
+        "downgrade_free": "Zu Kostenlos wechseln",
+        "scheduled": "Wechsel geplant",
+        "locked": "Gerade nicht verfügbar",
+        "fix_payment": "Karte aktualisieren",
+        "unavailable": "Support kontaktieren",
+        "loading": "Stripe wird geöffnet…"
+      },
+      "picker": {
+        "title": "Tarife",
+        "subtitle": "Monatspreise inkl. MwSt. Du kannst jederzeit wechseln oder kündigen.",
+        "stripeHint": "Zahlung und Tarifwechsel bestätigst du auf der sicheren Seite von Stripe. Wechselst du in einen günstigeren Tarif, gilt das ab Ende des bereits bezahlten Zeitraums.",
+        "lockedHint": "Du hast bereits einen Tarifwechsel geplant. Einen anderen kannst du wählen, sobald er gilt, oder ihn unter „Rechnungen und Karte“ rückgängig machen."
+      },
+      "summary": {
+        "title": "Dein Tarif",
+        "priceLabel": "Gebühr",
+        "priceValue": "{price}/Monat, inkl. MwSt.",
+        "commissionLabel": "Provision pro Buchung",
+        "servicesLabel": "Veröffentlichte Leistungen",
+        "servicesUsage": "{used} von {max}",
+        "servicesUnlimited": "{used} · Unbegrenzt",
+        "renewsOn": "Verlängert sich am {date}.",
+        "endsOn": "Endet am {date}. Danach wechselst du zu Kostenlos.",
+        "pausedByPlan": "{count, plural, one {# Leistung ist} other {# Leistungen sind}} durch das Limit deines Tarifs ausgeblendet.",
+        "changePlan": "Tarif wechseln",
+        "invoices": "Rechnungen und Karte"
+      },
+      "banner": {
+        "viewPlan": "Meinen Tarif ansehen",
+        "activating": {
+          "title": "Dein Tarif wird aktiviert…",
+          "body": "Stripe bestätigt die Zahlung. Das dauert ein paar Sekunden.",
+          "slowBody": "Das dauert länger als üblich. Dein Tarif wird aktiviert, sobald Stripe die Zahlung bestätigt; du kannst das Dashboard weiter nutzen."
+        },
+        "activated": {
+          "title": "Dein Tarif {plan} ist jetzt aktiv",
+          "body": "Du kannst jetzt mehr Leistungen veröffentlichen. Die Rechnung bekommst du per E-Mail."
+        },
+        "past_due": {
+          "title": "Wir konnten deinen Tarif {plan} nicht abbuchen",
+          "body": "Aktualisiere deine Karte, um ihn zu behalten. Schlagen die weiteren Versuche fehl, wechselst du zu Kostenlos und Leistungen über dem Limit werden ausgeblendet.",
+          "cta": "Karte aktualisieren"
+        },
+        "action_required": {
+          "title": "Die Zahlung für deinen Tarif {plan} muss bestätigt werden",
+          "body": "Deine Bank verlangt eine Bestätigung. Schließe sie ab, um den Tarif zu aktivieren.",
+          "cta": "Zahlung abschließen"
+        },
+        "cancel_scheduled": {
+          "title": "Dein Tarif {plan} endet am {date}",
+          "body": "Danach wechselst du zu Kostenlos. Wenn du es dir anders überlegst, kannst du ihn behalten.",
+          "cta": "Tarif behalten"
+        },
+        "downgrade_scheduled": {
+          "title": "Am {date} wechselst du zu {plan}",
+          "body": "Bis dahin behältst du deinen aktuellen Tarif."
+        }
+      },
+      "notices": {
+        "checkoutCancelled": "Du hast die Zahlung verlassen. Es wurde nichts abgebucht.",
+        "checkoutFailed": "Wir konnten die Zahlung für den Tarif {plan} nicht öffnen. Dein Geschäft ist bereits im Tarif Kostenlos veröffentlicht; du kannst ihn hier buchen.",
+        "confirmFailed": "Wir konnten diese Zahlung nicht bestätigen. Falls etwas abgebucht wurde, wird der Tarif in wenigen Minuten aktiviert."
+      },
+      "errors": {
+        "INVALID_INPUT": "Mit der Anfrage stimmt etwas nicht. Lade die Seite neu und versuche es noch einmal.",
+        "FORBIDDEN": "Deine Sitzung hat keinen Zugriff auf die Abrechnung dieses Geschäfts. Melde dich erneut an.",
+        "PLAN_NOT_PURCHASABLE": "Dieser Tarif kann so nicht gebucht werden.",
+        "SUBSCRIPTION_NOT_FOUND": "Wir finden kein aktives Abo. Wenn du gerade bezahlt hast, warte ein paar Sekunden und lade neu.",
+        "PLAN_UNAVAILABLE": "Dieser Tarif ist gerade nicht verfügbar. Versuche es später oder kontaktiere den Support.",
+        "STRIPE_FAILED": "Wir konnten Stripe nicht erreichen. Versuche es in ein paar Minuten erneut.",
+        "INTERNAL": "Etwas ist schiefgelaufen. Versuche es in ein paar Minuten erneut."
       }
     }
   },
@@ -1370,7 +1474,7 @@
   "onboarding": {
     "meta": {
       "title": "Geschäft einrichten",
-      "description": "Richte dein Geschäft auf Yaiwell in 5 Schritten ein: Typ, Daten, Standort, erste Dienstleistung und Überprüfung."
+      "description": "Richte dein Geschäft auf Yaiwell in 6 Schritten ein: Typ, Daten, Standort, erste Dienstleistung, Tarif und Überprüfung."
     },
     "badge": "Anbieter-Onboarding",
     "title": "Richte dein Geschäft ein",
@@ -1380,7 +1484,8 @@
       "step2": "Daten",
       "step3": "Standort",
       "step4": "Service",
-      "step5": "Bestätigen",
+      "step5": "Tarif",
+      "step6": "Bestätigen",
       "current": "Schritt {current} von {total}"
     },
     "common": {
@@ -1388,7 +1493,8 @@
       "back": "Zurück",
       "saving": "Speichern…",
       "publishCta": "Veröffentlichen und Dashboard öffnen",
-      "requiredField": "Pflichtfeld"
+      "requiredField": "Pflichtfeld",
+      "publishAndPayCta": "Veröffentlichen und bezahlen"
     },
     "syncing": {
       "title": "Konto wird synchronisiert…",
@@ -1469,8 +1575,17 @@
       "sections": {
         "business": "Geschäft",
         "location": "Standort",
-        "service": "Erste Dienstleistung"
+        "service": "Erste Dienstleistung",
+        "plan": "Tarif"
       }
+    },
+    "planStep": {
+      "title": "Wähle deinen Tarif",
+      "subtitle": "Monatspreise inkl. MwSt. Du kannst ihn jederzeit im Dashboard wechseln oder kündigen.",
+      "legend": "Verfügbare Tarife",
+      "freeNote": "Du startest ohne Gebühr. Brauchst du später mehr Leistungen, wechselst du im Dashboard in einen höheren Tarif.",
+      "paidNote": "Beim Veröffentlichen leiten wir dich zur sicheren Seite von Stripe weiter, um den Tarif zu bezahlen. Dein Geschäft geht im Tarif Kostenlos online und der Tarif wird aktiviert, sobald du bezahlt hast.",
+      "unavailable": "Wir können die Tarife gerade nicht anzeigen. Du startest mit Kostenlos und kannst im Dashboard wechseln."
     }
   },
   "signUp": {

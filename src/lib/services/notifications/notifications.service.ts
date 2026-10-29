@@ -175,8 +175,8 @@ export async function notifyBookingReminder(bookingId: string): Promise<void> {
   );
 }
 
-/** Igual que `withBooking`, para los avisos sobre un negocio. */
-async function withProvider(
+/** Igual que `withBooking`, para los avisos sobre un negocio (también los de facturación). */
+export async function withProvider(
   kind: string,
   providerId: string,
   send: (ctx: ProviderEmailContext) => Promise<unknown>,

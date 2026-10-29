@@ -1,53 +1,26 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { ZodError } from 'zod';
+import { auth } from '@clerk/nextjs/server';
 
 import { redirect } from '@/i18n/navigation';
 import type { AppLocale } from '@/i18n/routing';
-import { auth } from '@clerk/nextjs/server';
-
 import { requireCurrentProvider } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
-import {
-  buildLocalizedText,
-  EmptyLocalizedTextError,
-  ensureSpanishIfAny,
-  mergeLocalizedText,
-} from '@/lib/i18n';
-import {
-  CategoryNotFoundError,
-  createFirstServiceForProvider,
-  ProviderForOnboardingNotFoundError,
-} from '@/lib/services/provider-onboarding';
+import { buildLocalizedText, ensureSpanishIfAny, mergeLocalizedText } from '@/lib/i18n';
+import { createFirstServiceForProvider } from '@/lib/services/provider-onboarding';
 import { ensureUserFromClerk } from '@/lib/services/user';
 import type { LocalizedText } from '@/types/domain';
 
-/**
- * Resultado serializable de la server action. El form lo recibe en su
- * estado de Promise y muestra un toast/banner si `ok === false`.
- *
- * Si la action triunfa, no retornamos resultado al cliente: hacemos
- * `redirect` server-side que aborta la ejecución y navega.
- */
-export type CreateServiceActionState =
-  | { ok: true }
-  | {
-      ok: false;
-      /**
-       * Código tipado para que el cliente decida copy. Mantenemos un
-       * conjunto pequeño para no filtrar detalles internos.
-       */
-      code:
-        | 'VALIDATION'
-        | 'CATEGORY_NOT_FOUND'
-        | 'PROVIDER_NOT_FOUND'
-        | 'SERVICE_NOT_FOUND'
-        | 'FORBIDDEN'
-        | 'INTERNAL';
-      /** Mensaje legible opcional para mostrar al usuario. */
-      message?: string;
-    };
+import {
+  createServiceFailure,
+  localizedTextFailure,
+  updateServiceFailure,
+  validationFailure,
+  type CreateServiceActionState,
+} from './actions.errors';
+
+export type { CreateServiceActionState } from './actions.errors';
 
 interface RawInput {
   rootCategoryId: string | null;
@@ -97,11 +70,7 @@ export async function createServiceAction(
   // genéricos. El usuario decide cuánta granularidad quiere.
   const categoryId = raw.subtypeId || raw.typeId || raw.rootCategoryId;
   if (!categoryId) {
-    return {
-      ok: false,
-      code: 'VALIDATION',
-      message: 'Selecciona al menos una categoría.',
-    };
+    return validationFailure('Selecciona al menos una categoría.');
   }
 
   // Conversión a tipos esperados por el service. `durationMinutes` y
@@ -112,10 +81,10 @@ export async function createServiceAction(
   const priceCents = Math.round(Number(raw.priceEuros) * 100);
 
   if (!Number.isFinite(durationMinutes) || durationMinutes < 5) {
-    return { ok: false, code: 'VALIDATION', message: 'Duración inválida.' };
+    return validationFailure('Duración inválida.');
   }
   if (!Number.isFinite(priceCents) || priceCents < 0) {
-    return { ok: false, code: 'VALIDATION', message: 'Precio inválido.' };
+    return validationFailure('Precio inválido.');
   }
 
   // `LocalizedText` con el castellano garantizado: si el panel está en
@@ -128,10 +97,7 @@ export async function createServiceAction(
     name = buildLocalizedText(locale, raw.name);
     description = raw.description.trim() ? buildLocalizedText(locale, raw.description) : undefined;
   } catch (err) {
-    if (err instanceof EmptyLocalizedTextError) {
-      return { ok: false, code: 'VALIDATION', message: err.message };
-    }
-    throw err;
+    return localizedTextFailure(err);
   }
 
   try {
@@ -147,17 +113,7 @@ export async function createServiceAction(
       internal.id,
     );
   } catch (err) {
-    if (err instanceof ZodError) {
-      return { ok: false, code: 'VALIDATION', message: err.issues[0]?.message };
-    }
-    if (err instanceof CategoryNotFoundError) {
-      return { ok: false, code: 'CATEGORY_NOT_FOUND' };
-    }
-    if (err instanceof ProviderForOnboardingNotFoundError) {
-      return { ok: false, code: 'PROVIDER_NOT_FOUND' };
-    }
-    console.error('[panel/servicios/nuevo] createServiceAction error:', err);
-    return { ok: false, code: 'INTERNAL' };
+    return createServiceFailure(err);
   }
 
   // Invalida el cache del listado para que la próxima carga vea el
@@ -216,25 +172,21 @@ export async function updateServiceAction(
 
   const categoryId = raw.subtypeId || raw.typeId || raw.rootCategoryId;
   if (!categoryId) {
-    return {
-      ok: false,
-      code: 'VALIDATION',
-      message: 'Selecciona al menos una categoría.',
-    };
+    return validationFailure('Selecciona al menos una categoría.');
   }
 
   const durationMinutes = Number(raw.durationMinutes);
   const priceCents = Math.round(Number(raw.priceEuros) * 100);
 
   if (!Number.isFinite(durationMinutes) || durationMinutes < 5) {
-    return { ok: false, code: 'VALIDATION', message: 'Duración inválida.' };
+    return validationFailure('Duración inválida.');
   }
   if (!Number.isFinite(priceCents) || priceCents < 0) {
-    return { ok: false, code: 'VALIDATION', message: 'Precio inválido.' };
+    return validationFailure('Precio inválido.');
   }
 
   if (!raw.name.trim()) {
-    return { ok: false, code: 'VALIDATION', message: 'El nombre no puede estar vacío.' };
+    return validationFailure('El nombre no puede estar vacío.');
   }
 
   // Fusión defensiva: conservamos las claves de los demás idiomas
@@ -261,10 +213,7 @@ export async function updateServiceAction(
       ? mergeLocalizedText(existingDescription, locale, trimmedDescription)
       : ensureSpanishIfAny(existingDescription);
   } catch (err) {
-    if (err instanceof EmptyLocalizedTextError) {
-      return { ok: false, code: 'VALIDATION', message: err.message };
-    }
-    throw err;
+    return localizedTextFailure(err);
   }
 
   // Verificamos la categoría existe antes de tocar BD. Sin esto, un
@@ -289,11 +238,7 @@ export async function updateServiceAction(
       },
     });
   } catch (err) {
-    if (err instanceof ZodError) {
-      return { ok: false, code: 'VALIDATION', message: err.issues[0]?.message };
-    }
-    console.error('[panel/servicios/[id]/editar] updateServiceAction error:', err);
-    return { ok: false, code: 'INTERNAL' };
+    return updateServiceFailure(err);
   }
 
   revalidatePath(`/${locale}/panel/servicios`);

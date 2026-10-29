@@ -1,5 +1,5 @@
 /**
- * Estilos del paso 5 — resumen y CTA de publicación.
+ * Estilos del paso 6 — resumen y CTA de publicación.
  */
 export const confirmStepStyles = {
   root: 'flex flex-col gap-6',

@@ -1,8 +1,19 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState, useTransition, type FormEvent } from 'react';
 
-import type { AddServiceDraft, CategoryRoot, CategoryType } from './AddServiceForm.types';
+import {
+  createServiceAction,
+  updateServiceAction,
+} from '@/app/[locale]/panel/servicios/nuevo/actions';
+import type { AppLocale } from '@/i18n/routing';
+
+import type {
+  AddServiceDraft,
+  CategoryRoot,
+  CategoryType,
+  CreateServiceErrorCode,
+} from './AddServiceForm.types';
 
 /**
  * Estado inicial vacío del borrador de servicio.
@@ -102,4 +113,52 @@ export function useAddServiceForm(categoriesTree: CategoryRoot[], initialValues?
     updateField,
     reset,
   };
+}
+
+/**
+ * Hook del envío del formulario: llama a la server action de alta o de
+ * edición y traduce el resultado a estado de UI.
+ *
+ * Si la action triunfa hace `redirect` server-side y este hook nunca ve
+ * `ok: true`. Si falla, `PLAN_LIMIT_REACHED` se expone aparte
+ * (`planLimitReached`) porque la UI muestra el aviso con enlace a
+ * mejorar el plan en vez de un error de texto.
+ *
+ * @param initialPlanLimitReached — la página ya sabe que el plan está
+ *   lleno; así el aviso sale antes de que el negocio rellene nada.
+ */
+export function useAddServiceSubmit({
+  locale,
+  serviceId,
+  draft,
+  translateError,
+  initialPlanLimitReached = false,
+}: {
+  locale: AppLocale;
+  serviceId?: string;
+  draft: AddServiceDraft;
+  translateError: (code: CreateServiceErrorCode) => string;
+  initialPlanLimitReached?: boolean;
+}) {
+  const [isPending, startTransition] = useTransition();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [planLimitReached, setPlanLimitReached] = useState(initialPlanLimitReached);
+
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSubmitError(null);
+    startTransition(async () => {
+      const result = serviceId
+        ? await updateServiceAction(serviceId, locale, draft)
+        : await createServiceAction(locale, draft);
+      if (!result || result.ok) return;
+      if (result.code === 'PLAN_LIMIT_REACHED') {
+        setPlanLimitReached(true);
+        return;
+      }
+      setSubmitError(result.message ?? translateError(result.code));
+    });
+  }
+
+  return { isPending, submitError, planLimitReached, handleSubmit };
 }

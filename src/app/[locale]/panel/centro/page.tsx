@@ -2,12 +2,14 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 
+import { PlanSummaryCard } from '@/components/features/provider-panel/PlanSummaryCard';
 import { ProviderSettings } from '@/components/features/provider-panel/ProviderSettings';
 import type { SettingsProvider } from '@/components/features/provider-panel/ProviderSettings/ProviderSettings.types';
 import { StripeConnectCard } from '@/components/features/provider-panel/StripeConnectCard';
 import { requireCurrentProvider } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
 import type { WeeklySchedule } from '@/lib/services/availability';
+import { getProviderBillingSummary } from '@/lib/services/billing';
 import {
   getProviderPaymentsStatus,
   NO_CONNECT_ACCOUNT_STATUS,
@@ -46,8 +48,8 @@ interface PanelSettingsPageProps {
  * Configuración del centro (`/panel/centro`).
  *
  * Server Component que lee los datos del proveedor autenticado y los
- * pasa a 3 bloques de UI: configuración del centro (datos + horario),
- * estado de pagos (Stripe Connect) y card próximamente de multi-negocio.
+ * pasa a sus bloques de UI: configuración del centro (datos + horario),
+ * estado de pagos (Stripe Connect) y resumen del plan (Stripe Billing).
  *
  * Carga en paralelo provider + schedule + estado de pagos para no
  * encadenar round-trips. Tolera fallos puntuales de cada fuente sin
@@ -67,7 +69,7 @@ export default async function PanelSettingsPage({ params, searchParams }: PanelS
   // Paralelizamos: provider, schedule y pagos son independientes.
   // Los catches devuelven sentinelas tipados ({ok:true, ...} / {ok:false})
   // en lugar de mutar variables externas — más limpio en concurrente.
-  const [record, addressRow, schedule, paymentsResult] = await Promise.all([
+  const [record, addressRow, schedule, paymentsResult, billingSummary] = await Promise.all([
     prisma.provider.findUnique({
       where: { id },
       select: {
@@ -104,6 +106,12 @@ export default async function PanelSettingsPage({ params, searchParams }: PanelS
         // — son señal de inconsistencia y conviene verlos en Sentry.
         throw err;
       }),
+    // El resumen del plan solo lee BD; si falla, la página se pinta
+    // sin la tarjeta del plan en vez de caerse entera.
+    getProviderBillingSummary(id).catch((err) => {
+      console.error('[panel/centro] billing summary failed:', err);
+      return null;
+    }),
   ]);
 
   const paymentsStatus = paymentsResult.status;
@@ -152,6 +160,7 @@ export default async function PanelSettingsPage({ params, searchParams }: PanelS
         fetchFailed={paymentsFetchFailed}
         inlineNotice={inlineNotice}
       />
+      {billingSummary ? <PlanSummaryCard summary={billingSummary} locale={panelLocale} /> : null}
     </div>
   );
 }
