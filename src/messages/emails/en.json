@@ -50,8 +50,8 @@
   "refundDelayed": {
     "subject": "Your refund from {provider} has been delayed",
     "heading": "Your refund has been delayed",
-    "intro": "Your bank could not receive the {amount} refund for your booking at {provider}.",
-    "next": "We are processing it again and will write to you as soon as it goes through. You do not need to do anything."
+    "intro": "Your bank has rejected the {amount} refund for your booking at {provider}, so the money has not reached you yet.",
+    "next": "Our support team will contact you to complete the refund another way."
   },
   "reviewInvite": {
     "subject": "How was {provider}?",

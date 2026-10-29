@@ -134,9 +134,16 @@ export async function notifyLatePaymentRefunded(
  */
 export async function notifyRefundCompleted(bookingId: string): Promise<void> {
   // Tras un reintento desde /admin la reserva sigue `cancelled` hasta que
-  // llega `charge.refunded`; ambos caminos comparten clave y no duplican.
+  // llega `charge.refunded`; ambos caminos ven ya el refund nuevo guardado
+  // y comparten clave. Clave por refund: si una devolución falla y otra
+  // sale el mismo día, el segundo «Devolución hecha» también llega.
   await withBooking('refund-completed', bookingId, ['cancelled', 'refunded'], (ctx) =>
-    deliverEmail('refund-completed', bookingId, ctx.client, buildRefundCompletedEmail(ctx)),
+    deliverEmail(
+      'refund-completed',
+      ctx.stripeRefundId ?? bookingId,
+      ctx.client,
+      buildRefundCompletedEmail(ctx),
+    ),
   );
 }
 
@@ -150,9 +157,11 @@ export async function notifyRefundCompleted(bookingId: string): Promise<void> {
  *   reentrega del webhook no duplique, pero un fallo nuevo sí avise.
  */
 export async function notifyRefundDelayed(bookingId: string, refundId: string): Promise<void> {
-  await withBooking('refund-delayed', bookingId, ['cancelled'], (ctx) =>
-    deliverEmail('refund-delayed', refundId, ctx.client, buildRefundDelayedEmail(ctx)),
-  );
+  await withBooking('refund-delayed', bookingId, ['cancelled'], async (ctx) => {
+    // Si soporte ya emitió otro refund entre medias, este aviso sobra.
+    if (ctx.stripeRefundId !== refundId) return;
+    await deliverEmail('refund-delayed', refundId, ctx.client, buildRefundDelayedEmail(ctx));
+  });
 }
 
 /**

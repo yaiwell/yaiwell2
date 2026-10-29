@@ -80,12 +80,15 @@ export const refundRepository = {
   },
 
   /** Localiza la reserva de un refund por su id de Stripe. */
-  async findByStripeRefundId(
-    stripeRefundId: string,
-  ): Promise<{ id: string; status: string; stripeRefundId: string | null } | null> {
+  async findByStripeRefundId(stripeRefundId: string): Promise<{
+    id: string;
+    status: string;
+    stripeRefundId: string | null;
+    refundFailedAt: Date | null;
+  } | null> {
     return prisma.booking.findUnique({
       where: { stripeRefundId },
-      select: { id: true, status: true, stripeRefundId: true },
+      select: { id: true, status: true, stripeRefundId: true, refundFailedAt: true },
     });
   },
 

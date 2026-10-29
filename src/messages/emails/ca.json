@@ -50,8 +50,8 @@
   "refundDelayed": {
     "subject": "La teva devolució de {provider} s'ha endarrerit",
     "heading": "La teva devolució s'ha endarrerit",
-    "intro": "El teu banc no ha pogut rebre la devolució de {amount} de la teva reserva a {provider}.",
-    "next": "Ja la tornem a tramitar i t'escriurem tan bon punt surti. No has de fer res."
+    "intro": "El teu banc ha rebutjat la devolució de {amount} de la teva reserva a {provider}, així que els diners encara no t'han arribat.",
+    "next": "El nostre equip de suport es posarà en contacte amb tu per completar la devolució per una altra via."
   },
   "reviewInvite": {
     "subject": "Com ha anat a {provider}?",

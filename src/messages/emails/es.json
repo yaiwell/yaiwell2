@@ -50,8 +50,8 @@
   "refundDelayed": {
     "subject": "Tu devolución de {provider} se ha retrasado",
     "heading": "Tu devolución se ha retrasado",
-    "intro": "Tu banco no ha podido recibir la devolución de {amount} de tu reserva en {provider}.",
-    "next": "Ya la estamos tramitando de nuevo y te escribiremos en cuanto salga. No tienes que hacer nada."
+    "intro": "Tu banco ha rechazado la devolución de {amount} de tu reserva en {provider}, así que el dinero todavía no te ha llegado.",
+    "next": "Nuestro equipo de soporte se pondrá en contacto contigo para completar la devolución por otra vía."
   },
   "reviewInvite": {
     "subject": "¿Qué tal en {provider}?",

@@ -179,6 +179,7 @@ describe('sendEmail', () => {
 describe('EmailSendError.retryable', () => {
   it.each([
     ['rate_limit_exceeded', 429, true],
+    ['concurrent_idempotent_requests', 409, true],
     ['internal_server_error', 500, true],
     ['application_error', null, true],
     ['validation_error', 403, false],

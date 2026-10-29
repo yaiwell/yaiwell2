@@ -37,6 +37,7 @@ export const notificationsRepository = {
         originalPriceCents: true,
         discountPct: true,
         notes: true,
+        stripeRefundId: true,
         service: { select: { name: true } },
         professional: { select: { name: true } },
         client: { select: RECIPIENT_SELECT },
@@ -61,6 +62,7 @@ export const notificationsRepository = {
       originalPriceCents: row.originalPriceCents,
       discountPct: row.discountPct,
       notes: row.notes?.trim() || null,
+      stripeRefundId: row.stripeRefundId,
       serviceName: row.service.name as unknown as LocalizedText,
       professionalName: row.professional.name,
       provider: {

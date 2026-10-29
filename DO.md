@@ -8,6 +8,15 @@
 
 ## 2026-10-29
 
+### 2026-10-29 — Correos: reembolso rechazado y reintentos
+
+P2 + `business-rules-auditor` (P1 y P2 aplicados).
+
+- **Reembolso rechazado por el banco** (`charge.refund.updated` → `failed` de un refund nuestro): aviso al cliente de que el dinero no le ha llegado y de que soporte le contactará. Sin aviso si hay contracargo abierto ni si soporte ya emitió otro refund. Una reentrega del mismo fallo ya no reescribe la cola ni vuelve a avisar.
+- **Reembolso completado** con clave por refund (`refund-completed/<re_…>`): si una devolución falla y otra sale el mismo día, el segundo aviso también llega.
+- **Reintento en el momento** ante fallos pasajeros de Resend (límite de envíos, 5xx, timeout de 8 s por intento): 2 reintentos (1 s y 3 s) con la misma clave. Los fallos de configuración o validación no se repiten.
+- 1419 tests unitarios.
+
 ### 2026-10-29 — Correos: segunda tanda
 
 P2 + P10 (`business-rules-auditor` y `conventions-reviewer` en paralelo; P1 y P2 aplicados).

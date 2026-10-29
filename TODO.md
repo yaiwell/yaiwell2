@@ -200,8 +200,7 @@
 - [ ] **`public/og-default.svg` queda huérfano** tras generar la imagen de compartición en código. Es el único asset de marca del repo, así que se conserva por si se reutiliza; borrarlo o no es decisión de diseño.
 - [ ] **Decidir qué hacer con la tabla `provider_categories`**, que queda sin uso tras derivar las categorías de los servicios (2026-09-28). Nunca tuvo una fila. O se borra del schema con una migración, o se documenta por qué se conserva.
 - [~] **Notificaciones por email (Resend)** — avisos base (2026-10-28) y segunda tanda (2026-10-29) hechos, ver DO.md. Pendiente:
-  - [ ] **Reintento de correos fallidos**: si Resend falla, el aviso se pierde (queda en logs/Sentry). Necesita migración: `confirmationEmailSentAt` o una tabla outbox, y que el cron diario reintente.
-  - [ ] **Avisar al cliente si su reembolso falla de forma asíncrona** (`charge.refund.updated` → `failed` tras un «te devolvemos»): hoy solo entra en la cola de /admin y el cliente no sabe nada hasta que sale.
+  - [ ] **Cola persistente de correos fallidos**: el reintento en el momento (2 intentos, 2026-10-29) cubre los fallos pasajeros; lo que falle tras eso se pierde (queda en logs/Sentry). Necesita migración: tabla de reintentos y que el cron diario la procese.
   - [ ] **Recordatorio con umbral de ~24 h** en vez de por día civil, para cubrir las citas reservadas después del cron (necesita más de un cron al día o un plan de pago).
   - [ ] **Comprobar si el proyecto de Vercel tiene Fluid Compute**: el cron diario fija `maxDuration = 60` (máximo de Hobby sin Fluid); con Fluid se podría subir a 300.
 - [ ] 4 planes de suscripción con Stripe Billing.

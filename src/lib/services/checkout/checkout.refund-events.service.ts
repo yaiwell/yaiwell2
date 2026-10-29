@@ -45,6 +45,12 @@ export async function recordAsyncRefundFailure(
 
   const reason = `refund_failed: ${refund.failure_reason ?? 'unknown'}`;
   const isOwnRefund = booking.stripeRefundId === refund.id;
+  // Reentrega del mismo fallo (Stripe reintenta hasta 3 días, o alguien lo
+  // reenvía desde el dashboard): ya está en la cola. No reescribimos
+  // `refundFailedAt` ni volvemos a avisar al cliente.
+  if (isOwnRefund && booking.status === 'cancelled' && booking.refundFailedAt) {
+    return unchanged;
+  }
   if (!isOwnRefund || !QUEUEABLE_STATUSES.has(booking.status)) {
     console.error('[checkout/refund-events] foreign refund failed; not queued:', booking.id);
     reportCheckoutWarning(
@@ -62,13 +68,24 @@ export async function recordAsyncRefundFailure(
     booking.id,
     'error',
   );
-  return { bookingId: booking.id, changed: true, status: 'cancelled', delayedRefund: refund.id };
+  // Con un contracargo abierto el dinero lo resuelve la disputa, no
+  // nosotros: un aviso de «tu banco lo ha rechazado» confundiría.
+  const disputed = refund.failure_reason === 'charge_for_pending_refund_disputed';
+  return {
+    bookingId: booking.id,
+    changed: true,
+    status: 'cancelled',
+    ...(disputed ? {} : { delayedRefund: refund.id }),
+  };
 }
 
 /** Reserva del refund: por `stripeRefundId` y, si no, por su PaymentIntent. */
-async function resolveRefundBooking(
-  refund: Stripe.Refund,
-): Promise<{ id: string; status: string; stripeRefundId: string | null }> {
+async function resolveRefundBooking(refund: Stripe.Refund): Promise<{
+  id: string;
+  status: string;
+  stripeRefundId: string | null;
+  refundFailedAt: Date | null;
+}> {
   const byRefund = await refundRepository.findByStripeRefundId(refund.id);
   if (byRefund) return byRefund;
 

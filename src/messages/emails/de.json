@@ -50,8 +50,8 @@
   "refundDelayed": {
     "subject": "Deine Erstattung von {provider} verzögert sich",
     "heading": "Deine Erstattung verzögert sich",
-    "intro": "Deine Bank konnte die Erstattung von {amount} für deine Buchung bei {provider} nicht annehmen.",
-    "next": "Wir veranlassen sie erneut und schreiben dir, sobald sie durch ist. Du musst nichts tun."
+    "intro": "Deine Bank hat die Erstattung von {amount} für deine Buchung bei {provider} abgelehnt, daher ist das Geld noch nicht bei dir angekommen.",
+    "next": "Unser Support-Team meldet sich bei dir, um die Erstattung auf anderem Weg abzuschließen."
   },
   "reviewInvite": {
     "subject": "Wie war es bei {provider}?",

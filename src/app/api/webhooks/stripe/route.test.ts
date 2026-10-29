@@ -252,6 +252,19 @@ describe('POST /api/webhooks/stripe', () => {
     expect(notifyRefundDelayedMock).toHaveBeenCalledWith('bk-4', 're_1');
   });
 
+  it('sin delayedRefund no avisa del retraso', async () => {
+    notifyRefundDelayedMock.mockClear();
+    verifyMock.mockReturnValue({
+      type: 'charge.refund.updated',
+      data: { object: { id: 're_1', status: 'failed' } },
+    });
+    refundUpdatedMock.mockResolvedValue({ bookingId: 'bk-4', changed: false, status: 'cancelled' });
+
+    await POST(buildRequest());
+
+    expect(notifyRefundDelayedMock).not.toHaveBeenCalled();
+  });
+
   it('marca como refunded ante charge.refunded', async () => {
     const charge = { id: 'ch_test', payment_intent: 'pi_test', metadata: { bookingId: 'bk-3' } };
     verifyMock.mockReturnValue({

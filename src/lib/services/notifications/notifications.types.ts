@@ -26,6 +26,8 @@ export interface BookingEmailContext {
   originalPriceCents: number | null;
   discountPct: number | null;
   notes: string | null;
+  /** Último refund emitido (`re_…`); identifica cada devolución en las claves. */
+  stripeRefundId: string | null;
   serviceName: LocalizedText;
   professionalName: string | null;
   provider: { id: string; name: string; slug: string; address: string };

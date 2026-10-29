@@ -33,8 +33,10 @@ export function buildRefundCompletedEmail(ctx: BookingEmailContext): EmailConten
 }
 
 /**
- * El reembolso que anunciamos ha fallado en el banco. No prometemos plazo:
- * lo reintenta soporte y el aviso de reembolso completado cierra el ciclo.
+ * El reembolso que anunciamos ha fallado en el banco. No hay reintento
+ * automático: los motivos típicos (tarjeta caducada o cancelada) hacen
+ * que repetirlo sobre el mismo pago vuelva a fallar, así que soporte lo
+ * resuelve por otra vía. No prometemos plazo.
  */
 export function buildRefundDelayedEmail(ctx: BookingEmailContext): EmailContent {
   const { locale } = ctx.client;

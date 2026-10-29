@@ -48,6 +48,7 @@ const booking = {
   originalPriceCents: null,
   discountPct: null,
   notes: null,
+  stripeRefundId: null,
   serviceName: { es: 'Corte' },
   professionalName: null,
   provider: { id: 'prov-1', name: 'Studio Aura', slug: 'studio-aura', address: 'Major 1' },
@@ -168,13 +169,21 @@ describe('sendTomorrowReminders', () => {
 });
 
 describe('notifyRefundCompleted', () => {
-  it('avisa al cliente con la clave compartida por admin y webhook', async () => {
-    mocks.findBookingContext.mockResolvedValue({ ...booking, status: 'refunded' });
-    await notifyRefundCompleted('bk-1');
-    expect(mocks.sendEmail.mock.calls[0][0]).toMatchObject({
-      to: ['ana@yaiwell.com'],
-      idempotencyKey: 'refund-completed/bk-1',
+  it('la clave va por refund: dos devoluciones distintas avisan dos veces', async () => {
+    mocks.findBookingContext.mockResolvedValueOnce({
+      ...booking,
+      status: 'cancelled',
+      stripeRefundId: 're_2',
     });
+    mocks.findBookingContext.mockResolvedValueOnce({
+      ...booking,
+      status: 'refunded',
+      stripeRefundId: 're_3',
+    });
+    await notifyRefundCompleted('bk-1');
+    await notifyRefundCompleted('bk-1');
+    const keys = mocks.sendEmail.mock.calls.map(([m]) => m.idempotencyKey);
+    expect(keys).toEqual(['refund-completed/re_2', 'refund-completed/re_3']);
   });
 
   it.each(['confirmed', 'completed'])('no avisa si la reserva está %s', async (status) => {
@@ -212,12 +221,26 @@ describe('sendTomorrowReminders: límites', () => {
 
 describe('notifyRefundDelayed', () => {
   it('avisa al cliente con una clave por refund fallido', async () => {
-    mocks.findBookingContext.mockResolvedValue({ ...booking, status: 'cancelled' });
+    mocks.findBookingContext.mockResolvedValue({
+      ...booking,
+      status: 'cancelled',
+      stripeRefundId: 're_1',
+    });
     await notifyRefundDelayed('bk-1', 're_1');
     expect(mocks.sendEmail.mock.calls[0][0]).toMatchObject({
       to: ['ana@yaiwell.com'],
       idempotencyKey: 'refund-delayed/re_1',
     });
+  });
+
+  it('no avisa si soporte ya emitió otro refund entre medias', async () => {
+    mocks.findBookingContext.mockResolvedValue({
+      ...booking,
+      status: 'cancelled',
+      stripeRefundId: 're_2',
+    });
+    await notifyRefundDelayed('bk-1', 're_1');
+    expect(mocks.sendEmail).not.toHaveBeenCalled();
   });
 
   it('no avisa si la reserva ya consta como reembolsada', async () => {

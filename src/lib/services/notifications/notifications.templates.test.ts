@@ -39,6 +39,7 @@ function ctx(overrides: Partial<BookingEmailContext> = {}): BookingEmailContext 
     originalPriceCents: null,
     discountPct: null,
     notes: null,
+    stripeRefundId: null,
     serviceName: { es: 'Corte de pelo', ca: 'Tall de cabell', en: 'Haircut', de: 'Haarschnitt' },
     professionalName: 'Marta',
     provider: { id: 'prov-1', name: 'Studio Aura', slug: 'studio-aura', address: 'Carrer Major 1' },

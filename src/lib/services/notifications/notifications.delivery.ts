@@ -29,6 +29,12 @@ export function isTestAddress(email: string): boolean {
 const RETRY_DELAYS_MS = [1_000, 3_000];
 
 /**
+ * Tope por intento: el SDK de Resend no pone timeout al `fetch` y un envío
+ * colgado alargaría el cron más allá de su `maxDuration`.
+ */
+const ATTEMPT_TIMEOUT_MS = 8_000;
+
+/**
  * Envía un correo ya construido. **Nunca lanza**: un aviso que falla no
  * puede deshacer un pago confirmado ni una cancelación. Un fallo pasajero
  * se reintenta con la misma clave de idempotencia (Resend no duplica); si
@@ -58,7 +64,7 @@ export async function deliverEmail(
   };
   for (let attempt = 0; ; attempt++) {
     try {
-      await sendEmail(message);
+      await withTimeout(sendEmail(message), ATTEMPT_TIMEOUT_MS);
       return;
     } catch (err) {
       const delay = RETRY_DELAYS_MS[attempt];
@@ -92,4 +98,17 @@ export function reportNotificationFailure(kind: string, refId: string, err: unkn
     .catch(() => {
       // Sin Sentry solo queda el log de consola.
     });
+}
+
+/**
+ * Corta una promesa que tarda demasiado con un `EmailSendError` reintentable
+ * (la misma clave de idempotencia evita el duplicado si el primer intento
+ * acabó saliendo).
+ */
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new EmailSendError('timeout', undefined, 504)), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }

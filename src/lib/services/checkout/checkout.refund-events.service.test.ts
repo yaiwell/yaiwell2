@@ -62,8 +62,32 @@ describe('recordAsyncRefundFailure', () => {
       bookingId: 'bk-1',
       changed: true,
       status: 'cancelled',
-      delayedRefund: expect.any(String),
+      delayedRefund: 're_1',
     });
+  });
+
+  it('una reentrega del mismo fallo no reescribe la cola ni vuelve a avisar', async () => {
+    refundRepoMock.findByStripeRefundId.mockResolvedValue({
+      id: 'bk-1',
+      status: 'cancelled',
+      stripeRefundId: 're_1',
+      refundFailedAt: new Date('2026-10-26T09:00:00.000Z'),
+    });
+
+    const result = await recordAsyncRefundFailure(refund(), NOW);
+
+    expect(refundRepoMock.recordAsyncFailure).not.toHaveBeenCalled();
+    expect(result).toEqual({ bookingId: 'bk-1', changed: false, status: 'cancelled' });
+  });
+
+  it('con un contracargo abierto encola pero no avisa al cliente', async () => {
+    const result = await recordAsyncRefundFailure(
+      refund({ failure_reason: 'charge_for_pending_refund_disputed' }),
+      NOW,
+    );
+
+    expect(refundRepoMock.recordAsyncFailure).toHaveBeenCalled();
+    expect(result).not.toHaveProperty('delayedRefund');
   });
 
   it('no encola un refund ajeno sobre una reserva viva (parcial manual)', async () => {
@@ -104,6 +128,7 @@ describe('recordAsyncRefundFailure', () => {
 
     expect(refundRepoMock.recordAsyncFailure).not.toHaveBeenCalled();
     expect(result.changed).toBe(false);
+    expect(result).not.toHaveProperty('delayedRefund');
   });
 
   it('lanza BookingForCheckoutNotFoundError si el refund no es de ninguna reserva', async () => {
