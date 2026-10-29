@@ -18,6 +18,7 @@ P12 + P13 (`stripe-payments` implementa, `db-migration-guard` sobre la migració
 - **Webhooks perdidos**: el cron asienta los pagos cobrados sin webhook (pasada 1 h, misma lógica que el webhook, sin tocar cargos ya reembolsados), manda los mismos avisos y lo sube a Sentry como `error`. Los PaymentIntent aún abiertos (`requires_*`) se saltan sin aviso.
 - **Descartar entradas de `/admin/reembolsos`** con motivo y autor; bloqueado si Stripe dice que hay dinero cobrado sin devolver.
 - 1513 tests unitarios.
+- Alerta de Sentry creada por el dev: `domain` = `checkout` y nivel ≥ `error`, aviso por email cada 60 min como máximo.
 
 ### 2026-10-29 — Correos: reembolso rechazado y reintentos
 
