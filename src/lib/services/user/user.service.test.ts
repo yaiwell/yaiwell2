@@ -154,6 +154,42 @@ describe('normalizeClerkUser', () => {
 describe('syncUserFromClerk', () => {
   beforeEach(() => {
     vi.mocked(prisma.user.upsert).mockReset();
+    vi.mocked(prisma.user.findUnique).mockReset();
+    vi.mocked(prisma.user.update).mockReset();
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  it('reenlaza por email al usuario que llega con un clerkId nuevo (cambio de instancia)', async () => {
+    vi.mocked(prisma.user.findUnique)
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ id: 'db-uuid', clerkId: 'user_dev_old' } as never);
+    vi.mocked(prisma.user.upsert).mockResolvedValue({ id: 'db-uuid' } as never);
+
+    await syncUserFromClerk(buildClerkUser());
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { id: 'db-uuid' },
+      data: { clerkId: 'user_abc' },
+    });
+    expect(prisma.user.upsert).toHaveBeenCalled();
+  });
+
+  it('no reenlaza si ya existe una fila con ese clerkId', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValueOnce({ id: 'db-uuid' } as never);
+    vi.mocked(prisma.user.upsert).mockResolvedValue({ id: 'db-uuid' } as never);
+
+    await syncUserFromClerk(buildClerkUser());
+
+    expect(prisma.user.update).not.toHaveBeenCalled();
+  });
+
+  it('no reenlaza un usuario nuevo de verdad', async () => {
+    vi.mocked(prisma.user.findUnique).mockResolvedValue(null);
+    vi.mocked(prisma.user.upsert).mockResolvedValue({ id: 'db-uuid' } as never);
+
+    await syncUserFromClerk(buildClerkUser());
+
+    expect(prisma.user.update).not.toHaveBeenCalled();
   });
 
   it('hace upsert con los campos normalizados', async () => {
