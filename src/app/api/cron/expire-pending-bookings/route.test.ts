@@ -8,7 +8,8 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { expireMock, remindMock, confirmedMock, lateRefundMock } = vi.hoisted(() => ({
+const { expireMock, remindMock, confirmedMock, lateRefundMock, closingMock } = vi.hoisted(() => ({
+  closingMock: vi.fn(),
   expireMock: vi.fn(),
   remindMock: vi.fn(),
   confirmedMock: vi.fn(async () => {}),
@@ -23,7 +24,16 @@ vi.mock('@/lib/services/notifications', () => ({
   scheduleNotification: (task: () => Promise<void>) => void task(),
 }));
 
+vi.mock('./daily-closing', () => ({ runDailyClosing: closingMock }));
+
 import { GET } from './route';
+
+const CLOSING_SUMMARY = {
+  autoCompleted: 1,
+  autoCompleteFailed: 0,
+  commissions: null,
+  reviewInvites: { sent: 1, skipped: 0 },
+};
 
 const SECRET = 'test-cron-secret';
 
@@ -48,6 +58,7 @@ beforeEach(() => {
     settlements: [],
   });
   remindMock.mockResolvedValue({ scanned: 3, sent: 3, truncated: false });
+  closingMock.mockResolvedValue(CLOSING_SUMMARY);
 });
 
 afterEach(() => {
@@ -91,7 +102,27 @@ describe('GET /api/cron/expire-pending-bookings', () => {
       skipped: 1,
       failed: 0,
       reminders: { scanned: 3, sent: 3, truncated: false },
+      closing: CLOSING_SUMMARY,
     });
+  });
+
+  it('ejecuta el cierre diario con el barrido de recordatorios en curso', async () => {
+    await GET(request(`Bearer ${SECRET}`));
+
+    expect(closingMock).toHaveBeenCalledOnce();
+    const [now, startedAt, reminders] = closingMock.mock.calls[0];
+    expect(now).toBeInstanceOf(Date);
+    expect(typeof startedAt).toBe('number');
+    await expect(reminders).resolves.toEqual({ scanned: 3, sent: 3, truncated: false });
+  });
+
+  it('un fallo inesperado del cierre diario no tumba la respuesta', async () => {
+    closingMock.mockRejectedValue(new Error('boom'));
+
+    const response = await GET(request(`Bearer ${SECRET}`));
+
+    expect(response.status).toBe(200);
+    expect((await response.json()).closing).toBeNull();
   });
 
   it('responde 500 si el barrido falla de raíz, pero los recordatorios salen igual', async () => {
@@ -139,5 +170,6 @@ describe('GET /api/cron/expire-pending-bookings', () => {
   it('sin autorización no envía recordatorios', async () => {
     await GET(request('Bearer otro-secreto'));
     expect(remindMock).not.toHaveBeenCalled();
+    expect(closingMock).not.toHaveBeenCalled();
   });
 });

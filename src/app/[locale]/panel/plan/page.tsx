@@ -4,6 +4,7 @@ import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { BillingStatusBanner } from '@/components/features/provider-panel/BillingStatusBanner';
+import { OnsitePaymentCard } from '@/components/features/provider-panel/OnsitePaymentCard';
 import {
   PlanPageHeader,
   type PlanPageNotice,
@@ -15,6 +16,8 @@ import { requireCurrentProvider } from '@/lib/auth/server';
 import {
   CheckoutSessionMismatchError,
   confirmCheckoutSession,
+  confirmOnsiteSetupSession,
+  getOnsiteBillingSummary,
   getProviderBillingSummary,
 } from '@/lib/services/billing';
 import { listPublicPlans } from '@/lib/services/plans';
@@ -56,6 +59,20 @@ async function confirmReturn(
   }
 }
 
+/**
+ * Vuelta del Checkout de setup del cobro en el local: guarda ya el
+ * método de pago para que la tarjeta lo muestre sin esperar al webhook.
+ * Ningún fallo rompe la página (el webhook lo guardará igualmente).
+ */
+async function confirmOnsiteSetupReturn(sessionId: string, providerId: string): Promise<void> {
+  try {
+    await confirmOnsiteSetupSession(sessionId, providerId);
+  } catch (err) {
+    if (err instanceof CheckoutSessionMismatchError) return;
+    console.error('[panel/plan] confirmOnsiteSetupSession failed:', err);
+  }
+}
+
 /** Aviso de cabecera según la vuelta de Stripe. */
 function pageNotice(
   query: PlanPageQuery,
@@ -77,6 +94,8 @@ function pageNotice(
  *  - `?checkout=cancelled` → aviso de que no se ha cobrado nada.
  *  - `?checkout=failed&plan=…` → el onboarding no pudo abrir el pago.
  *  - `?plan=<tier>` → destaca ese plan en el selector.
+ *  - `?onsite_setup=success&session_id=…` → guarda el método de pago de
+ *    las comisiones del cobro en el local (tarjeta «Cobro en el local»).
  */
 export default async function PanelPlanPage({ params, searchParams }: PanelPlanPageProps) {
   const { locale } = await params;
@@ -95,10 +114,14 @@ export default async function PanelPlanPage({ params, searchParams }: PanelPlanP
     query.checkout === 'success' && query.sessionId
       ? await confirmReturn(query.sessionId, providerId)
       : null;
+  if (query.onsiteSetup === 'success' && query.sessionId) {
+    await confirmOnsiteSetupReturn(query.sessionId, providerId);
+  }
 
-  const [summary, plans] = await Promise.all([
+  const [summary, plans, onsite] = await Promise.all([
     getProviderBillingSummary(providerId),
     listPublicPlans(),
+    getOnsiteBillingSummary(providerId),
   ]);
   const checkoutState = resolveCheckoutState(outcome, summary.subscriptionStatus);
 
@@ -107,6 +130,7 @@ export default async function PanelPlanPage({ params, searchParams }: PanelPlanP
       <PlanPageHeader notice={pageNotice(query, outcome)} noticePlan={query.plan} />
       <BillingStatusBanner summary={summary} locale={panelLocale} checkoutState={checkoutState} />
       <PlanSummaryCard summary={summary} locale={panelLocale} showChangePlanLink={false} />
+      <OnsitePaymentCard summary={onsite} locale={panelLocale} />
       <PlanPicker
         plans={plans}
         summary={summary}

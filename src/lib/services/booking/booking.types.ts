@@ -10,7 +10,7 @@
  * sin acoplarse al modelo Prisma completo.
  */
 
-import { BookingStatus } from '@prisma/client';
+import { BookingStatus, type Prisma } from '@prisma/client';
 
 export { BookingStatus };
 
@@ -71,6 +71,13 @@ export interface CreateBookingOptions {
    * frontera de 2 h. Por defecto, `new Date()`.
    */
   now?: Date;
+  /**
+   * Comprobación extra dentro de la transacción, tras bloquear al
+   * profesional y antes de escribir. La usa el pago en el local para
+   * releer si el negocio sigue admitiéndolo (interruptor y deuda) sin
+   * carrera con un cambio simultáneo. Si lanza, no se crea nada.
+   */
+  precondition?: (tx: Prisma.TransactionClient) => Promise<void>;
 }
 
 /**
@@ -127,12 +134,17 @@ export interface UndoNoShowResult {
   onsiteCommissionChargeId: string | null;
 }
 
-/** Resumen de una pasada del cierre automático de reservas en el local. */
-export interface AutoCompleteOnsiteSummary {
+/**
+ * Resumen de una pasada del cierre automático (online y en el local).
+ */
+export interface AutoCompleteSummary {
   /** Reservas completadas en esta pasada: invitar a valorar. */
   completedBookingIds: string[];
-  /** Comisiones encoladas: pasar a `itemizeCommission`. */
+  /** Comisiones encoladas (solo reservas en el local): pasar a `itemizeCommission`. */
   commissionChargeIds: string[];
   /** Reservas que fallaron (se reintentan en la siguiente pasada). */
   failedBookingIds: string[];
 }
+
+/** @deprecated Nombre anterior de `AutoCompleteSummary`. */
+export type AutoCompleteOnsiteSummary = AutoCompleteSummary;

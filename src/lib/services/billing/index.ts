@@ -33,6 +33,24 @@ export {
 } from './billing.validation';
 export { applyPlanLimits, assertCanPublishService, getServiceUsage } from './billing.plan-limits';
 
+// Comisiones del pago en el local (Stripe Billing, decidido 2026-10-30).
+export { itemizeCommission } from './billing.commission.itemize';
+export { scheduleCommissionItemization } from './billing.commission.schedule';
+export { runCommissionSweep } from './billing.commission.sweep';
+export {
+  completeOnsiteSetup,
+  confirmOnsiteSetupSession,
+  createOnsiteSetupSession,
+} from './billing.setup';
+export { getOnsiteBillingSummary, setOnsitePaymentAcceptance } from './billing.onsite';
+export { onsitePaymentToggleSchema } from './billing.validation';
+export {
+  OnsiteCommissionDebtError,
+  OnsitePaymentMethodMissingError,
+} from './billing.onsite.errors';
+export type { OnsiteSetupResult } from './billing.setup';
+export type { CommissionSweepOptions } from './billing.commission.sweep';
+
 export {
   BillingPlanNotSeededError,
   BillingProviderNotFoundError,
@@ -59,8 +77,11 @@ export type { PlanLimitsResult, ServiceUsage } from './billing.plan-limits';
 export type {
   BillingPortalFlow,
   BillingWebhookResult,
+  CommissionSweepSummary,
   ItemizeCommission,
   ItemizeCommissionOutcome,
+  OnsiteBillingSummary,
+  OnsitePaymentBlockReason,
   PaidPlanTier,
   PlanChange,
   PlanCheckoutSession,

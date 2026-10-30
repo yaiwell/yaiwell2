@@ -65,6 +65,69 @@ beforeEach(() => {
   }));
 });
 
+describe('createOnsiteBooking · pending anterior y relectura en la transacción', () => {
+  it('suelta la pending solo tras validar, y antes de crear', async () => {
+    const releasePending = vi.fn(async () => {});
+    await createOnsiteBooking(
+      { serviceId: SERVICE_ID, slotStartIso: isoIn(180) },
+      'client-1',
+      NOW,
+      { releasePending },
+    );
+    expect(releasePending).toHaveBeenCalledTimes(1);
+    expect(releasePending.mock.invocationCallOrder[0]).toBeLessThan(
+      createBookingMock.mock.invocationCallOrder[0],
+    );
+  });
+
+  it('cliente bloqueado → no suelta la pending', async () => {
+    eligibilityMock.mockResolvedValue({
+      allowed: false,
+      restrictedUntil: new Date('2027-01-01T00:00:00Z'),
+      sanctionsInWindow: 3,
+    });
+    const releasePending = vi.fn(async () => {});
+    await expect(
+      createOnsiteBooking({ serviceId: SERVICE_ID, slotStartIso: isoIn(180) }, 'client-1', NOW, {
+        releasePending,
+      }),
+    ).rejects.toBeInstanceOf(OnsitePaymentNotAllowedError);
+    expect(releasePending).not.toHaveBeenCalled();
+  });
+
+  it('a 1h59 → no suelta la pending', async () => {
+    const releasePending = vi.fn(async () => {});
+    await expect(
+      createOnsiteBooking({ serviceId: SERVICE_ID, slotStartIso: isoIn(119) }, 'client-1', NOW, {
+        releasePending,
+      }),
+    ).rejects.toBeInstanceOf(OnsitePaymentNotAllowedError);
+    expect(releasePending).not.toHaveBeenCalled();
+  });
+
+  it('la precondición relee el negocio en la transacción y rechaza si entró en deuda', async () => {
+    let precondition: ((tx: unknown) => Promise<void>) | undefined;
+    createBookingMock.mockImplementation(
+      async (_i, _c, opts: { precondition: typeof precondition }) => {
+        precondition = opts.precondition;
+        return { id: 'b', priceCents: 1, startAt: NOW, endAt: NOW };
+      },
+    );
+    await createOnsiteBooking({ serviceId: SERVICE_ID, slotStartIso: isoIn(180) }, 'client-1', NOW);
+
+    const tx = { marker: 'tx' };
+    findStatusMock.mockResolvedValue({
+      acceptsOnsitePayment: true,
+      billing: { onsitePaymentMethodReadyAt: READY, commissionDebtSince: NOW },
+    });
+    await expect(precondition?.(tx)).rejects.toMatchObject({ reason: 'provider' });
+    expect(findStatusMock).toHaveBeenLastCalledWith('prov-1', tx);
+
+    findStatusMock.mockResolvedValue(readyProvider);
+    await expect(precondition?.(tx)).resolves.toBeUndefined();
+  });
+});
+
 describe('createOnsiteBooking', () => {
   it('crea la reserva en el local con el mismo reloj y devuelve el importe a pagar', async () => {
     const result = await createOnsiteBooking(
@@ -81,7 +144,7 @@ describe('createOnsiteBooking', () => {
         notes: 'hola',
       },
       'client-1',
-      { paymentMode: 'onsite', now: NOW },
+      expect.objectContaining({ paymentMode: 'onsite', now: NOW }),
     );
     expect(result).toEqual({
       bookingId: 'booking-1',

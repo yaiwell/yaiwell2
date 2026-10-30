@@ -177,3 +177,49 @@ describe('countSanctionsInWindow', () => {
     ).toBe(2);
   });
 });
+
+describe('computeOnlineOnlyUntil · sanción registrada tarde', () => {
+  const late = (occurred: string, created: string): SanctionForCalc => ({
+    occurredAt: d(occurred),
+    createdAt: d(created),
+    revokedAt: null,
+  });
+
+  it('el bloqueo cuenta desde el registro (marcada 72 h después de la cita)', () => {
+    const until = computeOnlineOnlyUntil(
+      [
+        s('2026-01-01T10:00:00Z'),
+        s('2026-03-01T10:00:00Z'),
+        late('2026-05-15T10:00:00Z', '2026-05-18T10:00:00Z'),
+      ],
+      d('2026-06-01T00:00:00Z'),
+    );
+    expect(until?.toISOString()).toBe('2026-08-18T10:00:00.000Z');
+  });
+
+  it('la ventana de 12 meses sigue midiéndose desde la cita, no desde el registro', () => {
+    // La tercera cita cae 12 meses y 1 día después de la primera: no hay
+    // trío aunque se registrara antes de que pasaran 12 meses desde nada.
+    const until = computeOnlineOnlyUntil(
+      [
+        s('2025-05-14T10:00:00Z'),
+        s('2025-12-01T10:00:00Z'),
+        late('2026-05-15T10:00:00Z', '2026-05-15T12:00:00Z'),
+      ],
+      d('2026-06-01T00:00:00Z'),
+    );
+    expect(until).toBeNull();
+  });
+
+  it('un createdAt anterior a la cita (datos raros) no adelanta el bloqueo', () => {
+    const until = computeOnlineOnlyUntil(
+      [
+        s('2026-01-01T10:00:00Z'),
+        s('2026-03-01T10:00:00Z'),
+        late('2026-05-15T10:00:00Z', '2026-05-10T10:00:00Z'),
+      ],
+      d('2026-06-01T00:00:00Z'),
+    );
+    expect(until?.toISOString()).toBe('2026-08-15T10:00:00.000Z');
+  });
+});

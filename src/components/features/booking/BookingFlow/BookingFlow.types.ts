@@ -17,6 +17,13 @@ import type { Provider, Service } from '@/types/domain';
 export type BookingStep = 'slot' | 'summary' | 'payment' | 'confirmation';
 
 /**
+ * Cómo quiere pagar el cliente (§4.bis, decidido 2026-10-29): online
+ * ahora o en el local. Es una preferencia: si el pago en el local deja
+ * de estar disponible para el hueco, el flujo cae a online.
+ */
+export type BookingPaymentMethod = 'online' | 'onsite';
+
+/**
  * Estado acumulado del flujo de reserva. Se va completando paso a paso.
  * `slotStartIso`/`slotEndIso` se guardan como strings para que el draft
  * sea trivialmente serializable y comparable entre renders.
@@ -27,12 +34,14 @@ export interface BookingDraft {
   notes: string;
   /** Id real de la reserva creada en BD al abrir el checkout. */
   bookingId: string | null;
+  /** Método de pago elegido en el resumen. */
+  paymentMethod: BookingPaymentMethod;
 }
 
 /**
  * Borrador que sobrevive al viaje a `/entrar` o `/registro`.
  *
- * Sólo intención del usuario: hueco y notas. El `bookingId` queda fuera
+ * Sólo intención del usuario: hueco, notas y método de pago. El `bookingId` queda fuera
  * a propósito (ver `BookingFlow.draft.ts`). El `serviceId` viaja dentro
  * para poder descartar un borrador de otro servicio.
  */
@@ -41,6 +50,7 @@ export interface PersistedBookingDraft {
   slotStartIso: string | null;
   slotEndIso: string | null;
   notes: string;
+  paymentMethod: BookingPaymentMethod;
 }
 
 /**

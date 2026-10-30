@@ -127,8 +127,20 @@ describe('WeeklyCalendar', () => {
 
     const dialog = screen.getByRole('dialog');
     expect(within(dialog).getByText('Marta R.')).toBeInTheDocument();
-    expect(within(dialog).getByText('Marcar finalizada')).toBeInTheDocument();
+    // Aún no ha empezado: se puede cancelar, pero no finalizar.
+    expect(within(dialog).queryByText('Marcar finalizada')).not.toBeInTheDocument();
     expect(within(dialog).getByText('Cancelar reserva')).toBeEnabled();
+  });
+
+  it('ofrece finalizar una cita ya empezada', () => {
+    const { container } = renderCalendar([
+      confirmedBooking({ startAtIso: '2026-10-27T08:30:00.000Z' }),
+    ]);
+    fireEvent.click(
+      container.querySelector('[data-component="weekly-calendar-booking-bk-1"]') as Element,
+    );
+
+    expect(within(screen.getByRole('dialog')).getByText('Marcar finalizada')).toBeInTheDocument();
   });
 
   it('no ofrece acciones en una reserva ya completada', () => {
@@ -178,7 +190,8 @@ describe('WeeklyCalendar', () => {
   });
 
   it('deshabilita las acciones del detalle en modo preview', () => {
-    const { container } = renderCalendar([confirmedBooking()], true);
+    // Los datos de ejemplo no tienen instante real.
+    const { container } = renderCalendar([confirmedBooking({ startAtIso: null })], true);
     fireEvent.click(
       container.querySelector('[data-component="weekly-calendar-booking-bk-1"]') as Element,
     );

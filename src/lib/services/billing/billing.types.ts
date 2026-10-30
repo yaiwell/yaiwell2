@@ -89,6 +89,11 @@ export interface BillingWebhookResult {
   planChanged?: PlanChange;
   /** Clave del aviso de cobro fallido que toca enviar (transición real). */
   paymentFailedKey?: string;
+  /**
+   * Clave del aviso de comisiones impagadas (`${invoiceId}:${intento}`).
+   * Solo en la transición real (comisiones que pasan a `failed`).
+   */
+  commissionPaymentFailedKey?: string;
 }
 
 /** Resumen de facturación para el panel del negocio. */
@@ -134,8 +139,51 @@ export type ItemizeCommissionOutcome = 'itemized' | 'already_itemized' | 'retry_
  *    de `markBookingCompleted`;
  *  - la action de deshacer «no presentado» si devolvió `completed`;
  *  - el cron, con los `commissionChargeIds` de
- *    `autoCompleteStaleOnsiteBookings` y las filas aún `pending`.
+ *    `autoCompleteStaleBookings` y las filas aún `pending`.
  *
  * Idempotente: clave `onsite-commission:<bookingId>` en Stripe.
  */
 export type ItemizeCommission = (chargeId: string) => Promise<ItemizeCommissionOutcome>;
+
+/** Resumen del barrido diario de comisiones (respuesta del cron). */
+export interface CommissionSweepSummary {
+  /** Comisiones pasadas a Stripe en esta pasada. */
+  itemized: number;
+  /** Comisiones en las que Stripe falló (siguen `pending`). */
+  retryLater: number;
+  /** Facturas mensuales sueltas emitidas. */
+  invoiced: number;
+  /** Borradores vacíos borrados (los conceptos ya iban en otra factura). */
+  emptyInvoices: number;
+  invoiceFailures: number;
+  /** Se acabó el presupuesto de tiempo: el resto, mañana. */
+  truncated: boolean;
+}
+
+/** Por qué no se puede activar el pago en el local. */
+export type OnsitePaymentBlockReason = 'payment_method_missing' | 'commission_debt';
+
+/**
+ * Tarjeta «Cobro en el local» de `/panel/plan` (`getOnsiteBillingSummary`).
+ * Solo lee BD. Importes en céntimos, IVA incluido.
+ */
+export interface OnsiteBillingSummary {
+  /** Interruptor del negocio (`providers.acceptsOnsitePayment`). */
+  enabled: boolean;
+  /**
+   * Se ofrece de verdad a los clientes: activado, con método de pago y sin
+   * deuda (la misma condición que aplica `createOnsiteBooking`).
+   */
+  effective: boolean;
+  /** Hay un método de pago guardado para cobrar las comisiones. */
+  paymentMethodReady: boolean;
+  paymentMethodReadyAt: Date | null;
+  /** Primer cobro fallido sin resolver; con valor, el pago en el local se suspende. */
+  commissionDebtSince: Date | null;
+  /** `null` si se puede activar; si no, el motivo (copy de la UI). */
+  enableBlockedBy: OnsitePaymentBlockReason | null;
+  /** Comisiones aún por facturar o facturadas y pendientes de cobro. */
+  outstandingCommissionCents: number;
+  /** Comisiones con el cobro fallido (la deuda). */
+  overdueCommissionCents: number;
+}

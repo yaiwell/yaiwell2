@@ -48,7 +48,9 @@ import { respondToBillingEvent } from './billing-webhook';
  *
  * **Planes de negocio** (Stripe Billing): `checkout.session.completed`
  * de suscripción, `customer.subscription.*` e `invoice.*` van a
- * `billing-webhook.ts`, con la misma política de respuestas.
+ * `billing-webhook.ts`, con la misma política de respuestas. Ahí también
+ * las comisiones del pago en el local: Checkout de setup del método de
+ * pago e `invoice.finalized|paid|payment_failed|marked_uncollectible|voided`.
  *
  * **Eventos aún sin cablear** (llegan como `handled: false`):
  *  - `account.updated` → sync del onboarding Connect del proveedor.

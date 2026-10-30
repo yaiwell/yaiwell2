@@ -11,20 +11,26 @@
     "clientLabel": "Client",
     "notesLabel": "Notes del client",
     "paidLabel": "Total pagat",
-    "discountNote": "Descompte del {pct} % aplicat (preu habitual {original})"
+    "discountNote": "Descompte del {pct} % aplicat (preu habitual {original})",
+    "payAtVenueLabel": "A pagar al local"
   },
   "bookingConfirmed": {
     "subject": "Reserva confirmada a {provider}",
     "heading": "La teva reserva està confirmada",
     "intro": "Hem rebut el pagament. T'esperen a {provider}.",
     "cta": "Veure les meves reserves",
-    "lastMinute": "És una reserva d'última hora: comença menys de 2 hores després de fer-la, així que el pagament no admet devolució."
+    "lastMinute": "És una reserva d'última hora: comença menys de 2 hores després de fer-la, així que el pagament no admet devolució.",
+    "onsiteIntro": "La teva reserva a {provider} està confirmada. Pagaràs {amount} al local el dia de la cita.",
+    "onsiteNoShow": "Si no hi pots anar, cancel·la des de «Les meves reserves» fins a 2 hores abans: és sense càrrec. Si no et presentes sense cancel·lar, sumaràs 1 absència; amb 3 en 12 mesos, durant 3 mesos només podràs reservar pagant en línia."
   },
   "providerNewBooking": {
     "subject": "Nova reserva: {service}, {when}",
     "heading": "Tens una reserva nova",
     "intro": "{client} ha reservat i pagat en línia.",
-    "cta": "Obrir el calendari"
+    "cta": "Obrir el calendari",
+    "onsiteIntro": "{client} ha reservat i pagarà al teu local.",
+    "onsiteCommission": "Cobra {amount} al teu local. La comissió de Yaiwell ({commission}) te la cobrarem a la factura mensual quan la cita quedi finalitzada.",
+    "onsiteNoShow": "Si no es presenta, marca-ho des del calendari del panell: no pagaràs comissió per aquesta reserva."
   },
   "bookingCancelled": {
     "subject": "{provider} ha cancel·lat la teva reserva",
@@ -40,7 +46,8 @@
     "heading": "Reserva cancel·lada",
     "intro": "Hem cancel·lat la teva reserva a {provider}, tal com ens vas demanar.",
     "noPayment": "No t'han cobrat res per aquesta reserva, així que no hi ha res a retornar.",
-    "cta": "Cercar una altra hora"
+    "cta": "Cercar una altra hora",
+    "onsiteNoCharge": "Havies de pagar al local, així que la cancel·lació és sense càrrec."
   },
   "providerClientCancelled": {
     "subject": "Cancel·lació: {service}, {when}",
@@ -81,7 +88,8 @@
     "subject": "Demà tens cita a {provider}",
     "heading": "T'esperen demà",
     "intro": "Et recordem la teva cita de demà a {provider}.",
-    "cta": "Veure les meves reserves"
+    "cta": "Veure les meves reserves",
+    "onsite": "Recorda que pagues {amount} al local. Si no hi pots anar, cancel·la des de «Les meves reserves» fins a 2 hores abans: és sense càrrec."
   },
   "providerApproved": {
     "subject": "{provider} ja està publicat a Yaiwell",
@@ -115,5 +123,32 @@
     "intro": "La subscripció al pla {plan} de {provider} ha acabat i el negoci ha passat al pla Gratis.",
     "next": "Si tenies més serveis publicats dels que permet el pla Gratis, hem amagat els que sobren. Es tornaran a mostrar tan bon punt tornis a contractar un pla de pagament.",
     "cta": "Veure els plans"
+  },
+  "commissionPaymentFailed": {
+    "subject": "No hem pogut cobrar les comissions de {provider}",
+    "heading": "Revisa el teu mètode de pagament",
+    "intro": "Hem intentat cobrar la factura de comissions de les reserves pagades al local de {provider} i el pagament no ha anat bé.",
+    "next": "Mentre quedi pendent, els teus clients no podran triar pagar al local a les reserves noves; el pagament en línia continua funcionant. Tan bon punt es cobri la factura, el pagament al local tornarà a estar disponible.",
+    "cta": "Revisar el pagament"
+  },
+  "onsiteCommission": {
+    "itemDescription": "Comissió Yaiwell · {service} · reserva pagada al local del {date}",
+    "invoiceDescription": "Comissions Yaiwell de les reserves pagades al local"
+  },
+  "noShow": {
+    "subject": "{provider} indica que no et vas presentar a la cita",
+    "heading": "No et vas presentar a la cita",
+    "intro": "{provider} ha indicat que no et vas presentar a la cita.",
+    "online": "Com que la vas pagar en línia, no hi ha devolució de l’import ({amount}).",
+    "onsiteSanction": "Havies de pagar al local, així que suma 1 sanció al teu compte: en portes {count} de 3 en els últims 12 mesos.",
+    "onsiteRestricted": "Amb 3 sancions en 12 mesos, fins al {date} només podràs reservar pagant en línia.",
+    "support": "Si creus que és un error, escriu-nos a {email} i ho revisem.",
+    "cta": "Escriure a suport"
+  },
+  "noShowUndone": {
+    "subject": "{provider} ha corregit la teva cita: no consta com a absència",
+    "heading": "Absència retirada",
+    "intro": "{provider} ha corregit l'avís anterior: la teva cita ja no consta com a «no presentat».",
+    "sanctionRevoked": "Hem retirat la sanció del teu compte: ja no compta per al límit de 3 en 12 mesos."
   }
 }

@@ -5,7 +5,7 @@ import { isLiveSubscriptionStatus } from '@/lib/utils/plan-billing';
 
 /**
  * Validación de la query de `/panel/plan` (`?checkout`, `?session_id`,
- * `?plan`) y del resultado de la vuelta del Checkout. Funciones puras: la
+ * `?plan`, `?onsite_setup`) y del resultado de la vuelta del Checkout. Funciones puras: la
  * página solo orquesta.
  */
 
@@ -15,6 +15,14 @@ const CHECKOUT_VALUES = ['success', 'cancelled', 'failed'] as const;
 export type CheckoutParam = (typeof CHECKOUT_VALUES)[number];
 
 /**
+ * Vuelta del Checkout en modo `setup` del cobro en el local
+ * (`?onsite_setup=`): guardar el método de pago de las comisiones.
+ */
+const ONSITE_SETUP_VALUES = ['success', 'cancelled'] as const;
+
+export type OnsiteSetupParam = (typeof ONSITE_SETUP_VALUES)[number];
+
+/**
  * Query de la página. Todo llega del navegador (o de Stripe): cada campo
  * inválido se descarta en vez de romper la página.
  */
@@ -22,12 +30,14 @@ const planPageQuerySchema = z.object({
   checkout: z.enum(CHECKOUT_VALUES).optional().catch(undefined),
   session_id: z.string().min(1).max(255).optional().catch(undefined),
   plan: z.enum(PLAN_TIERS).optional().catch(undefined),
+  onsite_setup: z.enum(ONSITE_SETUP_VALUES).optional().catch(undefined),
 });
 
 export interface PlanPageQuery {
   checkout: CheckoutParam | null;
   sessionId: string | null;
   plan: PlanTierId | null;
+  onsiteSetup: OnsiteSetupParam | null;
 }
 
 /** Normaliza `searchParams` (un valor repetido llega como array). */
@@ -39,11 +49,13 @@ export function parsePlanPageQuery(
     checkout: first(searchParams.checkout),
     session_id: first(searchParams.session_id),
     plan: first(searchParams.plan),
+    onsite_setup: first(searchParams.onsite_setup),
   });
   return {
     checkout: parsed.checkout ?? null,
     sessionId: parsed.session_id ?? null,
     plan: parsed.plan ?? null,
+    onsiteSetup: parsed.onsite_setup ?? null,
   };
 }
 

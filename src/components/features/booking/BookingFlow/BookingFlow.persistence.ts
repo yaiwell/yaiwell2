@@ -20,6 +20,7 @@ const EMPTY_DRAFT: BookingDraft = {
   slotEndIso: null,
   notes: '',
   bookingId: null,
+  paymentMethod: 'online',
 };
 
 export interface BookingDraftState {

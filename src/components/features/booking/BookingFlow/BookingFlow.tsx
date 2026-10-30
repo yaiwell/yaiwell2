@@ -1,30 +1,33 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
-import { Link } from '@/i18n/navigation';
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
 import { BookingConfirmation } from '../BookingConfirmation';
 import { BookingSummary } from '../BookingSummary';
+import { OnsiteConfirmPanel } from '../OnsiteConfirmPanel';
 import { SlotPicker } from '../SlotPicker';
 
 import { BookingCheckoutPanel } from './BookingCheckoutPanel';
 import { useIsLastMinuteSlot } from './BookingFlow.lastMinute';
-import { BOOKING_STEPS, useBookingFlow } from './BookingFlow.logic';
+import { useBookingFlow } from './BookingFlow.logic';
+import { resolveConfirmation, useBookingFlowPayment } from './BookingFlow.payment';
 import { useBookingPrice } from './BookingFlow.price';
+import { BOOKING_STEPS } from './BookingFlow.steps';
 import { bookingFlowStyles as s } from './BookingFlow.styles';
 import type { BookingFlowProps } from './BookingFlow.types';
+import { BookingFlowFooter } from './BookingFlowFooter';
 
 /**
  * Orquestador del flujo de reserva.
  *
  * Renderiza cada paso en función del estado del hook `useBookingFlow`:
  *  1. `slot`: el usuario elige día y hora.
- *  2. `summary`: revisa los datos y añade notas opcionales.
- *  3. `payment`: se crea la reserva en `pending` y se cobra con Stripe.
+ *  2. `summary`: revisa los datos, añade notas y elige cómo pagar.
+ *  3. `payment`: online, se crea la reserva en `pending` y se cobra con
+ *     Stripe; en el local, se confirma la reserva sin cobro (§4.bis).
  *  4. `confirmation`: ve el resultado real del pago según BD.
  *
  * El componente JSX se limita a componer; toda la lógica vive en
@@ -40,23 +43,14 @@ export function BookingFlow({
   const t = useTranslations('booking.flow');
   const tPolicy = useTranslations('booking.policy');
 
-  const {
-    step,
-    stepIndex,
-    draft,
-    checkout,
-    canAdvance,
-    slotExpired,
-    paymentPending,
-    goNext,
-    goBack,
-    selectSlot,
-    updateDraft,
-    chooseAnotherSlot,
-    completePayment,
-    retryCheckout,
-    expireCheckout,
-  } = useBookingFlow({ serviceId: service.id });
+  const flow = useBookingFlow({ serviceId: service.id });
+  const { step, stepIndex, draft, checkout, slotExpired, paymentPending } = flow;
+  const { goNext, selectSlot, updateDraft, completePayment, retryCheckout, expireCheckout } = flow;
+  // Método de pago y reserva en el local; envuelve volver y «otra hora»
+  // para que un error del local no sobreviva al cambio de paso.
+  const payment = useBookingFlowPayment({ ...flow, serviceId: service.id });
+  const { paymentMethod, onsiteState, goBack, chooseAnotherSlot } = payment;
+  const canAdvance = flow.canAdvance && !payment.waitingForOptions;
 
   // Estimación de "última hora" (< 2 h) con el reloj del navegador. Vale
   // para el resumen; en el paso de pago manda el valor del servidor.
@@ -95,24 +89,17 @@ export function BookingFlow({
 
   // Si llegamos a la confirmación renderizamos solo esa pantalla con
   // su propio layout interno: no necesita stepper ni navegación.
-  if (step === 'confirmation' && draft.bookingId && draft.slotStartIso && draft.slotEndIso) {
+  const confirmed =
+    step === 'confirmation' ? resolveConfirmation(onsiteState, draft, price, paymentPending) : null;
+  if (confirmed) {
     return (
       <section className={s.root} data-component="booking-flow-confirmation">
         <BookingConfirmation
           provider={provider}
           service={service}
           locale={locale}
-          slotStartIso={draft.slotStartIso}
-          slotEndIso={draft.slotEndIso}
-          bookingId={draft.bookingId}
           providerSlugWithId={providerSlugWithId}
-          amountCents={price.amountCents}
-          originalPriceCents={price.originalPriceCents}
-          discountPct={price.discountPct}
-          // La reserva sólo pasa a `confirmed` cuando llega el webhook
-          // `payment_intent.succeeded`. Hasta que BD lo diga, el copy
-          // honesto es "pago en curso" — también en el camino sin 3DS.
-          paymentPending={paymentPending}
+          {...confirmed}
         />
       </section>
     );
@@ -128,7 +115,7 @@ export function BookingFlow({
       case 'summary':
         return t('steps.summary');
       case 'payment':
-        return t('steps.payment');
+        return paymentMethod === 'onsite' ? t('steps.onsite') : t('steps.payment');
       case 'confirmation':
         return t('steps.confirmation');
     }
@@ -164,6 +151,12 @@ export function BookingFlow({
         </p>
       )}
 
+      {payment.onsiteLeadTimeExpired && (
+        <p className={s.notice} role="status" data-component="booking-flow-onsite-expired">
+          {t('onsiteExpiredNotice')}
+        </p>
+      )}
+
       <div className={s.card}>
         {step === 'slot' && (
           <SlotPicker
@@ -191,10 +184,26 @@ export function BookingFlow({
             price={price}
             isLastMinute={isLastMinute}
             onNotesChange={(notes) => updateDraft({ notes })}
+            paymentOptions={payment.paymentOptions}
+            paymentMethod={paymentMethod}
+            onPaymentMethodChange={payment.choosePaymentMethod}
           />
         )}
 
-        {step === 'payment' && (
+        {step === 'payment' && paymentMethod === 'onsite' && draft.slotStartIso && (
+          <OnsiteConfirmPanel
+            price={price}
+            slotStartIso={draft.slotStartIso}
+            locale={locale}
+            state={onsiteState}
+            redirectUrl={bookingPath}
+            onConfirm={payment.confirmOnsite}
+            onChooseAnotherSlot={chooseAnotherSlot}
+            onPayOnline={payment.payOnline}
+          />
+        )}
+
+        {step === 'payment' && paymentMethod === 'online' && (
           <BookingCheckoutPanel
             checkout={checkout}
             discountChange={discountChange}
@@ -213,40 +222,15 @@ export function BookingFlow({
           una vez, adaptada al hueco elegido. */}
       {step === 'slot' && <p className={s.policyNote}>{tPolicy('compactNote')}</p>}
 
-      <footer className={s.footer}>
-        {stepIndex === 0 ? (
-          <Link
-            href={`/centro/${providerSlugWithId}`}
-            className={s.backButton}
-            data-component="booking-flow-cancel"
-          >
-            <ArrowLeft className="size-4" aria-hidden />
-            {t('cancel')}
-          </Link>
-        ) : (
-          <button
-            type="button"
-            onClick={goBack}
-            className={s.backButton}
-            data-component="booking-flow-back"
-          >
-            <ArrowLeft className="size-4" aria-hidden />
-            {t('back')}
-          </button>
-        )}
-
-        {step !== 'payment' && (
-          <button
-            type="button"
-            onClick={goNext}
-            disabled={!canAdvance}
-            className={s.primaryButton}
-            data-component="booking-flow-next"
-          >
-            {t(step === 'summary' ? 'goToPayment' : 'continue')}
-          </button>
-        )}
-      </footer>
+      <BookingFlowFooter
+        step={step}
+        isFirstStep={stepIndex === 0}
+        canAdvance={canAdvance}
+        paymentMethod={paymentMethod}
+        providerSlugWithId={providerSlugWithId}
+        onBack={goBack}
+        onNext={() => goNext(paymentMethod)}
+      />
     </section>
   );
 }

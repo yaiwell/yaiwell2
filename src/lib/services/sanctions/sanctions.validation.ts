@@ -18,3 +18,17 @@ export const revokeSanctionSchema = z.object({
 });
 
 export type RevokeSanctionParsed = z.infer<typeof revokeSanctionSchema>;
+
+/**
+ * Filtro de la pantalla de sanciones de soporte (`?email=`). Llega de la
+ * URL: un valor vacío o inválido se trata como «sin filtro».
+ */
+export const supportSanctionsFilterSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .max(254)
+    .transform((value) => value || null)
+    .nullish()
+    .catch(null),
+});

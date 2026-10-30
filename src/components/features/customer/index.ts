@@ -3,5 +3,6 @@ export { BookingsList, splitBookings } from './BookingsList';
 export { CancelBookingDialog } from './CancelBookingDialog';
 export { CustomerShell } from './CustomerShell';
 export { ExistingReview } from './ExistingReview';
+export { OnsiteRestrictionNotice } from './OnsiteRestrictionNotice';
 export { ReviewFeedbackProvider } from './ReviewFeedback';
 export { ReviewDialog, ReviewForm } from './ReviewForm';

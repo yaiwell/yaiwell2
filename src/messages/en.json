@@ -420,7 +420,8 @@
             "notFound": "This booking no longer exists.",
             "forbidden": "You do not have permission over this booking.",
             "notConfirmed": "Only confirmed and paid bookings can be marked as finished.",
-            "internal": "We could not mark it as finished. Please try again in a few minutes."
+            "internal": "We could not mark it as finished. Please try again in a few minutes.",
+            "notStarted": "The appointment hasn’t started yet: you can complete it once it begins."
           }
         },
         "cancel": {
@@ -438,6 +439,43 @@
             "notCancellable": "This booking can no longer be cancelled in its current state.",
             "refundFailed": "The booking was cancelled, but the refund could not be issued. Support will look into it; there is no need to try again.",
             "internal": "We could not cancel it. Please try again in a few minutes."
+          },
+          "confirmDescriptionOnsite": "They were going to pay at the venue, so there’s nothing to refund. The slot becomes free again. This can’t be undone.",
+          "confirmActionOnsite": "Yes, cancel"
+        },
+        "paymentOnsite": "Pay at the venue",
+        "noShow": {
+          "button": "Didn’t show up",
+          "confirmTitle": "Mark as a no-show?",
+          "descriptionOnsite": "They were going to pay at the venue: they’ll get 1 penalty and we won’t charge you commission for this booking. You can undo this for 24 h.",
+          "descriptionOnline": "They paid online: there’s no refund and no penalty. You can undo this for 24 h.",
+          "confirmAction": "Yes, they didn’t show up",
+          "cancel": "Back",
+          "pending": "Saving…",
+          "errors": {
+            "notFound": "This booking no longer exists.",
+            "forbidden": "You don’t have permission for this booking.",
+            "notConfirmed": "Only confirmed bookings can be marked. Reload the page.",
+            "notStarted": "The appointment time hasn’t arrived yet.",
+            "windowClosed": "More than 72 h have passed since the appointment: it can no longer be marked.",
+            "internal": "It couldn’t be saved. Try again in a few minutes."
+          }
+        },
+        "undoNoShow": {
+          "button": "Undo",
+          "hint": "You can undo this for 24 h.",
+          "confirmTitle": "Undo “Didn’t show up”?",
+          "confirmDescription": "The booking goes back to confirmed and any penalty is removed. If more than 72 h have passed since the appointment, it’s marked as completed.",
+          "confirmAction": "Yes, undo",
+          "cancel": "Back",
+          "pending": "Undoing…",
+          "errors": {
+            "notFound": "This booking no longer exists.",
+            "forbidden": "You don’t have permission for this booking.",
+            "notNoShow": "This booking is no longer marked as “Didn’t show up”. Reload the page.",
+            "windowClosed": "More than 24 h have passed: to undo it, contact support.",
+            "slotTaken": "That slot is now taken by another booking. Contact support.",
+            "internal": "It couldn’t be undone. Try again in a few minutes."
           }
         }
       },
@@ -531,7 +569,10 @@
         "professional": "Professional",
         "price": "Amount",
         "status": "Status",
-        "noActions": "This booking is already closed: there is nothing left to do."
+        "noActions": "This booking is already closed: there is nothing left to do.",
+        "payment": "Payment",
+        "paymentOnline": "Online",
+        "paymentOnsite": "At the venue"
       }
     },
     "services": {
@@ -874,6 +915,28 @@
         "PLAN_UNAVAILABLE": "This plan is not available right now. Try again later or contact support.",
         "STRIPE_FAILED": "We could not reach Stripe. Try again in a few minutes.",
         "INTERNAL": "Something went wrong. Try again in a few minutes."
+      },
+      "onsite": {
+        "title": "Payment at the venue",
+        "description": "Let your clients book and pay at your business. We charge you the commission for each completed booking on a monthly invoice, at your plan’s rate.",
+        "toggleLabel": "Accept payment at the venue",
+        "statusOn": "On: your clients can choose to pay at the venue.",
+        "statusOff": "Off: bookings can only be paid online.",
+        "statusSuspended": "Suspended: there are unpaid commissions.",
+        "methodReady": "Payment method for commissions saved.",
+        "methodMissing": "To turn it on, add a payment method we can charge commissions to.",
+        "addMethod": "Add payment method",
+        "changeMethod": "Change payment method",
+        "debt": "We haven’t been able to collect commissions for payment at the venue since {date}. Until they’re paid, your clients can only pay online.",
+        "outstanding": "Commissions pending collection: {amount}",
+        "overdue": "Unpaid commissions: {amount}",
+        "saving": "Saving…",
+        "redirecting": "Opening Stripe…",
+        "errors": {
+          "paymentMethodMissing": "First add a payment method for commissions.",
+          "commissionDebt": "There are unpaid commissions: update your payment method to turn it on.",
+          "generic": "It couldn’t be saved. Try again in a few minutes."
+        }
       }
     }
   },
@@ -888,13 +951,15 @@
         "slot": "Pick your slot",
         "summary": "Confirm the details",
         "payment": "Secure payment",
-        "confirmation": "Booking confirmed"
+        "confirmation": "Booking confirmed",
+        "onsite": "Confirm your booking"
       },
       "back": "Back",
       "cancel": "Cancel booking",
       "continue": "Continue",
       "goToPayment": "Go to payment",
-      "slotExpiredNotice": "The time you had chosen is no longer available. Pick another one to continue."
+      "slotExpiredNotice": "The time you had chosen is no longer available. Pick another one to continue.",
+      "onsiteExpiredNotice": "This time is now less than 2 h away: it can only be booked paying online. Check the conditions before continuing."
     },
     "slotPicker": {
       "dayStripLabel": "Available days",
@@ -932,14 +997,17 @@
       "totalLabel": "Total",
       "notesLabel": "Notes for the centre (optional)",
       "notesHelper": "Let us know anything relevant: allergies, first visit, preferences…",
-      "notesPlaceholder": "Write here if you'd like to add something."
+      "notesPlaceholder": "Write here if you'd like to add something.",
+      "onsiteTotalLabel": "To pay at the venue"
     },
     "policy": {
       "title": "Quick policy",
       "cancelUntil": "Free cancellation until {deadline} from “My bookings”, with a full refund.",
       "cancelWindowPassed": "The free cancellation period has already ended.",
       "providerCancel": "The centre can also cancel up to 2 hours beforehand; if so, you'll get a full automatic refund.",
-      "compactNote": "Free cancellation from “My bookings” up to 2 h before the service, with a full refund. If you book less than 2 h ahead, you pay on the spot and it cannot be cancelled."
+      "compactNote": "Free cancellation from “My bookings” up to 2 h before the service, with a full refund. If you book less than 2 h ahead, you pay on the spot and it cannot be cancelled.",
+      "onsiteCancelUntil": "Free cancellation, at no charge, until {deadline}, from “My bookings”.",
+      "onsiteProviderCancel": "The venue can also cancel up to 2 h before; if it does, we’ll let you know by email."
     },
     "lastMinute": {
       "policy": "This booking starts in less than 2 h: you pay now and it cannot be cancelled or refunded. If the centre cannot see you, write to us and we'll refund 100%.",
@@ -966,7 +1034,9 @@
       "backToProvider": "Back to centre",
       "pendingTitle": "Payment in progress",
       "pendingSubtitle": "We're confirming the charge with your bank. As soon as it clears you'll see the booking under “My bookings”.",
-      "viewMyBookings": "View my bookings"
+      "viewMyBookings": "View my bookings",
+      "onsiteSubtitle": "You’ll pay {amount} at the venue. You’ll find the details in “My bookings”.",
+      "onsiteTotalLabel": "To pay at the venue"
     },
     "checkout": {
       "loadingTitle": "Preparing your payment",
@@ -985,6 +1055,42 @@
       "signUp": "Create account",
       "draftKeptHint": "We are keeping your time slot and your notes: when you come back you will pick up right where you left off.",
       "chooseAnotherSlot": "Choose another time"
+    },
+    "paymentMethod": {
+      "legend": "How would you like to pay?",
+      "online": {
+        "title": "Pay online now",
+        "hint": "Securely by card. Free cancellation up to 2 h before, with a full refund."
+      },
+      "onsite": {
+        "title": "Pay at the venue",
+        "hint": "Pay at the venue on the day. Free cancellation, at no charge, up to 2 h before.",
+        "lastMinute": "Not available: bookings that start in less than 2 h are paid online when booking.",
+        "restricted": "Not available for now: after 3 missed appointments without cancelling in 12 months, bookings must be paid online for 3 months.",
+        "restrictedUntil": "Not available until {date}: after 3 missed appointments without cancelling in 12 months, bookings must be paid online for 3 months."
+      }
+    },
+    "onsite": {
+      "amountLabel": "To pay at the venue",
+      "noShowNotice": "If you can’t make it, cancel from “My bookings” up to 2 h before. If you don’t show up without cancelling, it counts as 1 missed appointment; with 3 in 12 months, you’ll only be able to book paying online for 3 months.",
+      "confirm": "Confirm booking",
+      "confirming": "Confirming…",
+      "payAtVenueNote": "We don’t charge you anything now: you pay directly at the venue.",
+      "errors": {
+        "title": "We couldn’t confirm your booking",
+        "unauthenticated": "You need an account to book. Sign in or sign up and we’ll carry on.",
+        "slotUnavailable": "That time has just been taken. Please choose another.",
+        "slotTooSoon": "That time is now too close to book. Please choose another.",
+        "serviceUnavailable": "This service can no longer be booked. Choose another time or service.",
+        "pendingAlreadyPaid": "You had already paid for this booking online. You’ll find it in “My bookings”.",
+        "lastMinute": "This time starts in less than 2 h: it can only be booked paying online.",
+        "restricted": "Right now you can only book paying online.",
+        "restrictedUntil": "Until {date} you can only book paying online.",
+        "notOffered": "This venue no longer accepts payment at the venue. You can pay online.",
+        "generic": "Something went wrong confirming your booking. Please try again.",
+        "payOnline": "Pay online",
+        "viewMyBookings": "View my bookings"
+      }
     }
   },
   "customerArea": {
@@ -1098,6 +1204,11 @@
         "VALIDATION": "Check the rating and text and try again.",
         "INTERNAL": "We couldn’t post the review. Please try again in a few minutes."
       }
+    },
+    "paymentOnsite": "Pay at the venue",
+    "onsiteRestriction": {
+      "title": "For now you can only pay online",
+      "body": "You’ve missed 3 appointments without cancelling in the last 12 months. Until {date}, your bookings are paid online when you book."
     }
   },
   "adminArea": {
@@ -1109,7 +1220,8 @@
       "dashboard": "Dashboard",
       "queue": "Queue",
       "exit": "Exit panel",
-      "refunds": "Failed refunds"
+      "refunds": "Failed refunds",
+      "sanctions": "Penalties"
     },
     "dashboard": {
       "title": "Operational overview",
@@ -1240,6 +1352,44 @@
           "VALIDATION": "Could not dismiss the refund for {provider}: invalid identifier.",
           "FORBIDDEN": "Your session does not have admin permissions to dismiss the refund for {provider}.",
           "INTERNAL": "Unexpected error while dismissing the refund for {provider}. Try again in a few minutes."
+        }
+      }
+    },
+    "sanctions": {
+      "meta": {
+        "title": "Penalties · Admin"
+      },
+      "title": "No-show penalties",
+      "subtitle": "Active penalties for clients who missed an appointment they were going to pay at the venue. After the 24 h in which the business can undo it, only support can remove them.",
+      "filter": {
+        "label": "Client email",
+        "placeholder": "client@example.com",
+        "submit": "Search"
+      },
+      "empty": "There are no active penalties.",
+      "emptyFiltered": "There are no active penalties for “{email}”.",
+      "fields": {
+        "client": "Client",
+        "provider": "Venue and service",
+        "occurredAt": "Appointment",
+        "booking": "Booking"
+      },
+      "revoke": {
+        "label": "Remove penalty",
+        "aria": "Remove the penalty for {email}",
+        "reasonLabel": "Reason",
+        "reasonHint": "Required, at least {min} characters. It is recorded.",
+        "reasonTooShort": "Write a reason of at least {min} characters.",
+        "confirm": "Remove penalty",
+        "cancel": "Cancel",
+        "pending": "Removing…",
+        "errors": {
+          "NOT_FOUND": "This penalty no longer exists.",
+          "ALREADY_REVOKED": "This penalty had already been removed. Reload the page.",
+          "INVALID_REASON": "Check the reason.",
+          "VALIDATION": "It couldn’t be removed. Reload the page and try again.",
+          "FORBIDDEN": "You don’t have permission to remove penalties.",
+          "INTERNAL": "It couldn’t be removed. Try again in a few minutes."
         }
       }
     }

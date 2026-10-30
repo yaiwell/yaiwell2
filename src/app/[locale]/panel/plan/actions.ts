@@ -1,126 +1,39 @@
 'use server';
 
-import { hasLocale } from 'next-intl';
+import { revalidatePath } from 'next/cache';
 
-import { routing, type AppLocale } from '@/i18n/routing';
-import { getCurrentProviderId, getCurrentRole } from '@/lib/auth/server';
-import { SITE_URL } from '@/lib/seo/site-url';
+import type { AppLocale } from '@/i18n/routing';
 import {
-  BillingPlanNotSeededError,
-  BillingPortalNotConfiguredError,
   billingPortalIntentSchema,
   BillingProviderNotFoundError,
-  BillingStripeError,
   createBillingPortalSession,
+  createOnsiteSetupSession,
   createPlanCheckoutSession,
+  OnsiteCommissionDebtError,
+  OnsitePaymentMethodMissingError,
+  onsitePaymentToggleSchema,
   paidPlanTierSchema,
-  PlanChangeNotAllowedError,
-  PlanNotPurchasableError,
-  PlanPriceMismatchError,
+  setOnsitePaymentAcceptance,
   SubscriptionAlreadyActiveError,
-  SubscriptionNotFoundError,
-  VatTaxRateNotConfiguredError,
-  type BillingPortalFlow,
   type BillingPortalIntent,
   type PaidPlanTier,
 } from '@/lib/services/billing';
 
-/**
- * Códigos de fallo estables que la UI del plan traduce a copy i18n
- * (`providerPanel.plan.errors.*`). Nunca viajan mensajes internos.
- */
-export type PlanActionErrorCode =
-  | 'INVALID_INPUT'
-  | 'FORBIDDEN'
-  | 'PLAN_NOT_PURCHASABLE'
-  | 'SUBSCRIPTION_NOT_FOUND'
-  | 'PLAN_UNAVAILABLE'
-  | 'STRIPE_FAILED'
-  | 'INTERNAL';
+import {
+  FORBIDDEN,
+  INVALID_INPUT,
+  isValidLocale,
+  planPageUrl,
+  resolveProviderId,
+  toActionError,
+  toPortalFlow,
+  type PlanActionResult,
+} from './actions.helpers';
 
-/**
- * Resultado de las actions de facturación. En éxito devolvemos la URL
- * de Stripe (Checkout o portal) y el cliente hace `window.location.assign`:
- * así el botón mantiene su estado de carga hasta que el navegador sale.
- */
-export type PlanActionResult = { ok: true; url: string } | { ok: false; code: PlanActionErrorCode };
+export type { PlanActionErrorCode, PlanActionResult } from './actions.helpers';
 
 /** Recorridos del portal que la UI puede pedir (schema en `billing`). */
 export type { BillingPortalIntent };
-
-const INVALID_INPUT: PlanActionResult = { ok: false, code: 'INVALID_INPUT' };
-const FORBIDDEN: PlanActionResult = { ok: false, code: 'FORBIDDEN' };
-
-/** Ruta del panel del plan; las URLs de vuelta de Stripe apuntan aquí. */
-function planPageUrl(locale: AppLocale): string {
-  return `${SITE_URL}/${locale}/panel/plan`;
-}
-
-/**
- * El `locale` llega del cliente: se valida antes de usarlo en las URLs
- * que enviamos a Stripe.
- */
-function isValidLocale(locale: unknown): locale is AppLocale {
-  return typeof locale === 'string' && hasLocale(routing.locales, locale);
-}
-
-/**
- * Negocio del usuario en sesión. Usamos las variantes que no redirigen:
- * una action que devuelve una URL no puede responder con un redirect a
- * `/entrar` u `/onboarding`, así que sin rol de negocio o sin negocio
- * contestamos `FORBIDDEN`. La propiedad la garantiza la consulta (solo
- * devuelve el negocio del usuario en sesión).
- */
-async function resolveProviderId(): Promise<string | null> {
-  const role = await getCurrentRole();
-  if (role !== 'provider') return null;
-  return getCurrentProviderId();
-}
-
-/** Traduce los errores tipados de `billing` a códigos estables. */
-function toActionError(scope: string, err: unknown): PlanActionResult {
-  if (err instanceof PlanNotPurchasableError) return { ok: false, code: 'PLAN_NOT_PURCHASABLE' };
-  // Mismas reglas que la UI (impago, cambio ya programado, mismo plan):
-  // solo llega aquí si alguien se salta el botón. Sin código propio para
-  // no exigir copy nuevo en la UI.
-  if (err instanceof PlanChangeNotAllowedError) return { ok: false, code: 'PLAN_NOT_PURCHASABLE' };
-  if (err instanceof SubscriptionNotFoundError) {
-    return { ok: false, code: 'SUBSCRIPTION_NOT_FOUND' };
-  }
-  if (err instanceof BillingProviderNotFoundError) return FORBIDDEN;
-  if (
-    err instanceof PlanPriceMismatchError ||
-    err instanceof BillingPlanNotSeededError ||
-    err instanceof VatTaxRateNotConfiguredError ||
-    err instanceof BillingPortalNotConfiguredError
-  ) {
-    // Catálogo de Stripe (precio, IVA o portal) desalineado o sin crear:
-    // no vendemos hasta ejecutar `stripe:sync-plans`. Lo vemos en Sentry.
-    console.error(`[panel/plan] ${scope} plan unavailable:`, err);
-    return { ok: false, code: 'PLAN_UNAVAILABLE' };
-  }
-  if (err instanceof BillingStripeError) {
-    console.error(`[panel/plan] ${scope} stripe failed:`, err.cause ?? err);
-    return { ok: false, code: 'STRIPE_FAILED' };
-  }
-  console.error(`[panel/plan] ${scope} unexpected:`, err);
-  return { ok: false, code: 'INTERNAL' };
-}
-
-/** Traduce la intención de la UI al recorrido del portal de Stripe. */
-function toPortalFlow(intent: BillingPortalIntent, tier: PaidPlanTier | null): BillingPortalFlow {
-  switch (intent) {
-    case 'manage':
-      return { type: 'manage' };
-    case 'payment_method':
-      return { type: 'payment_method_update' };
-    case 'cancel':
-      return { type: 'subscription_cancel' };
-    case 'change':
-      // `tier` validado por el caller: `change` sin tier no llega aquí.
-      return { type: 'subscription_update_confirm', tier: tier as PaidPlanTier };
-  }
-}
 
 async function openPortal(
   providerId: string,
@@ -211,4 +124,87 @@ export async function openBillingPortalAction(
   if (!providerId) return FORBIDDEN;
 
   return openPortal(providerId, locale, parsedIntent.data, paidTier);
+}
+
+/**
+ * Códigos de fallo del interruptor «Cobro en el local» (copy i18n en la
+ * UI). `PAYMENT_METHOD_MISSING`: falta guardar el método de pago para
+ * las comisiones; `COMMISSION_DEBT`: hay comisiones impagadas.
+ */
+export type OnsiteToggleErrorCode =
+  | 'INVALID_INPUT'
+  | 'FORBIDDEN'
+  | 'PAYMENT_METHOD_MISSING'
+  | 'COMMISSION_DEBT'
+  | 'INTERNAL';
+
+/** Resultado del interruptor: el estado que ha quedado guardado. */
+export type OnsiteToggleResult =
+  | { ok: true; enabled: boolean }
+  | { ok: false; code: OnsiteToggleErrorCode };
+
+/**
+ * Activa o desactiva el pago en el local del negocio (opt-in, §4.bis).
+ *
+ * Activar exige método de pago guardado y ninguna comisión impagada (lo
+ * comprueba el service en el mismo `UPDATE`); desactivar siempre se
+ * puede y no toca las reservas en el local ya hechas.
+ *
+ * @param locale — idioma de la web (para revalidar la página).
+ * @param enabled — estado pedido (booleano estricto; lo demás es `INVALID_INPUT`).
+ */
+export async function toggleOnsitePaymentAction(
+  locale: AppLocale,
+  enabled: unknown,
+): Promise<OnsiteToggleResult> {
+  if (!isValidLocale(locale)) return { ok: false, code: 'INVALID_INPUT' };
+  const parsed = onsitePaymentToggleSchema.safeParse(enabled);
+  if (!parsed.success) return { ok: false, code: 'INVALID_INPUT' };
+
+  const providerId = await resolveProviderId();
+  if (!providerId) return { ok: false, code: 'FORBIDDEN' };
+
+  try {
+    await setOnsitePaymentAcceptance(providerId, parsed.data);
+  } catch (err) {
+    if (err instanceof OnsitePaymentMethodMissingError) {
+      return { ok: false, code: 'PAYMENT_METHOD_MISSING' };
+    }
+    if (err instanceof OnsiteCommissionDebtError) return { ok: false, code: 'COMMISSION_DEBT' };
+    if (err instanceof BillingProviderNotFoundError) return { ok: false, code: 'FORBIDDEN' };
+    console.error('[panel/plan] onsite toggle unexpected:', err);
+    return { ok: false, code: 'INTERNAL' };
+  }
+  revalidatePath(`/${locale}/panel/plan`);
+  return { ok: true, enabled: parsed.data };
+}
+
+/**
+ * Abre el Checkout de Stripe en modo `setup` para guardar el método de
+ * pago de las comisiones del pago en el local. A la vuelta, la página
+ * recibe `?onsite_setup=success&session_id=…` y puede llamar a
+ * `confirmOnsiteSetupSession` (el webhook lo guarda igualmente).
+ *
+ * @returns la URL de Stripe, igual que las demás actions del plan.
+ */
+export async function startOnsiteSetupAction(locale: AppLocale): Promise<PlanActionResult> {
+  if (!isValidLocale(locale)) return INVALID_INPUT;
+  const providerId = await resolveProviderId();
+  if (!providerId) return FORBIDDEN;
+
+  const base = planPageUrl(locale);
+  try {
+    const session = await createOnsiteSetupSession(
+      providerId,
+      {
+        // `{CHECKOUT_SESSION_ID}` lo sustituye Stripe: no se codifica.
+        successUrl: `${base}?onsite_setup=success&session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${base}?onsite_setup=cancelled`,
+      },
+      locale,
+    );
+    return { ok: true, url: session.url };
+  } catch (err) {
+    return toActionError('onsite-setup', err);
+  }
 }

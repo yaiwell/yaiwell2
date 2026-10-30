@@ -1,2 +1,3 @@
 - [Comportamiento real de la cuenta Stripe test](reference_stripe_test_account_behaviour.md) — business_type bloqueado tras AccountLink, login link solo tras alta, past_due desde el inicio, claves en .env.local
 - [Nunca borrar cuentas Connect por metadata](feedback_never_bulk_delete_stripe_accounts.md) — solo ids creados en la misma ejecución; así se borró la cuenta Custom de Studio Aura
+- [stripe docs en Git Bash](reference_stripe_docs_cli_gitbash.md) — usar MSYS_NO_PATHCONV=1 o la ruta da 404

@@ -12,9 +12,14 @@ vi.mock('@/lib/db/prisma', async () => {
 
 import { prisma } from '@/lib/db/prisma';
 
-import { autoCompleteStaleOnsiteBookings, markBookingCompleted } from './booking.complete.service';
+import {
+  autoCompleteStaleBookings,
+  autoCompleteStaleOnsiteBookings,
+  markBookingCompleted,
+} from './booking.complete.service';
 import {
   BookingNotConfirmedError,
+  BookingNotStartedError,
   BookingNotFoundError,
   UnauthorizedCancellationError,
 } from './booking.errors';
@@ -82,6 +87,16 @@ describe('markBookingCompleted', () => {
     expect(mockPrisma.onsiteCommissionCharge.create).not.toHaveBeenCalled();
   });
 
+  it('1 minuto antes del inicio → BookingNotStartedError, sin escribir ni comisión', async () => {
+    mockPrisma.booking.findUnique.mockResolvedValue(fakeBooking() as never);
+
+    await expect(markBookingCompleted(BOOKING_ID, OWNER_ID, at(-60 * 1000))).rejects.toBeInstanceOf(
+      BookingNotStartedError,
+    );
+    expect(mockPrisma.booking.updateMany).not.toHaveBeenCalled();
+    expect(mockPrisma.onsiteCommissionCharge.create).not.toHaveBeenCalled();
+  });
+
   it.each(['pending', 'completed', 'no_show', 'cancelled'])(
     'rechaza desde %s sin escribir',
     async (status) => {
@@ -107,24 +122,23 @@ describe('markBookingCompleted', () => {
   });
 });
 
-describe('autoCompleteStaleOnsiteBookings', () => {
+describe('autoCompleteStaleBookings', () => {
   const NOW = at(100 * HOUR);
-  const stale = (id: string) => ({
+  const stale = (id: string, paymentMode: 'online' | 'onsite' = 'onsite') => ({
     id,
     providerId: PROVIDER_ID,
     commissionCents: 400,
-    paymentMode: 'onsite' as const,
+    paymentMode,
   });
 
-  it('busca onsite confirmed con startAt < now − 72 h y respeta el tope', async () => {
+  it('busca confirmed (online y en el local) con startAt < now − 72 h y respeta el tope', async () => {
     mockPrisma.booking.findMany.mockResolvedValue([]);
 
-    await autoCompleteStaleOnsiteBookings(NOW, 25);
+    await autoCompleteStaleBookings(NOW, 25);
 
     expect(mockPrisma.booking.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
-          paymentMode: 'onsite',
           status: 'confirmed',
           startAt: { lt: at(28 * HOUR) },
         },
@@ -141,7 +155,7 @@ describe('autoCompleteStaleOnsiteBookings', () => {
       .mockResolvedValueOnce({ id: 'c-1' } as never)
       .mockResolvedValueOnce({ id: 'c-2' } as never);
 
-    const summary = await autoCompleteStaleOnsiteBookings(NOW);
+    const summary = await autoCompleteStaleBookings(NOW);
 
     expect(summary).toEqual({
       completedBookingIds: ['b-1', 'b-2'],
@@ -158,7 +172,7 @@ describe('autoCompleteStaleOnsiteBookings', () => {
     mockPrisma.booking.findMany.mockResolvedValue([stale('b-1')] as never);
     mockPrisma.booking.updateMany.mockResolvedValue({ count: 0 });
 
-    const summary = await autoCompleteStaleOnsiteBookings(NOW);
+    const summary = await autoCompleteStaleBookings(NOW);
 
     expect(summary.completedBookingIds).toEqual([]);
     expect(mockPrisma.onsiteCommissionCharge.create).not.toHaveBeenCalled();
@@ -172,7 +186,7 @@ describe('autoCompleteStaleOnsiteBookings', () => {
       .mockResolvedValueOnce({ count: 1 });
     mockPrisma.onsiteCommissionCharge.create.mockResolvedValue({ id: 'c-2' } as never);
 
-    const summary = await autoCompleteStaleOnsiteBookings(NOW);
+    const summary = await autoCompleteStaleBookings(NOW);
 
     expect(summary).toEqual({
       completedBookingIds: ['b-2'],
@@ -181,9 +195,44 @@ describe('autoCompleteStaleOnsiteBookings', () => {
     });
   });
 
+  it('online: la completa (invitar a valorar) sin encolar comisión nueva', async () => {
+    mockPrisma.booking.findMany.mockResolvedValue([
+      stale('b-online', 'online'),
+      stale('b-onsite'),
+    ] as never);
+    mockPrisma.booking.updateMany.mockResolvedValue({ count: 1 });
+    mockPrisma.onsiteCommissionCharge.create.mockResolvedValue({ id: 'c-onsite' } as never);
+
+    const summary = await autoCompleteStaleBookings(NOW);
+
+    expect(summary).toEqual({
+      completedBookingIds: ['b-online', 'b-onsite'],
+      commissionChargeIds: ['c-onsite'],
+      failedBookingIds: [],
+    });
+    expect(mockPrisma.onsiteCommissionCharge.create).toHaveBeenCalledOnce();
+    expect(mockPrisma.booking.updateMany.mock.calls[0][0]).toEqual({
+      where: { id: 'b-online', status: 'confirmed' },
+      data: { status: 'completed', completedAt: NOW },
+    });
+  });
+
+  it('online en carrera (0 filas): no la cuenta como completada', async () => {
+    mockPrisma.booking.findMany.mockResolvedValue([stale('b-online', 'online')] as never);
+    mockPrisma.booking.updateMany.mockResolvedValue({ count: 0 });
+
+    const summary = await autoCompleteStaleBookings(NOW);
+
+    expect(summary.completedBookingIds).toEqual([]);
+  });
+
+  it('el alias antiguo apunta a la misma función', () => {
+    expect(autoCompleteStaleOnsiteBookings).toBe(autoCompleteStaleBookings);
+  });
+
   it('a las 72 h justas no entra (corte estricto)', async () => {
     mockPrisma.booking.findMany.mockResolvedValue([]);
-    await autoCompleteStaleOnsiteBookings(at(72 * HOUR));
+    await autoCompleteStaleBookings(at(72 * HOUR));
     const where = mockPrisma.booking.findMany.mock.calls[0][0]?.where;
     expect(where?.startAt).toEqual({ lt: START });
   });

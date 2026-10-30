@@ -42,7 +42,7 @@ export const sanctionsRepository = {
   async findActiveSince(userId: string, since: Date, db: Db = prisma) {
     return db.clientSanction.findMany({
       where: { userId, revokedAt: null, occurredAt: { gte: since } },
-      select: { occurredAt: true, revokedAt: true },
+      select: { occurredAt: true, createdAt: true, revokedAt: true },
       orderBy: { occurredAt: 'asc' },
     });
   },
@@ -115,6 +115,35 @@ export const sanctionsRepository = {
       data: revocation,
     });
     return count;
+  },
+
+  /**
+   * Sanciones vigentes para la pantalla de soporte, de la más reciente a
+   * la más antigua, con lo justo para identificar la cita. Filtro opcional
+   * por email del cliente (contiene, sin distinguir mayúsculas).
+   */
+  async listActiveForSupport(email: string | null, limit: number, db: Db = prisma) {
+    return db.clientSanction.findMany({
+      where: {
+        revokedAt: null,
+        ...(email ? { user: { email: { contains: email, mode: 'insensitive' as const } } } : {}),
+      },
+      select: {
+        id: true,
+        bookingId: true,
+        occurredAt: true,
+        createdAt: true,
+        user: { select: { email: true, fullName: true } },
+        booking: {
+          select: {
+            provider: { select: { businessName: true } },
+            service: { select: { name: true } },
+          },
+        },
+      },
+      orderBy: { occurredAt: 'desc' },
+      take: limit,
+    });
   },
 
   async findById(sanctionId: string, db: Db = prisma) {

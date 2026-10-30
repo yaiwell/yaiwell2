@@ -1,12 +1,12 @@
+// `review.window` va por import directo: el barrel de review arrastra Prisma.
 import { pickLocalized } from '@/lib/i18n';
-// Import directo: el barrel de review arrastra Prisma.
 import { REVIEW_WINDOW_DAYS } from '@/lib/services/review/review.window';
 import { isLastMinuteAtCreation } from '@/lib/utils/booking-last-minute';
 import { buildProviderSlugWithId } from '@/lib/utils/provider-slug';
 
 import { bookingBaseDetails, bookingDetails } from './notifications.booking-details';
 import { buildEmailUrl, formatEmailDateTime, formatEmailPrice } from './notifications.format';
-import { getEmailTranslator } from './notifications.i18n';
+import { getEmailTranslator, type EmailTranslator } from './notifications.i18n';
 import { closing, greet } from './notifications.template-helpers';
 import type {
   BookingEmailContext,
@@ -15,15 +15,25 @@ import type {
 } from './notifications.types';
 
 /**
- * Recibo al cliente cuando el pago confirma la reserva. Si era de última
- * hora lo recuerda: ese pago no admite devolución (§4.bis).
+ * Confirmación al cliente. Online es el recibo del pago y, si era de
+ * última hora, recuerda que no admite devolución. En el local (§4.bis)
+ * dice cuánto pagará allí y avisa de lo que supone no presentarse.
  */
 export function buildBookingConfirmedEmail(ctx: BookingEmailContext): EmailContent {
   const { locale } = ctx.client;
   const t = getEmailTranslator(locale);
-  const paragraphs = [t('bookingConfirmed.intro', { provider: ctx.provider.name })];
-  if (isLastMinuteAtCreation(ctx.startAt, ctx.createdAt)) {
-    paragraphs.push(t('bookingConfirmed.lastMinute'));
+  const paragraphs: string[] = [];
+  if (ctx.paymentMode === 'onsite') {
+    const amount = formatEmailPrice(ctx.priceCents, locale);
+    paragraphs.push(
+      t('bookingConfirmed.onsiteIntro', { provider: ctx.provider.name, amount }),
+      t('bookingConfirmed.onsiteNoShow'),
+    );
+  } else {
+    paragraphs.push(t('bookingConfirmed.intro', { provider: ctx.provider.name }));
+    if (isLastMinuteAtCreation(ctx.startAt, ctx.createdAt)) {
+      paragraphs.push(t('bookingConfirmed.lastMinute'));
+    }
   }
   return {
     subject: t('bookingConfirmed.subject', { provider: ctx.provider.name }),
@@ -37,8 +47,9 @@ export function buildBookingConfirmedEmail(ctx: BookingEmailContext): EmailConte
 }
 
 /**
- * Aviso al dueño del negocio de una reserva pagada. Lleva el nombre del
- * cliente y sus notas, nunca su email: el contacto pasa por Yaiwell.
+ * Aviso al dueño del negocio de una reserva nueva. Lleva el nombre del
+ * cliente y sus notas, nunca su email: el contacto pasa por Yaiwell. Si
+ * es en el local, cuánto cobra allí y que la comisión va a su factura.
  */
 export function buildProviderNewBookingEmail(ctx: BookingEmailContext): EmailContent {
   const { locale } = ctx.owner;
@@ -56,7 +67,7 @@ export function buildProviderNewBookingEmail(ctx: BookingEmailContext): EmailCon
     }),
     heading: t('providerNewBooking.heading'),
     greeting: greet(t, ctx.owner),
-    paragraphs: [t('providerNewBooking.intro', { client: clientName })],
+    paragraphs: providerNewBookingParagraphs(ctx, t, clientName),
     details,
     cta: {
       label: t('providerNewBooking.cta'),
@@ -64,6 +75,24 @@ export function buildProviderNewBookingEmail(ctx: BookingEmailContext): EmailCon
     },
     ...closing(t),
   };
+}
+
+/** Párrafos del aviso al negocio según cómo se paga la reserva. */
+function providerNewBookingParagraphs(
+  ctx: BookingEmailContext,
+  t: EmailTranslator,
+  client: string,
+): string[] {
+  if (ctx.paymentMode !== 'onsite') return [t('providerNewBooking.intro', { client })];
+  const { locale } = ctx.owner;
+  return [
+    t('providerNewBooking.onsiteIntro', { client }),
+    t('providerNewBooking.onsiteCommission', {
+      amount: formatEmailPrice(ctx.priceCents, locale),
+      commission: formatEmailPrice(ctx.commissionCents, locale),
+    }),
+    t('providerNewBooking.onsiteNoShow'),
+  ];
 }
 
 /**

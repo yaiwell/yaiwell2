@@ -11,20 +11,26 @@
     "clientLabel": "Cliente",
     "notesLabel": "Notas del cliente",
     "paidLabel": "Total pagado",
-    "discountNote": "Descuento del {pct} % aplicado (precio habitual {original})"
+    "discountNote": "Descuento del {pct} % aplicado (precio habitual {original})",
+    "payAtVenueLabel": "A pagar en el local"
   },
   "bookingConfirmed": {
     "subject": "Reserva confirmada en {provider}",
     "heading": "Tu reserva está confirmada",
     "intro": "Hemos recibido el pago. Te esperan en {provider}.",
     "cta": "Ver mis reservas",
-    "lastMinute": "Es una reserva de última hora: empieza menos de 2 horas después de hacerla, así que el pago no admite devolución."
+    "lastMinute": "Es una reserva de última hora: empieza menos de 2 horas después de hacerla, así que el pago no admite devolución.",
+    "onsiteIntro": "Tu reserva en {provider} está confirmada. Pagarás {amount} en el local el día de la cita.",
+    "onsiteNoShow": "Si no puedes ir, cancela desde «Mis reservas» hasta 2 horas antes: es sin cargo. Si no te presentas sin cancelar, sumarás 1 ausencia; con 3 en 12 meses, durante 3 meses solo podrás reservar pagando online."
   },
   "providerNewBooking": {
     "subject": "Nueva reserva: {service}, {when}",
     "heading": "Tienes una reserva nueva",
     "intro": "{client} ha reservado y pagado online.",
-    "cta": "Abrir el calendario"
+    "cta": "Abrir el calendario",
+    "onsiteIntro": "{client} ha reservado y pagará en tu local.",
+    "onsiteCommission": "Cobra {amount} en tu local. La comisión de Yaiwell ({commission}) te la cobraremos en tu factura mensual cuando la cita quede finalizada.",
+    "onsiteNoShow": "Si no se presenta, márcalo desde el calendario del panel: no pagarás comisión por esta reserva."
   },
   "bookingCancelled": {
     "subject": "{provider} ha cancelado tu reserva",
@@ -40,7 +46,8 @@
     "heading": "Reserva cancelada",
     "intro": "Hemos cancelado tu reserva en {provider}, tal como nos pediste.",
     "noPayment": "No se te había cobrado nada por esta reserva, así que no hay nada que devolver.",
-    "cta": "Buscar otra hora"
+    "cta": "Buscar otra hora",
+    "onsiteNoCharge": "Ibas a pagar en el local, así que la cancelación es sin cargo."
   },
   "providerClientCancelled": {
     "subject": "Cancelación: {service}, {when}",
@@ -81,7 +88,8 @@
     "subject": "Mañana tienes cita en {provider}",
     "heading": "Te esperan mañana",
     "intro": "Te recordamos tu cita de mañana en {provider}.",
-    "cta": "Ver mis reservas"
+    "cta": "Ver mis reservas",
+    "onsite": "Recuerda que pagas {amount} en el local. Si no puedes ir, cancela desde «Mis reservas» hasta 2 horas antes: es sin cargo."
   },
   "providerApproved": {
     "subject": "{provider} ya está publicado en Yaiwell",
@@ -115,5 +123,32 @@
     "intro": "La suscripción al plan {plan} de {provider} ha terminado y el negocio ha pasado al plan Gratis.",
     "next": "Si tenías más servicios publicados de los que permite el plan Gratis, hemos ocultado los que sobran. Volverán a mostrarse en cuanto contrates de nuevo un plan de pago.",
     "cta": "Ver los planes"
+  },
+  "commissionPaymentFailed": {
+    "subject": "No hemos podido cobrar las comisiones de {provider}",
+    "heading": "Revisa tu método de pago",
+    "intro": "Hemos intentado cobrar la factura de comisiones de las reservas pagadas en el local de {provider} y el pago no ha salido adelante.",
+    "next": "Mientras quede pendiente, tus clientes no podrán elegir pagar en el local en las reservas nuevas; el pago online sigue funcionando. En cuanto se cobre la factura, el pago en el local vuelve a estar disponible.",
+    "cta": "Revisar el pago"
+  },
+  "onsiteCommission": {
+    "itemDescription": "Comisión Yaiwell · {service} · reserva pagada en el local del {date}",
+    "invoiceDescription": "Comisiones Yaiwell de las reservas pagadas en el local"
+  },
+  "noShow": {
+    "subject": "{provider} indica que no te presentaste a tu cita",
+    "heading": "No te presentaste a tu cita",
+    "intro": "{provider} ha indicado que no te presentaste a tu cita.",
+    "online": "Como la pagaste online, no hay devolución del importe ({amount}).",
+    "onsiteSanction": "Ibas a pagar en el local, así que suma 1 sanción a tu cuenta: llevas {count} de 3 en los últimos 12 meses.",
+    "onsiteRestricted": "Con 3 sanciones en 12 meses, hasta el {date} solo podrás reservar pagando online.",
+    "support": "Si crees que es un error, escríbenos a {email} y lo revisamos.",
+    "cta": "Escribir a soporte"
+  },
+  "noShowUndone": {
+    "subject": "{provider} ha corregido tu cita: no consta como ausencia",
+    "heading": "Ausencia retirada",
+    "intro": "{provider} ha corregido el aviso anterior: tu cita ya no consta como «no presentado».",
+    "sanctionRevoked": "Hemos retirado la sanción de tu cuenta: ya no cuenta para el límite de 3 en 12 meses."
   }
 }

@@ -20,7 +20,8 @@ export function bookingBaseDetails(
 
 /**
  * Detalles de la cita en el idioma del destinatario. El importe muestra
- * el descuento con el precio habitual, igual que la confirmación web.
+ * el descuento con el precio habitual, igual que la confirmación web, y
+ * se rotula «a pagar en el local» si la reserva no se pagó online.
  */
 export function bookingDetails(
   ctx: BookingEmailContext,
@@ -39,6 +40,8 @@ export function bookingDetails(
           original: formatEmailPrice(ctx.originalPriceCents, locale),
         })}`
       : paid;
-  details.push({ label: t('common.paidLabel'), value });
+  // En el local no se ha cobrado nada: el importe es lo que se pagará allí.
+  const label = ctx.paymentMode === 'onsite' ? t('common.payAtVenueLabel') : t('common.paidLabel');
+  details.push({ label, value });
   return details;
 }

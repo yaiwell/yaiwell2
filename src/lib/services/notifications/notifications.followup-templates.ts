@@ -57,7 +57,10 @@ export function buildRefundDelayedEmail(ctx: BookingEmailContext): EmailContent 
   };
 }
 
-/** Recordatorio al cliente de la cita del día siguiente. */
+/**
+ * Recordatorio al cliente de la cita del día siguiente. Si paga en el
+ * local, una línea le recuerda el importe y la cancelación sin cargo.
+ */
 export function buildBookingReminderEmail(ctx: BookingEmailContext): EmailContent {
   const { locale } = ctx.client;
   const t = getEmailTranslator(locale);
@@ -65,7 +68,13 @@ export function buildBookingReminderEmail(ctx: BookingEmailContext): EmailConten
     subject: t('bookingReminder.subject', { provider: ctx.provider.name }),
     heading: t('bookingReminder.heading'),
     greeting: greet(t, ctx.client),
-    paragraphs: [t('bookingReminder.intro', { provider: ctx.provider.name })],
+    paragraphs: [
+      t('bookingReminder.intro', { provider: ctx.provider.name }),
+      // En el local: cuánto pagar allí y que cancelar a tiempo es sin cargo.
+      ...(ctx.paymentMode === 'onsite'
+        ? [t('bookingReminder.onsite', { amount: formatEmailPrice(ctx.priceCents, locale) })]
+        : []),
+    ],
     details: bookingDetails(ctx, locale, t),
     cta: { label: t('bookingReminder.cta'), url: buildEmailUrl(locale, '/mis-reservas') },
     ...closing(t),

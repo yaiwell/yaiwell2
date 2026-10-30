@@ -70,11 +70,12 @@ export function getMinutesSpan(span: TimeSpan): { startMin: number; endMin: numb
 }
 
 /**
- * Estado visual del bloque: `refunded` y `no_show` se pintan como
- * `cancelled` (la cita no tuvo lugar); el detalle del bloque los distingue.
+ * Estado visual del bloque: `refunded` se pinta como `cancelled` (la
+ * cita no tuvo lugar y la hora quedó libre); el detalle los distingue.
+ * `no_show` conserva su color: la hora estuvo ocupada.
  */
 export function toBlockStatus(status: PanelBookingActionStatus): PanelBookingStatus {
-  return status === 'refunded' || status === 'no_show' ? 'cancelled' : status;
+  return status === 'refunded' ? 'cancelled' : status;
 }
 
 /**

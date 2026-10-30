@@ -7,6 +7,7 @@ import { getStripeClient } from '@/lib/integrations/stripe';
 
 import { toStripeLocale } from './billing.catalog';
 import { reuseOrExpireOpenSessions } from './billing.checkout-sessions';
+import { invoiceCommissionsBeforePlan } from './billing.commission.pre-plan';
 import { ensureBillingCustomer } from './billing.customer';
 import {
   BillingStripeError,
@@ -75,6 +76,9 @@ export async function createPlanCheckoutSession(
   }
   const customerId = await ensureBillingCustomer(providerId);
   await assertNoLiveSubscriptionInStripe(customerId);
+  // Comisiones del pago en el local pendientes: van en su propia factura.
+  // Si no, entrarían en la primera del plan sin aparecer en el Checkout.
+  await invoiceCommissionsBeforePlan(providerId, customerId);
   const [price, vatTaxRateId] = await Promise.all([
     resolvePriceForTier(parsedTier.data),
     resolveVatTaxRate(),

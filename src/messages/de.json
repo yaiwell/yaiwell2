@@ -420,7 +420,8 @@
             "notFound": "Diese Buchung existiert nicht mehr.",
             "forbidden": "Du hast keine Berechtigung für diese Buchung.",
             "notConfirmed": "Nur bestätigte und bezahlte Buchungen lassen sich abschließen.",
-            "internal": "Die Buchung konnte nicht abgeschlossen werden. Versuche es in ein paar Minuten erneut."
+            "internal": "Die Buchung konnte nicht abgeschlossen werden. Versuche es in ein paar Minuten erneut.",
+            "notStarted": "Der Termin hat noch nicht begonnen: Du kannst ihn abschließen, sobald er beginnt."
           }
         },
         "cancel": {
@@ -438,6 +439,43 @@
             "notCancellable": "Diese Buchung lässt sich in ihrem aktuellen Status nicht mehr stornieren.",
             "refundFailed": "Die Buchung wurde storniert, aber die Erstattung konnte nicht ausgelöst werden. Der Support kümmert sich darum; du musst es nicht erneut versuchen.",
             "internal": "Die Buchung konnte nicht storniert werden. Versuche es in ein paar Minuten erneut."
+          },
+          "confirmDescriptionOnsite": "Es sollte vor Ort bezahlt werden, daher gibt es nichts zu erstatten. Der Termin wird wieder frei. Das kann nicht rückgängig gemacht werden.",
+          "confirmActionOnsite": "Ja, stornieren"
+        },
+        "paymentOnsite": "Zahlung vor Ort",
+        "noShow": {
+          "button": "Nicht erschienen",
+          "confirmTitle": "Als „nicht erschienen“ markieren?",
+          "descriptionOnsite": "Es sollte vor Ort bezahlt werden: Das Konto erhält 1 Sanktion, und wir berechnen dir für diese Buchung keine Provision. Du kannst das 24 Std. lang rückgängig machen.",
+          "descriptionOnline": "Es wurde online bezahlt: keine Erstattung und keine Sanktion. Du kannst das 24 Std. lang rückgängig machen.",
+          "confirmAction": "Ja, nicht erschienen",
+          "cancel": "Zurück",
+          "pending": "Wird gespeichert …",
+          "errors": {
+            "notFound": "Diese Buchung existiert nicht mehr.",
+            "forbidden": "Du hast keine Berechtigung für diese Buchung.",
+            "notConfirmed": "Nur bestätigte Buchungen können markiert werden. Lade die Seite neu.",
+            "notStarted": "Der Termin hat noch nicht begonnen.",
+            "windowClosed": "Seit dem Termin sind mehr als 72 Std. vergangen: Er kann nicht mehr markiert werden.",
+            "internal": "Speichern nicht möglich. Versuche es in ein paar Minuten erneut."
+          }
+        },
+        "undoNoShow": {
+          "button": "Rückgängig",
+          "hint": "Du kannst das 24 Std. lang rückgängig machen.",
+          "confirmTitle": "„Nicht erschienen“ rückgängig machen?",
+          "confirmDescription": "Die Buchung ist wieder bestätigt, und eine eventuelle Sanktion wird aufgehoben. Sind seit dem Termin mehr als 72 Std. vergangen, gilt sie als abgeschlossen.",
+          "confirmAction": "Ja, rückgängig machen",
+          "cancel": "Zurück",
+          "pending": "Wird rückgängig gemacht …",
+          "errors": {
+            "notFound": "Diese Buchung existiert nicht mehr.",
+            "forbidden": "Du hast keine Berechtigung für diese Buchung.",
+            "notNoShow": "Diese Buchung ist nicht mehr als „nicht erschienen“ markiert. Lade die Seite neu.",
+            "windowClosed": "Es sind mehr als 24 Std. vergangen: Wende dich zum Rückgängigmachen an den Support.",
+            "slotTaken": "Dieser Zeitraum ist bereits durch eine andere Buchung belegt. Wende dich an den Support.",
+            "internal": "Rückgängigmachen nicht möglich. Versuche es in ein paar Minuten erneut."
           }
         }
       },
@@ -531,7 +569,10 @@
         "professional": "Fachkraft",
         "price": "Betrag",
         "status": "Status",
-        "noActions": "Diese Buchung ist bereits abgeschlossen: Es gibt nichts mehr zu tun."
+        "noActions": "Diese Buchung ist bereits abgeschlossen: Es gibt nichts mehr zu tun.",
+        "payment": "Zahlung",
+        "paymentOnline": "Online",
+        "paymentOnsite": "Vor Ort"
       }
     },
     "services": {
@@ -874,6 +915,28 @@
         "PLAN_UNAVAILABLE": "Dieser Tarif ist gerade nicht verfügbar. Versuche es später oder kontaktiere den Support.",
         "STRIPE_FAILED": "Wir konnten Stripe nicht erreichen. Versuche es in ein paar Minuten erneut.",
         "INTERNAL": "Etwas ist schiefgelaufen. Versuche es in ein paar Minuten erneut."
+      },
+      "onsite": {
+        "title": "Zahlung vor Ort",
+        "description": "Lass deine Kundschaft buchen und direkt in deinem Betrieb bezahlen. Die Provision für jede abgeschlossene Buchung berechnen wir dir in einer monatlichen Rechnung, zum Satz deines Tarifs.",
+        "toggleLabel": "Zahlung vor Ort akzeptieren",
+        "statusOn": "Aktiv: Deine Kundschaft kann wählen, vor Ort zu bezahlen.",
+        "statusOff": "Inaktiv: Es kann nur mit Online-Zahlung gebucht werden.",
+        "statusSuspended": "Ausgesetzt: Es gibt unbezahlte Provisionen.",
+        "methodReady": "Zahlungsmethode für Provisionen gespeichert.",
+        "methodMissing": "Um es zu aktivieren, füge eine Zahlungsmethode hinzu, über die wir die Provisionen abbuchen.",
+        "addMethod": "Zahlungsmethode hinzufügen",
+        "changeMethod": "Zahlungsmethode ändern",
+        "debt": "Seit dem {date} konnten wir Provisionen für Zahlungen vor Ort nicht einziehen. Bis sie bezahlt sind, kann deine Kundschaft nur online bezahlen.",
+        "outstanding": "Ausstehende Provisionen: {amount}",
+        "overdue": "Unbezahlte Provisionen: {amount}",
+        "saving": "Wird gespeichert …",
+        "redirecting": "Stripe wird geöffnet …",
+        "errors": {
+          "paymentMethodMissing": "Füge zuerst eine Zahlungsmethode für die Provisionen hinzu.",
+          "commissionDebt": "Es gibt unbezahlte Provisionen: Aktualisiere die Zahlungsmethode, um es zu aktivieren.",
+          "generic": "Speichern nicht möglich. Versuche es in ein paar Minuten erneut."
+        }
       }
     }
   },
@@ -888,13 +951,15 @@
         "slot": "Wähle deinen Termin",
         "summary": "Daten bestätigen",
         "payment": "Sichere Zahlung",
-        "confirmation": "Buchung bestätigt"
+        "confirmation": "Buchung bestätigt",
+        "onsite": "Buchung bestätigen"
       },
       "back": "Zurück",
       "cancel": "Buchung abbrechen",
       "continue": "Weiter",
       "goToPayment": "Zur Zahlung",
-      "slotExpiredNotice": "Der von dir gewählte Termin ist nicht mehr verfügbar. Wähle einen anderen, um fortzufahren."
+      "slotExpiredNotice": "Der von dir gewählte Termin ist nicht mehr verfügbar. Wähle einen anderen, um fortzufahren.",
+      "onsiteExpiredNotice": "Bis zu dieser Uhrzeit sind es jetzt weniger als 2 Std.: Sie kann nur mit Online-Zahlung gebucht werden. Prüfe die Bedingungen, bevor du fortfährst."
     },
     "slotPicker": {
       "dayStripLabel": "Verfügbare Tage",
@@ -932,14 +997,17 @@
       "totalLabel": "Gesamt",
       "notesLabel": "Hinweise an das Studio (optional)",
       "notesHelper": "Teile uns alles Wichtige mit: Allergien, erstes Mal, Vorlieben…",
-      "notesPlaceholder": "Schreib hier rein, falls du etwas ergänzen möchtest."
+      "notesPlaceholder": "Schreib hier rein, falls du etwas ergänzen möchtest.",
+      "onsiteTotalLabel": "Vor Ort zu zahlen"
     },
     "policy": {
       "title": "Kurze Richtlinie",
       "cancelUntil": "Kostenlose Stornierung bis {deadline} unter „Meine Buchungen“, mit voller Erstattung.",
       "cancelWindowPassed": "Die Frist für die kostenlose Stornierung ist bereits abgelaufen.",
       "providerCancel": "Das Studio kann ebenfalls bis 2 Stunden vorher stornieren; in diesem Fall erhältst du automatisch die vollständige Rückerstattung.",
-      "compactNote": "Kostenlose Stornierung unter „Meine Buchungen“ bis 2 Std. vor dem Service, mit voller Erstattung. Buchst du weniger als 2 Std. vorher, zahlst du sofort und kannst nicht stornieren."
+      "compactNote": "Kostenlose Stornierung unter „Meine Buchungen“ bis 2 Std. vor dem Service, mit voller Erstattung. Buchst du weniger als 2 Std. vorher, zahlst du sofort und kannst nicht stornieren.",
+      "onsiteCancelUntil": "Kostenlose Stornierung ohne Gebühren bis {deadline} über „Meine Buchungen“.",
+      "onsiteProviderCancel": "Auch der Betrieb kann bis 2 Std. vorher stornieren; dann informieren wir dich per E-Mail."
     },
     "lastMinute": {
       "policy": "Diese Buchung beginnt in weniger als 2 Std.: Die Zahlung erfolgt sofort, eine Stornierung oder Erstattung ist nicht möglich. Kann das Studio dich nicht bedienen, schreib uns und wir erstatten dir 100 %.",
@@ -966,7 +1034,9 @@
       "backToProvider": "Zurück zum Studio",
       "pendingTitle": "Zahlung läuft",
       "pendingSubtitle": "Wir bestätigen die Abbuchung mit deiner Bank. Sobald sie durch ist, siehst du die Buchung unter „Meine Buchungen“.",
-      "viewMyBookings": "Meine Buchungen ansehen"
+      "viewMyBookings": "Meine Buchungen ansehen",
+      "onsiteSubtitle": "Du bezahlst {amount} vor Ort. Die Details findest du unter „Meine Buchungen“.",
+      "onsiteTotalLabel": "Vor Ort zu zahlen"
     },
     "checkout": {
       "loadingTitle": "Zahlung wird vorbereitet",
@@ -985,6 +1055,42 @@
       "signUp": "Konto erstellen",
       "draftKeptHint": "Wir merken uns deinen Termin und deine Notizen: Wenn du zurückkommst, machst du genau dort weiter.",
       "chooseAnotherSlot": "Anderen Termin wählen"
+    },
+    "paymentMethod": {
+      "legend": "Wie möchtest du bezahlen?",
+      "online": {
+        "title": "Jetzt online bezahlen",
+        "hint": "Sicher mit Karte. Kostenlose Stornierung bis 2 Std. vorher, mit voller Erstattung."
+      },
+      "onsite": {
+        "title": "Vor Ort bezahlen",
+        "hint": "Du bezahlst am Termin direkt vor Ort. Kostenlose Stornierung ohne Gebühren bis 2 Std. vorher.",
+        "lastMinute": "Nicht verfügbar: Buchungen, die in weniger als 2 Std. beginnen, werden bei der Buchung online bezahlt.",
+        "restricted": "Derzeit nicht verfügbar: Nach 3 nicht wahrgenommenen Terminen ohne Stornierung in 12 Monaten kann 3 Monate lang nur mit Online-Zahlung gebucht werden.",
+        "restrictedUntil": "Bis {date} nicht verfügbar: Nach 3 nicht wahrgenommenen Terminen ohne Stornierung in 12 Monaten kann 3 Monate lang nur mit Online-Zahlung gebucht werden."
+      }
+    },
+    "onsite": {
+      "amountLabel": "Vor Ort zu zahlen",
+      "noShowNotice": "Wenn du nicht kommen kannst, storniere bis 2 Std. vorher über „Meine Buchungen“. Erscheinst du ohne Stornierung nicht, zählt das als 1 nicht wahrgenommener Termin; bei 3 in 12 Monaten kannst du 3 Monate lang nur mit Online-Zahlung buchen.",
+      "confirm": "Buchung bestätigen",
+      "confirming": "Wird bestätigt …",
+      "payAtVenueNote": "Wir berechnen dir jetzt nichts: Du bezahlst direkt vor Ort.",
+      "errors": {
+        "title": "Wir konnten deine Buchung nicht bestätigen",
+        "unauthenticated": "Zum Buchen brauchst du ein Konto. Melde dich an oder registriere dich, dann geht es weiter.",
+        "slotUnavailable": "Diese Uhrzeit wurde gerade vergeben. Wähle eine andere.",
+        "slotTooSoon": "Diese Uhrzeit liegt jetzt zu nah, um sie zu buchen. Wähle eine andere.",
+        "serviceUnavailable": "Diese Leistung kann nicht mehr gebucht werden. Wähle eine andere Uhrzeit oder Leistung.",
+        "pendingAlreadyPaid": "Du hattest diese Buchung bereits online bezahlt. Du findest sie unter „Meine Buchungen“.",
+        "lastMinute": "Diese Uhrzeit beginnt in weniger als 2 Std.: Sie kann nur mit Online-Zahlung gebucht werden.",
+        "restricted": "Im Moment kannst du nur mit Online-Zahlung buchen.",
+        "restrictedUntil": "Bis {date} kannst du nur mit Online-Zahlung buchen.",
+        "notOffered": "Dieser Betrieb akzeptiert keine Zahlung vor Ort mehr. Du kannst online bezahlen.",
+        "generic": "Beim Bestätigen der Buchung ist etwas schiefgelaufen. Versuche es erneut.",
+        "payOnline": "Online bezahlen",
+        "viewMyBookings": "Meine Buchungen ansehen"
+      }
     }
   },
   "customerArea": {
@@ -1098,6 +1204,11 @@
         "VALIDATION": "Prüfe Bewertung und Text und versuche es erneut.",
         "INTERNAL": "Die Bewertung konnte nicht veröffentlicht werden. Bitte versuche es in ein paar Minuten erneut."
       }
+    },
+    "paymentOnsite": "Zahlung vor Ort",
+    "onsiteRestriction": {
+      "title": "Im Moment kannst du nur online bezahlen",
+      "body": "Du hast in den letzten 12 Monaten 3 Termine ohne Stornierung nicht wahrgenommen. Bis {date} werden deine Buchungen bei der Buchung online bezahlt."
     }
   },
   "adminArea": {
@@ -1109,7 +1220,8 @@
       "dashboard": "Dashboard",
       "queue": "Warteschlange",
       "exit": "Panel verlassen",
-      "refunds": "Fehlgeschlagene Erstattungen"
+      "refunds": "Fehlgeschlagene Erstattungen",
+      "sanctions": "Sanktionen"
     },
     "dashboard": {
       "title": "Operative Übersicht",
@@ -1240,6 +1352,44 @@
           "VALIDATION": "Die Erstattung für {provider} konnte nicht verworfen werden: ungültige Kennung.",
           "FORBIDDEN": "Deine Sitzung hat keine Admin-Rechte, um die Erstattung für {provider} zu verwerfen.",
           "INTERNAL": "Unerwarteter Fehler beim Verwerfen der Erstattung für {provider}. Versuche es in ein paar Minuten erneut."
+        }
+      }
+    },
+    "sanctions": {
+      "meta": {
+        "title": "Sanktionen · Admin"
+      },
+      "title": "Sanktionen wegen Nichterscheinens",
+      "subtitle": "Aktive Sanktionen von Kundschaft, die zu einem Termin mit Zahlung vor Ort nicht erschienen ist. Nach den 24 Std., in denen der Betrieb es rückgängig machen kann, kann nur der Support sie aufheben.",
+      "filter": {
+        "label": "E-Mail der Kundschaft",
+        "placeholder": "kunde@beispiel.de",
+        "submit": "Suchen"
+      },
+      "empty": "Es gibt keine aktiven Sanktionen.",
+      "emptyFiltered": "Es gibt keine aktiven Sanktionen für „{email}“.",
+      "fields": {
+        "client": "Kundschaft",
+        "provider": "Betrieb und Leistung",
+        "occurredAt": "Termin",
+        "booking": "Buchung"
+      },
+      "revoke": {
+        "label": "Sanktion aufheben",
+        "aria": "Sanktion von {email} aufheben",
+        "reasonLabel": "Grund",
+        "reasonHint": "Pflichtfeld, mindestens {min} Zeichen. Wird protokolliert.",
+        "reasonTooShort": "Gib einen Grund mit mindestens {min} Zeichen an.",
+        "confirm": "Sanktion aufheben",
+        "cancel": "Abbrechen",
+        "pending": "Wird aufgehoben …",
+        "errors": {
+          "NOT_FOUND": "Diese Sanktion existiert nicht mehr.",
+          "ALREADY_REVOKED": "Diese Sanktion war bereits aufgehoben. Lade die Seite neu.",
+          "INVALID_REASON": "Prüfe den Grund.",
+          "VALIDATION": "Aufheben nicht möglich. Lade die Seite neu und versuche es erneut.",
+          "FORBIDDEN": "Du hast keine Berechtigung, Sanktionen aufzuheben.",
+          "INTERNAL": "Aufheben nicht möglich. Versuche es in ein paar Minuten erneut."
         }
       }
     }

@@ -80,3 +80,27 @@ async function isStillOpen(sessionId: string): Promise<boolean> {
     return true;
   }
 }
+
+/**
+ * El Customer tiene abierta una sesión de Checkout de plan. Mientras lo
+ * esté, un concepto de comisión suelto entraría en la primera factura de
+ * la suscripción sin aparecer en la página de pago: `itemizeCommission`
+ * lo aplaza.
+ *
+ * @throws BillingStripeError — si Stripe no responde.
+ */
+export async function hasOpenPlanCheckout(customerId: string): Promise<boolean> {
+  try {
+    const list = await getStripeClient().checkout.sessions.list(
+      { customer: customerId, status: 'open', limit: 20 },
+      { timeout: 10_000 },
+    );
+    return list.data.some(
+      (session) =>
+        session.mode === 'subscription' &&
+        providerMetadataSchema.safeParse(session.metadata).success,
+    );
+  } catch (err) {
+    throw new BillingStripeError('Could not list open checkout sessions.', err);
+  }
+}

@@ -6,6 +6,7 @@ import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
 import { DiscountedPrice } from '../DiscountedPrice';
 import { LastMinuteNotice } from '../LastMinuteNotice';
+import { PaymentMethodPicker } from '../PaymentMethodPicker';
 
 import {
   formatCancellationDeadline,
@@ -36,6 +37,9 @@ export function BookingSummary({
   price,
   isLastMinute,
   onNotesChange,
+  paymentOptions,
+  paymentMethod = 'online',
+  onPaymentMethodChange,
 }: BookingSummaryProps) {
   const t = useTranslations('booking.summary');
   const tPolicy = useTranslations('booking.policy');
@@ -48,6 +52,13 @@ export function BookingSummary({
   // Con descuento y sin reserva todavía, el importe es una previsión:
   // el tramo puede cambiar antes de abrir el pago y manda el servidor.
   const isEstimatedOffer = price.isEstimate && price.discountPct !== null;
+  const isOnsite = paymentMethod === 'onsite';
+  const totalLabel = isEstimatedOffer
+    ? tOffer('estimatedPriceLabel')
+    : isOnsite
+      ? t('onsiteTotalLabel')
+      : t('totalLabel');
+  const deadline = formatCancellationDeadline(slotStartIso, locale);
 
   return (
     <div className={s.root} data-component="booking-summary">
@@ -94,9 +105,7 @@ export function BookingSummary({
           <dd className={s.rowValue}>{t('anyProfessional')}</dd>
         </div>
         <div className={s.row}>
-          <dt className={s.rowLabel}>
-            {isEstimatedOffer ? tOffer('estimatedPriceLabel') : t('totalLabel')}
-          </dt>
+          <dt className={s.rowLabel}>{totalLabel}</dt>
           <dd className={s.rowValueStrong}>
             <DiscountedPrice
               amountCents={price.amountCents}
@@ -114,6 +123,15 @@ export function BookingSummary({
           </dd>
         </div>
       </dl>
+
+      {paymentOptions && onPaymentMethodChange && (
+        <PaymentMethodPicker
+          options={paymentOptions}
+          value={paymentMethod}
+          onChange={onPaymentMethodChange}
+          locale={locale}
+        />
+      )}
 
       <div className={s.notesBlock}>
         <label className={s.notesLabel} htmlFor="booking-summary-notes">
@@ -139,11 +157,11 @@ export function BookingSummary({
             {tPolicy('title')}
           </h4>
           <p data-component="booking-summary-cancel-until">
-            {tPolicy('cancelUntil', {
-              deadline: formatCancellationDeadline(slotStartIso, locale),
-            })}
+            {isOnsite
+              ? tPolicy('onsiteCancelUntil', { deadline })
+              : tPolicy('cancelUntil', { deadline })}
           </p>
-          <p>{tPolicy('providerCancel')}</p>
+          <p>{isOnsite ? tPolicy('onsiteProviderCancel') : tPolicy('providerCancel')}</p>
         </section>
       )}
     </div>

@@ -25,6 +25,8 @@ interface BookingCancelButtonProps {
   initialCancellable: boolean;
   /** En modo preview el botón se muestra pero no ejecuta nada. */
   disabled?: boolean;
+  /** En el local no hay cobro: el diálogo no promete reembolso. */
+  paymentMode?: 'online' | 'onsite';
 }
 
 /** Códigos de error que este botón sabe contar al proveedor. */
@@ -57,8 +59,13 @@ export function BookingCancelButton({
   startAtIso,
   initialCancellable,
   disabled = false,
+  paymentMode = 'online',
 }: BookingCancelButtonProps) {
   const t = useTranslations('providerPanel.calendar.actions.cancel');
+  // En el local no hubo cobro: nada que reembolsar.
+  const isOnsite = paymentMode === 'onsite';
+  const description = isOnsite ? t('confirmDescriptionOnsite') : t('confirmDescription');
+  const confirmLabel = isOnsite ? t('confirmActionOnsite') : t('confirmAction');
   const [open, setOpen] = useState(false);
   const [errorCode, setErrorCode] = useState<CancelErrorCode | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -139,7 +146,7 @@ export function BookingCancelButton({
           >
             <AlertDialog.Title className={d.title}>{t('confirmTitle')}</AlertDialog.Title>
             <AlertDialog.Description className={d.description}>
-              {t('confirmDescription')}
+              {description}
             </AlertDialog.Description>
 
             {errorCode && (
@@ -166,7 +173,7 @@ export function BookingCancelButton({
                 onClick={handleConfirm}
                 data-component={`booking-actions-cancel-confirm-${bookingId}`}
               >
-                {isPending ? t('pending') : t('confirmAction')}
+                {isPending ? t('pending') : confirmLabel}
               </Button>
             </div>
           </AlertDialog.Content>

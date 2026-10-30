@@ -43,6 +43,7 @@ describe('saveBookingDraft / loadBookingDraft', () => {
       slotEndIso: FUTURE_END,
       notes: 'Primera vez',
       bookingId: 'bk-1',
+      paymentMethod: 'onsite',
     });
 
     // Antes del debounce todavía no hay nada escrito.
@@ -54,6 +55,7 @@ describe('saveBookingDraft / loadBookingDraft', () => {
       slotStartIso: FUTURE_START,
       slotEndIso: FUTURE_END,
       notes: 'Primera vez',
+      paymentMethod: 'onsite',
     });
   });
 
@@ -66,6 +68,7 @@ describe('saveBookingDraft / loadBookingDraft', () => {
       slotEndIso: FUTURE_END,
       notes: '',
       bookingId: 'bk-de-otro',
+      paymentMethod: 'online',
     });
     vi.advanceTimersByTime(300);
 
@@ -90,6 +93,7 @@ describe('saveBookingDraft / loadBookingDraft', () => {
       slotEndIso: FUTURE_END,
       notes: 'x',
       bookingId: null,
+      paymentMethod: 'online',
     });
     clearBookingDraft();
     vi.advanceTimersByTime(300);
@@ -113,6 +117,7 @@ describe('restoreBookingDraft', () => {
         slotEndIso: FUTURE_END,
         notes: 'Vengo con mi hija',
         bookingId: null,
+        paymentMethod: 'online',
       },
       slotExpired: false,
     });
@@ -135,6 +140,7 @@ describe('restoreBookingDraft', () => {
         slotEndIso: null,
         notes: 'Alérgica al amoníaco',
         bookingId: null,
+        paymentMethod: 'online',
       },
       slotExpired: true,
     });
@@ -146,6 +152,14 @@ describe('restoreBookingDraft', () => {
     const restored = restoreBookingDraft(SERVICE_ID, NOW);
     expect(restored?.slotExpired).toBe(false);
     expect(restored?.draft.notes).toBe('Sólo notas');
+  });
+
+  it('restaura la preferencia de pagar en el local; un valor desconocido cae a online', () => {
+    writeRaw({ serviceId: SERVICE_ID, slotStartIso: null, notes: '', paymentMethod: 'onsite' });
+    expect(restoreBookingDraft(SERVICE_ID, NOW)?.draft.paymentMethod).toBe('onsite');
+
+    writeRaw({ serviceId: SERVICE_ID, slotStartIso: null, notes: '', paymentMethod: 'bizum' });
+    expect(restoreBookingDraft(SERVICE_ID, NOW)?.draft.paymentMethod).toBe('online');
   });
 
   it('devuelve null si no hay nada guardado', () => {

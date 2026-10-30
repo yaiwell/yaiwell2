@@ -38,7 +38,14 @@ export function buildClientCancellationEmail(
   if (refund === 'refund_uncertain') {
     paragraphs.push(t('bookingCancelled.refundUncertain', { amount }));
   }
-  if (refund === 'no_payment') paragraphs.push(t('clientCancelled.noPayment'));
+  if (refund === 'no_payment') {
+    // Iba a pagar en el local: la cancelación a tiempo es «sin cargo».
+    paragraphs.push(
+      ctx.paymentMode === 'onsite'
+        ? t('clientCancelled.onsiteNoCharge')
+        : t('clientCancelled.noPayment'),
+    );
+  }
   return {
     subject: t('clientCancelled.subject', { provider: ctx.provider.name }),
     heading: t('clientCancelled.heading'),

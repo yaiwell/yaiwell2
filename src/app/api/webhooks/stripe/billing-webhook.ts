@@ -3,6 +3,7 @@ import type Stripe from 'stripe';
 
 import { BillingProviderNotFoundError, handleBillingEvent } from '@/lib/services/billing';
 import {
+  notifyCommissionPaymentFailed,
   notifyPlanDowngraded,
   notifyPlanPaymentFailed,
   scheduleNotification,
@@ -18,7 +19,8 @@ interface BillingWebhookResponse {
 
 /**
  * Rama de Stripe Billing del webhook (`checkout.session.completed` de
- * suscripción, `customer.subscription.*`, `invoice.*`). Separada de
+ * suscripción o de setup, `customer.subscription.*`, `invoice.*` de planes
+ * y de comisiones del pago en el local). Separada de
  * `route.ts` para que cada fichero se quede en una responsabilidad.
  *
  * Misma política de respuestas que el resto del webhook: 200 si el
@@ -29,9 +31,15 @@ interface BillingWebhookResponse {
 export async function respondToBillingEvent(event: Stripe.Event): Promise<NextResponse> {
   try {
     const result = await handleBillingEvent(event);
-    const { providerId, planChanged, paymentFailedKey } = result;
+    const { providerId, planChanged, paymentFailedKey, commissionPaymentFailedKey } = result;
     if (providerId && paymentFailedKey) {
       scheduleNotification(() => notifyPlanPaymentFailed(providerId, paymentFailedKey));
+    }
+    // Comisiones del pago en el local impagadas: el pago en el local queda suspendido.
+    if (providerId && commissionPaymentFailedKey) {
+      scheduleNotification(() =>
+        notifyCommissionPaymentFailed(providerId, commissionPaymentFailedKey),
+      );
     }
     if (providerId && planChanged?.to === 'free' && planChanged.from !== 'free') {
       const { from } = planChanged;

@@ -3,11 +3,12 @@ import { describe, expect, it } from 'vitest';
 import {
   NO_SHOW_MARK_WINDOW_MS,
   NO_SHOW_UNDO_WINDOW_MS,
+  canCompleteBooking,
   canMarkNoShow,
   canUndoNoShow,
   getNoShowMarkWindow,
-  getOnsiteAutoCompleteCutoff,
-  isOnsiteAutoCompleteDue,
+  getAutoCompleteCutoff,
+  isAutoCompleteDue,
 } from './booking-no-show';
 
 const START = new Date('2026-11-02T10:00:00.000Z');
@@ -76,23 +77,44 @@ describe('canUndoNoShow', () => {
   });
 });
 
-describe('cierre automático de reservas en el local', () => {
+describe('cierre automático de reservas', () => {
   it('a las 72 h justas aún no; un instante después sí', () => {
-    expect(isOnsiteAutoCompleteDue(START, at(72 * HOUR))).toBe(false);
-    expect(isOnsiteAutoCompleteDue(START, at(72 * HOUR + 1))).toBe(true);
+    expect(isAutoCompleteDue(START, at(72 * HOUR))).toBe(false);
+    expect(isAutoCompleteDue(START, at(72 * HOUR + 1))).toBe(true);
   });
 
   it('el corte del cron es now − 72 h', () => {
     const now = at(100 * HOUR);
-    expect(getOnsiteAutoCompleteCutoff(now).getTime()).toBe(at(28 * HOUR).getTime());
+    expect(getAutoCompleteCutoff(now).getTime()).toBe(at(28 * HOUR).getTime());
   });
 
   it('el cierre automático empieza justo donde acaba la ventana de no presentado', () => {
     const boundary = at(NO_SHOW_MARK_WINDOW_MS);
     expect(canMarkNoShow({ status: 'confirmed', startAt: START }, boundary)).toBe(true);
-    expect(isOnsiteAutoCompleteDue(START, boundary)).toBe(false);
+    expect(isAutoCompleteDue(START, boundary)).toBe(false);
     const after = at(NO_SHOW_MARK_WINDOW_MS + 1);
     expect(canMarkNoShow({ status: 'confirmed', startAt: START }, after)).toBe(false);
-    expect(isOnsiteAutoCompleteDue(START, after)).toBe(true);
+    expect(isAutoCompleteDue(START, after)).toBe(true);
+  });
+});
+
+describe('canCompleteBooking', () => {
+  const START = new Date('2026-11-10T12:00:00.000Z');
+
+  it('a partir del inicio, solo si está confirmada', () => {
+    expect(canCompleteBooking({ status: 'confirmed', startAt: START }, START)).toBe(true);
+    expect(
+      canCompleteBooking({ status: 'confirmed', startAt: START }, new Date(START.getTime() + 1)),
+    ).toBe(true);
+    expect(canCompleteBooking({ status: 'pending', startAt: START }, START)).toBe(false);
+  });
+
+  it('1 minuto antes del inicio no se puede', () => {
+    expect(
+      canCompleteBooking(
+        { status: 'confirmed', startAt: START },
+        new Date(START.getTime() - 60_000),
+      ),
+    ).toBe(false);
   });
 });

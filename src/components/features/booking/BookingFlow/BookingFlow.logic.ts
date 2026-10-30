@@ -8,19 +8,15 @@ import { creatingCheckout, readyCheckout } from './BookingFlow.checkout';
 import { clearBookingDraft } from './BookingFlow.draft';
 import { useBookingDraft } from './BookingFlow.persistence';
 import { useBookingPaymentStatus } from './BookingFlow.status';
-import type { BookingDraft, BookingStep, CheckoutState } from './BookingFlow.types';
+import { BOOKING_STEPS, nextStep, previousStep } from './BookingFlow.steps';
+import type {
+  BookingDraft,
+  BookingPaymentMethod,
+  BookingStep,
+  CheckoutState,
+} from './BookingFlow.types';
 
-/**
- * Orden de los pasos del flujo. Se centraliza aquí para que el componente
- * y el indicador visual compartan la misma fuente de verdad y no sea
- * posible "desincronizarse" al añadir o reordenar pasos en el futuro.
- */
-export const BOOKING_STEPS: readonly BookingStep[] = [
-  'slot',
-  'summary',
-  'payment',
-  'confirmation',
-] as const;
+export { BOOKING_STEPS } from './BookingFlow.steps';
 
 /**
  * Hook que gestiona el estado del flujo de reserva.
@@ -48,16 +44,10 @@ export function useBookingFlow(args: { serviceId: string }) {
   // `slotExpired` avisa de que el hueco guardado ya no admite reserva.
   const { draft, setDraft, slotExpired, setSlotExpired } = useBookingDraft(serviceId);
 
-  // Espejos del estado en refs para poder consultarlo dentro de los
-  // callbacks sin meterlo en sus dependencias (y sin ejecutar efectos
-  // dentro de los updaters de `useState`, que React puede invocar dos
-  // veces en StrictMode).
-  //
-  // La sincronización va en un efecto, no en el cuerpo del render:
-  // escribir una ref durante el render es justo lo que hace que React
-  // pueda leer un valor obsoleto tras un re-render interrumpido. Los
-  // handlers corren siempre después del commit, así que leen el valor
-  // ya actualizado.
+  // Espejos del estado en refs para leerlo en los callbacks sin meterlo
+  // en sus dependencias. Se sincronizan en un efecto, no en el render:
+  // escribir una ref al renderizar puede dejar un valor obsoleto tras un
+  // re-render interrumpido; los handlers corren después del commit.
   const checkoutRef = useRef<CheckoutState>(checkout);
   const draftRef = useRef<BookingDraft>(draft);
 
@@ -120,30 +110,25 @@ export function useBookingFlow(args: { serviceId: string }) {
     setCheckout(readyCheckout(result, creating.estimatedLastMinute));
   }, [serviceId, draft.slotStartIso, draft.notes, setDraft]);
 
-  const goNext = useCallback(() => {
-    // El salto resumen → pago es el que dispara la creación de la
-    // reserva. Cambiamos de paso antes de esperar a la red para que el
-    // usuario vea el spinner del checkout en lugar de un botón muerto.
-    if (step === 'summary') {
-      setStep('payment');
-      void startCheckout();
-      return;
-    }
+  const goNext = useCallback(
+    (paymentMethod: BookingPaymentMethod = 'online') => {
+      // El salto resumen → pago es el que dispara la creación de la
+      // reserva online. Cambiamos de paso antes de esperar a la red para
+      // que el usuario vea el spinner del checkout en lugar de un botón
+      // muerto. En el local no se crea nada hasta «Confirmar reserva».
+      if (step === 'summary') {
+        setStep('payment');
+        if (paymentMethod === 'online') void startCheckout();
+        return;
+      }
 
-    setStep((current) => {
-      const idx = BOOKING_STEPS.indexOf(current);
-      // Si ya estamos en el último paso, no movemos. Evita estados inválidos.
-      if (idx < 0 || idx >= BOOKING_STEPS.length - 1) return current;
-      return BOOKING_STEPS[idx + 1];
-    });
-  }, [step, startCheckout]);
+      setStep(nextStep);
+    },
+    [step, startCheckout],
+  );
 
   const goBack = useCallback(() => {
-    setStep((current) => {
-      const idx = BOOKING_STEPS.indexOf(current);
-      if (idx <= 0) return current;
-      return BOOKING_STEPS[idx - 1];
-    });
+    setStep(previousStep);
   }, []);
 
   const updateDraft = useCallback(
@@ -197,6 +182,13 @@ export function useBookingFlow(args: { serviceId: string }) {
     setStep('slot');
   }, [setDraft, setSlotExpired]);
 
+  /** La reserva `pending` del checkout se soltó (cambio a pagar en el local). */
+  const discardCheckout = useCallback(() => {
+    checkoutRef.current = { status: 'idle' };
+    setCheckout({ status: 'idle' });
+    setDraft((prev) => ({ ...prev, bookingId: null }));
+  }, [setDraft]);
+
   /** Retención vencida antes de pagar (nada cobrado): el panel ofrece otra hora. */
   const expireCheckout = useCallback(() => {
     checkoutRef.current = { status: 'error', code: 'HOLD_EXPIRED' };
@@ -216,12 +208,7 @@ export function useBookingFlow(args: { serviceId: string }) {
     setStep('confirmation');
   }, []);
 
-  /**
-   * Reintento manual tras un error al abrir el checkout.
-   *
-   * No necesita resetear nada: desde `error` el guard de `startCheckout`
-   * no bloquea, así que basta con volver a llamarlo.
-   */
+  /** Reintento tras un error: desde `error` el guard de `startCheckout` no bloquea. */
   const retryCheckout = useCallback(() => {
     void startCheckout();
   }, [startCheckout]);
@@ -247,5 +234,6 @@ export function useBookingFlow(args: { serviceId: string }) {
     completePayment,
     retryCheckout,
     expireCheckout,
+    discardCheckout,
   };
 }

@@ -25,11 +25,12 @@ export const NO_SHOW_MARK_WINDOW_MS = 72 * HOUR_MS;
 export const NO_SHOW_UNDO_WINDOW_MS = 24 * HOUR_MS;
 
 /**
- * Antigüedad (desde `startAt`) a partir de la cual una reserva en el
- * local aún `confirmed` se completa sola. Es el mismo plazo que el de
- * marcar «no presentado»: o lo marcó el negocio, o se da por prestado.
+ * Antigüedad (desde `startAt`) a partir de la cual una reserva aún
+ * `confirmed` se completa sola, se pagara online o en el local (decidido
+ * 2026-10-30). Es el mismo plazo que el de marcar «no presentado»: o lo
+ * marcó el negocio, o se da por prestado.
  */
-export const ONSITE_AUTO_COMPLETE_AFTER_MS = NO_SHOW_MARK_WINDOW_MS;
+export const AUTO_COMPLETE_AFTER_MS = NO_SHOW_MARK_WINDOW_MS;
 
 /** Situación de una reserva frente a la acción «No se presentó». */
 export type NoShowMarkWindow = 'not_started' | 'open' | 'closed';
@@ -40,7 +41,7 @@ export type NoShowMarkWindow = 'not_started' | 'open' | 'closed';
  *
  * Antes del inicio no se puede marcar (el cliente aún puede llegar);
  * a las 72 h justas todavía sí, y el cierre automático empieza solo
- * cuando se supera ese instante (`isOnsiteAutoCompleteDue`).
+ * cuando se supera ese instante (`isAutoCompleteDue`).
  *
  * @param startAt — inicio de la reserva.
  * @param now — instante de referencia.
@@ -61,6 +62,15 @@ export function canMarkNoShow(booking: { status: string; startAt: Date }, now: D
 }
 
 /**
+ * Si el negocio puede marcar la reserva como finalizada: `confirmed` y ya
+ * empezada (`now >= startAt`). Antes del inicio no se ha prestado nada, y
+ * completar desbloquearía la valoración y, en el local, la comisión.
+ */
+export function canCompleteBooking(booking: { status: string; startAt: Date }, now: Date): boolean {
+  return booking.status === 'confirmed' && now.getTime() >= booking.startAt.getTime();
+}
+
+/**
  * Si el negocio puede deshacer ahora un «no presentado»: reserva
  * `no_show` marcada hace 24 h o menos (límite incluido).
  */
@@ -73,17 +83,17 @@ export function canUndoNoShow(
 }
 
 /**
- * Si una reserva en el local que sigue `confirmed` ya debe completarse
- * sola: han pasado **más** de 72 h desde su inicio.
+ * Si una reserva que sigue `confirmed` ya debe completarse sola: han
+ * pasado **más** de 72 h desde su inicio.
  */
-export function isOnsiteAutoCompleteDue(startAt: Date, now: Date): boolean {
-  return now.getTime() - startAt.getTime() > ONSITE_AUTO_COMPLETE_AFTER_MS;
+export function isAutoCompleteDue(startAt: Date, now: Date): boolean {
+  return now.getTime() - startAt.getTime() > AUTO_COMPLETE_AFTER_MS;
 }
 
 /**
  * Corte para la consulta del cron: las reservas con `startAt` anterior a
  * este instante (estrictamente) ya deben completarse solas.
  */
-export function getOnsiteAutoCompleteCutoff(now: Date): Date {
-  return new Date(now.getTime() - ONSITE_AUTO_COMPLETE_AFTER_MS);
+export function getAutoCompleteCutoff(now: Date): Date {
+  return new Date(now.getTime() - AUTO_COMPLETE_AFTER_MS);
 }

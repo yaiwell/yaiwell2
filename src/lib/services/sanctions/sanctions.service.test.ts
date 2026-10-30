@@ -19,6 +19,7 @@ import { sanctionsRepository } from './sanctions.repository';
 import {
   getClientOnsiteEligibility,
   listActiveSanctions,
+  listActiveSanctionsForSupport,
   revokeSanction,
 } from './sanctions.service';
 
@@ -38,10 +39,10 @@ describe('getClientOnsiteEligibility', () => {
     const result = await getClientOnsiteEligibility('user-1', NOW);
 
     expect(result).toEqual({ allowed: true, restrictedUntil: null, sanctionsInWindow: 0 });
-    // Solo lee 15 meses atrás y solo las vigentes.
+    // Solo lee 16 meses atrás (15 + margen por marcarla tarde) y solo las vigentes.
     const where = mockPrisma.clientSanction.findMany.mock.calls[0][0]?.where;
     expect(where).toMatchObject({ userId: 'user-1', revokedAt: null });
-    expect((where?.occurredAt as { gte: Date }).gte.toISOString()).toBe('2025-03-01T12:00:00.000Z');
+    expect((where?.occurredAt as { gte: Date }).gte.toISOString()).toBe('2025-02-01T12:00:00.000Z');
   });
 
   it('con 2 sanciones en 12 meses, permitido y cuenta 2', async () => {
@@ -173,5 +174,46 @@ describe('sanctionsRepository.activateNoShowSanction', () => {
       bookingId: 'b-1',
       revokedAt: { not: null },
     });
+  });
+});
+
+describe('listActiveSanctionsForSupport', () => {
+  const supportRow = {
+    id: SANCTION_ID,
+    bookingId: 'bk-1',
+    occurredAt: NOW,
+    createdAt: NOW,
+    user: { email: 'ana@yaiwell.com', fullName: '  ' },
+    booking: { provider: { businessName: 'Studio Aura' }, service: { name: { es: 'Corte' } } },
+  };
+
+  it('filtra por email (contiene, sin mayúsculas) y aplana la fila', async () => {
+    mockPrisma.clientSanction.findMany.mockResolvedValue([supportRow] as never);
+
+    const result = await listActiveSanctionsForSupport({ email: '  Ana@ ' });
+
+    const args = mockPrisma.clientSanction.findMany.mock.calls[0][0];
+    expect(args?.where).toEqual({
+      revokedAt: null,
+      user: { email: { contains: 'Ana@', mode: 'insensitive' } },
+    });
+    expect(result).toEqual([
+      {
+        id: SANCTION_ID,
+        bookingId: 'bk-1',
+        occurredAt: NOW,
+        createdAt: NOW,
+        clientEmail: 'ana@yaiwell.com',
+        clientName: null,
+        providerName: 'Studio Aura',
+        serviceName: { es: 'Corte' },
+      },
+    ]);
+  });
+
+  it('sin filtro (o vacío) lista todas las vigentes', async () => {
+    mockPrisma.clientSanction.findMany.mockResolvedValue([]);
+    await listActiveSanctionsForSupport({ email: '' });
+    expect(mockPrisma.clientSanction.findMany.mock.calls[0][0]?.where).toEqual({ revokedAt: null });
   });
 });

@@ -11,20 +11,26 @@
     "clientLabel": "Client",
     "notesLabel": "Client notes",
     "paidLabel": "Total paid",
-    "discountNote": "{pct}% discount applied (usual price {original})"
+    "discountNote": "{pct}% discount applied (usual price {original})",
+    "payAtVenueLabel": "To pay at the venue"
   },
   "bookingConfirmed": {
     "subject": "Booking confirmed at {provider}",
     "heading": "Your booking is confirmed",
     "intro": "We have received your payment. {provider} is expecting you.",
     "cta": "View my bookings",
-    "lastMinute": "This is a last-minute booking: it starts less than 2 hours after you made it, so the payment is non-refundable."
+    "lastMinute": "This is a last-minute booking: it starts less than 2 hours after you made it, so the payment is non-refundable.",
+    "onsiteIntro": "Your booking at {provider} is confirmed. You’ll pay {amount} at the venue on the day.",
+    "onsiteNoShow": "If you can’t make it, cancel from “My bookings” up to 2 hours before, at no charge. If you don’t show up without cancelling, it counts as 1 missed appointment; with 3 in 12 months, you’ll only be able to book paying online for 3 months."
   },
   "providerNewBooking": {
     "subject": "New booking: {service}, {when}",
     "heading": "You have a new booking",
     "intro": "{client} has booked and paid online.",
-    "cta": "Open the calendar"
+    "cta": "Open the calendar",
+    "onsiteIntro": "{client} has booked and will pay at your venue.",
+    "onsiteCommission": "Charge {amount} at your venue. We’ll charge you Yaiwell’s commission ({commission}) on your monthly invoice once the appointment is completed.",
+    "onsiteNoShow": "If they don’t show up, mark it from the panel calendar: you won’t pay commission for this booking."
   },
   "bookingCancelled": {
     "subject": "{provider} has cancelled your booking",
@@ -40,7 +46,8 @@
     "heading": "Booking cancelled",
     "intro": "We have cancelled your booking at {provider}, as you asked.",
     "noPayment": "You had not been charged for this booking, so there is nothing to refund.",
-    "cta": "Find another time"
+    "cta": "Find another time",
+    "onsiteNoCharge": "You were going to pay at the venue, so the cancellation is free of charge."
   },
   "providerClientCancelled": {
     "subject": "Cancellation: {service}, {when}",
@@ -81,7 +88,8 @@
     "subject": "Your appointment at {provider} is tomorrow",
     "heading": "See you tomorrow",
     "intro": "A quick reminder of your appointment tomorrow at {provider}.",
-    "cta": "View my bookings"
+    "cta": "View my bookings",
+    "onsite": "Remember you pay {amount} at the venue. If you can’t make it, cancel from “My bookings” up to 2 hours before, at no charge."
   },
   "providerApproved": {
     "subject": "{provider} is now live on Yaiwell",
@@ -115,5 +123,32 @@
     "intro": "The {plan} plan subscription for {provider} has ended and the business has moved to the Free plan.",
     "next": "If you had more published services than the Free plan allows, we have hidden the extra ones. They will show again as soon as you take out a paid plan.",
     "cta": "See the plans"
+  },
+  "commissionPaymentFailed": {
+    "subject": "We couldn't collect the commissions for {provider}",
+    "heading": "Check your payment method",
+    "intro": "We tried to collect the commission invoice for the bookings paid at the venue of {provider} and the payment didn't go through.",
+    "next": "While it remains unpaid, your clients won't be able to choose paying at the venue for new bookings; online payment keeps working. As soon as the invoice is paid, paying at the venue becomes available again.",
+    "cta": "Review the payment"
+  },
+  "onsiteCommission": {
+    "itemDescription": "Yaiwell commission · {service} · booking paid at the venue on {date}",
+    "invoiceDescription": "Yaiwell commissions for bookings paid at the venue"
+  },
+  "noShow": {
+    "subject": "{provider} says you missed your appointment",
+    "heading": "You missed your appointment",
+    "intro": "{provider} has reported that you didn’t show up for your appointment.",
+    "online": "As you paid online, the amount ({amount}) isn’t refunded.",
+    "onsiteSanction": "You were going to pay at the venue, so 1 penalty has been added to your account: you have {count} of 3 in the last 12 months.",
+    "onsiteRestricted": "With 3 penalties in 12 months, until {date} you’ll only be able to book paying online.",
+    "support": "If you think this is a mistake, write to us at {email} and we’ll look into it.",
+    "cta": "Contact support"
+  },
+  "noShowUndone": {
+    "subject": "{provider} has corrected your appointment: no missed appointment recorded",
+    "heading": "Missed appointment removed",
+    "intro": "{provider} has corrected the previous notice: your appointment is no longer recorded as missed.",
+    "sanctionRevoked": "We’ve removed the penalty from your account: it no longer counts towards the limit of 3 in 12 months."
   }
 }

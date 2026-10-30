@@ -40,6 +40,9 @@ export function AdminShell({ children }: AdminShellProps) {
           <Link href="/admin/reembolsos" className={s.navLink} data-component="admin-nav-refunds">
             {t('nav.refunds')}
           </Link>
+          <Link href="/admin/sanciones" className={s.navLink} data-component="admin-nav-sanctions">
+            {t('nav.sanctions')}
+          </Link>
           <Link href="/" className={s.navLink} data-component="admin-nav-exit">
             {t('nav.exit')}
           </Link>

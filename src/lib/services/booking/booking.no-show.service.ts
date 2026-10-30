@@ -19,7 +19,7 @@ import { getClientOnsiteEligibility, sanctionsRepository } from '@/lib/services/
 import {
   NO_SHOW_UNDO_WINDOW_MS,
   getNoShowMarkWindow,
-  isOnsiteAutoCompleteDue,
+  isAutoCompleteDue,
 } from '@/lib/utils/booking-no-show';
 
 import { commitCompletion } from './booking.complete';
@@ -162,7 +162,7 @@ export async function undoBookingNoShow(
     sanctionRevoked = (await sanctionsRepository.revokeByBooking(bookingId, revocation, tx)) > 0;
   };
 
-  if (isOnsiteAutoCompleteDue(booking.startAt, now)) {
+  if (isAutoCompleteDue(booking.startAt, now)) {
     const outcome = await commitCompletion(booking, 'no_show', now, revokeSanction);
     if (!outcome) throw new BookingNotNoShowError();
     return {

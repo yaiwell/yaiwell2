@@ -16,7 +16,13 @@ import { WeekNavigation } from './WeekNavigation';
 import type { PanelBookingStatus, WeeklyCalendarProps } from './WeeklyCalendar.types';
 
 /** Estados que se muestran en la leyenda (orden visible). */
-const LEGEND_STATUSES: PanelBookingStatus[] = ['confirmed', 'pending', 'completed', 'cancelled'];
+const LEGEND_STATUSES: PanelBookingStatus[] = [
+  'confirmed',
+  'pending',
+  'completed',
+  'cancelled',
+  'no_show',
+];
 
 /**
  * Calendario semanal del panel del proveedor.

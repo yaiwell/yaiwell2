@@ -31,8 +31,11 @@ export const bookingCardStyles = {
   statusCompleted: 'bg-status-info text-status-info-foreground ring-status-info-foreground/30',
   statusCancelled: 'bg-destructive/15 text-destructive ring-destructive/30',
   statusRefunded: 'bg-muted text-muted-foreground ring-border',
-  // Provisional (migración 9f): la pieza de UI del pago en el local
-  // decidirá su color definitivo.
-  statusNoShow: 'bg-muted text-muted-foreground ring-border',
+  // No presentado: par `status-busy` (neutro cálido, AA en ambos modos),
+  // distinto del rojo de cancelada: la cita no se canceló, se perdió.
+  statusNoShow: 'bg-status-busy text-status-busy-foreground ring-status-busy-foreground/30',
+  // «Pago en el local»: dato de la reserva, no un estado.
+  paymentChip:
+    'inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground/80',
   blockedHint: 'text-xs text-muted-foreground',
 } as const;

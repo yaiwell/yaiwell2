@@ -4,7 +4,11 @@ import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
-import { formatSlotDateLong, formatSlotTimeOnly } from '../BookingSummary/BookingSummary.logic';
+import {
+  formatPriceCents,
+  formatSlotDateLong,
+  formatSlotTimeOnly,
+} from '../BookingSummary/BookingSummary.logic';
 import { DiscountedPrice } from '../DiscountedPrice';
 
 import { bookingConfirmationStyles as s } from './BookingConfirmation.styles';
@@ -30,12 +34,20 @@ export function BookingConfirmation({
   originalPriceCents = null,
   discountPct = null,
   paymentPending = false,
+  paymentMode = 'online',
 }: BookingConfirmationProps) {
   const t = useTranslations('booking.confirmation');
 
   // `en` y `de` son opcionales en `LocalizedText`: indexar a pelo dejaba
   // el nombre del servicio en blanco en esos dos idiomas.
   const serviceName = pickLocalized(service.name, locale);
+  const isOnsite = paymentMode === 'onsite';
+  // En el local no hay cobro que esperar: la reserva ya nace confirmada.
+  const subtitle = isOnsite
+    ? t('onsiteSubtitle', { amount: formatPriceCents(amountCents, locale) })
+    : paymentPending
+      ? t('pendingSubtitle')
+      : t('subtitle');
 
   return (
     <div className={s.root} data-component="booking-confirmation">
@@ -44,8 +56,10 @@ export function BookingConfirmation({
       </span>
 
       <div className={s.titleBlock}>
-        <h2 className={s.title}>{paymentPending ? t('pendingTitle') : t('title')}</h2>
-        <p className={s.subtitle}>{paymentPending ? t('pendingSubtitle') : t('subtitle')}</p>
+        <h2 className={s.title}>{paymentPending && !isOnsite ? t('pendingTitle') : t('title')}</h2>
+        <p className={s.subtitle} data-component="booking-confirmation-subtitle">
+          {subtitle}
+        </p>
       </div>
 
       <dl className={s.detailsCard}>
@@ -73,7 +87,7 @@ export function BookingConfirmation({
           </dd>
         </div>
         <div className={s.row}>
-          <dt className={s.rowLabel}>{t('totalLabel')}</dt>
+          <dt className={s.rowLabel}>{isOnsite ? t('onsiteTotalLabel') : t('totalLabel')}</dt>
           {/* Con hueco liberado, el precio de referencia sale tachado
               junto a lo pagado; ambos vienen congelados en la reserva. */}
           <dd className={s.rowValue}>

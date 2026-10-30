@@ -122,6 +122,7 @@ export async function createBooking(
       // hueco liberado con descuento) se serializan, y el segundo ya ve
       // la reserva del primero en la comprobación de solape.
       await bookingRepository.lockProfessional(tx, data.professionalId);
+      if (options.precondition) await options.precondition(tx);
 
       const overlapping = await bookingRepository.findOverlapping(
         data.professionalId,

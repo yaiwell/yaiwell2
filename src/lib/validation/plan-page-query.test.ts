@@ -6,7 +6,14 @@ describe('parsePlanPageQuery', () => {
   it('lee la vuelta del Checkout', () => {
     expect(
       parsePlanPageQuery({ checkout: 'success', session_id: 'cs_test_abc', plan: 'pro' }),
-    ).toEqual({ checkout: 'success', sessionId: 'cs_test_abc', plan: 'pro' });
+    ).toEqual({ checkout: 'success', sessionId: 'cs_test_abc', plan: 'pro', onsiteSetup: null });
+  });
+
+  it('lee la vuelta del Checkout de setup del cobro en el local', () => {
+    expect(
+      parsePlanPageQuery({ onsite_setup: 'success', session_id: 'cs_test_setup' }),
+    ).toMatchObject({ onsiteSetup: 'success', sessionId: 'cs_test_setup', checkout: null });
+    expect(parsePlanPageQuery({ onsite_setup: 'otro' }).onsiteSetup).toBeNull();
   });
 
   it('descarta valores desconocidos sin romper', () => {
@@ -14,6 +21,7 @@ describe('parsePlanPageQuery', () => {
       checkout: null,
       sessionId: null,
       plan: null,
+      onsiteSetup: null,
     });
   });
 

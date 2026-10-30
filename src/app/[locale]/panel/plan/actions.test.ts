@@ -22,7 +22,12 @@ const mocks = vi.hoisted(() => {
   class VatTaxRateNotConfiguredError extends Error {}
   class BillingPortalNotConfiguredError extends Error {}
   class PlanChangeNotAllowedError extends Error {}
+  class OnsiteCommissionDebtError extends Error {}
+  class OnsitePaymentMethodMissingError extends Error {}
   return {
+    createOnsiteSetupSession: vi.fn(),
+    setOnsitePaymentAcceptance: vi.fn(),
+    revalidatePath: vi.fn(),
     getCurrentRole: vi.fn(),
     getCurrentProviderId: vi.fn(),
     createPlanCheckoutSession: vi.fn(),
@@ -38,6 +43,8 @@ const mocks = vi.hoisted(() => {
       VatTaxRateNotConfiguredError,
       BillingPortalNotConfiguredError,
       PlanChangeNotAllowedError,
+      OnsiteCommissionDebtError,
+      OnsitePaymentMethodMissingError,
     },
   };
 });
@@ -46,6 +53,7 @@ vi.mock('@/lib/auth/server', () => ({
   getCurrentRole: mocks.getCurrentRole,
   getCurrentProviderId: mocks.getCurrentProviderId,
 }));
+vi.mock('next/cache', () => ({ revalidatePath: mocks.revalidatePath }));
 vi.mock('@/lib/seo/site-url', () => ({ SITE_URL: 'https://yaiwell2.vercel.app' }));
 vi.mock('@/lib/services/billing', async () => {
   // Los schemas son los reales: la action no redefine la validación.
@@ -58,10 +66,18 @@ vi.mock('@/lib/services/billing', async () => {
     billingPortalIntentSchema: validation.billingPortalIntentSchema,
     createPlanCheckoutSession: mocks.createPlanCheckoutSession,
     createBillingPortalSession: mocks.createBillingPortalSession,
+    onsitePaymentToggleSchema: validation.onsitePaymentToggleSchema,
+    createOnsiteSetupSession: mocks.createOnsiteSetupSession,
+    setOnsitePaymentAcceptance: mocks.setOnsitePaymentAcceptance,
   };
 });
 
-import { openBillingPortalAction, startPlanCheckoutAction } from './actions';
+import {
+  openBillingPortalAction,
+  startOnsiteSetupAction,
+  startPlanCheckoutAction,
+  toggleOnsitePaymentAction,
+} from './actions';
 
 const PROVIDER_ID = 'prov-uuid';
 const PLAN_URL = 'https://yaiwell2.vercel.app/es/panel/plan';
@@ -203,5 +219,87 @@ describe('openBillingPortalAction', () => {
       ok: false,
       code: 'SUBSCRIPTION_NOT_FOUND',
     });
+  });
+});
+
+describe('toggleOnsitePaymentAction', () => {
+  it('activa el pago en el local y revalida el panel', async () => {
+    mocks.setOnsitePaymentAcceptance.mockResolvedValue(undefined);
+    expect(await toggleOnsitePaymentAction('es', true)).toEqual({ ok: true, enabled: true });
+    expect(mocks.setOnsitePaymentAcceptance).toHaveBeenCalledWith(PROVIDER_ID, true);
+    expect(mocks.revalidatePath).toHaveBeenCalledWith('/es/panel/plan');
+  });
+
+  it.each(['true', 1, null, undefined])('rechaza el valor %j', async (value) => {
+    expect(await toggleOnsitePaymentAction('es', value)).toEqual({
+      ok: false,
+      code: 'INVALID_INPUT',
+    });
+    expect(mocks.setOnsitePaymentAcceptance).not.toHaveBeenCalled();
+  });
+
+  it('sin negocio responde FORBIDDEN', async () => {
+    mocks.getCurrentRole.mockResolvedValue('client');
+    expect(await toggleOnsitePaymentAction('es', true)).toEqual({ ok: false, code: 'FORBIDDEN' });
+    expect(mocks.setOnsitePaymentAcceptance).not.toHaveBeenCalled();
+  });
+
+  it('sin método de pago: PAYMENT_METHOD_MISSING', async () => {
+    mocks.setOnsitePaymentAcceptance.mockRejectedValue(
+      new mocks.errors.OnsitePaymentMethodMissingError(),
+    );
+    expect(await toggleOnsitePaymentAction('es', true)).toEqual({
+      ok: false,
+      code: 'PAYMENT_METHOD_MISSING',
+    });
+  });
+
+  it('con comisiones impagadas: COMMISSION_DEBT', async () => {
+    mocks.setOnsitePaymentAcceptance.mockRejectedValue(
+      new mocks.errors.OnsiteCommissionDebtError(),
+    );
+    expect(await toggleOnsitePaymentAction('es', true)).toEqual({
+      ok: false,
+      code: 'COMMISSION_DEBT',
+    });
+  });
+
+  it('un error inesperado no filtra el mensaje', async () => {
+    mocks.setOnsitePaymentAcceptance.mockRejectedValue(new Error('db password wrong'));
+    expect(await toggleOnsitePaymentAction('es', false)).toEqual({ ok: false, code: 'INTERNAL' });
+  });
+});
+
+describe('startOnsiteSetupAction', () => {
+  it('devuelve la URL del Checkout de setup con las vueltas al panel', async () => {
+    mocks.createOnsiteSetupSession.mockResolvedValue({
+      sessionId: 'cs_test_s',
+      url: 'https://checkout.stripe.com/c/setup/cs_test_s',
+    });
+    expect(await startOnsiteSetupAction('es')).toEqual({
+      ok: true,
+      url: 'https://checkout.stripe.com/c/setup/cs_test_s',
+    });
+    expect(mocks.createOnsiteSetupSession).toHaveBeenCalledWith(
+      PROVIDER_ID,
+      {
+        successUrl: `${PLAN_URL}?onsite_setup=success&session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${PLAN_URL}?onsite_setup=cancelled`,
+      },
+      'es',
+    );
+  });
+
+  it('rechaza un idioma inválido sin llamar a Stripe', async () => {
+    expect(await startOnsiteSetupAction('fr' as never)).toEqual({
+      ok: false,
+      code: 'INVALID_INPUT',
+    });
+    expect(mocks.createOnsiteSetupSession).not.toHaveBeenCalled();
+  });
+
+  it('un fallo de Stripe sale como STRIPE_FAILED', async () => {
+    mocks.createOnsiteSetupSession.mockRejectedValue(new mocks.errors.BillingStripeError());
+    expect(await startOnsiteSetupAction('es')).toEqual({ ok: false, code: 'STRIPE_FAILED' });
   });
 });

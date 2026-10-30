@@ -3,6 +3,8 @@
  * con pago en el local, CLAUDE.md §4.bis).
  */
 
+import type { LocalizedText } from '@/types/domain';
+
 /** Motivos de sanción. Hoy solo uno (CHECK en BD, migración 9f). */
 export type SanctionReason = 'no_show';
 
@@ -26,6 +28,18 @@ export interface ActiveSanctionSummary {
   reason: SanctionReason;
   occurredAt: Date;
   createdAt: Date;
+}
+
+/** Sanción vigente tal como la ve soporte en `/admin/sanciones`. */
+export interface SupportSanctionSummary {
+  id: string;
+  bookingId: string;
+  occurredAt: Date;
+  createdAt: Date;
+  clientEmail: string;
+  clientName: string | null;
+  providerName: string;
+  serviceName: LocalizedText;
 }
 
 /** Resultado de revocar una sanción desde soporte. */

@@ -25,6 +25,15 @@ export const providerMetadataSchema = z.object({
   providerId: z.string().min(1).max(64),
 });
 
+/** Metadata del Checkout de setup del método de pago de comisiones. */
+export const onsiteSetupMetadataSchema = z.object({
+  kind: z.literal('onsite_setup'),
+  providerId: z.string().min(1).max(64),
+});
+
+/** Entrada de la action del interruptor «Cobro en el local». */
+export const onsitePaymentToggleSchema = z.boolean();
+
 /** Metadata del price creada por `stripe:sync-plans`. */
 export const priceMetadataSchema = z.object({ tier: planTierSchema });
 

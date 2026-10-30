@@ -1,24 +1,26 @@
 /**
  * Cierre de reservas como `completed` (CLAUDE.md §4.bis):
  *  - a mano, por el negocio desde su panel;
- *  - solo, a las 72 h del inicio, si era en el local y nadie la cerró
- *    (decidido 2026-10-30: única excepción a «solo el profesional completa»).
+ *  - solo, a las 72 h del inicio, si nadie la cerró, se pagara online o
+ *    en el local (decidido 2026-10-30: única excepción a «solo el
+ *    profesional completa»).
  *
  * Completar es lo que desbloquea la valoración del cliente y, en las
  * reservas en el local, lo que genera la comisión a cobrar al negocio.
  */
 
-import { getOnsiteAutoCompleteCutoff } from '@/lib/utils/booking-no-show';
+import { canCompleteBooking, getAutoCompleteCutoff } from '@/lib/utils/booking-no-show';
 
 import { commitCompletion } from './booking.complete';
 import {
   BookingNotConfirmedError,
   BookingNotFoundError,
+  BookingNotStartedError,
   UnauthorizedCancellationError,
 } from './booking.errors';
 import { bookingLifecycleRepository } from './booking.lifecycle.repository';
 import { bookingRepository } from './booking.repository';
-import type { AutoCompleteOnsiteSummary, CompleteBookingResult } from './booking.types';
+import type { AutoCompleteSummary, CompleteBookingResult } from './booking.types';
 
 /** Tope por pasada del cron: acota el tiempo de la función serverless. */
 export const AUTO_COMPLETE_DEFAULT_LIMIT = 100;
@@ -45,6 +47,7 @@ export const AUTO_COMPLETE_DEFAULT_LIMIT = 100;
  * @throws UnauthorizedCancellationError — el usuario no es el dueño
  *   (mismo error que cancelar: la regla de titularidad es la misma).
  * @throws BookingNotConfirmedError — no estaba (o dejó de estar) `confirmed`.
+ * @throws BookingNotStartedError — todavía no ha llegado la hora de inicio.
  */
 export async function markBookingCompleted(
   bookingId: string,
@@ -61,6 +64,11 @@ export async function markBookingCompleted(
   if (booking.status !== 'confirmed') {
     throw new BookingNotConfirmedError();
   }
+  // Antes del inicio no se ha prestado nada: completar desbloquearía la
+  // valoración y, en el local, generaría comisión.
+  if (!canCompleteBooking(booking, now)) {
+    throw new BookingNotStartedError();
+  }
 
   const outcome = await commitCompletion(booking, 'confirmed', now);
   if (!outcome) {
@@ -74,8 +82,11 @@ export async function markBookingCompleted(
 }
 
 /**
- * Completa las reservas en el local aún `confirmed` cuyo inicio pasó hace
- * **más** de 72 h. Para el cron diario.
+ * Completa las reservas aún `confirmed` (online o en el local) cuyo
+ * inicio pasó hace **más** de 72 h. Para el cron diario.
+ *
+ * Todas desbloquean la invitación a valorar. Solo las del local encolan
+ * comisión: en las online ya se retuvo al cobrar (`application_fee`).
  *
  * Una a una, cada una en su transacción y con la misma escritura
  * condicional que el cierre manual: si el negocio marca «no presentado»
@@ -88,17 +99,17 @@ export async function markBookingCompleted(
  * @returns ids completados (invitar a valorar), comisiones encoladas
  *   (pasar a `itemizeCommission`) y fallos.
  */
-export async function autoCompleteStaleOnsiteBookings(
+export async function autoCompleteStaleBookings(
   now: Date = new Date(),
   limit: number = AUTO_COMPLETE_DEFAULT_LIMIT,
-): Promise<AutoCompleteOnsiteSummary> {
-  const summary: AutoCompleteOnsiteSummary = {
+): Promise<AutoCompleteSummary> {
+  const summary: AutoCompleteSummary = {
     completedBookingIds: [],
     commissionChargeIds: [],
     failedBookingIds: [],
   };
-  const stale = await bookingLifecycleRepository.findStaleOnsiteConfirmed(
-    getOnsiteAutoCompleteCutoff(now),
+  const stale = await bookingLifecycleRepository.findStaleConfirmed(
+    getAutoCompleteCutoff(now),
     limit,
   );
 
@@ -112,9 +123,15 @@ export async function autoCompleteStaleOnsiteBookings(
         summary.commissionChargeIds.push(outcome.onsiteCommissionChargeId);
       }
     } catch (err) {
-      console.error('[booking/auto-complete] failed to complete onsite booking:', booking.id, err);
+      console.error('[booking/auto-complete] failed to complete booking:', booking.id, err);
       summary.failedBookingIds.push(booking.id);
     }
   }
   return summary;
 }
+
+/**
+ * @deprecated Nombre anterior: desde 2026-10-30 el cierre automático cubre
+ * también las reservas online. Usar `autoCompleteStaleBookings`.
+ */
+export const autoCompleteStaleOnsiteBookings = autoCompleteStaleBookings;

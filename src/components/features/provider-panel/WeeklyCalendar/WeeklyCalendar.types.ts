@@ -20,8 +20,10 @@ export const PANEL_CALENDAR_END_HOUR = 21;
  * Subset de `BookingStatus` de BD: `'refunded'` se pinta como
  * `'cancelled'` (un reembolso sigue a una cancelación; en la cuadrícula
  * no merece color propio). El detalle del bloque sí los distingue.
+ * `'no_show'` sí tiene color propio: la franja estaba reservada y el
+ * cliente no vino, que no es lo mismo que una hora que quedó libre.
  */
-export type PanelBookingStatus = 'confirmed' | 'pending' | 'completed' | 'cancelled';
+export type PanelBookingStatus = 'confirmed' | 'pending' | 'completed' | 'cancelled' | 'no_show';
 
 /**
  * Reserva de ejemplo del modo preview.

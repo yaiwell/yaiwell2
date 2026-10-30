@@ -4,7 +4,12 @@ import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Dialog } from 'radix-ui';
 
-import { BookingCancelButton, BookingCompleteButton } from '../BookingActionsList';
+import {
+  BookingCancelButton,
+  BookingCompleteButton,
+  BookingNoShowButton,
+  BookingUndoNoShowButton,
+} from '../BookingActionsList';
 import { bookingActionDialogStyles as d } from '../BookingActionsList/BookingActionsList.styles';
 import type { SupportedLocale } from '../BookingActionsList/BookingActionsList.types';
 import { WEEKDAY_KEYS, toBlockStatus } from './WeeklyCalendar.logic';
@@ -42,7 +47,7 @@ export function CalendarBookingBlock({
   const { row, topPx, heightPx, priceLabel } = positioned;
   const { booking, canComplete, showCancel, cancellable } = row;
   const suffix = variant === 'day' ? '-day' : '';
-  const hasActions = canComplete || showCancel;
+  const hasActions = canComplete || showCancel || row.canMarkNoShow || row.canUndoNoShow;
 
   return (
     <Dialog.Root>
@@ -96,6 +101,13 @@ export function CalendarBookingBlock({
             )}
             <dt className={ds.term}>{t('details.price')}</dt>
             <dd className={ds.value}>{priceLabel}</dd>
+            <dt className={ds.term}>{t('details.payment')}</dt>
+            <dd
+              className={ds.value}
+              data-component={`weekly-calendar-detail-payment-${booking.id}`}
+            >
+              {row.isOnsite ? t('details.paymentOnsite') : t('details.paymentOnline')}
+            </dd>
             <dt className={ds.term}>{t('details.status')}</dt>
             <dd className={ds.value} data-component={`weekly-calendar-detail-status-${booking.id}`}>
               {t(`status.${booking.status}`)}
@@ -107,6 +119,21 @@ export function CalendarBookingBlock({
               {canComplete && (
                 <BookingCompleteButton locale={locale} bookingId={booking.id} disabled={readOnly} />
               )}
+              {row.canMarkNoShow && (
+                <BookingNoShowButton
+                  locale={locale}
+                  bookingId={booking.id}
+                  isOnsite={row.isOnsite}
+                  disabled={readOnly}
+                />
+              )}
+              {row.canUndoNoShow && (
+                <BookingUndoNoShowButton
+                  locale={locale}
+                  bookingId={booking.id}
+                  disabled={readOnly}
+                />
+              )}
               {showCancel && (
                 <BookingCancelButton
                   locale={locale}
@@ -114,6 +141,7 @@ export function CalendarBookingBlock({
                   startAtIso={booking.startAtIso}
                   initialCancellable={cancellable}
                   disabled={readOnly}
+                  paymentMode={booking.paymentMode}
                 />
               )}
             </div>

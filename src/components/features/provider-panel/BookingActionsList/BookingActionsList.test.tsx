@@ -155,6 +155,12 @@ describe('BookingActionsList', () => {
     expect(screen.getByRole('button', { name: /Cancelar reserva/ })).toBeDisabled();
   });
 
+  it('no ofrece "marcar finalizada" antes de la hora de inicio', () => {
+    renderList([makeBooking({ startAtIso: isoInMinutes(1) })]);
+
+    expect(screen.queryByRole('button', { name: /Marcar finalizada/ })).not.toBeInTheDocument();
+  });
+
   it('no ofrece "marcar finalizada" en una reserva pendiente de pago', () => {
     renderList([makeBooking({ status: 'pending' })]);
 
@@ -174,7 +180,8 @@ describe('BookingActionsList', () => {
   it('invoca completeBookingAction con (locale, bookingId) al confirmar', async () => {
     completeBookingActionMock.mockResolvedValueOnce({ ok: true });
     const user = userEvent.setup();
-    renderList([makeBooking()]);
+    // Ya empezada: antes del inicio no se ofrece finalizar.
+    renderList([makeBooking({ startAtIso: isoInMinutes(-30) })]);
 
     await user.click(screen.getByRole('button', { name: /Marcar finalizada/ }));
     await user.click(screen.getByRole('button', { name: 'Sí, marcar como finalizada' }));

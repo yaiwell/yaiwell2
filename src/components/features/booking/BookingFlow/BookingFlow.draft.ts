@@ -64,6 +64,8 @@ export function loadBookingDraft(serviceId: string): PersistedBookingDraft | nul
       slotStartIso: typeof parsed.slotStartIso === 'string' ? parsed.slotStartIso : null,
       slotEndIso: typeof parsed.slotEndIso === 'string' ? parsed.slotEndIso : null,
       notes: typeof parsed.notes === 'string' ? parsed.notes : '',
+      // Borradores anteriores al pago en el local no traen método: online.
+      paymentMethod: parsed.paymentMethod === 'onsite' ? 'onsite' : 'online',
     };
   } catch {
     // Storage bloqueado (incógnito estricto, cuota) o JSON inválido: lo
@@ -104,6 +106,7 @@ export function restoreBookingDraft(
       slotEndIso: slotUsable ? persisted.slotEndIso : null,
       notes: persisted.notes,
       bookingId: null,
+      paymentMethod: persisted.paymentMethod,
     },
     slotExpired: hasSlot && !slotUsable,
   };
@@ -124,6 +127,7 @@ export function saveBookingDraft(serviceId: string, draft: BookingDraft): void {
     slotStartIso: draft.slotStartIso,
     slotEndIso: draft.slotEndIso,
     notes: draft.notes,
+    paymentMethod: draft.paymentMethod,
   };
   pendingSaveHandle = setTimeout(() => {
     pendingSaveHandle = null;

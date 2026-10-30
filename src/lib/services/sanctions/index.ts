@@ -7,8 +7,10 @@
  */
 
 export {
+  SUPPORT_SANCTIONS_LIMIT,
   getClientOnsiteEligibility,
   listActiveSanctions,
+  listActiveSanctionsForSupport,
   revokeSanction,
 } from './sanctions.service';
 export { sanctionsRepository } from './sanctions.repository';
@@ -25,7 +27,7 @@ export {
 export type { SanctionForCalc } from './sanctions.calc';
 
 export { SanctionAlreadyRevokedError, SanctionNotFoundError } from './sanctions.errors';
-export { revokeSanctionSchema } from './sanctions.validation';
+export { revokeSanctionSchema, supportSanctionsFilterSchema } from './sanctions.validation';
 export type { RevokeSanctionParsed } from './sanctions.validation';
 
 export type {
@@ -33,4 +35,5 @@ export type {
   ClientOnsiteEligibility,
   RevokeSanctionResult,
   SanctionReason,
+  SupportSanctionSummary,
 } from './sanctions.types';

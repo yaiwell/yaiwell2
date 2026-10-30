@@ -12,6 +12,18 @@ const mocks = vi.hoisted(() => ({
   clearPaymentFailure: vi.fn(),
 }));
 vi.mock('./billing.sync', () => ({ syncSubscription: mocks.syncSubscription }));
+// Las comisiones del pago en el local tienen sus propios tests
+// (`billing.webhook.commission.test.ts`): aquí ninguna factura las lleva.
+vi.mock('./billing.commission.webhook', () => ({
+  applyCommissionInvoiceEvent: vi.fn(async () => null),
+}));
+vi.mock('./billing.payment-method.webhook', () => ({
+  handlePaymentMethodChange: vi.fn(async () => ({ handled: false })),
+}));
+vi.mock('./billing.setup', () => ({
+  isOnsiteSetupSession: () => false,
+  completeOnsiteSetup: vi.fn(),
+}));
 vi.mock('./billing.repository', () => ({
   billingRepository: {
     findByCustomerId: mocks.findByCustomerId,

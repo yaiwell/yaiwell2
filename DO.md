@@ -8,6 +8,19 @@
 
 ## 2026-10-29
 
+## 2026-10-30
+
+### 2026-10-30 — Pago en el local, no presentados y sanciones
+
+P4 + P12 + P13 (`Plan` → pieza A de datos y dominio con `db-migration-guard` → B `stripe-payments` y C `general-purpose` en paralelo → `business-rules-auditor` + `conventions-reviewer`; P1 y P2 aplicados salvo E2E y antiabuso, en TODO). Diseño en `docs/design-onsite-payment-2026-10-30.md`; decisiones en CLAUDE.md §4.bis.
+
+- **Migración 9f** (aplicada): estado `no_show`, `paymentMode`, `client_sanctions` y `onsite_commission_charges` (RLS sin policies), opción `acceptsOnsitePayment` y columnas de cobro en `provider_billing`.
+- **Reserva en el local** (opcional por negocio, con tarjeta guardada y sin deuda; más de 2 h de antelación; cliente no bloqueado): nace `confirmed` sin pago, validada en servidor y releída dentro de la transacción. En el flujo, selector de método, confirmación con aviso de sanción y vuelta a online si se cruzan las 2 h.
+- **No presentado**: el negocio lo marca desde la hora de inicio hasta 72 h después y puede deshacerlo en 24 h; sanción solo si era en el local; 3 sanciones en 12 meses bloquean el pago en el local 3 meses (calculado, no guardado). Avisos al cliente al marcar y al deshacer. Soporte retira sanciones en `/admin/sanciones`.
+- **Completar** solo desde la hora de inicio; encola la comisión del local en la misma transacción. **Cierre automático a las 72 h** (online y local) en el cron diario, sin invitación para las de más de 7 días.
+- **Comisiones del local** con Stripe Billing: concepto por reserva (IVA 21 % incluido, idempotente, conciliado si ya estaba facturado, aplazado si hay un alta de plan abierta), factura mensual para negocios sin plan, factura previa antes de contratar un plan, Checkout para guardar tarjeta, deuda que desactiva el pago en el local y se intenta saldar al guardar tarjeta nueva, y webhooks de facturas y de método de pago.
+- 2251 tests unitarios.
+
 ### 2026-10-29 — Cancelación de reservas por el cliente
 
 P12/P15 (`stripe-payments` implementa; `business-rules-auditor` + `conventions-reviewer`; P1 y P2 aplicados salvo el E2E, en TODO).

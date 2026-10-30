@@ -420,7 +420,8 @@
             "notFound": "Esta reserva ya no existe.",
             "forbidden": "No tienes permiso sobre esta reserva.",
             "notConfirmed": "Solo se pueden finalizar reservas confirmadas y pagadas.",
-            "internal": "No se ha podido marcar como finalizada. Inténtalo de nuevo en unos minutos."
+            "internal": "No se ha podido marcar como finalizada. Inténtalo de nuevo en unos minutos.",
+            "notStarted": "Todavía no ha llegado la hora de la cita: podrás finalizarla cuando empiece."
           }
         },
         "cancel": {
@@ -438,6 +439,43 @@
             "notCancellable": "Esta reserva ya no se puede cancelar en su estado actual.",
             "refundFailed": "La reserva se ha cancelado, pero el reembolso no ha podido emitirse. Soporte lo revisará; no hace falta que lo intentes de nuevo.",
             "internal": "No se ha podido cancelar. Inténtalo de nuevo en unos minutos."
+          },
+          "confirmDescriptionOnsite": "Iba a pagar en el local, así que no hay nada que devolver. El hueco vuelve a quedar libre. No se puede deshacer.",
+          "confirmActionOnsite": "Sí, cancelar"
+        },
+        "paymentOnsite": "Pago en el local",
+        "noShow": {
+          "button": "No se presentó",
+          "confirmTitle": "¿Marcar que no se presentó?",
+          "descriptionOnsite": "Iba a pagar en el local: se le sumará 1 sanción y no te cobraremos comisión por esta reserva. Podrás deshacerlo durante 24 h.",
+          "descriptionOnline": "Pagó online: no se le devuelve el importe ni recibe sanción. Podrás deshacerlo durante 24 h.",
+          "confirmAction": "Sí, no se presentó",
+          "cancel": "Volver",
+          "pending": "Guardando…",
+          "errors": {
+            "notFound": "Esta reserva ya no existe.",
+            "forbidden": "No tienes permiso sobre esta reserva.",
+            "notConfirmed": "Solo se puede marcar en reservas confirmadas. Recarga la página.",
+            "notStarted": "Todavía no ha llegado la hora de la cita.",
+            "windowClosed": "Han pasado más de 72 h desde la cita: ya no se puede marcar.",
+            "internal": "No se ha podido guardar. Inténtalo de nuevo en unos minutos."
+          }
+        },
+        "undoNoShow": {
+          "button": "Deshacer",
+          "hint": "Puedes deshacerlo durante 24 h.",
+          "confirmTitle": "¿Deshacer «No se presentó»?",
+          "confirmDescription": "La reserva vuelve a quedar confirmada y, si había sanción, se retira. Si ya han pasado 72 h desde la cita, queda como finalizada.",
+          "confirmAction": "Sí, deshacer",
+          "cancel": "Volver",
+          "pending": "Deshaciendo…",
+          "errors": {
+            "notFound": "Esta reserva ya no existe.",
+            "forbidden": "No tienes permiso sobre esta reserva.",
+            "notNoShow": "Esta reserva ya no está marcada como «No se presentó». Recarga la página.",
+            "windowClosed": "Han pasado más de 24 h: para deshacerlo, escribe a soporte.",
+            "slotTaken": "Esa franja ya está ocupada por otra reserva. Escribe a soporte.",
+            "internal": "No se ha podido deshacer. Inténtalo de nuevo en unos minutos."
           }
         }
       },
@@ -531,7 +569,10 @@
         "professional": "Profesional",
         "price": "Importe",
         "status": "Estado",
-        "noActions": "Esta reserva ya está cerrada: no hay acciones pendientes."
+        "noActions": "Esta reserva ya está cerrada: no hay acciones pendientes.",
+        "payment": "Pago",
+        "paymentOnline": "Online",
+        "paymentOnsite": "En el local"
       }
     },
     "services": {
@@ -874,6 +915,28 @@
         "PLAN_UNAVAILABLE": "Este plan no está disponible ahora mismo. Inténtalo más tarde o habla con soporte.",
         "STRIPE_FAILED": "No hemos podido conectar con Stripe. Inténtalo de nuevo en unos minutos.",
         "INTERNAL": "Algo ha ido mal. Inténtalo de nuevo en unos minutos."
+      },
+      "onsite": {
+        "title": "Cobro en el local",
+        "description": "Deja que tu clientela reserve y pague en tu negocio. La comisión de cada reserva completada te la cobramos en una factura mensual, con la misma tasa de tu plan.",
+        "toggleLabel": "Aceptar pago en el local",
+        "statusOn": "Activado: tu clientela puede elegir pagar en el local.",
+        "statusOff": "Desactivado: solo se puede reservar pagando online.",
+        "statusSuspended": "Suspendido: hay comisiones sin pagar.",
+        "methodReady": "Método de pago para las comisiones guardado.",
+        "methodMissing": "Para activarlo, añade un método de pago con el que cobrarte las comisiones.",
+        "addMethod": "Añadir método de pago",
+        "changeMethod": "Cambiar método de pago",
+        "debt": "No hemos podido cobrar comisiones del pago en el local desde el {date}. Hasta que se cobren, tu clientela solo puede pagar online.",
+        "outstanding": "Comisiones pendientes de cobro: {amount}",
+        "overdue": "Comisiones impagadas: {amount}",
+        "saving": "Guardando…",
+        "redirecting": "Abriendo Stripe…",
+        "errors": {
+          "paymentMethodMissing": "Añade antes un método de pago para las comisiones.",
+          "commissionDebt": "Hay comisiones sin pagar: actualiza el método de pago para poder activarlo.",
+          "generic": "No se ha podido guardar. Inténtalo de nuevo en unos minutos."
+        }
       }
     }
   },
@@ -888,13 +951,15 @@
         "slot": "Elige tu hueco",
         "summary": "Confirma los datos",
         "payment": "Pago seguro",
-        "confirmation": "Reserva confirmada"
+        "confirmation": "Reserva confirmada",
+        "onsite": "Confirma tu reserva"
       },
       "back": "Atrás",
       "cancel": "Cancelar reserva",
       "continue": "Continuar",
       "goToPayment": "Ir al pago",
-      "slotExpiredNotice": "El hueco que tenías elegido ya no está disponible. Elige otro para continuar."
+      "slotExpiredNotice": "El hueco que tenías elegido ya no está disponible. Elige otro para continuar.",
+      "onsiteExpiredNotice": "Ya faltan menos de 2 h para esta hora: solo se puede reservar pagando online. Revisa las condiciones antes de continuar."
     },
     "slotPicker": {
       "dayStripLabel": "Días disponibles",
@@ -932,14 +997,17 @@
       "totalLabel": "Total",
       "notesLabel": "Notas para el centro (opcional)",
       "notesHelper": "Indícanos cualquier detalle relevante: alergias, primera vez, preferencias…",
-      "notesPlaceholder": "Escribe aquí si quieres añadir algo."
+      "notesPlaceholder": "Escribe aquí si quieres añadir algo.",
+      "onsiteTotalLabel": "A pagar en el local"
     },
     "policy": {
       "title": "Política breve",
       "cancelUntil": "Cancelación gratuita hasta el {deadline}, desde «Mis reservas», con devolución íntegra.",
       "cancelWindowPassed": "El plazo de cancelación gratuita ya ha pasado.",
       "providerCancel": "El centro también puede cancelar hasta 2h antes; en ese caso recibirás un reembolso íntegro automático.",
-      "compactNote": "Cancelación gratuita desde «Mis reservas» hasta 2 h antes del servicio, con devolución íntegra. Si reservas con menos de 2 h, se paga al momento y no admite cancelación."
+      "compactNote": "Cancelación gratuita desde «Mis reservas» hasta 2 h antes del servicio, con devolución íntegra. Si reservas con menos de 2 h, se paga al momento y no admite cancelación.",
+      "onsiteCancelUntil": "Cancelación gratuita y sin cargo hasta el {deadline}, desde «Mis reservas».",
+      "onsiteProviderCancel": "El centro también puede cancelar hasta 2 h antes; si lo hace, te avisaremos por email."
     },
     "lastMinute": {
       "policy": "Esta reserva empieza en menos de 2 h: se paga ahora y no admite cancelación ni reembolso. Si el centro no puede atenderte, escríbenos y te devolvemos el 100 %.",
@@ -966,7 +1034,9 @@
       "backToProvider": "Volver al centro",
       "pendingTitle": "Pago en curso",
       "pendingSubtitle": "Estamos confirmando el cobro con tu banco. En cuanto termine, verás la reserva en «Mis reservas».",
-      "viewMyBookings": "Ver mis reservas"
+      "viewMyBookings": "Ver mis reservas",
+      "onsiteSubtitle": "Pagarás {amount} en el local. Tienes el detalle en «Mis reservas».",
+      "onsiteTotalLabel": "A pagar en el local"
     },
     "checkout": {
       "loadingTitle": "Preparando el pago",
@@ -985,6 +1055,42 @@
       "signUp": "Crear cuenta",
       "draftKeptHint": "Guardamos tu hueco y tus notas: al volver seguirás justo donde lo dejaste.",
       "chooseAnotherSlot": "Elegir otro hueco"
+    },
+    "paymentMethod": {
+      "legend": "¿Cómo quieres pagar?",
+      "online": {
+        "title": "Pagar ahora online",
+        "hint": "Con tarjeta, de forma segura. Cancelación gratuita hasta 2 h antes, con devolución íntegra."
+      },
+      "onsite": {
+        "title": "Pagar en el local",
+        "hint": "Pagas en el centro el día de la cita. Cancelación gratuita y sin cargo hasta 2 h antes.",
+        "lastMinute": "No disponible: las reservas que empiezan en menos de 2 h se pagan online al reservar.",
+        "restricted": "No disponible por ahora: tras 3 ausencias sin cancelar en 12 meses, durante 3 meses solo se puede reservar pagando online.",
+        "restrictedUntil": "No disponible hasta el {date}: tras 3 ausencias sin cancelar en 12 meses, durante 3 meses solo se puede reservar pagando online."
+      }
+    },
+    "onsite": {
+      "amountLabel": "A pagar en el local",
+      "noShowNotice": "Si no puedes venir, cancela desde «Mis reservas» hasta 2 h antes. Si no te presentas sin cancelar, sumarás 1 ausencia; con 3 en 12 meses, durante 3 meses solo podrás reservar pagando online.",
+      "confirm": "Confirmar reserva",
+      "confirming": "Confirmando…",
+      "payAtVenueNote": "No te cobramos nada ahora: pagas directamente en el centro.",
+      "errors": {
+        "title": "No hemos podido confirmar la reserva",
+        "unauthenticated": "Para reservar necesitas una cuenta. Entra o regístrate y seguimos.",
+        "slotUnavailable": "Esa hora acaba de ocuparse. Elige otra.",
+        "slotTooSoon": "Esa hora ya está demasiado cerca para reservarla. Elige otra.",
+        "serviceUnavailable": "Este servicio ya no se puede reservar. Elige otra hora u otro servicio.",
+        "pendingAlreadyPaid": "Ya habías pagado esta reserva online. La tienes en «Mis reservas».",
+        "lastMinute": "Esta hora empieza en menos de 2 h: solo se puede reservar pagando online.",
+        "restricted": "Ahora mismo solo puedes reservar pagando online.",
+        "restrictedUntil": "Hasta el {date} solo puedes reservar pagando online.",
+        "notOffered": "Este centro ya no acepta el pago en el local. Puedes pagar online.",
+        "generic": "Algo ha fallado al confirmar la reserva. Inténtalo de nuevo.",
+        "payOnline": "Pagar online",
+        "viewMyBookings": "Ver mis reservas"
+      }
     }
   },
   "customerArea": {
@@ -1098,6 +1204,11 @@
         "VALIDATION": "Revisa la puntuación y el texto e inténtalo de nuevo.",
         "INTERNAL": "No hemos podido publicar la valoración. Inténtalo de nuevo en unos minutos."
       }
+    },
+    "paymentOnsite": "Pago en el local",
+    "onsiteRestriction": {
+      "title": "Por ahora solo puedes pagar online",
+      "body": "Has acumulado 3 ausencias sin cancelar en los últimos 12 meses. Hasta el {date}, tus reservas se pagan online al reservar."
     }
   },
   "adminArea": {
@@ -1109,7 +1220,8 @@
       "dashboard": "Dashboard",
       "queue": "Cola",
       "exit": "Salir del panel",
-      "refunds": "Reembolsos fallidos"
+      "refunds": "Reembolsos fallidos",
+      "sanctions": "Sanciones"
     },
     "dashboard": {
       "title": "Resumen operativo",
@@ -1240,6 +1352,44 @@
           "VALIDATION": "No se ha podido descartar el reembolso de {provider}: identificador no válido.",
           "FORBIDDEN": "Tu sesión no tiene permisos de admin para descartar el reembolso de {provider}.",
           "INTERNAL": "Error inesperado al descartar el reembolso de {provider}. Vuelve a intentarlo en unos minutos."
+        }
+      }
+    },
+    "sanctions": {
+      "meta": {
+        "title": "Sanciones · Admin"
+      },
+      "title": "Sanciones por no presentado",
+      "subtitle": "Sanciones vigentes de clientes que no se presentaron a una cita con pago en el local. Pasadas las 24 h en que el negocio puede deshacerlo, solo soporte puede retirarlas.",
+      "filter": {
+        "label": "Email del cliente",
+        "placeholder": "cliente@ejemplo.com",
+        "submit": "Buscar"
+      },
+      "empty": "No hay sanciones vigentes.",
+      "emptyFiltered": "No hay sanciones vigentes para «{email}».",
+      "fields": {
+        "client": "Cliente",
+        "provider": "Centro y servicio",
+        "occurredAt": "Cita",
+        "booking": "Reserva"
+      },
+      "revoke": {
+        "label": "Retirar sanción",
+        "aria": "Retirar la sanción de {email}",
+        "reasonLabel": "Motivo",
+        "reasonHint": "Obligatorio, mínimo {min} caracteres. Queda registrado.",
+        "reasonTooShort": "Escribe un motivo de al menos {min} caracteres.",
+        "confirm": "Retirar sanción",
+        "cancel": "Cancelar",
+        "pending": "Retirando…",
+        "errors": {
+          "NOT_FOUND": "Esta sanción ya no existe.",
+          "ALREADY_REVOKED": "Esta sanción ya estaba retirada. Recarga la página.",
+          "INVALID_REASON": "Revisa el motivo.",
+          "VALIDATION": "No se ha podido retirar. Recarga la página e inténtalo de nuevo.",
+          "FORBIDDEN": "No tienes permiso para retirar sanciones.",
+          "INTERNAL": "No se ha podido retirar. Inténtalo de nuevo en unos minutos."
         }
       }
     }

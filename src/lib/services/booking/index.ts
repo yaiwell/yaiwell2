@@ -10,6 +10,7 @@ export { cancelBookingByProvider, createBooking } from './booking.service';
 export { cancelBookingByClient } from './booking.client-cancel.service';
 export {
   AUTO_COMPLETE_DEFAULT_LIMIT,
+  autoCompleteStaleBookings,
   autoCompleteStaleOnsiteBookings,
   markBookingCompleted,
 } from './booking.complete.service';
@@ -47,6 +48,7 @@ export { BOOKING_TOO_SOON_ISSUE_CODE, isBookingTooSoonError } from './booking.va
 export { BookingStatus } from './booking.types';
 export type {
   AutoCompleteOnsiteSummary,
+  AutoCompleteSummary,
   BookingPaymentMode,
   BookingSummary,
   CancelBookingByProviderInput,

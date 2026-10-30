@@ -420,7 +420,8 @@
             "notFound": "Aquesta reserva ja no existeix.",
             "forbidden": "No tens permís sobre aquesta reserva.",
             "notConfirmed": "Només es poden finalitzar reserves confirmades i pagades.",
-            "internal": "No s’ha pogut marcar com a finalitzada. Torna-ho a provar d’aquí a uns minuts."
+            "internal": "No s’ha pogut marcar com a finalitzada. Torna-ho a provar d’aquí a uns minuts.",
+            "notStarted": "Encara no ha arribat l'hora de la cita: podràs finalitzar-la quan comenci."
           }
         },
         "cancel": {
@@ -438,6 +439,43 @@
             "notCancellable": "Aquesta reserva ja no es pot cancel·lar en el seu estat actual.",
             "refundFailed": "La reserva s’ha cancel·lat, però el reemborsament no s’ha pogut emetre. Suport ho revisarà; no cal que ho tornis a intentar.",
             "internal": "No s’ha pogut cancel·lar. Torna-ho a provar d’aquí a uns minuts."
+          },
+          "confirmDescriptionOnsite": "Havia de pagar al local, així que no hi ha res a retornar. L’espai torna a quedar lliure. No es pot desfer.",
+          "confirmActionOnsite": "Sí, cancel·lar"
+        },
+        "paymentOnsite": "Pagament al local",
+        "noShow": {
+          "button": "No s’ha presentat",
+          "confirmTitle": "Vols marcar que no s’ha presentat?",
+          "descriptionOnsite": "Havia de pagar al local: se li sumarà 1 sanció i no et cobrarem comissió per aquesta reserva. Podràs desfer-ho durant 24 h.",
+          "descriptionOnline": "Va pagar en línia: no se li retorna l’import ni rep cap sanció. Podràs desfer-ho durant 24 h.",
+          "confirmAction": "Sí, no s’ha presentat",
+          "cancel": "Tornar",
+          "pending": "Desant…",
+          "errors": {
+            "notFound": "Aquesta reserva ja no existeix.",
+            "forbidden": "No tens permís sobre aquesta reserva.",
+            "notConfirmed": "Només es pot marcar en reserves confirmades. Torna a carregar la pàgina.",
+            "notStarted": "Encara no ha arribat l’hora de la cita.",
+            "windowClosed": "Han passat més de 72 h des de la cita: ja no es pot marcar.",
+            "internal": "No s’ha pogut desar. Torna-ho a provar d’aquí a uns minuts."
+          }
+        },
+        "undoNoShow": {
+          "button": "Desfer",
+          "hint": "Pots desfer-ho durant 24 h.",
+          "confirmTitle": "Vols desfer «No s’ha presentat»?",
+          "confirmDescription": "La reserva torna a quedar confirmada i, si hi havia sanció, es retira. Si ja han passat 72 h des de la cita, queda com a finalitzada.",
+          "confirmAction": "Sí, desfer",
+          "cancel": "Tornar",
+          "pending": "Desfent…",
+          "errors": {
+            "notFound": "Aquesta reserva ja no existeix.",
+            "forbidden": "No tens permís sobre aquesta reserva.",
+            "notNoShow": "Aquesta reserva ja no està marcada com a «No s’ha presentat». Torna a carregar la pàgina.",
+            "windowClosed": "Han passat més de 24 h: per desfer-ho, escriu a suport.",
+            "slotTaken": "Aquesta franja ja està ocupada per una altra reserva. Escriu a suport.",
+            "internal": "No s’ha pogut desfer. Torna-ho a provar d’aquí a uns minuts."
           }
         }
       },
@@ -531,7 +569,10 @@
         "professional": "Professional",
         "price": "Import",
         "status": "Estat",
-        "noActions": "Aquesta reserva ja està tancada: no hi ha accions pendents."
+        "noActions": "Aquesta reserva ja està tancada: no hi ha accions pendents.",
+        "payment": "Pagament",
+        "paymentOnline": "En línia",
+        "paymentOnsite": "Al local"
       }
     },
     "services": {
@@ -874,6 +915,28 @@
         "PLAN_UNAVAILABLE": "Aquest pla no està disponible ara mateix. Torna-ho a provar més tard o parla amb suport.",
         "STRIPE_FAILED": "No hem pogut connectar amb Stripe. Torna-ho a provar d’aquí a uns minuts.",
         "INTERNAL": "Alguna cosa ha anat malament. Torna-ho a provar d’aquí a uns minuts."
+      },
+      "onsite": {
+        "title": "Cobrament al local",
+        "description": "Deixa que la teva clientela reservi i pagui al teu negoci. La comissió de cada reserva completada te la cobrem en una factura mensual, amb la mateixa taxa del teu pla.",
+        "toggleLabel": "Acceptar el pagament al local",
+        "statusOn": "Activat: la teva clientela pot triar pagar al local.",
+        "statusOff": "Desactivat: només es pot reservar pagant en línia.",
+        "statusSuspended": "Suspès: hi ha comissions sense pagar.",
+        "methodReady": "Mètode de pagament per a les comissions desat.",
+        "methodMissing": "Per activar-lo, afegeix un mètode de pagament amb què cobrar-te les comissions.",
+        "addMethod": "Afegir un mètode de pagament",
+        "changeMethod": "Canviar el mètode de pagament",
+        "debt": "No hem pogut cobrar comissions del pagament al local des del {date}. Fins que es cobrin, la teva clientela només pot pagar en línia.",
+        "outstanding": "Comissions pendents de cobrament: {amount}",
+        "overdue": "Comissions impagades: {amount}",
+        "saving": "Desant…",
+        "redirecting": "Obrint Stripe…",
+        "errors": {
+          "paymentMethodMissing": "Afegeix abans un mètode de pagament per a les comissions.",
+          "commissionDebt": "Hi ha comissions sense pagar: actualitza el mètode de pagament per poder activar-lo.",
+          "generic": "No s’ha pogut desar. Torna-ho a provar d’aquí a uns minuts."
+        }
       }
     }
   },
@@ -888,13 +951,15 @@
         "slot": "Tria el teu lloc",
         "summary": "Confirma les dades",
         "payment": "Pagament segur",
-        "confirmation": "Reserva confirmada"
+        "confirmation": "Reserva confirmada",
+        "onsite": "Confirma la reserva"
       },
       "back": "Enrere",
       "cancel": "Cancel·lar reserva",
       "continue": "Continuar",
       "goToPayment": "Anar al pagament",
-      "slotExpiredNotice": "L’hora que havies triat ja no està disponible. Tria’n una altra per continuar."
+      "slotExpiredNotice": "L’hora que havies triat ja no està disponible. Tria’n una altra per continuar.",
+      "onsiteExpiredNotice": "Ja falten menys de 2 h per a aquesta hora: només es pot reservar pagant en línia. Revisa les condicions abans de continuar."
     },
     "slotPicker": {
       "dayStripLabel": "Dies disponibles",
@@ -932,14 +997,17 @@
       "totalLabel": "Total",
       "notesLabel": "Notes per al centre (opcional)",
       "notesHelper": "Indica'ns qualsevol detall rellevant: al·lèrgies, primera vegada, preferències…",
-      "notesPlaceholder": "Escriu aquí si vols afegir alguna cosa."
+      "notesPlaceholder": "Escriu aquí si vols afegir alguna cosa.",
+      "onsiteTotalLabel": "A pagar al local"
     },
     "policy": {
       "title": "Política breu",
       "cancelUntil": "Cancel·lació gratuïta fins al {deadline}, des de «Les meves reserves», amb retorn íntegre.",
       "cancelWindowPassed": "El termini de cancel·lació gratuïta ja ha passat.",
       "providerCancel": "El centre també pot cancel·lar fins a 2h abans; en aquest cas rebràs un reemborsament íntegre automàtic.",
-      "compactNote": "Cancel·lació gratuïta des de «Les meves reserves» fins a 2 h abans del servei, amb retorn íntegre. Si reserves amb menys de 2 h, es paga al moment i no admet cancel·lació."
+      "compactNote": "Cancel·lació gratuïta des de «Les meves reserves» fins a 2 h abans del servei, amb retorn íntegre. Si reserves amb menys de 2 h, es paga al moment i no admet cancel·lació.",
+      "onsiteCancelUntil": "Cancel·lació gratuïta i sense càrrec fins al {deadline}, des de «Les meves reserves».",
+      "onsiteProviderCancel": "El centre també pot cancel·lar fins a 2 h abans; si ho fa, t’avisarem per correu."
     },
     "lastMinute": {
       "policy": "Aquesta reserva comença d'aquí a menys de 2 h: es paga ara i no admet cancel·lació ni reemborsament. Si el centre no et pot atendre, escriu-nos i et tornem el 100 %.",
@@ -966,7 +1034,9 @@
       "backToProvider": "Tornar al centre",
       "pendingTitle": "Pagament en curs",
       "pendingSubtitle": "Estem confirmant el cobrament amb el teu banc. Quan acabi, veuràs la reserva a «Les meves reserves».",
-      "viewMyBookings": "Veure les meves reserves"
+      "viewMyBookings": "Veure les meves reserves",
+      "onsiteSubtitle": "Pagaràs {amount} al local. Tens el detall a «Les meves reserves».",
+      "onsiteTotalLabel": "A pagar al local"
     },
     "checkout": {
       "loadingTitle": "Preparant el pagament",
@@ -985,6 +1055,42 @@
       "signUp": "Crear compte",
       "draftKeptHint": "Guardem la teva hora i les teves notes: en tornar continuaràs just on ho vas deixar.",
       "chooseAnotherSlot": "Triar una altra hora"
+    },
+    "paymentMethod": {
+      "legend": "Com vols pagar?",
+      "online": {
+        "title": "Pagar ara en línia",
+        "hint": "Amb targeta, de manera segura. Cancel·lació gratuïta fins a 2 h abans, amb devolució íntegra."
+      },
+      "onsite": {
+        "title": "Pagar al local",
+        "hint": "Pagues al centre el dia de la cita. Cancel·lació gratuïta i sense càrrec fins a 2 h abans.",
+        "lastMinute": "No disponible: les reserves que comencen d’aquí a menys de 2 h es paguen en línia en reservar.",
+        "restricted": "No disponible de moment: després de 3 absències sense cancel·lar en 12 mesos, durant 3 mesos només es pot reservar pagant en línia.",
+        "restrictedUntil": "No disponible fins al {date}: després de 3 absències sense cancel·lar en 12 mesos, durant 3 mesos només es pot reservar pagant en línia."
+      }
+    },
+    "onsite": {
+      "amountLabel": "A pagar al local",
+      "noShowNotice": "Si no pots venir, cancel·la des de «Les meves reserves» fins a 2 h abans. Si no et presentes sense cancel·lar, sumaràs 1 absència; amb 3 en 12 mesos, durant 3 mesos només podràs reservar pagant en línia.",
+      "confirm": "Confirmar la reserva",
+      "confirming": "Confirmant…",
+      "payAtVenueNote": "Ara no et cobrem res: pagues directament al centre.",
+      "errors": {
+        "title": "No hem pogut confirmar la reserva",
+        "unauthenticated": "Per reservar necessites un compte. Entra o registra’t i continuem.",
+        "slotUnavailable": "Aquesta hora s’acaba d’ocupar. Tria’n una altra.",
+        "slotTooSoon": "Aquesta hora ja és massa a prop per reservar-la. Tria’n una altra.",
+        "serviceUnavailable": "Aquest servei ja no es pot reservar. Tria una altra hora o un altre servei.",
+        "pendingAlreadyPaid": "Ja havies pagat aquesta reserva en línia. La tens a «Les meves reserves».",
+        "lastMinute": "Aquesta hora comença d’aquí a menys de 2 h: només es pot reservar pagant en línia.",
+        "restricted": "Ara mateix només pots reservar pagant en línia.",
+        "restrictedUntil": "Fins al {date} només pots reservar pagant en línia.",
+        "notOffered": "Aquest centre ja no accepta el pagament al local. Pots pagar en línia.",
+        "generic": "Alguna cosa ha fallat en confirmar la reserva. Torna-ho a provar.",
+        "payOnline": "Pagar en línia",
+        "viewMyBookings": "Veure les meves reserves"
+      }
     }
   },
   "customerArea": {
@@ -1098,6 +1204,11 @@
         "VALIDATION": "Revisa la puntuació i el text i torna-ho a provar.",
         "INTERNAL": "No hem pogut publicar la valoració. Torna-ho a provar d’aquí a uns minuts."
       }
+    },
+    "paymentOnsite": "Pagament al local",
+    "onsiteRestriction": {
+      "title": "De moment només pots pagar en línia",
+      "body": "Has acumulat 3 absències sense cancel·lar en els últims 12 mesos. Fins al {date}, les teves reserves es paguen en línia en reservar."
     }
   },
   "adminArea": {
@@ -1109,7 +1220,8 @@
       "dashboard": "Dashboard",
       "queue": "Cua",
       "exit": "Sortir del panell",
-      "refunds": "Reemborsaments fallits"
+      "refunds": "Reemborsaments fallits",
+      "sanctions": "Sancions"
     },
     "dashboard": {
       "title": "Resum operatiu",
@@ -1240,6 +1352,44 @@
           "VALIDATION": "No s'ha pogut descartar el reemborsament de {provider}: identificador no vàlid.",
           "FORBIDDEN": "La teva sessió no té permisos d'admin per descartar el reemborsament de {provider}.",
           "INTERNAL": "Error inesperat en descartar el reemborsament de {provider}. Torna-ho a intentar d'aquí a uns minuts."
+        }
+      }
+    },
+    "sanctions": {
+      "meta": {
+        "title": "Sancions · Admin"
+      },
+      "title": "Sancions per no presentat",
+      "subtitle": "Sancions vigents de clients que no es van presentar a una cita amb pagament al local. Passades les 24 h en què el negoci ho pot desfer, només suport les pot retirar.",
+      "filter": {
+        "label": "Correu del client",
+        "placeholder": "client@exemple.com",
+        "submit": "Cercar"
+      },
+      "empty": "No hi ha sancions vigents.",
+      "emptyFiltered": "No hi ha sancions vigents per a «{email}».",
+      "fields": {
+        "client": "Client",
+        "provider": "Centre i servei",
+        "occurredAt": "Cita",
+        "booking": "Reserva"
+      },
+      "revoke": {
+        "label": "Retirar la sanció",
+        "aria": "Retirar la sanció de {email}",
+        "reasonLabel": "Motiu",
+        "reasonHint": "Obligatori, mínim {min} caràcters. Queda registrat.",
+        "reasonTooShort": "Escriu un motiu d'almenys {min} caràcters.",
+        "confirm": "Retirar la sanció",
+        "cancel": "Cancel·lar",
+        "pending": "Retirant…",
+        "errors": {
+          "NOT_FOUND": "Aquesta sanció ja no existeix.",
+          "ALREADY_REVOKED": "Aquesta sanció ja estava retirada. Torna a carregar la pàgina.",
+          "INVALID_REASON": "Revisa el motiu.",
+          "VALIDATION": "No s'ha pogut retirar. Torna a carregar la pàgina i torna-ho a provar.",
+          "FORBIDDEN": "No tens permís per retirar sancions.",
+          "INTERNAL": "No s'ha pogut retirar. Torna-ho a provar d'aquí a uns minuts."
         }
       }
     }

@@ -39,4 +39,9 @@ export interface BookingConfirmationProps {
    * Cambia el copy para no prometer una confirmación que todavía no es.
    */
   paymentPending?: boolean;
+  /**
+   * `onsite`: reserva con pago en el local (§4.bis). No hubo cobro: el
+   * copy dice cuánto se pagará en el negocio en vez de «total».
+   */
+  paymentMode?: 'online' | 'onsite';
 }

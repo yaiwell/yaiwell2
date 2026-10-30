@@ -23,16 +23,24 @@ export const SANCTION_WINDOW_MONTHS = 12;
 export const ONLINE_ONLY_MONTHS = 3;
 
 /**
- * Antigüedad máxima (en meses) de una sanción que aún puede influir en un
- * bloqueo vigente: la más antigua de un trío dista como mucho 12 meses de
- * la tercera, y el bloqueo dura 3 meses desde esta. El repositorio no
- * necesita leer nada anterior.
+ * Antigüedad máxima (en meses, por `occurredAt`) de una sanción que aún
+ * puede influir en un bloqueo vigente: la más antigua de un trío dista
+ * como mucho 12 meses de la tercera, y el bloqueo dura 3 meses desde que
+ * esta se registró (hasta 72 h después de la cita). El mes extra cubre
+ * ese desfase; el repositorio no necesita leer nada anterior.
  */
-export const SANCTION_LOOKBACK_MONTHS = SANCTION_WINDOW_MONTHS + ONLINE_ONLY_MONTHS;
+export const SANCTION_LOOKBACK_MONTHS = SANCTION_WINDOW_MONTHS + ONLINE_ONLY_MONTHS + 1;
 
 /** Lo mínimo de una sanción que necesita el cálculo. */
 export interface SanctionForCalc {
+  /** Inicio de la cita: mide la ventana de 12 meses. */
   occurredAt: Date;
+  /**
+   * Cuándo se registró (el negocio puede marcar hasta 72 h después). El
+   * bloqueo cuenta desde `max(occurredAt, createdAt)`: así dura sus 3
+   * meses completos aunque se marcara tarde. Ausente = `occurredAt`.
+   */
+  createdAt?: Date;
   revokedAt: Date | null;
 }
 
@@ -55,21 +63,34 @@ export function addMonthsUtc(date: Date, months: number): Date {
   return result;
 }
 
-/** Sanciones vigentes (no revocadas) ordenadas de más antigua a más reciente. */
-function activeSorted(sanctions: readonly SanctionForCalc[]): Date[] {
+/** Sanciones vigentes (no revocadas) ordenadas por `occurredAt`. */
+function activeSortedSanctions(sanctions: readonly SanctionForCalc[]): SanctionForCalc[] {
   return sanctions
     .filter((s) => s.revokedAt === null)
-    .map((s) => s.occurredAt)
-    .sort((a, b) => a.getTime() - b.getTime());
+    .sort((a, b) => a.occurredAt.getTime() - b.occurredAt.getTime());
+}
+
+/** Fechas de las sanciones vigentes, de más antigua a más reciente. */
+function activeSorted(sanctions: readonly SanctionForCalc[]): Date[] {
+  return activeSortedSanctions(sanctions).map((s) => s.occurredAt);
+}
+
+/** Desde cuándo cuenta el bloqueo que dispara una sanción. */
+function blockStart(sanction: SanctionForCalc): Date {
+  const created = sanction.createdAt;
+  return created && created.getTime() > sanction.occurredAt.getTime()
+    ? created
+    : sanction.occurredAt;
 }
 
 /**
  * Hasta cuándo el cliente solo puede pagar online, o `null` si no hay
  * bloqueo vigente en `now`.
  *
- * Para cada sanción i (desde la tercera, ordenadas), si entre ella y la
- * sanción i−2 hay 12 meses o menos, hay tres en una ventana de 12 meses
- * y se bloquea hasta `s[i] + 3 meses`. Se queda el bloqueo más lejano:
+ * Para cada sanción i (desde la tercera, ordenadas por `occurredAt`), si
+ * entre ella y la sanción i−2 hay 12 meses o menos, hay tres en una
+ * ventana de 12 meses y se bloquea hasta `max(occurredAt, createdAt)` de
+ * la sanción i + 3 meses (marcarla tarde no acorta el bloqueo). Se queda el bloqueo más lejano:
  * una cuarta sanción durante un bloqueo lo prolonga.
  *
  * El límite `now` es exclusivo: en el instante exacto en que vence el
@@ -82,13 +103,14 @@ export function computeOnlineOnlyUntil(
   sanctions: readonly SanctionForCalc[],
   now: Date,
 ): Date | null {
-  const dates = activeSorted(sanctions);
+  const sorted = activeSortedSanctions(sanctions);
   let blockedUntil: Date | null = null;
-  for (let i = SANCTIONS_THRESHOLD - 1; i < dates.length; i++) {
-    const first = dates[i - (SANCTIONS_THRESHOLD - 1)];
-    const current = dates[i];
-    if (current.getTime() > addMonthsUtc(first, SANCTION_WINDOW_MONTHS).getTime()) continue;
-    const until = addMonthsUtc(current, ONLINE_ONLY_MONTHS);
+  for (let i = SANCTIONS_THRESHOLD - 1; i < sorted.length; i++) {
+    const first = sorted[i - (SANCTIONS_THRESHOLD - 1)].occurredAt;
+    const current = sorted[i];
+    const windowEnd = addMonthsUtc(first, SANCTION_WINDOW_MONTHS).getTime();
+    if (current.occurredAt.getTime() > windowEnd) continue;
+    const until = addMonthsUtc(blockStart(current), ONLINE_ONLY_MONTHS);
     if (!blockedUntil || until.getTime() > blockedUntil.getTime()) blockedUntil = until;
   }
   if (!blockedUntil || blockedUntil.getTime() <= now.getTime()) return null;

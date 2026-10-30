@@ -7,6 +7,8 @@
  * en su misma transacción con este repositorio.
  */
 
+import type { LocalizedText } from '@/types/domain';
+
 import {
   SANCTION_LOOKBACK_MONTHS,
   addMonthsUtc,
@@ -20,13 +22,14 @@ import type {
   ClientOnsiteEligibility,
   RevokeSanctionResult,
   SanctionReason,
+  SupportSanctionSummary,
 } from './sanctions.types';
-import { revokeSanctionSchema } from './sanctions.validation';
+import { revokeSanctionSchema, supportSanctionsFilterSchema } from './sanctions.validation';
 
 /**
  * Si el cliente puede reservar pagando en el local en `now`.
  *
- * Solo lee lo que puede influir en un bloqueo vigente (15 meses atrás):
+ * Solo lee lo que puede influir en un bloqueo vigente (16 meses atrás, por `occurredAt`):
  * el bloqueo se recalcula siempre, nunca se guarda.
  *
  * @param userId — `User.id` interno del cliente.
@@ -54,6 +57,33 @@ export async function getClientOnsiteEligibility(
 export async function listActiveSanctions(userId: string): Promise<ActiveSanctionSummary[]> {
   const rows = await sanctionsRepository.listActive(userId);
   return rows.map((row) => ({ ...row, reason: row.reason as SanctionReason }));
+}
+
+/** Tope de filas de la pantalla de soporte (con filtro por email se afina). */
+export const SUPPORT_SANCTIONS_LIMIT = 100;
+
+/**
+ * Sanciones vigentes para la pantalla de soporte (`/admin/sanciones`),
+ * filtrables por email del cliente. La autorización la hace el borde.
+ *
+ * @param filter — `{ email? }` crudo de la URL (validado con Zod).
+ */
+export async function listActiveSanctionsForSupport(
+  filter: unknown,
+): Promise<SupportSanctionSummary[]> {
+  const parsed = supportSanctionsFilterSchema.safeParse(filter ?? {});
+  const email = parsed.success ? (parsed.data.email ?? null) : null;
+  const rows = await sanctionsRepository.listActiveForSupport(email, SUPPORT_SANCTIONS_LIMIT);
+  return rows.map((row) => ({
+    id: row.id,
+    bookingId: row.bookingId,
+    occurredAt: row.occurredAt,
+    createdAt: row.createdAt,
+    clientEmail: row.user.email,
+    clientName: row.user.fullName?.trim() || null,
+    providerName: row.booking.provider.businessName,
+    serviceName: row.booking.service.name as unknown as LocalizedText,
+  }));
 }
 
 /**

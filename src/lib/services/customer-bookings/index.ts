@@ -9,6 +9,7 @@
  */
 
 export { getCustomerBookings } from './customer-bookings.service';
+export { getOnlineOnlyUntil } from './customer-bookings.restriction';
 export type {
   BookingStatus,
   CustomerBookingCancellation,

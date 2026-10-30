@@ -11,20 +11,26 @@
     "clientLabel": "Kundschaft",
     "notesLabel": "Anmerkungen",
     "paidLabel": "Bezahlt",
-    "discountNote": "{pct} % Rabatt angewendet (regulärer Preis {original})"
+    "discountNote": "{pct} % Rabatt angewendet (regulärer Preis {original})",
+    "payAtVenueLabel": "Vor Ort zu zahlen"
   },
   "bookingConfirmed": {
     "subject": "Buchung bei {provider} bestätigt",
     "heading": "Deine Buchung ist bestätigt",
     "intro": "Wir haben deine Zahlung erhalten. {provider} erwartet dich.",
     "cta": "Meine Buchungen ansehen",
-    "lastMinute": "Das ist eine Last-Minute-Buchung: Der Termin beginnt weniger als 2 Stunden nach deiner Buchung, deshalb kann die Zahlung nicht erstattet werden."
+    "lastMinute": "Das ist eine Last-Minute-Buchung: Der Termin beginnt weniger als 2 Stunden nach deiner Buchung, deshalb kann die Zahlung nicht erstattet werden.",
+    "onsiteIntro": "Deine Buchung bei {provider} ist bestätigt. Du bezahlst {amount} am Termin vor Ort.",
+    "onsiteNoShow": "Wenn du nicht kommen kannst, storniere bis 2 Stunden vorher über „Meine Buchungen“ – ohne Gebühren. Erscheinst du ohne Stornierung nicht, zählt das als 1 nicht wahrgenommener Termin; bei 3 in 12 Monaten kannst du 3 Monate lang nur mit Online-Zahlung buchen."
   },
   "providerNewBooking": {
     "subject": "Neue Buchung: {service}, {when}",
     "heading": "Du hast eine neue Buchung",
     "intro": "{client} hat online gebucht und bezahlt.",
-    "cta": "Kalender öffnen"
+    "cta": "Kalender öffnen",
+    "onsiteIntro": "{client} hat gebucht und bezahlt bei dir vor Ort.",
+    "onsiteCommission": "Kassiere {amount} vor Ort. Die Yaiwell-Provision ({commission}) berechnen wir dir in deiner Monatsrechnung, sobald der Termin abgeschlossen ist.",
+    "onsiteNoShow": "Wenn niemand erscheint, markiere es im Kalender deines Panels: Dann zahlst du für diese Buchung keine Provision."
   },
   "bookingCancelled": {
     "subject": "{provider} hat deine Buchung storniert",
@@ -40,7 +46,8 @@
     "heading": "Buchung storniert",
     "intro": "Wir haben deine Buchung bei {provider} wie gewünscht storniert.",
     "noPayment": "Für diese Buchung wurde dir nichts berechnet, daher gibt es nichts zu erstatten.",
-    "cta": "Andere Uhrzeit finden"
+    "cta": "Andere Uhrzeit finden",
+    "onsiteNoCharge": "Du wolltest vor Ort bezahlen, daher ist die Stornierung kostenlos."
   },
   "providerClientCancelled": {
     "subject": "Stornierung: {service}, {when}",
@@ -81,7 +88,8 @@
     "subject": "Morgen hast du einen Termin bei {provider}",
     "heading": "Bis morgen",
     "intro": "Kurze Erinnerung an deinen Termin morgen bei {provider}.",
-    "cta": "Meine Buchungen ansehen"
+    "cta": "Meine Buchungen ansehen",
+    "onsite": "Denk daran: Du bezahlst {amount} vor Ort. Wenn du nicht kommen kannst, storniere bis 2 Stunden vorher über „Meine Buchungen“ – ohne Gebühren."
   },
   "providerApproved": {
     "subject": "{provider} ist jetzt auf Yaiwell online",
@@ -115,5 +123,32 @@
     "intro": "Das Abo für den Tarif {plan} von {provider} ist beendet und das Unternehmen ist in den Tarif Kostenlos gewechselt.",
     "next": "Wenn du mehr Leistungen veröffentlicht hattest, als der Tarif Kostenlos erlaubt, haben wir die überzähligen ausgeblendet. Sie erscheinen wieder, sobald du einen kostenpflichtigen Tarif buchst.",
     "cta": "Tarife ansehen"
+  },
+  "commissionPaymentFailed": {
+    "subject": "Wir konnten die Provisionen von {provider} nicht abbuchen",
+    "heading": "Prüfe deine Zahlungsmethode",
+    "intro": "Wir haben versucht, die Provisionsrechnung für die vor Ort bezahlten Buchungen von {provider} abzubuchen, aber die Zahlung ist fehlgeschlagen.",
+    "next": "Solange sie offen ist, können deine Kundinnen und Kunden bei neuen Buchungen nicht vor Ort bezahlen; die Online-Zahlung funktioniert weiterhin. Sobald die Rechnung bezahlt ist, ist die Zahlung vor Ort wieder verfügbar.",
+    "cta": "Zahlung prüfen"
+  },
+  "onsiteCommission": {
+    "itemDescription": "Yaiwell-Provision · {service} · vor Ort bezahlte Buchung vom {date}",
+    "invoiceDescription": "Yaiwell-Provisionen für vor Ort bezahlte Buchungen"
+  },
+  "noShow": {
+    "subject": "{provider} meldet, dass du deinen Termin nicht wahrgenommen hast",
+    "heading": "Du hast deinen Termin nicht wahrgenommen",
+    "intro": "{provider} hat gemeldet, dass du nicht zu deinem Termin erschienen bist.",
+    "online": "Da du online bezahlt hast, wird der Betrag ({amount}) nicht erstattet.",
+    "onsiteSanction": "Du wolltest vor Ort bezahlen, daher wird deinem Konto 1 Sanktion hinzugefügt: Du hast {count} von 3 in den letzten 12 Monaten.",
+    "onsiteRestricted": "Mit 3 Sanktionen in 12 Monaten kannst du bis {date} nur mit Online-Zahlung buchen.",
+    "support": "Wenn du denkst, dass das ein Fehler ist, schreib uns an {email}, und wir prüfen es.",
+    "cta": "Support kontaktieren"
+  },
+  "noShowUndone": {
+    "subject": "{provider} hat deinen Termin korrigiert: kein Nichterscheinen vermerkt",
+    "heading": "Nichterscheinen aufgehoben",
+    "intro": "{provider} hat die vorherige Meldung korrigiert: Dein Termin gilt nicht mehr als nicht wahrgenommen.",
+    "sanctionRevoked": "Wir haben die Sanktion von deinem Konto entfernt: Sie zählt nicht mehr zur Grenze von 3 in 12 Monaten."
   }
 }

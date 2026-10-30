@@ -9,6 +9,7 @@
 
 export { createBookingCheckout } from './checkout.service';
 export { createOnsiteBooking, getPaymentOptions } from './checkout.onsite.service';
+export type { OnsiteBookingHooks } from './checkout.onsite.service';
 export { isProviderOnsiteReady, resolvePaymentOptions } from './checkout.onsite';
 export type { PaymentOptionsInput, ProviderOnsiteStatus } from './checkout.onsite';
 

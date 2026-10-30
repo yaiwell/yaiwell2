@@ -1,4 +1,4 @@
-import { CalendarClock, MapPin, User } from 'lucide-react';
+import { CalendarClock, MapPin, Store, User } from 'lucide-react';
 import { useFormatter, useLocale, useTranslations } from 'next-intl';
 
 import { ExistingReview } from '@/components/features/customer/ExistingReview';
@@ -123,6 +123,13 @@ export function BookingCard({ booking, variant }: BookingCardProps) {
             <MapPin className={s.metaIcon} aria-hidden="true" />
             {booking.providerAddress}
           </li>
+          {/* Pago en el local (§4.bis): el importe se paga en el negocio. */}
+          {booking.paymentMode === 'onsite' ? (
+            <li className={s.paymentChip} data-component={`customer-booking-onsite-${booking.id}`}>
+              <Store className={s.metaIcon} aria-hidden="true" />
+              {t('paymentOnsite')}
+            </li>
+          ) : null}
         </ul>
 
         {booking.notes ? <p className={s.notes}>“{booking.notes}”</p> : null}

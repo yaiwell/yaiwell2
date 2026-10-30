@@ -41,11 +41,13 @@ const notify = vi.hoisted(() => ({
   schedule: vi.fn((task: () => Promise<void>) => void task()),
   failed: vi.fn(async () => {}),
   downgraded: vi.fn(async () => {}),
+  commissionFailed: vi.fn(async () => {}),
 }));
 vi.mock('@/lib/services/notifications', () => ({
   scheduleNotification: notify.schedule,
   notifyPlanPaymentFailed: notify.failed,
   notifyPlanDowngraded: notify.downgraded,
+  notifyCommissionPaymentFailed: notify.commissionFailed,
   notifyBookingConfirmed: vi.fn(),
   notifyLatePaymentRefunded: vi.fn(),
   notifyRefundCompleted: vi.fn(),
@@ -128,6 +130,27 @@ describe('POST /api/webhooks/stripe — planes', () => {
     });
     await POST(buildRequest());
     expect(notify.failed).toHaveBeenCalledWith('prov-1', 'in_1:2');
+  });
+
+  it('programa el aviso de comisiones impagadas con su clave', async () => {
+    givenEvent('invoice.payment_failed');
+    handleMock.mockResolvedValue({
+      handled: true,
+      providerId: 'prov-1',
+      commissionPaymentFailedKey: 'in_c:1',
+    });
+    await POST(buildRequest());
+    expect(notify.commissionFailed).toHaveBeenCalledWith('prov-1', 'in_c:1');
+    expect(notify.failed).not.toHaveBeenCalled();
+  });
+
+  it('enruta invoice.finalized (facturas de comisiones) al dominio billing', async () => {
+    givenEvent('invoice.finalized');
+    handleMock.mockResolvedValue({ handled: true, providerId: 'prov-1' });
+    const res = await POST(buildRequest());
+    expect(res.status).toBe(200);
+    expect(handleMock).toHaveBeenCalled();
+    expect(notify.commissionFailed).not.toHaveBeenCalled();
   });
 
   it('200 handled:false si el evento no es de ningún negocio nuestro', async () => {

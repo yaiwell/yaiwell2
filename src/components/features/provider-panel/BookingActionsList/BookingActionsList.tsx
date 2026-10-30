@@ -1,4 +1,4 @@
-import { CalendarClock } from 'lucide-react';
+import { CalendarClock, Store } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { formatCurrencyFromCents } from '../DashboardMetrics/DashboardMetrics.logic';
@@ -8,6 +8,8 @@ import { bookingActionsListStyles as s } from './BookingActionsList.styles';
 import type { BookingActionsListProps, PanelBookingActionStatus } from './BookingActionsList.types';
 import { BookingCancelButton } from './BookingCancelButton';
 import { BookingCompleteButton } from './BookingCompleteButton';
+import { BookingNoShowButton } from './BookingNoShowButton';
+import { BookingUndoNoShowButton } from './BookingUndoNoShowButton';
 
 /** Claves de día del namespace `providerPanel.calendar.weekdays`. */
 const WEEKDAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
@@ -59,65 +61,93 @@ export function BookingActionsList({ bookings, locale, readOnly, now }: BookingA
         </p>
       ) : (
         <ul className={s.list}>
-          {rows.map(({ booking, canComplete, showCancel, cancellable, releasable }) => (
-            <li
-              key={booking.id}
-              className={s.card}
-              data-component={`booking-actions-item-${booking.id}`}
-              data-status={booking.status}
-            >
-              <div className={s.cardMain}>
-                <p className={s.cardWhen}>
-                  <CalendarClock className={s.cardWhenIcon} aria-hidden />
-                  {t(`weekdays.${WEEKDAY_KEYS[booking.weekday]}`)} · {booking.startTime}–
-                  {booking.endTime}
-                  <span className={`${s.statusChip} ${STATUS_CLASSES[booking.status]}`}>
-                    {t(`status.${booking.status}`)}
-                  </span>
-                </p>
-                <p className={s.cardService}>{booking.serviceName}</p>
-                <p className={s.cardMeta}>
-                  {booking.professionalName
-                    ? t('actions.clientWithProfessional', {
-                        client: booking.clientName,
-                        professional: booking.professionalName,
-                      })
-                    : booking.clientName}
-                </p>
-              </div>
-
-              <div className={s.cardAside}>
-                <span className={s.cardPrice}>
-                  {formatCurrencyFromCents(booking.priceCents, locale)}
-                </span>
-                <div className={s.cardActions}>
-                  {canComplete && (
-                    <BookingCompleteButton
-                      locale={locale}
-                      bookingId={booking.id}
-                      disabled={readOnly}
-                    />
-                  )}
-                  {showCancel && (
-                    <BookingCancelButton
-                      locale={locale}
-                      bookingId={booking.id}
-                      startAtIso={booking.startAtIso}
-                      initialCancellable={cancellable}
-                      disabled={readOnly}
-                    />
-                  )}
-                  {releasable && booking.startAtIso && (
-                    <ReleaseCancelledSlotButton
-                      bookingId={booking.id}
-                      startAtIso={booking.startAtIso}
-                      disabled={readOnly}
-                    />
-                  )}
+          {rows.map((row) => {
+            const { booking, canComplete, showCancel, cancellable, releasable } = row;
+            return (
+              <li
+                key={booking.id}
+                className={s.card}
+                data-component={`booking-actions-item-${booking.id}`}
+                data-status={booking.status}
+              >
+                <div className={s.cardMain}>
+                  <p className={s.cardWhen}>
+                    <CalendarClock className={s.cardWhenIcon} aria-hidden />
+                    {t(`weekdays.${WEEKDAY_KEYS[booking.weekday]}`)} · {booking.startTime}–
+                    {booking.endTime}
+                    <span className={`${s.statusChip} ${STATUS_CLASSES[booking.status]}`}>
+                      {t(`status.${booking.status}`)}
+                    </span>
+                    {row.isOnsite && (
+                      <span
+                        className={s.paymentChip}
+                        data-component={`booking-actions-onsite-${booking.id}`}
+                      >
+                        <Store className={s.paymentChipIcon} aria-hidden />
+                        {t('actions.paymentOnsite')}
+                      </span>
+                    )}
+                  </p>
+                  <p className={s.cardService}>{booking.serviceName}</p>
+                  <p className={s.cardMeta}>
+                    {booking.professionalName
+                      ? t('actions.clientWithProfessional', {
+                          client: booking.clientName,
+                          professional: booking.professionalName,
+                        })
+                      : booking.clientName}
+                  </p>
                 </div>
-              </div>
-            </li>
-          ))}
+
+                <div className={s.cardAside}>
+                  <span className={s.cardPrice}>
+                    {formatCurrencyFromCents(booking.priceCents, locale)}
+                  </span>
+                  <div className={s.cardActions}>
+                    {canComplete && (
+                      <BookingCompleteButton
+                        locale={locale}
+                        bookingId={booking.id}
+                        disabled={readOnly}
+                      />
+                    )}
+                    {row.canMarkNoShow && (
+                      <BookingNoShowButton
+                        locale={locale}
+                        bookingId={booking.id}
+                        isOnsite={row.isOnsite}
+                        disabled={readOnly}
+                      />
+                    )}
+                    {row.canUndoNoShow && (
+                      <BookingUndoNoShowButton
+                        locale={locale}
+                        bookingId={booking.id}
+                        disabled={readOnly}
+                      />
+                    )}
+                    {showCancel && (
+                      <BookingCancelButton
+                        locale={locale}
+                        bookingId={booking.id}
+                        startAtIso={booking.startAtIso}
+                        initialCancellable={cancellable}
+                        disabled={readOnly}
+                        paymentMode={booking.paymentMode}
+                      />
+                    )}
+                    {releasable && booking.startAtIso && (
+                      <ReleaseCancelledSlotButton
+                        bookingId={booking.id}
+                        startAtIso={booking.startAtIso}
+                        disabled={readOnly}
+                      />
+                    )}
+                  </div>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>

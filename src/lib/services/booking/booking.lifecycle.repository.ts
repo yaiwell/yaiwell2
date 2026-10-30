@@ -83,12 +83,12 @@ export const bookingLifecycleRepository = {
   },
 
   /**
-   * Reservas en el local aún `confirmed` cuyo inicio es anterior a
-   * `cutoff` (estricto), de la más antigua a la más reciente.
+   * Reservas aún `confirmed` (online o en el local) cuyo inicio es
+   * anterior a `cutoff` (estricto), de la más antigua a la más reciente.
    */
-  async findStaleOnsiteConfirmed(cutoff: Date, limit: number, db: Db = prisma) {
+  async findStaleConfirmed(cutoff: Date, limit: number, db: Db = prisma) {
     return db.booking.findMany({
-      where: { paymentMode: 'onsite', status: 'confirmed', startAt: { lt: cutoff } },
+      where: { status: 'confirmed', startAt: { lt: cutoff } },
       select: { id: true, providerId: true, commissionCents: true, paymentMode: true },
       orderBy: { startAt: 'asc' },
       take: limit,

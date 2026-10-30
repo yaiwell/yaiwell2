@@ -28,6 +28,16 @@ export interface BookingEmailContext {
   notes: string | null;
   /** Último refund emitido (`re_…`); identifica cada devolución en las claves. */
   stripeRefundId: string | null;
+  /**
+   * Online o en el local (§4.bis). En el local no hubo cobro: los correos
+   * dicen cuánto se paga en el negocio y avisan de la sanción por no
+   * presentarse.
+   */
+  paymentMode: 'online' | 'onsite';
+  /** Comisión de Yaiwell congelada en la reserva (al negocio, en su factura si es en el local). */
+  commissionCents: number;
+  /** Cuándo se marcó «no presentado» (`null` si no lo está): distingue cada marca. */
+  noShowAt: Date | null;
   serviceName: LocalizedText;
   professionalName: string | null;
   provider: { id: string; name: string; slug: string; address: string };
@@ -75,3 +85,16 @@ export type CancellationRefundState =
   | 'refund_pending'
   | 'refund_uncertain'
   | 'no_payment';
+
+/**
+ * Lo que cuenta el aviso de «no presentado» (de `markBookingNoShow`).
+ * `sanctionsInWindow` y `restrictedUntil` solo tienen sentido con
+ * `sanctionApplied` (reserva en el local).
+ */
+export interface NoShowNotice {
+  sanctionApplied: boolean;
+  /** Sanciones vigentes en los últimos 12 meses, contando esta. */
+  sanctionsInWindow: number;
+  /** Fin del bloqueo «solo online» si con esta sanción salta; `null` si no. */
+  restrictedUntil: Date | null;
+}

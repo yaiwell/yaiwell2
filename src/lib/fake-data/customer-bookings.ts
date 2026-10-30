@@ -1,5 +1,6 @@
+// `customer-bookings.cancellation` va por import directo: el barrel arrastra
+// Prisma y esta regla es pura.
 import type { BookingStatus, CustomerBookingView } from '@/lib/services/customer-bookings';
-// Import directo: el barrel arrastra Prisma y esta regla es pura.
 import { resolveCancellation } from '@/lib/services/customer-bookings/customer-bookings.cancellation';
 import type { Service } from '@/types/domain';
 

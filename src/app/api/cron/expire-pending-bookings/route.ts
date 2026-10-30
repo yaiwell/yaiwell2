@@ -12,19 +12,25 @@ import {
 } from '@/lib/services/notifications';
 import { verifyCronAuthorization } from '@/lib/utils/cron-auth';
 
+import { runDailyClosing } from './daily-closing';
+
 /**
- * Margen para los recordatorios, que se envían con pausa entre correos.
- * 60 s es el máximo del plan Hobby.
+ * 60 s es el máximo del plan Hobby. Los trabajos van en paralelo y cada
+ * uno tiene su presupuesto: recordatorios ≤ 40 s, comisiones en Stripe
+ * ≤ 25 s e invitaciones a valorar hasta el segundo 45 (tras los
+ * recordatorios, por el límite de Resend).
  */
 export const maxDuration = 60;
 
 /**
- * Cron diario: caducidad de reservas `pending` abandonadas y recordatorio
- * de las citas de mañana.
+ * Cron diario: caducidad de reservas `pending` abandonadas, recordatorio
+ * de las citas de mañana y cierre diario (reservas sin cerrar a las 72 h,
+ * invitación a valorar y comisiones del pago en el local en Stripe
+ * Billing, ver `daily-closing.ts`).
  *
- * El plan Hobby solo permite un cron al día, así que los dos trabajos
+ * El plan Hobby solo permite un cron al día, así que los trabajos
  * comparten ejecución (y ruta: cambiarla obligaría a tocar `vercel.json`).
- * Son independientes: si uno falla, el otro se ejecuta igual. El
+ * Son independientes: si uno falla, los demás se ejecutan igual. El
  * recordatorio sale de madrugada, el día anterior a la cita.
  *
  * Programado en `vercel.json` con `0 3 * * *` (UTC): 04:00 en Madrid en
@@ -40,10 +46,12 @@ export const maxDuration = 60;
  *   distinguir a Vercel de cualquier otro. El cuerpo es genérico para no
  *   revelar configuración; el detalle va solo al log.
  * - 401 si la cabecera `Authorization: Bearer <CRON_SECRET>` no coincide.
- * - 200 con el resumen `{ scanned, expired, settled, skipped, failed, reminders }`.
+ * - 200 con el resumen `{ scanned, expired, settled, skipped, failed, reminders, closing }`.
  *   Los fallos por reserva van dentro del resumen, no como 500: se
  *   reintentan solos al día siguiente.
- * - 500 solo si falla la consulta inicial de alguno de los dos (BD caída).
+ * - 500 solo si falla la consulta inicial de la caducidad o de los
+ *   recordatorios (BD caída). El cierre diario nunca tumba la respuesta:
+ *   sus fallos van en `closing` y se reintentan mañana.
  *
  * GET porque es el método con el que invoca Vercel Cron. Al leer
  * cabeceras de la petición el handler es dinámico y nunca se cachea.
@@ -58,10 +66,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
 
-  const [expiry, reminders] = await Promise.allSettled([
+  const startedAt = Date.now();
+  const reminderSweep = sendTomorrowReminders();
+  const [expiry, reminders, closing] = await Promise.allSettled([
     expireAbandonedPendingBookings(),
-    sendTomorrowReminders(),
+    reminderSweep,
+    runDailyClosing(new Date(startedAt), startedAt, reminderSweep),
   ]);
+  if (closing.status === 'rejected') {
+    // `runDailyClosing` no lanza; si pasa, no debe tapar los otros dos.
+    console.error('[cron/expire-pending-bookings] daily closing failed:', closing.reason);
+  }
   if (expiry.status === 'rejected') {
     console.error('[cron/expire-pending-bookings] expiry sweep failed:', expiry.reason);
   }
@@ -75,7 +90,14 @@ export async function GET(request: NextRequest) {
   // solo recuento.
   const { settlements, ...expirySummary } = expiry.value;
   notifySettlements(settlements);
-  return NextResponse.json({ ...expirySummary, reminders: reminders.value }, { status: 200 });
+  return NextResponse.json(
+    {
+      ...expirySummary,
+      reminders: reminders.value,
+      closing: closing.status === 'fulfilled' ? closing.value : null,
+    },
+    { status: 200 },
+  );
 }
 
 /**

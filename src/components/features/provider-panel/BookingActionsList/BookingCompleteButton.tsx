@@ -38,7 +38,7 @@ export function BookingCompleteButton({
   const t = useTranslations('providerPanel.calendar.actions.complete');
   const [open, setOpen] = useState(false);
   const [errorCode, setErrorCode] = useState<
-    'notFound' | 'forbidden' | 'notConfirmed' | 'internal' | null
+    'notFound' | 'forbidden' | 'notConfirmed' | 'notStarted' | 'internal' | null
   >(null);
   const [isPending, startTransition] = useTransition();
 
@@ -61,6 +61,9 @@ export function BookingCompleteButton({
           break;
         case 'NOT_CONFIRMED':
           setErrorCode('notConfirmed');
+          break;
+        case 'NOT_STARTED':
+          setErrorCode('notStarted');
           break;
         default:
           setErrorCode('internal');

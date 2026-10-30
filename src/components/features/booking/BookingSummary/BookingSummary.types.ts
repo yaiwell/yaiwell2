@@ -1,5 +1,7 @@
 import type { Provider, Service } from '@/types/domain';
 
+import type { PaymentOptionsState } from '../BookingFlow/BookingFlow.paymentOptions';
+import type { BookingPaymentMethod } from '../BookingFlow/BookingFlow.types';
 import type { DisplayedBookingPrice } from '../DiscountedPrice';
 
 /**
@@ -33,4 +35,12 @@ export interface BookingSummaryProps {
    */
   isLastMinute: boolean;
   onNotesChange: (notes: string) => void;
+  /**
+   * Métodos de pago del hueco (§4.bis, pago en el local). Sin ellos no
+   * se pinta el selector y la reserva es online.
+   */
+  paymentOptions?: PaymentOptionsState;
+  /** Método efectivo: online si el local no está disponible. */
+  paymentMethod?: BookingPaymentMethod;
+  onPaymentMethodChange?: (method: BookingPaymentMethod) => void;
 }

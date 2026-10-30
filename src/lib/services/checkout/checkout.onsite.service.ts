@@ -24,6 +24,16 @@ import { createOnsiteBookingSchema, getPaymentOptionsSchema } from './checkout.v
  * `onsite_commission_charges`, Stripe Billing).
  */
 
+/** Pasos que el caller intercala en la creación (ver `createOnsiteBooking`). */
+export interface OnsiteBookingHooks {
+  /**
+   * Suelta la reserva `pending` propia que retiene la franja (checkout
+   * online abierto antes de cambiar de método). Se llama **después** de
+   * validar que el local está permitido y antes de crear.
+   */
+  releasePending?: () => Promise<void>;
+}
+
 /**
  * Calcula las opciones a partir del hueco: negocio, antelación y, si hay
  * cliente con sesión, su bloqueo por sanciones. Compartido por la
@@ -85,6 +95,7 @@ export async function getPaymentOptions(
  * @param input — `{ serviceId, slotStartIso, notes? }` crudo.
  * @param clientId — `User.id` del cliente autenticado.
  * @param now — instante de referencia; inyectable para tests.
+ * @param hooks — `releasePending` para soltar antes la `pending` propia.
  * @throws OnsitePaymentNotAllowedError — `last_minute`, `provider` o
  *   `client_restricted` (con `restrictedUntil`).
  * @throws ServiceNotFoundError | ServicePausedError | ProfessionalNotResolvedError
@@ -94,6 +105,7 @@ export async function createOnsiteBooking(
   input: unknown,
   clientId: string,
   now: Date = new Date(),
+  hooks: OnsiteBookingHooks = {},
 ): Promise<OnsiteBookingResult> {
   const data = createOnsiteBookingSchema.parse(input);
   const slotStart = new Date(data.slotStartIso);
@@ -107,12 +119,25 @@ export async function createOnsiteBooking(
     );
   }
 
+  // Solo con el local ya permitido se suelta la `pending` anterior: si el
+  // cliente está bloqueado o es última hora, conserva su reserva online.
+  if (hooks.releasePending) await hooks.releasePending();
+
   let booking: Awaited<ReturnType<typeof createBooking>>;
   try {
     booking = await createBooking(
       { serviceId: data.serviceId, professionalId, slotStart, notes: data.notes },
       clientId,
-      { paymentMode: 'onsite', now },
+      {
+        paymentMode: 'onsite',
+        now,
+        // Se relee dentro de la transacción: si el negocio lo desactivó o
+        // entró en deuda desde la comprobación de arriba, no se reserva.
+        precondition: async (tx) => {
+          const status = await onsiteRepository.findProviderOnsiteStatus(providerId, tx);
+          if (!isProviderOnsiteReady(status)) throw new OnsitePaymentNotAllowedError('provider');
+        },
+      },
     );
   } catch (err) {
     if (err instanceof OnsiteBookingTooLateError) {

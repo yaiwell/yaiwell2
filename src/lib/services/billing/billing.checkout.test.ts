@@ -27,6 +27,8 @@ vi.mock('./billing.prices', () => ({
 vi.mock('./billing.sync', () => ({ syncSubscription: mocks.syncSubscription }));
 const resolveVatMock = vi.hoisted(() => vi.fn());
 vi.mock('./billing.tax', () => ({ resolveVatTaxRate: resolveVatMock }));
+const prePlanMock = vi.hoisted(() => vi.fn());
+vi.mock('./billing.commission.pre-plan', () => ({ invoiceCommissionsBeforePlan: prePlanMock }));
 
 import { confirmCheckoutSession, createPlanCheckoutSession } from './billing.checkout';
 import {
@@ -50,6 +52,7 @@ beforeEach(() => {
   mocks.ensureBillingCustomer.mockResolvedValue(CUSTOMER_ID);
   mocks.resolvePriceForTier.mockResolvedValue(buildPrice('pro', 4900));
   resolveVatMock.mockResolvedValue('txr_iva21');
+  prePlanMock.mockResolvedValue('none');
   stripeMock.subscriptions.list.mockResolvedValue({ data: [] });
   stripeMock.checkout.sessions.list.mockResolvedValue({ data: [] });
   stripeMock.checkout.sessions.create.mockResolvedValue({
@@ -63,6 +66,23 @@ afterEach(() => {
 });
 
 describe('createPlanCheckoutSession', () => {
+  it('factura aparte las comisiones pendientes antes de crear el Checkout', async () => {
+    prePlanMock.mockResolvedValue('invoiced');
+    await createPlanCheckoutSession(PROVIDER_ID, 'pro', URLS, 'es');
+    expect(prePlanMock).toHaveBeenCalledWith(PROVIDER_ID, CUSTOMER_ID);
+    expect(prePlanMock.mock.invocationCallOrder[0]).toBeLessThan(
+      stripeMock.checkout.sessions.create.mock.invocationCallOrder[0]!,
+    );
+  });
+
+  it('si no se pueden facturar las comisiones, no abre el Checkout', async () => {
+    prePlanMock.mockRejectedValue(new Error('stripe down'));
+    await expect(createPlanCheckoutSession(PROVIDER_ID, 'pro', URLS, 'es')).rejects.toThrow(
+      'stripe down',
+    );
+    expect(stripeMock.checkout.sessions.create).not.toHaveBeenCalled();
+  });
+
   it('crea la sesión de suscripción con customer, metadata y facturación', async () => {
     const result = await createPlanCheckoutSession(PROVIDER_ID, 'pro', URLS, 'ca');
     expect(result).toEqual({

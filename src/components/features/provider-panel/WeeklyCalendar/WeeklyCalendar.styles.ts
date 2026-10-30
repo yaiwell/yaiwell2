@@ -104,6 +104,9 @@ export const bookingBlockByStatus: BookingStatusClassMap = {
   pending: 'border-status-soon-foreground/30 bg-status-soon text-status-soon-foreground',
   completed: 'border-status-now-foreground/30 bg-status-now text-status-now-foreground',
   cancelled: 'border-destructive/30 bg-destructive/15 text-destructive line-through opacity-70',
+  // Borde discontinuo y sin tachar: la hora estuvo reservada, no libre.
+  no_show:
+    'border-dashed border-status-busy-foreground/50 bg-status-busy text-status-busy-foreground opacity-90',
 } as const;
 
 /**
@@ -115,4 +118,5 @@ export const legendDotByStatus: BookingStatusClassMap = {
   pending: 'bg-brand-butter',
   completed: 'bg-brand-sage',
   cancelled: 'bg-destructive',
+  no_show: 'bg-status-busy-foreground',
 } as const;

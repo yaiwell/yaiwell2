@@ -40,8 +40,15 @@ export const bookingActionsListStyles = {
   statusCompleted: 'bg-primary/15 text-primary',
   statusCancelled: 'bg-destructive/10 text-destructive',
   statusRefunded: 'bg-destructive/10 text-destructive',
-  // Provisional (migración 9f): la pieza de UI decidirá el color definitivo.
-  statusNoShow: 'bg-muted text-muted-foreground',
+  // No presentado: par semántico `status-busy` (neutro cálido, AA en
+  // claro y oscuro) con borde discontinuo para no confundirlo con una
+  // cancelación (rojo) ni con una cita cerrada con normalidad.
+  statusNoShow:
+    'border border-dashed border-status-busy-foreground/40 bg-status-busy text-status-busy-foreground',
+  // Etiqueta «Pago en el local»: informativa, no un estado.
+  paymentChip:
+    'inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-xs font-medium text-muted-foreground',
+  paymentChipIcon: 'size-3',
 
   // Pista bajo el botón cuando la ventana de 2 h se ha cerrado.
   blockedHint: 'max-w-xs text-muted-foreground text-xs sm:text-right',

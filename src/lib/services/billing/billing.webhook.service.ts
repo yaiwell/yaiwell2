@@ -2,8 +2,14 @@ import 'server-only';
 
 import type Stripe from 'stripe';
 
-import { BillingProviderNotFoundError } from './billing.errors';
+import {
+  applyCommissionInvoiceEvent,
+  type CommissionInvoiceEventType,
+} from './billing.commission.webhook';
+import { BillingProviderNotFoundError, CheckoutSessionMismatchError } from './billing.errors';
 import { billingRepository } from './billing.repository';
+import { handlePaymentMethodChange } from './billing.payment-method.webhook';
+import { completeOnsiteSetup, isOnsiteSetupSession } from './billing.setup';
 import { syncSubscription } from './billing.sync';
 import type { BillingWebhookResult } from './billing.types';
 
@@ -16,6 +22,13 @@ export const BILLING_EVENTS = [
   'invoice.payment_failed',
   'invoice.payment_action_required',
   'invoice.paid',
+  // Comisiones del pago en el local (facturas sueltas y líneas en las del plan).
+  'invoice.finalized',
+  'invoice.marked_uncollectible',
+  'invoice.voided',
+  // Método de pago de las comisiones retirado.
+  'payment_method.detached',
+  'customer.updated',
 ] as const;
 
 export type BillingEventType = (typeof BILLING_EVENTS)[number];
@@ -51,22 +64,77 @@ export async function handleBillingEvent(event: Stripe.Event): Promise<BillingWe
       return fromSync(await syncSubscription(event.data.object.id));
     case 'invoice.payment_failed':
     case 'invoice.payment_action_required':
-      return handlePaymentProblem(event.data.object, new Date(event.created * 1000));
     case 'invoice.paid':
-      return handleInvoicePaid(event.data.object);
+    case 'invoice.finalized':
+    case 'invoice.marked_uncollectible':
+    case 'invoice.voided':
+      return handleInvoiceEvent(event.type, event.data.object, new Date(event.created * 1000));
+    case 'payment_method.detached':
+    case 'customer.updated':
+      return handlePaymentMethodChange(event);
     default:
       return { handled: false };
   }
 }
 
-/** Solo los Checkout de suscripción son nuestros; los de pago, no. */
+/**
+ * Checkout de suscripción (plan) o de setup (método de pago de las
+ * comisiones del pago en el local). Los de pago de reservas no son de aquí.
+ */
 async function handleCheckoutCompleted(
   session: Stripe.Checkout.Session,
 ): Promise<BillingWebhookResult> {
+  if (isOnsiteSetupSession(session)) return handleOnsiteSetupCompleted(session);
   if (session.mode !== 'subscription' || !session.subscription) return { handled: false };
   const id =
     typeof session.subscription === 'string' ? session.subscription : session.subscription.id;
   return fromSync(await syncSubscription(id));
+}
+
+/** Setup completado: método por defecto de las facturas + `onsitePaymentMethodReadyAt`. */
+async function handleOnsiteSetupCompleted(
+  session: Stripe.Checkout.Session,
+): Promise<BillingWebhookResult> {
+  try {
+    const result = await completeOnsiteSetup(session);
+    return result ? { handled: true, providerId: result.providerId } : { handled: false };
+  } catch (err) {
+    // Customer que no es de ningún negocio: la ruta responde 200 sin reintento.
+    if (err instanceof CheckoutSessionMismatchError) {
+      throw new BillingProviderNotFoundError(`Setup session ${session.id} has no provider.`);
+    }
+    throw err;
+  }
+}
+
+/**
+ * Evento de factura: la parte del plan (solo facturas de suscripción) y
+ * la de comisiones (cualquier factura con conceptos de comisión) son
+ * independientes y se suman. Una renovación del plan puede llevar las dos.
+ */
+async function handleInvoiceEvent(
+  type: CommissionInvoiceEventType,
+  invoice: Stripe.Invoice,
+  at: Date,
+): Promise<BillingWebhookResult> {
+  let plan: BillingWebhookResult = { handled: false };
+  if (subscriptionIdOf(invoice)) {
+    if (type === 'invoice.payment_failed' || type === 'invoice.payment_action_required') {
+      plan = await handlePaymentProblem(invoice, at);
+    } else if (type === 'invoice.paid') {
+      plan = await handleInvoicePaid(invoice);
+    }
+  }
+  const commission = await applyCommissionInvoiceEvent(type, invoice, at);
+  if (!commission) return plan;
+  return {
+    ...plan,
+    handled: plan.handled || commission.changed,
+    providerId: plan.providerId ?? commission.providerId,
+    ...(commission.paymentFailedKey
+      ? { commissionPaymentFailedKey: commission.paymentFailedKey }
+      : {}),
+  };
 }
 
 /**

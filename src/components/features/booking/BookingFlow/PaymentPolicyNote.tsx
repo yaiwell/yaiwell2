@@ -22,6 +22,11 @@ interface PaymentPolicyNoteProps {
   /** Inicio de la reserva tal y como quedó en BD. */
   slotStartIso: string;
   locale: AppLocale;
+  /**
+   * `onsite` (pago en el local): no hay cobro, así que la cancelación a
+   * tiempo es «sin cargo» en vez de «con devolución íntegra».
+   */
+  paymentMode?: 'online' | 'onsite';
   /** Instante fijo para tests; en producción el reloj avanza solo. */
   now?: Date;
 }
@@ -43,6 +48,7 @@ export function PaymentPolicyNote({
   changed,
   slotStartIso,
   locale,
+  paymentMode = 'online',
   now,
 }: PaymentPolicyNoteProps) {
   const t = useTranslations('booking.payment');
@@ -55,6 +61,13 @@ export function PaymentPolicyNote({
     current,
   );
 
+  const deadline = formatCancellationDeadline(slotStartIso, locale);
+  const cancelText = !windowOpen
+    ? tPolicy('cancelWindowPassed')
+    : paymentMode === 'onsite'
+      ? tPolicy('onsiteCancelUntil', { deadline })
+      : tPolicy('cancelUntil', { deadline });
+
   return (
     <div className={s.root} data-component="booking-payment-policy">
       {changed && (
@@ -66,11 +79,7 @@ export function PaymentPolicyNote({
         <LastMinuteNotice />
       ) : (
         <p className={s.cancelUntil} data-component="booking-payment-policy-cancel">
-          {windowOpen
-            ? tPolicy('cancelUntil', {
-                deadline: formatCancellationDeadline(slotStartIso, locale),
-              })
-            : tPolicy('cancelWindowPassed')}
+          {cancelText}
         </p>
       )}
     </div>

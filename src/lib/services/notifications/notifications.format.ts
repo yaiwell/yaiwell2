@@ -1,6 +1,7 @@
 import type { AppLocale } from '@/i18n/routing';
 import { toIntlLocale } from '@/lib/i18n';
 import { SITE_URL } from '@/lib/seo/site-url';
+import { formatShortDayMonth } from '@/lib/utils/short-date';
 
 /** Zona del negocio: las horas del correo deben coincidir con las del local. */
 const EMAIL_TIMEZONE = 'Europe/Madrid';
@@ -30,3 +31,18 @@ export function formatEmailPrice(cents: number, locale: AppLocale): string {
 export function buildEmailUrl(locale: AppLocale, path: string): string {
   return `${SITE_URL}/${locale}${path}`;
 }
+
+/**
+ * Fecha corta `dd/mm` en hora de Madrid (p. ej., el fin de un bloqueo):
+ * basta con el día para el destinatario.
+ */
+export function formatEmailShortDate(date: Date, locale: AppLocale): string {
+  return formatShortDayMonth(date, toIntlLocale(locale), EMAIL_TIMEZONE);
+}
+
+/**
+ * Buzón de soporte que citan los correos. Es el mismo contacto público
+ * del footer y de los textos legales (`LEGAL_CONTACT_EMAIL`), que no se
+ * importa aquí porque su módulo carga los documentos legales enteros.
+ */
+export const SUPPORT_EMAIL = 'hola@yaiwell.com';

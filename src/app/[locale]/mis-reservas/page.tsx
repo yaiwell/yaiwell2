@@ -5,12 +5,13 @@ import { hasLocale } from 'next-intl';
 
 import {
   BookingsList,
+  OnsiteRestrictionNotice,
   ReviewFeedbackProvider,
   splitBookings,
 } from '@/components/features/customer';
 import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
-import { getCustomerBookings } from '@/lib/services/customer-bookings';
+import { getCustomerBookings, getOnlineOnlyUntil } from '@/lib/services/customer-bookings';
 import { ensureUserFromClerk } from '@/lib/services/user';
 
 interface CustomerBookingsPageProps {
@@ -60,7 +61,10 @@ export default async function CustomerBookingsPage({ params }: CustomerBookingsP
 
   const t = await getTranslations('customerArea');
   const now = new Date();
-  const bookings = await getCustomerBookings(user.id, now);
+  const [bookings, onlineOnlyUntil] = await Promise.all([
+    getCustomerBookings(user.id, now),
+    getOnlineOnlyUntil(user.id, now),
+  ]);
   const { upcoming, past, pendingReview } = splitBookings(bookings, now);
 
   return (
@@ -71,6 +75,10 @@ export default async function CustomerBookingsPage({ params }: CustomerBookingsP
         </h1>
         <p className="text-muted-foreground max-w-xl text-sm">{t('page.subtitle')}</p>
       </header>
+
+      {/* Bloqueo «solo online» por no presentados (§4.bis): se avisa aquí
+          para que no lo descubra a mitad de una reserva. */}
+      {onlineOnlyUntil ? <OnsiteRestrictionNotice until={onlineOnlyUntil} /> : null}
 
       {/* El aviso de "valoración publicada" vive por encima del listado:
           al revalidar, la card valorada cambia de sección y su diálogo
