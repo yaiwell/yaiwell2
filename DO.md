@@ -10,6 +10,10 @@
 
 ## 2026-10-30
 
+### 2026-10-30 — E2E de cancelación, conversión a profesional y pago en el local
+
+P15 (`e2e-tester`, usuarios `+clerk_test` en Clerk DEV con permiso del dev; datos sembrados por id y borrados al terminar, BD idéntica antes y después). Specs `customer-cancel`, `become-provider`, `onsite-payment` y `onsite-no-show` (13 tests, estables en 3 ejecuciones en paralelo; sin bugs de producto). Utils `onsite-seed.ts` y `sign-in.ts` (inicio de sesión con reintentos). Sin cubrir: reembolso real por Stripe, rechazo directo de server actions y correos.
+
 ### 2026-10-30 — Antiabuso del pago en el local y términos actualizados
 
 - **Tope de 3 reservas futuras en el local** por cliente (`MAX_ACTIVE_ONSITE_BOOKINGS`), comprobado en la regla pura, en las opciones de pago y dentro de la transacción de creación con un bloqueo por cliente; motivo `limit_reached` en la UI.
