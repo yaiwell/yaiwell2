@@ -396,7 +396,8 @@
         "pending": "Pendent",
         "completed": "Completada",
         "cancelled": "Cancel·lada",
-        "refunded": "Reemborsada"
+        "refunded": "Reemborsada",
+        "no_show": "No presentat"
       },
       "legend": "Llegenda",
       "emptyDay": "Sense reserves",
@@ -1021,7 +1022,8 @@
       "confirmed": "Confirmada",
       "completed": "Completada",
       "cancelled": "Cancel·lada",
-      "refunded": "Reemborsada"
+      "refunded": "Reemborsada",
+      "no_show": "No presentat"
     },
     "actions": {
       "viewDetail": "Veure detall",

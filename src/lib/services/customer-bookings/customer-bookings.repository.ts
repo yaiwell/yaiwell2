@@ -28,6 +28,7 @@ export const customerBookingsRepository = {
       select: {
         id: true,
         status: true,
+        paymentMode: true,
         startAt: true,
         endAt: true,
         createdAt: true,

@@ -40,6 +40,8 @@ export const bookingActionsListStyles = {
   statusCompleted: 'bg-primary/15 text-primary',
   statusCancelled: 'bg-destructive/10 text-destructive',
   statusRefunded: 'bg-destructive/10 text-destructive',
+  // Provisional (migración 9f): la pieza de UI decidirá el color definitivo.
+  statusNoShow: 'bg-muted text-muted-foreground',
 
   // Pista bajo el botón cuando la ventana de 2 h se ha cerrado.
   blockedHint: 'max-w-xs text-muted-foreground text-xs sm:text-right',

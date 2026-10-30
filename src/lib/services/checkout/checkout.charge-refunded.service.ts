@@ -28,8 +28,14 @@ import type { BookingTransitionResult } from './checkout.types';
  *     está obsoleto: llegó tarde y no puede tapar ese fallo.
  */
 
-/** Estados desde los que un reembolso total lleva a `refunded`. */
-const REFUNDABLE_STATUSES = new Set(['confirmed', 'completed', 'cancelled']);
+/**
+ * Estados desde los que un reembolso total lleva a `refunded`.
+ *
+ * `no_show` (migración 9f): un no presentado pagado online no se devuelve
+ * por regla (§4.bis), pero si soporte o el negocio lo reembolsan a mano
+ * desde el dashboard, la reserva debe reflejar que el dinero volvió.
+ */
+const REFUNDABLE_STATUSES = new Set(['confirmed', 'completed', 'cancelled', 'no_show']);
 
 /**
  * Marca como `refunded` la reserva asociada a un `charge.refunded`.

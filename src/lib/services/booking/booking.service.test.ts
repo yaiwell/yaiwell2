@@ -9,7 +9,7 @@
  *  - createBooking: happy path, solapamiento, slot demasiado pronto.
  *  - cancelBookingByProvider: happy path, ventana < 2 h, no titular,
  *    estados no cancelables.
- *  - markBookingCompleted: happy path, estado distinto de confirmed.
+ *  - markBookingCompleted: ver booking.complete.service.test.ts.
  */
 
 import { ZodError } from 'zod';
@@ -53,14 +53,13 @@ import { prisma } from '@/lib/db/prisma';
 
 import {
   BookingNotCancellableError,
-  BookingNotConfirmedError,
   BookingTooLateToCancelError,
   ServiceNotFoundError,
   ServicePausedError,
   SlotUnavailableError,
   UnauthorizedCancellationError,
 } from './booking.errors';
-import { cancelBookingByProvider, createBooking, markBookingCompleted } from './booking.service';
+import { cancelBookingByProvider, createBooking } from './booking.service';
 
 /**
  * Atajos tipados a los mocks. `vi.mocked` reusa la inferencia de TS
@@ -390,32 +389,5 @@ describe('cancelBookingByProvider', () => {
       UnauthorizedCancellationError,
     );
     expect(mockPrisma.booking.updateMany).not.toHaveBeenCalled();
-  });
-});
-
-describe('markBookingCompleted', () => {
-  const bookingId = BOOKING_ID;
-
-  it('marca como completada cuando el estado actual es confirmed', async () => {
-    const startAt = new Date(Date.now() - 60 * 60_000); // ya pasó
-    mockPrisma.booking.findUnique.mockResolvedValue(fakeBooking({ startAt, status: 'confirmed' }));
-    mockPrisma.booking.update.mockResolvedValue({ id: bookingId } as never);
-
-    await markBookingCompleted(bookingId, 'user-provider');
-
-    expect(mockPrisma.booking.update).toHaveBeenCalledOnce();
-    const updateArgs = mockPrisma.booking.update.mock.calls[0][0];
-    expect(updateArgs.data.status).toBe('completed');
-    expect(updateArgs.data.completedAt).toBeInstanceOf(Date);
-  });
-
-  it('rechaza con BookingNotConfirmedError si el estado actual es pending', async () => {
-    const startAt = new Date(Date.now() - 60 * 60_000);
-    mockPrisma.booking.findUnique.mockResolvedValue(fakeBooking({ startAt, status: 'pending' }));
-
-    await expect(markBookingCompleted(bookingId, 'user-provider')).rejects.toBeInstanceOf(
-      BookingNotConfirmedError,
-    );
-    expect(mockPrisma.booking.update).not.toHaveBeenCalled();
   });
 });

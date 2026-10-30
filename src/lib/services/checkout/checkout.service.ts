@@ -3,17 +3,13 @@ import 'server-only';
 import type Stripe from 'stripe';
 
 import { getStripeClient } from '@/lib/integrations/stripe';
-import { availabilityRepository } from '@/lib/services/availability';
-import { bookingRepository, createBooking, ServiceNotFoundError } from '@/lib/services/booking';
+import { bookingRepository, createBooking } from '@/lib/services/booking';
 import { getConnectAccountStatus } from '@/lib/services/payments';
 import { isLastMinuteAtCreation } from '@/lib/utils/booking-last-minute';
 
-import {
-  PaymentIntentCreationError,
-  ProfessionalNotResolvedError,
-  ProviderNotChargeableError,
-} from './checkout.errors';
+import { PaymentIntentCreationError, ProviderNotChargeableError } from './checkout.errors';
 import { checkoutRepository } from './checkout.repository';
+import { resolveBookingTarget } from './checkout.target';
 import type { BookingCheckoutSession } from './checkout.types';
 import { createBookingCheckoutSchema } from './checkout.validation';
 
@@ -63,23 +59,9 @@ export async function createBookingCheckout(
 ): Promise<BookingCheckoutSession> {
   const data = createBookingCheckoutSchema.parse(input);
 
-  const service = await availabilityRepository.findServiceForAvailability(data.serviceId);
-  if (!service) {
-    throw new ServiceNotFoundError();
-  }
+  const { providerId, professionalId } = await resolveBookingTarget(data.serviceId);
 
-  // Mismo fallback que el motor de availability: si el servicio no tiene
-  // profesional asignado (caso del autónomo), cae al primero activo del
-  // proveedor. Así el slot que se mostró y el que se reserva salen del
-  // mismo profesional.
-  const professionalId =
-    service.professionalId ??
-    (await availabilityRepository.findFirstProfessionalIdForProvider(service.providerId));
-  if (!professionalId) {
-    throw new ProfessionalNotResolvedError();
-  }
-
-  const destinationAccountId = await resolveChargeableAccount(service.providerId);
+  const destinationAccountId = await resolveChargeableAccount(providerId);
 
   // `createBooking` aplica las reglas de negocio: antelación mínima de 30 min,
   // servicio activo, ausencia de solapamiento, y congela precio y

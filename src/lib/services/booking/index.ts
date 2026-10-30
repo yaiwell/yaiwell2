@@ -6,8 +6,14 @@
  * internos del módulo directamente está prohibido por convención.
  */
 
-export { cancelBookingByProvider, createBooking, markBookingCompleted } from './booking.service';
+export { cancelBookingByProvider, createBooking } from './booking.service';
 export { cancelBookingByClient } from './booking.client-cancel.service';
+export {
+  AUTO_COMPLETE_DEFAULT_LIMIT,
+  autoCompleteStaleOnsiteBookings,
+  markBookingCompleted,
+} from './booking.complete.service';
+export { markBookingNoShow, undoBookingNoShow } from './booking.no-show.service';
 
 export { bookingRepository } from './booking.repository';
 
@@ -23,8 +29,13 @@ export {
   BookingNotCancellableError,
   BookingNotConfirmedError,
   BookingNotFoundError,
+  BookingNotNoShowError,
+  BookingNotStartedError,
   BookingTooLateToCancelError,
   LastMinuteBookingNotCancellableError,
+  NoShowUndoWindowClosedError,
+  NoShowWindowClosedError,
+  OnsiteBookingTooLateError,
   ServiceNotFoundError,
   ServicePausedError,
   SlotUnavailableError,
@@ -35,7 +46,13 @@ export { BOOKING_TOO_SOON_ISSUE_CODE, isBookingTooSoonError } from './booking.va
 
 export { BookingStatus } from './booking.types';
 export type {
+  AutoCompleteOnsiteSummary,
+  BookingPaymentMode,
   BookingSummary,
   CancelBookingByProviderInput,
+  CompleteBookingResult,
   CreateBookingInput,
+  CreateBookingOptions,
+  NoShowResult,
+  UndoNoShowResult,
 } from './booking.types';

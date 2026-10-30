@@ -4,8 +4,11 @@
  * Orquesta el repositorio de bookings con las reglas de negocio
  * descritas en §4.bis de CLAUDE.md:
  *  - Cancelación por proveedor solo si faltan >=2 h hasta `startAt`.
- *  - Solo el dueño del Provider puede cancelar/completar.
- *  - El paso a `completed` solo se permite desde `confirmed`.
+ *  - Solo el dueño del Provider puede cancelar.
+ *  - Pago en el local solo con 2 h o más de antelación.
+ *
+ * Completar y «no presentado» viven en `booking.complete.service.ts` y
+ * `booking.no-show.service.ts`.
  *
  * Toda entrada externa se valida con Zod antes de tocar la BD. Los
  * errores son clases tipadas para que la capa de transporte mapee
@@ -13,7 +16,9 @@
  */
 
 import { prisma } from '@/lib/db/prisma';
+import { isExclusionViolation } from '@/lib/db/prisma-errors';
 import { findLiveOfferForSlot, isBookableStart } from '@/lib/services/slot-offers';
+import { isOnsiteAllowedByLeadTime } from '@/lib/utils/booking-payment-mode';
 import { computeCommissionCents, priceSlot } from '@/lib/utils/slot-offer-pricing';
 
 import {
@@ -22,18 +27,22 @@ import {
   commitCancellation,
 } from './booking.cancel';
 import {
-  BookingNotConfirmedError,
   BookingNotFoundError,
+  OnsiteBookingTooLateError,
   ServiceNotFoundError,
   ServicePausedError,
   SlotUnavailableError,
   UnauthorizedCancellationError,
 } from './booking.errors';
 import { bookingRepository } from './booking.repository';
+import type { CreateBookingOptions } from './booking.types';
 import { cancelBookingSchema, createBookingSchema } from './booking.validation';
 
+/** Restricción de BD contra dos `confirmed` solapadas (migración 9d). */
+const OVERLAP_CONSTRAINT = 'bookings_no_overlap_confirmed';
+
 /**
- * Crea una reserva en estado `pending`.
+ * Crea una reserva.
  *
  * Pasos:
  *  1. Valida la entrada con Zod (incluye la regla de antelación mínima).
@@ -45,18 +54,41 @@ import { cancelBookingSchema, createBookingSchema } from './booking.validation';
  *     comisión sobre el precio cobrado.
  *  6. Persiste la reserva en la misma transacción.
  *
+ * Según `options.paymentMode`:
+ *  - `online` (por defecto): nace `pending`; el webhook de Stripe la
+ *    confirma al cobrar.
+ *  - `onsite`: nace `confirmed`, sin PaymentIntent ni retención, y solo
+ *    con 2 h o más de antelación (§4.bis). Al nacer `confirmed`, la
+ *    restricción de exclusión de la BD (9d) es la última palabra: un
+ *    23P01 se traduce a `SlotUnavailableError`.
+ *
  * Congelamos `priceCents` y `commissionCents` en el momento de la
  * reserva para que cambios posteriores de precio o plan no afecten
- * a reservas pasadas.
+ * a reservas pasadas. En el local la comisión es la misma (misma tasa
+ * del plan) y se cobra al negocio al completarse.
  *
  * @param input — datos crudos del cliente (validados con Zod).
  * @param clientId — id del usuario autenticado (`User.id`).
+ * @param options — modo de pago y reloj compartido con el caller.
  * @throws ServiceNotFoundError — si el servicio no existe o está soft-deleted.
  * @throws ServicePausedError — si el servicio está pausado por el dueño.
+ * @throws OnsiteBookingTooLateError — en el local a menos de 2 h del inicio.
  * @throws SlotUnavailableError — si el slot solapa con otra reserva activa.
  */
-export async function createBooking(input: unknown, clientId: string) {
+export async function createBooking(
+  input: unknown,
+  clientId: string,
+  options: CreateBookingOptions = {},
+) {
   const data = createBookingSchema.parse(input);
+  const paymentMode = options.paymentMode ?? 'online';
+  // Un único instante para el tramo de descuento, la regla de última hora
+  // y `createdAt`: así nunca se contradicen en la frontera de 2 h.
+  const now = options.now ?? new Date();
+
+  if (paymentMode === 'onsite' && !isOnsiteAllowedByLeadTime(data.slotStart, now)) {
+    throw new OnsiteBookingTooLateError();
+  }
 
   // Cargamos el servicio con el proveedor + plan para conocer la
   // duración, el precio y la comisión a aplicar.
@@ -76,11 +108,6 @@ export async function createBooking(input: unknown, clientId: string) {
   // Calculamos el cierre del slot a partir de la duración del servicio.
   const endAt = new Date(data.slotStart.getTime() + service.durationMinutes * 60_000);
 
-  // Un único instante para el tramo de descuento y para `createdAt`, del
-  // que sale la regla de última hora: así nunca se contradicen en la
-  // frontera de 2 h.
-  const now = new Date();
-
   // Solo aceptamos horas que ofrecemos: de la rejilla del motor o
   // liberadas con descuento. Sin esto una llamada directa podría
   // reservar fuera de horario o una hora que la UI nunca enseñó.
@@ -88,58 +115,65 @@ export async function createBooking(input: unknown, clientId: string) {
     throw new SlotUnavailableError();
   }
 
-  return prisma.$transaction(async (tx) => {
-    // Bloqueo por profesional hasta el fin de la transacción: dos
-    // clientes que reservan el mismo hueco a la vez (más probable en un
-    // hueco liberado con descuento) se serializan, y el segundo ya ve
-    // la reserva del primero en la comprobación de solape.
-    await bookingRepository.lockProfessional(tx, data.professionalId);
+  try {
+    return await prisma.$transaction(async (tx) => {
+      // Bloqueo por profesional hasta el fin de la transacción: dos
+      // clientes que reservan el mismo hueco a la vez (más probable en un
+      // hueco liberado con descuento) se serializan, y el segundo ya ve
+      // la reserva del primero en la comprobación de solape.
+      await bookingRepository.lockProfessional(tx, data.professionalId);
 
-    const overlapping = await bookingRepository.findOverlapping(
-      data.professionalId,
-      data.slotStart,
-      endAt,
-      now,
-      tx,
-    );
-    if (overlapping.length > 0) {
-      throw new SlotUnavailableError();
-    }
-
-    // Hueco liberado con descuento: el % vigente se resuelve aquí, en
-    // servidor, y se congela en la reserva (CLAUDE.md §4.bis).
-    const offer = await findLiveOfferForSlot(
-      data.professionalId,
-      data.serviceId,
-      data.slotStart,
-      now,
-      tx,
-    );
-    const price = priceSlot(service.priceCents, offer?.discounts ?? null, data.slotStart, now);
-
-    return bookingRepository.create(
-      {
-        clientId,
-        serviceId: data.serviceId,
-        professionalId: data.professionalId,
-        providerId: service.providerId,
-        startAt: data.slotStart,
+      const overlapping = await bookingRepository.findOverlapping(
+        data.professionalId,
+        data.slotStart,
         endAt,
-        priceCents: price.priceCents,
-        // La comisión se calcula sobre lo que se cobra, con descuento o sin él.
-        commissionCents: computeCommissionCents(
-          price.priceCents,
-          service.provider.plan.commissionRateBps,
-        ),
-        notes: data.notes,
-        slotOfferId: price.discountPct !== null ? offer?.id : null,
-        originalPriceCents: price.originalPriceCents,
-        discountPct: price.discountPct,
-        createdAt: now,
-      },
-      tx,
-    );
-  });
+        now,
+        tx,
+      );
+      if (overlapping.length > 0) {
+        throw new SlotUnavailableError();
+      }
+
+      // Hueco liberado con descuento: el % vigente se resuelve aquí, en
+      // servidor, y se congela en la reserva (CLAUDE.md §4.bis).
+      const offer = await findLiveOfferForSlot(
+        data.professionalId,
+        data.serviceId,
+        data.slotStart,
+        now,
+        tx,
+      );
+      const price = priceSlot(service.priceCents, offer?.discounts ?? null, data.slotStart, now);
+
+      return bookingRepository.create(
+        {
+          clientId,
+          serviceId: data.serviceId,
+          professionalId: data.professionalId,
+          providerId: service.providerId,
+          startAt: data.slotStart,
+          endAt,
+          priceCents: price.priceCents,
+          // La comisión se calcula sobre lo que se cobra, con descuento o sin él.
+          commissionCents: computeCommissionCents(
+            price.priceCents,
+            service.provider.plan.commissionRateBps,
+          ),
+          notes: data.notes,
+          slotOfferId: price.discountPct !== null ? offer?.id : null,
+          originalPriceCents: price.originalPriceCents,
+          discountPct: price.discountPct,
+          createdAt: now,
+          status: paymentMode === 'onsite' ? 'confirmed' : 'pending',
+          paymentMode,
+        },
+        tx,
+      );
+    });
+  } catch (err) {
+    if (isExclusionViolation(err, OVERLAP_CONSTRAINT)) throw new SlotUnavailableError();
+    throw err;
+  }
 }
 
 /**
@@ -183,39 +217,4 @@ export async function cancelBookingByProvider(input: unknown, providerUserId: st
 
   // El centro retira la oferta de origen: decide él si vuelve a liberar.
   return commitCancellation(booking, now, { retireOffer: true });
-}
-
-/**
- * Marca una reserva como completada desde el panel del proveedor.
- *
- * Es el evento que desbloquea la valoración para el cliente (§4.bis).
- * Reglas:
- *  - Solo el dueño del Provider asociado puede marcarla.
- *  - Solo se permite la transición `confirmed` -> `completed`. No se
- *    salta `confirmed` desde `pending` para no marcar como atendida
- *    una reserva que aún no se ha pagado.
- *
- * @throws BookingNotFoundError — si la reserva no existe.
- * @throws UnauthorizedCancellationError — si el usuario no es dueño
- *   (reutilizamos el error porque la regla de titularidad es la misma).
- * @throws BookingNotConfirmedError — si el estado actual no es
- *   `confirmed`.
- */
-export async function markBookingCompleted(bookingId: string, providerUserId: string) {
-  const booking = await bookingRepository.findById(bookingId);
-  if (!booking) {
-    throw new BookingNotFoundError();
-  }
-
-  if (booking.provider.userId !== providerUserId) {
-    throw new UnauthorizedCancellationError();
-  }
-
-  if (booking.status !== 'confirmed') {
-    throw new BookingNotConfirmedError();
-  }
-
-  return bookingRepository.updateStatus(bookingId, 'completed', {
-    completedAt: new Date(),
-  });
 }

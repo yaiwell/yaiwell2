@@ -29,9 +29,9 @@ export interface UpdateStatusExtraFields {
 }
 
 /**
- * Datos crudos para insertar una reserva. El status arranca siempre
- * en `pending`: el paso a `confirmed` lo dispara Stripe vía webhook
- * cuando confirma el pago.
+ * Datos crudos para insertar una reserva. Online arranca en `pending`
+ * (el paso a `confirmed` lo dispara Stripe vía webhook al confirmar el
+ * pago); en el local nace `confirmed`, sin cobro en la app.
  */
 export interface CreateBookingData {
   clientId: string;
@@ -49,6 +49,10 @@ export interface CreateBookingData {
   discountPct?: number | null;
   /** Instante de creación; lo fija el servicio para usar un solo reloj. */
   createdAt?: Date;
+  /** Por defecto `pending` (online). */
+  status?: 'pending' | 'confirmed';
+  /** Por defecto `online`. */
+  paymentMode?: 'online' | 'onsite';
 }
 
 /** Cliente de BD: el global o el de una transacción en curso. */
@@ -107,8 +111,9 @@ export const bookingRepository = {
   },
 
   /**
-   * Crea una reserva en estado `pending`. Stripe la pasará a
-   * `confirmed` desde el webhook tras el pago.
+   * Crea una reserva. Online nace `pending` y Stripe la pasa a
+   * `confirmed` desde el webhook tras el pago; en el local nace ya
+   * `confirmed` (ver `createBooking`).
    */
   async create(data: CreateBookingData, db: Db = prisma) {
     return db.booking.create({
@@ -126,7 +131,8 @@ export const bookingRepository = {
         originalPriceCents: data.originalPriceCents ?? null,
         discountPct: data.discountPct ?? null,
         ...(data.createdAt && { createdAt: data.createdAt }),
-        status: 'pending',
+        status: data.status ?? 'pending',
+        paymentMode: data.paymentMode ?? 'online',
       },
     });
   },

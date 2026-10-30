@@ -31,5 +31,8 @@ export const bookingCardStyles = {
   statusCompleted: 'bg-status-info text-status-info-foreground ring-status-info-foreground/30',
   statusCancelled: 'bg-destructive/15 text-destructive ring-destructive/30',
   statusRefunded: 'bg-muted text-muted-foreground ring-border',
+  // Provisional (migración 9f): la pieza de UI del pago en el local
+  // decidirá su color definitivo.
+  statusNoShow: 'bg-muted text-muted-foreground ring-border',
   blockedHint: 'text-xs text-muted-foreground',
 } as const;

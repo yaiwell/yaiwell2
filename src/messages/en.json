@@ -396,7 +396,8 @@
         "pending": "Pending",
         "completed": "Completed",
         "cancelled": "Cancelled",
-        "refunded": "Refunded"
+        "refunded": "Refunded",
+        "no_show": "No-show"
       },
       "legend": "Legend",
       "emptyDay": "No bookings",
@@ -1021,7 +1022,8 @@
       "confirmed": "Confirmed",
       "completed": "Completed",
       "cancelled": "Cancelled",
-      "refunded": "Refunded"
+      "refunded": "Refunded",
+      "no_show": "No-show"
     },
     "actions": {
       "viewDetail": "View details",

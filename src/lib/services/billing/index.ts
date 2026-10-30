@@ -59,6 +59,8 @@ export type { PlanLimitsResult, ServiceUsage } from './billing.plan-limits';
 export type {
   BillingPortalFlow,
   BillingWebhookResult,
+  ItemizeCommission,
+  ItemizeCommissionOutcome,
   PaidPlanTier,
   PlanChange,
   PlanCheckoutSession,

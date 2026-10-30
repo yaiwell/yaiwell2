@@ -113,3 +113,29 @@ export interface ProviderBillingSummary {
   scheduledChangeAt: Date | null;
   lastPaymentFailedAt: Date | null;
 }
+
+/**
+ * Desenlace de pasar a Stripe la comisión de una reserva en el local
+ * (`onsite_commission_charges`, migración 9f).
+ *
+ *  - `itemized`: concepto creado ahora en el Customer del negocio.
+ *  - `already_itemized`: la fila ya no estaba `pending` (otro camino se
+ *    adelantó); no se ha hecho nada.
+ *  - `retry_later`: Stripe falló; la fila sigue `pending` con
+ *    `lastError` y la reintenta el cron.
+ */
+export type ItemizeCommissionOutcome = 'itemized' | 'already_itemized' | 'retry_later';
+
+/**
+ * Contrato de `itemizeCommission(chargeId)`, que implementa la pieza B
+ * (`billing.commission.itemize.ts`). La llaman, **fuera** de toda
+ * transacción y sin propagar errores al usuario:
+ *  - la action de «Finalizar» del panel con `onsiteCommissionChargeId`
+ *    de `markBookingCompleted`;
+ *  - la action de deshacer «no presentado» si devolvió `completed`;
+ *  - el cron, con los `commissionChargeIds` de
+ *    `autoCompleteStaleOnsiteBookings` y las filas aún `pending`.
+ *
+ * Idempotente: clave `onsite-commission:<bookingId>` en Stripe.
+ */
+export type ItemizeCommission = (chargeId: string) => Promise<ItemizeCommissionOutcome>;

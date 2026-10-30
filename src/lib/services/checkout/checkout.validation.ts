@@ -77,3 +77,23 @@ export const dismissBookingRefundSchema = z.object({
 });
 
 export type DismissBookingRefundParsed = z.infer<typeof dismissBookingRefundSchema>;
+
+/**
+ * Reserva con pago en el local. Mismo contrato que el checkout online:
+ * el cliente solo elige servicio, hora y nota; el resto sale de BD.
+ */
+export const createOnsiteBookingSchema = z.object({
+  serviceId: z.string().uuid(),
+  slotStartIso: z.string().datetime(),
+  notes: z.string().max(500).optional(),
+});
+
+export type CreateOnsiteBookingParsed = z.infer<typeof createOnsiteBookingSchema>;
+
+/** Consulta de los métodos de pago disponibles para un hueco. */
+export const getPaymentOptionsSchema = z.object({
+  serviceId: z.string().uuid(),
+  slotStartIso: z.string().datetime(),
+});
+
+export type GetPaymentOptionsParsed = z.infer<typeof getPaymentOptionsSchema>;

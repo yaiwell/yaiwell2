@@ -192,3 +192,39 @@ export interface RetryRefundResult {
   /** Id del refund cuando Stripe lo devolvió en este intento. */
   stripeRefundId: string | null;
 }
+
+/**
+ * Disponibilidad del pago en el local para un hueco concreto:
+ *  - `available`: se puede elegir.
+ *  - `last_minute`: empieza a menos de 2 h; solo online (la UI lo explica).
+ *  - `client_restricted`: el cliente está bloqueado hasta `restrictedUntil`.
+ *  - `not_offered`: el negocio no lo ofrece ahora (desactivado, sin método
+ *    de pago para comisiones o con deuda). La UI no enseña la opción.
+ */
+export type OnsitePaymentOption = 'available' | 'last_minute' | 'client_restricted' | 'not_offered';
+
+/**
+ * Métodos de pago que puede elegir el cliente en el paso de resumen.
+ * Online siempre está disponible (§4.bis). `restrictedUntil` solo con
+ * `onsite: 'client_restricted'`; ISO-8601 para cruzar a cliente.
+ */
+export interface PaymentOptions {
+  online: 'available';
+  onsite: OnsitePaymentOption;
+  restrictedUntilIso: string | null;
+}
+
+/**
+ * Resultado de crear una reserva en el local: ya `confirmed`, sin
+ * PaymentIntent. `amountCents` es lo que el cliente pagará en el local
+ * (con el descuento congelado, si lo hubo).
+ */
+export interface OnsiteBookingResult {
+  bookingId: string;
+  paymentMode: 'onsite';
+  amountCents: number;
+  originalPriceCents: number | null;
+  discountPct: number | null;
+  slotStartIso: string;
+  slotEndIso: string;
+}

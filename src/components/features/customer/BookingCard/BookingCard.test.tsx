@@ -29,6 +29,7 @@ function booking(
   return {
     id: 'bkg-1',
     status: 'confirmed',
+    paymentMode: 'online',
     startAt: START,
     endAt: new Date(START.getTime() + 60 * 60_000),
     createdAt,

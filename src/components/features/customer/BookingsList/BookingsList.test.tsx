@@ -39,6 +39,7 @@ function buildBooking(overrides: Partial<CustomerBookingView> = {}): CustomerBoo
   return {
     id: overrides.id ?? 'bkg-test',
     status: overrides.status ?? 'confirmed',
+    paymentMode: overrides.paymentMode ?? 'online',
     startAt: overrides.startAt ?? inHours(5),
     endAt: overrides.endAt ?? inHours(6),
     createdAt: overrides.createdAt ?? inHours(-48),

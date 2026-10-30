@@ -35,6 +35,7 @@ export async function getCustomerBookings(
   return records.map((record) => ({
     id: record.id,
     status: record.status,
+    paymentMode: record.paymentMode,
     startAt: record.startAt,
     endAt: record.endAt,
     createdAt: record.createdAt,

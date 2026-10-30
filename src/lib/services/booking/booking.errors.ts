@@ -122,3 +122,66 @@ export class LastMinuteBookingNotCancellableError extends Error {
     this.name = 'LastMinuteBookingNotCancellableError';
   }
 }
+
+/**
+ * Se intentó marcar «no presentado» antes de la hora de inicio: el
+ * cliente aún puede llegar (§4.bis).
+ */
+export class BookingNotStartedError extends Error {
+  readonly code = 'BOOKING_NOT_STARTED';
+
+  constructor(message = 'La reserva aún no ha empezado.') {
+    super(message);
+    this.name = 'BookingNotStartedError';
+  }
+}
+
+/**
+ * Han pasado más de 72 h desde el inicio: ya no se puede marcar «no
+ * presentado» (las reservas en el local se completan solas a las 72 h).
+ */
+export class NoShowWindowClosedError extends Error {
+  readonly code = 'NO_SHOW_WINDOW_CLOSED';
+
+  constructor(message = 'Ya no se puede marcar como no presentado: han pasado más de 72 h.') {
+    super(message);
+    this.name = 'NoShowWindowClosedError';
+  }
+}
+
+/**
+ * Han pasado más de 24 h desde que se marcó «no presentado»: el negocio
+ * ya no puede deshacerlo; solo soporte puede revocar la sanción.
+ */
+export class NoShowUndoWindowClosedError extends Error {
+  readonly code = 'NO_SHOW_UNDO_WINDOW_CLOSED';
+
+  constructor(message = 'Ya no se puede deshacer: han pasado más de 24 h. Contacta con soporte.') {
+    super(message);
+    this.name = 'NoShowUndoWindowClosedError';
+  }
+}
+
+/** Se intentó deshacer «no presentado» sobre una reserva que no lo está. */
+export class BookingNotNoShowError extends Error {
+  readonly code = 'BOOKING_NOT_NO_SHOW';
+
+  constructor(message = 'La reserva no está marcada como no presentada.') {
+    super(message);
+    this.name = 'BookingNotNoShowError';
+  }
+}
+
+/**
+ * Reserva en el local a menos de 2 h del inicio: sería de última hora,
+ * que se paga online y sin devolución (§4.bis). Red de seguridad del
+ * dominio; `checkout` lo comprueba antes con el mismo instante.
+ */
+export class OnsiteBookingTooLateError extends Error {
+  readonly code = 'ONSITE_BOOKING_TOO_LATE';
+
+  constructor(message = 'A menos de 2 h del inicio solo se puede pagar online.') {
+    super(message);
+    this.name = 'OnsiteBookingTooLateError';
+  }
+}

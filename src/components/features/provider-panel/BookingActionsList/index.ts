@@ -5,4 +5,5 @@ export type {
   BookingActionsListProps,
   PanelBookingAction,
   PanelBookingActionStatus,
+  PanelBookingPaymentMode,
 } from './BookingActionsList.types';

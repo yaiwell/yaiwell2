@@ -153,6 +153,10 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
   - Si pagó online: no hay devolución ni sanción.
   - Si iba a pagar en el local: **1 sanción**.
 - **3 sanciones en los últimos 12 meses** → durante los **3 meses** siguientes el cliente solo puede reservar pagando online. Las sanciones de más de 12 meses dejan de contar.
+- **Pago en el local opcional por negocio** (decidido 2026-10-30): desactivado por defecto; para activarlo el negocio guarda un método de pago (para la factura de comisiones) y no tiene comisiones impagadas. Una reserva en el local nace `confirmed` sin PaymentIntent.
+- **Reservas sin cerrar**: si a las **72 h** del inicio el negocio no la ha marcado como finalizada ni como no presentado, se completa sola e invita a valorar; si era en el local, además se cobra la comisión. Vale para reservas en el local y online (decidido 2026-10-30). Es la única excepción a que solo el profesional completa. El no presentado se puede marcar hasta 72 h después del inicio y deshacer por el negocio en 24 h; después, solo soporte.
+- **No presentado en el local: sin comisión** (el negocio no cobró). Pagado online: se queda la comisión ya retenida.
+- **Impago de comisiones**: al primer fallo de cobro se desactiva el pago en el local para reservas nuevas hasta que pague; el pago online sigue siempre. Lo incobrable lo gestiona soporte.
 - **Comisión**: se cobra por todas las reservas completadas, también las pagadas en el local; esas se cobran al negocio con su factura mensual (Stripe Billing). **Misma tasa** que el pago online, según el plan del negocio (decidido 2026-10-29): una comisión más baja en el local empujaría a los negocios a desviar pagos fuera de la app.
 
 ### Planes y cuentas de negocio (decidido 2026-10-29)

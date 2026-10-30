@@ -8,6 +8,9 @@
  */
 
 export { createBookingCheckout } from './checkout.service';
+export { createOnsiteBooking, getPaymentOptions } from './checkout.onsite.service';
+export { isProviderOnsiteReady, resolvePaymentOptions } from './checkout.onsite';
+export type { PaymentOptionsInput, ProviderOnsiteStatus } from './checkout.onsite';
 
 export { cancelBookingByProviderWithRefund } from './checkout.refund.service';
 export { cancelBookingByClientWithRefund } from './checkout.client-cancel.service';
@@ -34,6 +37,7 @@ export {
   BookingForCheckoutNotFoundError,
   BookingHoldExpiredError,
   MissingBookingReferenceError,
+  OnsitePaymentNotAllowedError,
   PaymentIntentCreationError,
   ProfessionalNotResolvedError,
   ProviderNotChargeableError,
@@ -42,18 +46,23 @@ export {
   RefundNotDismissableError,
   RefundNotInQueueError,
 } from './checkout.errors';
+export type { OnsitePaymentBlockReason } from './checkout.errors';
 
 export {
   cancelBookingWithRefundSchema,
   createBookingCheckoutSchema,
+  createOnsiteBookingSchema,
   dismissBookingRefundSchema,
+  getPaymentOptionsSchema,
   retryBookingRefundSchema,
   verifyBookingPayableSchema,
 } from './checkout.validation';
 export type {
   CancelBookingWithRefundParsed,
   CreateBookingCheckoutParsed,
+  CreateOnsiteBookingParsed,
   DismissBookingRefundParsed,
+  GetPaymentOptionsParsed,
   RetryBookingRefundParsed,
 } from './checkout.validation';
 
@@ -62,6 +71,9 @@ export type {
   BookingCheckoutSession,
   BookingTransitionResult,
   ExpirePendingSummary,
+  OnsiteBookingResult,
+  OnsitePaymentOption,
+  PaymentOptions,
   PendingRefundSummary,
   ProviderCancellationResult,
   RefundOutcome,

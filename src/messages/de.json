@@ -396,7 +396,8 @@
         "pending": "Ausstehend",
         "completed": "Abgeschlossen",
         "cancelled": "Storniert",
-        "refunded": "Erstattet"
+        "refunded": "Erstattet",
+        "no_show": "Nicht erschienen"
       },
       "legend": "Legende",
       "emptyDay": "Keine Buchungen",
@@ -1021,7 +1022,8 @@
       "confirmed": "Bestätigt",
       "completed": "Abgeschlossen",
       "cancelled": "Storniert",
-      "refunded": "Erstattet"
+      "refunded": "Erstattet",
+      "no_show": "Nicht erschienen"
     },
     "actions": {
       "viewDetail": "Details ansehen",

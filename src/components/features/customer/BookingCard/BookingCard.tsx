@@ -29,6 +29,8 @@ function statusClassName(status: BookingCardProps['booking']['status']): string 
       return s.statusCancelled;
     case 'refunded':
       return s.statusRefunded;
+    case 'no_show':
+      return s.statusNoShow;
   }
 }
 

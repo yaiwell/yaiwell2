@@ -1,5 +1,7 @@
 import 'server-only';
 
+import type { Prisma } from '@prisma/client';
+
 import type {
   PanelDailyRevenuePoint,
   PanelTopService,
@@ -20,9 +22,18 @@ import type { LocalizedText } from '@/types/domain';
  * `pending` no cuenta porque aún no está confirmada (no hay compromiso
  * económico). `cancelled` y `refunded` no cuentan porque no generan
  * ingreso. `confirmed` y `completed` sí — la primera porque la pasarela
- * ya ha cobrado, la segunda porque además se prestó el servicio.
+ * ya ha cobrado (o, en el local, hay compromiso firme), la segunda porque
+ * además se prestó el servicio.
+ *
+ * `no_show` (migración 9f) solo cuenta si se pagó online: el negocio se
+ * queda el cobro (§4.bis). En el local no cobró nada.
  */
 const REVENUE_STATUSES = ['confirmed', 'completed'] as const;
+
+/** Filtro de "reserva que genera ingreso" según la regla de arriba. */
+const REVENUE_WHERE: Prisma.BookingWhereInput = {
+  OR: [{ status: { in: [...REVENUE_STATUSES] } }, { status: 'no_show', paymentMode: 'online' }],
+};
 
 const WEEKDAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] as const;
 type WeekdayKey = (typeof WEEKDAY_KEYS)[number];
@@ -83,7 +94,7 @@ export async function getWeeklyMetrics(providerId: string): Promise<PanelWeeklyM
     where: {
       providerId,
       startAt: { gte: lastWeek.start, lt: thisWeek.end },
-      status: { in: [...REVENUE_STATUSES] },
+      ...REVENUE_WHERE,
     },
     select: {
       startAt: true,

@@ -11,10 +11,10 @@
  * estados válidos de una reserva.
  */
 
-import type { BookingStatus } from '@/lib/services/booking';
+import type { BookingPaymentMode, BookingStatus } from '@/lib/services/booking';
 import type { LocalizedText } from '@/types/domain';
 
-export type { BookingStatus };
+export type { BookingPaymentMode, BookingStatus };
 
 /**
  * Reseña propia del cliente sobre una reserva. Solo los campos que pinta
@@ -48,6 +48,8 @@ export type CustomerBookingCancellation =
 export interface CustomerBookingView {
   id: string;
   status: BookingStatus;
+  /** Online o en el local (migración 9f): la card dice «Pago en el local». */
+  paymentMode: BookingPaymentMode;
   startAt: Date;
   endAt: Date;
   /**

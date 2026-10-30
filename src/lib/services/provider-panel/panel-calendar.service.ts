@@ -52,6 +52,8 @@ export async function getPanelWeekBookings(
       startAt: true,
       endAt: true,
       status: true,
+      paymentMode: true,
+      noShowAt: true,
       priceCents: true,
       client: { select: { fullName: true, email: true } },
       service: { select: { name: true } },
@@ -74,6 +76,8 @@ export async function getPanelWeekBookings(
     professionalName: r.professional?.name ?? null,
     status: r.status as PanelBookingActionStatus,
     priceCents: r.priceCents,
+    paymentMode: r.paymentMode,
+    noShowAtIso: r.noShowAt?.toISOString() ?? null,
     releasable: isCancelledSlotReleasable(
       {
         status: r.status,

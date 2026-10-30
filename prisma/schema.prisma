@@ -90,6 +90,29 @@ enum BookingStatus {
   completed
   cancelled
   refunded
+  /// El cliente no se presentó; lo marca el profesional desde el panel
+  /// (migración 9f). El negocio puede deshacerlo en 24 h; después, soporte.
+  no_show
+}
+
+/// Cómo paga el cliente la reserva (migración 9f). `onsite` nace
+/// `confirmed` sin PaymentIntent y la comisión se cobra al negocio en
+/// su factura mensual (`OnsiteCommissionCharge`).
+enum BookingPaymentMode {
+  online
+  onsite
+}
+
+/// Estado de la comisión de una reserva en el local completada:
+/// `pending` → `itemized` (concepto creado en Stripe) → `invoiced`
+/// (factura finalizada) → `paid` | `failed`. `void` si se anula a mano.
+enum OnsiteCommissionStatus {
+  pending
+  itemized
+  invoiced
+  paid
+  failed
+  void
 }
 
 /// Estado guardado de una oferta de hueco. «Vendida» (hay una reserva
@@ -137,9 +160,10 @@ model User {
   deletedAt DateTime?
 
   // Relaciones
-  providers Provider[] @relation("ProviderOwner")
-  bookings  Booking[]  @relation("ClientBookings")
+  providers Provider[]       @relation("ProviderOwner")
+  bookings  Booking[]        @relation("ClientBookings")
   reviews   Review[]
+  sanctions ClientSanction[]
 
   @@index([role])
   @@index([deletedAt])
@@ -189,33 +213,37 @@ model Category {
 /// URLs públicas en Supabase Storage; el orden importa (primera =
 /// portada en cards).
 model Provider {
-  id           String                                @id @default(uuid())
+  id                   String                                @id @default(uuid())
   /// Dueño (cuenta Clerk con role=provider). Un usuario puede ser dueño de
   /// varios centros — necesario para el caso "multi-centro" de Fase 1.
-  userId       String
-  type         ProviderType
-  businessName String
-  slug         String                                @unique
-  vatNumber    String?
+  userId               String
+  type                 ProviderType
+  businessName         String
+  slug                 String                                @unique
+  vatNumber            String?
   /// `LocalizedText`: `es` obligatorio, `ca`/`en`/`de` opcionales.
-  description  Json
-  address      String
+  description          Json
+  address              String
   /// `geography(Point, 4326)` en PostGIS. Lng primero, Lat segundo.
   /// Las queries geo van por raw SQL en `lib/services/search/`.
-  location     Unsupported("geography(Point, 4326)")
+  location             Unsupported("geography(Point, 4326)")
   /// URLs absolutas. La primera es la portada.
-  photos       String[]
-  priceRange   PriceRange
+  photos               String[]
+  priceRange           PriceRange
   /// Caché de valoraciones: media 1-5 redondeada a 1 decimal (0 si no hay
   /// reseñas) y número de reseñas. La mantiene el trigger
   /// `trg_reviews_refresh_provider_rating` (migración `9a_provider_rating_cache`) en cada INSERT,
   /// DELETE o cambio de `rating`, `providerId` o `bookingId` en `reviews`; no escribir a mano. No toca
   /// `updatedAt`. `ratingCount = 0` se pinta como «Nuevo en Yaiwell».
   /// Permite ordenar en `searchProviders` sin agregar por cada query.
-  ratingAvg    Float                                 @default(0)
-  ratingCount  Int                                   @default(0)
+  ratingAvg            Float                                 @default(0)
+  ratingCount          Int                                   @default(0)
   /// Plan de suscripción activo (free por defecto al alta).
-  planId       String
+  planId               String
+  /// El negocio ofrece «pagar en el local» (migración 9f). Público a
+  /// propósito: la ficha lo enseña. Al reservar se exige además método de
+  /// pago listo y sin comisiones impagadas (`ProviderBilling`).
+  acceptsOnsitePayment Boolean                               @default(false)
 
   /// Verificación operativa: solo `approved` puede recibir reservas reales.
   verificationStatus VerificationStatus @default(pending)
@@ -238,8 +266,8 @@ model Provider {
   deletedAt DateTime?
 
   // Relaciones
-  owner                User                  @relation("ProviderOwner", fields: [userId], references: [id], onDelete: Restrict)
-  plan                 Plan                  @relation(fields: [planId], references: [id], onDelete: Restrict)
+  owner                User                     @relation("ProviderOwner", fields: [userId], references: [id], onDelete: Restrict)
+  plan                 Plan                     @relation(fields: [planId], references: [id], onDelete: Restrict)
   professionals        Professional[]
   services             Service[]
   bookings             Booking[]
@@ -248,6 +276,7 @@ model Provider {
   categories           ProviderCategory[]
   verificationRequests VerificationRequest[]
   billing              ProviderBilling?
+  onsiteCommissions    OnsiteCommissionCharge[]
 
   @@index([userId])
   @@index([planId])
@@ -380,15 +409,18 @@ model Service {
 /// btree_gist, migración 9d) impide dos `confirmed` solapadas del mismo
 /// profesional. No usar `migrate dev` ni `db push` contra el remoto: la
 /// borrarían al no estar en este modelo.
+/// CHECK fuera de Prisma `bookings_onsite_without_payment_intent`
+/// (migración 9f): una reserva `onsite` nunca lleva `stripePaymentIntentId`,
+/// así ningún camino de cobro online puede anclarse a ella.
 model Booking {
-  id                    String        @id @default(uuid())
+  id                    String             @id @default(uuid())
   clientId              String
   serviceId             String
   professionalId        String
   providerId            String
   startAt               DateTime
   endAt                 DateTime
-  status                BookingStatus @default(pending)
+  status                BookingStatus      @default(pending)
   priceCents            Int
   /// Comisión que retiene la plataforma en céntimos. Calculada en el
   /// momento de la reserva según `Plan.commissionRate` para que cambios
@@ -405,7 +437,7 @@ model Booking {
   cancelledAt           DateTime?
   /// Id del reembolso en Stripe (`re_…`). Se rellena al emitirlo, antes
   /// de que llegue `charge.refunded`. Único: un refund, una reserva.
-  stripeRefundId        String?       @unique
+  stripeRefundId        String?            @unique
   /// Cuándo Stripe confirmó el reembolso (`charge.refunded`).
   refundedAt            DateTime?
   /// Último intento fallido de reembolso. Con `refundedAt` a null forma
@@ -425,18 +457,25 @@ model Booking {
   slotOfferId           String?
   originalPriceCents    Int?
   discountPct           Int?
+  /// Online (PaymentIntent) o en el local (sin cobro en la app).
+  paymentMode           BookingPaymentMode @default(online)
+  /// Cuándo y quién (`User.id` interno) marcó «no presentado».
+  noShowAt              DateTime?
+  noShowMarkedBy        String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  client       User         @relation("ClientBookings", fields: [clientId], references: [id], onDelete: Restrict)
-  service      Service      @relation(fields: [serviceId], references: [id], onDelete: Restrict)
-  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Restrict)
-  provider     Provider     @relation(fields: [providerId], references: [id], onDelete: Restrict)
-  review       Review?
-  slotOffer    SlotOffer?   @relation("SlotOfferBookings", fields: [slotOfferId], references: [id], onDelete: SetNull)
+  client           User                    @relation("ClientBookings", fields: [clientId], references: [id], onDelete: Restrict)
+  service          Service                 @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  professional     Professional            @relation(fields: [professionalId], references: [id], onDelete: Restrict)
+  provider         Provider                @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  review           Review?
+  slotOffer        SlotOffer?              @relation("SlotOfferBookings", fields: [slotOfferId], references: [id], onDelete: SetNull)
   /// Oferta creada al liberar el hueco de esta reserva cancelada.
-  releasedAs   SlotOffer?   @relation("SlotOfferSource")
+  releasedAs       SlotOffer?              @relation("SlotOfferSource")
+  sanction         ClientSanction?
+  onsiteCommission OnsiteCommissionCharge?
 
   @@index([clientId, startAt])
   @@index([providerId, startAt])
@@ -601,23 +640,32 @@ enum BillingSubscriptionStatus {
 /// La fila nace al crear el Customer, que sirve a cualquier plan (también
 /// para cobrar en el futuro las comisiones del pago en el local).
 model ProviderBilling {
-  id                     String                     @id @default(uuid())
-  providerId             String                     @unique
-  stripeCustomerId       String                     @unique
+  id                          String                     @id @default(uuid())
+  providerId                  String                     @unique
+  stripeCustomerId            String                     @unique
   /// Suscripción en curso (la última sincronizada).
-  stripeSubscriptionId   String?                    @unique
-  subscriptionStatus     BillingSubscriptionStatus?
+  stripeSubscriptionId        String?                    @unique
+  subscriptionStatus          BillingSubscriptionStatus?
   /// Plan que paga según Stripe; en impago puede no coincidir con el efectivo.
-  subscribedPlanId       String?
-  currentPeriodEnd       DateTime?
-  cancelAtPeriodEnd      Boolean                    @default(false)
+  subscribedPlanId            String?
+  currentPeriodEnd            DateTime?
+  cancelAtPeriodEnd           Boolean                    @default(false)
   /// Bajada programada a fin de periodo.
-  scheduledPlanId        String?
-  scheduledChangeAt      DateTime?
-  lastPaymentFailedAt    DateTime?
+  scheduledPlanId             String?
+  scheduledChangeAt           DateTime?
+  lastPaymentFailedAt         DateTime?
   /// `${invoiceId}:${attempt}`: evita repetir el aviso si Stripe reenvía el evento.
-  lastFailureNotifiedKey String?
-  lastSyncedAt           DateTime?
+  lastFailureNotifiedKey      String?
+  lastSyncedAt                DateTime?
+  /// Método de pago por defecto guardado para cobrar las comisiones del
+  /// pago en el local (Checkout `mode: 'setup'`). Requisito para activarlo.
+  onsitePaymentMethodReadyAt  DateTime?
+  /// Último periodo (`YYYY-MM`, hora de Madrid) con factura suelta de
+  /// comisiones emitida; solo negocios sin suscripción viva.
+  lastCommissionInvoicePeriod String?
+  /// Primer fallo de cobro de comisiones sin resolver. Mientras tenga
+  /// valor, el negocio no admite reservas nuevas en el local.
+  commissionDebtSince         DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -629,4 +677,72 @@ model ProviderBilling {
   @@index([subscribedPlanId])
   @@index([scheduledPlanId])
   @@map("provider_billing")
+}
+
+// =========================================================================
+// Pago en el local: sanciones y comisiones (migración 9f)
+// =========================================================================
+
+/// Sanción a un cliente por no presentarse a una reserva en el local
+/// (CLAUDE.md §4.bis). Una por reserva (`bookingId` único). El bloqueo
+/// de 3 meses tras 3 sanciones en 12 meses **no se guarda**: lo calcula
+/// `computeOnlineOnlyUntil` a partir de las sanciones no revocadas.
+///
+/// Sin lectura pública (RLS sin policies, migración 9f).
+model ClientSanction {
+  id           String    @id @default(uuid())
+  userId       String
+  bookingId    String    @unique
+  /// De momento solo `'no_show'`. Lo impone el CHECK `client_sanctions_reason_check`
+  /// (migración 9f, fuera de Prisma: no usar `migrate dev` ni `db push`).
+  reason       String
+  /// Instante que cuenta para la ventana de 12 meses (= `Booking.startAt`).
+  occurredAt   DateTime
+  /// Revocación por el negocio (deshacer en 24 h) o por soporte.
+  revokedAt    DateTime?
+  /// `User.id` interno de quien la revocó.
+  revokedBy    String?
+  revokeReason String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+
+  // El índice parcial `(userId, occurredAt) WHERE revokedAt IS NULL` vive
+  // en la migración: Prisma no expresa índices parciales.
+  @@map("client_sanctions")
+}
+
+/// Comisión de una reserva en el local completada, a cobrar al negocio en
+/// su factura de Stripe Billing. Una por reserva (`bookingId` único).
+///
+/// Sin lectura pública (RLS sin policies, migración 9f). CHECK fuera de
+/// Prisma: `amountCents >= 0`.
+model OnsiteCommissionCharge {
+  id                  String                 @id @default(uuid())
+  bookingId           String                 @unique
+  providerId          String
+  /// Comisión congelada en la reserva (`Booking.commissionCents`).
+  amountCents         Int
+  status              OnsiteCommissionStatus @default(pending)
+  stripeInvoiceItemId String?                @unique
+  stripeInvoiceId     String?
+  itemizedAt          DateTime?
+  invoicedAt          DateTime?
+  paidAt              DateTime?
+  lastErrorAt         DateTime?
+  lastError           String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  booking  Booking  @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  provider Provider @relation(fields: [providerId], references: [id], onDelete: Restrict)
+
+  @@index([status, createdAt])
+  @@index([providerId, status])
+  @@index([stripeInvoiceId])
+  @@map("onsite_commission_charges")
 }

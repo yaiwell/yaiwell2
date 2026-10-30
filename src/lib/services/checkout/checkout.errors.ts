@@ -172,3 +172,27 @@ export class RefundNotDismissableError extends Error {
     this.name = 'RefundNotDismissableError';
   }
 }
+
+/** Por qué no se puede pagar en el local (ver `PaymentOptions`). */
+export type OnsitePaymentBlockReason = 'last_minute' | 'provider' | 'client_restricted';
+
+/**
+ * El cliente pidió pagar en el local y no se puede (§4.bis):
+ *  - `last_minute`: empieza a menos de 2 h; solo online, sin devolución.
+ *  - `provider`: el negocio no lo ofrece, no tiene método de pago para
+ *    las comisiones o tiene comisiones impagadas.
+ *  - `client_restricted`: 3 sanciones en 12 meses; `restrictedUntil` dice
+ *    hasta cuándo solo puede pagar online.
+ */
+export class OnsitePaymentNotAllowedError extends Error {
+  readonly code = 'ONSITE_PAYMENT_NOT_ALLOWED';
+
+  constructor(
+    readonly reason: OnsitePaymentBlockReason,
+    readonly restrictedUntil: Date | null = null,
+    message = 'No se puede pagar en el local esta reserva.',
+  ) {
+    super(message);
+    this.name = 'OnsitePaymentNotAllowedError';
+  }
+}

@@ -19,6 +19,7 @@ const STATUS_CLASSES: Record<PanelBookingActionStatus, string> = {
   completed: s.statusCompleted,
   cancelled: s.statusCancelled,
   refunded: s.statusRefunded,
+  no_show: s.statusNoShow,
 };
 
 /**

@@ -13,15 +13,20 @@ export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
  *
  * A diferencia de `PanelBookingStatus` (el calendario funde `refunded`
  * en `cancelled` porque visualmente no aporta), aquí distinguimos los
- * cinco estados: tras cancelar, saber si el reembolso ya salió es
- * justo la información que el proveedor busca en esta lista.
+ * estados: tras cancelar, saber si el reembolso ya salió es justo la
+ * información que el proveedor busca en esta lista. `no_show` (migración
+ * 9f): el cliente no se presentó.
  */
 export type PanelBookingActionStatus =
   | 'pending'
   | 'confirmed'
   | 'completed'
   | 'cancelled'
-  | 'refunded';
+  | 'refunded'
+  | 'no_show';
+
+/** Cómo paga el cliente: online o en el local (migración 9f). */
+export type PanelBookingPaymentMode = 'online' | 'onsite';
 
 /**
  * Reserva de la semana tal y como la consume el listado de acciones.
@@ -55,6 +60,16 @@ export interface PanelBookingAction {
    * datos de ejemplo del modo preview.
    */
   releasable?: boolean;
+  /**
+   * Online o en el local. Ausente en los datos de ejemplo del modo
+   * preview, que se tratan como online.
+   */
+  paymentMode?: PanelBookingPaymentMode;
+  /**
+   * Cuándo se marcó «no presentado» (ISO-8601 UTC), para ofrecer
+   * «Deshacer» durante 24 h. `null` si no lo está; ausente en preview.
+   */
+  noShowAtIso?: string | null;
 }
 
 /** Props del componente BookingActionsList. */

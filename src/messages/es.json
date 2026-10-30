@@ -396,7 +396,8 @@
         "pending": "Pendiente",
         "completed": "Completada",
         "cancelled": "Cancelada",
-        "refunded": "Reembolsada"
+        "refunded": "Reembolsada",
+        "no_show": "No presentado"
       },
       "legend": "Leyenda",
       "emptyDay": "Sin reservas",
@@ -1021,7 +1022,8 @@
       "confirmed": "Confirmada",
       "completed": "Completada",
       "cancelled": "Cancelada",
-      "refunded": "Reembolsada"
+      "refunded": "Reembolsada",
+      "no_show": "No presentado"
     },
     "actions": {
       "viewDetail": "Ver detalle",

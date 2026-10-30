@@ -66,6 +66,7 @@ function buildBooking(args: {
   return {
     id: args.id,
     status: args.status,
+    paymentMode: 'online',
     startAt,
     endAt,
     createdAt,
