@@ -94,7 +94,7 @@ test.afterAll(async () => {
     problems.push(...(await deleteTestUser(db, provider)));
     if (db) {
       const after = await countRows(db);
-      console.log('[onsite-no-show] filas antes/después:', JSON.stringify({ before, after }));
+      console.warn('[onsite-no-show] filas antes/después:', JSON.stringify({ before, after }));
       // Con otros specs en paralelo el conteo global no es comparable: se exige que no
       // quede nada de lo sembrado aquí (el balance global se verifica con --workers=1).
       expect(
