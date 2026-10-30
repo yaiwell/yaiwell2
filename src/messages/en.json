@@ -1067,7 +1067,8 @@
         "hint": "Pay at the venue on the day. Free cancellation, at no charge, up to 2 h before.",
         "lastMinute": "Not available: bookings that start in less than 2 h are paid online when booking.",
         "restricted": "Not available for now: after 3 missed appointments without cancelling in 12 months, bookings must be paid online for 3 months.",
-        "restrictedUntil": "Not available until {date}: after 3 missed appointments without cancelling in 12 months, bookings must be paid online for 3 months."
+        "restrictedUntil": "Not available until {date}: after 3 missed appointments without cancelling in 12 months, bookings must be paid online for 3 months.",
+        "limitReached": "Not available: you already have {max} bookings to pay at the venue. Please pay for this one online."
       }
     },
     "onsite": {
@@ -1086,6 +1087,7 @@
         "lastMinute": "This time starts in less than 2 h: it can only be booked paying online.",
         "restricted": "Right now you can only book paying online.",
         "restrictedUntil": "Until {date} you can only book paying online.",
+        "limitReached": "You already have {max} bookings to pay at the venue: please pay for this one online.",
         "notOffered": "This venue no longer accepts payment at the venue. You can pay online.",
         "generic": "Something went wrong confirming your booking. Please try again.",
         "payOnline": "Pay online",

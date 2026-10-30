@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 // (arrastra Prisma).
 import { Link } from '@/i18n/navigation';
 import type { AppLocale } from '@/i18n/routing';
+import { MAX_ACTIVE_ONSITE_BOOKINGS } from '@/lib/utils/booking-payment-mode';
 import { withRedirectUrl } from '@/lib/validation/redirect-url';
 
 import type { OnsiteBookingFailure } from '../BookingFlow/BookingFlow.onsite';
@@ -107,6 +108,9 @@ function resolveMessage(
       return t('pendingAlreadyPaid');
     case 'ONSITE_NOT_ALLOWED':
       if (error.reason === 'last_minute') return t('lastMinute');
+      if (error.reason === 'limit_reached') {
+        return t('limitReached', { max: MAX_ACTIVE_ONSITE_BOOKINGS });
+      }
       if (error.reason === 'client_restricted') {
         return error.restrictedUntilIso
           ? t('restrictedUntil', { date: formatRestrictionDate(error.restrictedUntilIso, locale) })

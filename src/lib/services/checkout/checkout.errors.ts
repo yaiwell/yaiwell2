@@ -174,7 +174,11 @@ export class RefundNotDismissableError extends Error {
 }
 
 /** Por qué no se puede pagar en el local (ver `PaymentOptions`). */
-export type OnsitePaymentBlockReason = 'last_minute' | 'provider' | 'client_restricted';
+export type OnsitePaymentBlockReason =
+  | 'last_minute'
+  | 'provider'
+  | 'client_restricted'
+  | 'limit_reached';
 
 /**
  * El cliente pidió pagar en el local y no se puede (§4.bis):
@@ -183,6 +187,7 @@ export type OnsitePaymentBlockReason = 'last_minute' | 'provider' | 'client_rest
  *    las comisiones o tiene comisiones impagadas.
  *  - `client_restricted`: 3 sanciones en 12 meses; `restrictedUntil` dice
  *    hasta cuándo solo puede pagar online.
+ *  - `limit_reached`: ya tiene 3 reservas futuras en el local; esta, online.
  */
 export class OnsitePaymentNotAllowedError extends Error {
   readonly code = 'ONSITE_PAYMENT_NOT_ALLOWED';

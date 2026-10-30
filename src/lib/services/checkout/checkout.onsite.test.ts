@@ -42,7 +42,12 @@ describe('isProviderOnsiteReady', () => {
 });
 
 describe('resolvePaymentOptions', () => {
-  const base = { now: NOW, providerReady: true, clientRestrictedUntil: null };
+  const base = {
+    now: NOW,
+    providerReady: true,
+    clientRestrictedUntil: null,
+    clientActiveOnsiteBookings: 0,
+  };
 
   it('online siempre disponible; en el local disponible a 2h00 justas', () => {
     expect(resolvePaymentOptions({ ...base, slotStart: inMin(120) })).toEqual({
@@ -74,6 +79,7 @@ describe('resolvePaymentOptions', () => {
         slotStart: inMin(60),
         providerReady: false,
         clientRestrictedUntil: new Date('2027-01-15T10:00:00Z'),
+        clientActiveOnsiteBookings: 3,
       }),
     ).toEqual({ online: 'available', onsite: 'not_offered', restrictedUntilIso: null });
   });
@@ -86,5 +92,34 @@ describe('resolvePaymentOptions', () => {
         clientRestrictedUntil: new Date('2027-01-15T10:00:00Z'),
       }),
     ).toEqual({ online: 'available', onsite: 'last_minute', restrictedUntilIso: null });
+  });
+
+  it('tope de reservas en el local: con 2 activas sigue disponible', () => {
+    expect(
+      resolvePaymentOptions({ ...base, slotStart: inMin(240), clientActiveOnsiteBookings: 2 })
+        .onsite,
+    ).toBe('available');
+  });
+
+  it('tope de reservas en el local: con 3 activas → limit_reached', () => {
+    expect(
+      resolvePaymentOptions({ ...base, slotStart: inMin(240), clientActiveOnsiteBookings: 3 }),
+    ).toEqual({ online: 'available', onsite: 'limit_reached', restrictedUntilIso: null });
+  });
+
+  it('última hora y bloqueo ganan al tope (dan más información)', () => {
+    const until = new Date('2027-01-15T10:00:00Z');
+    expect(
+      resolvePaymentOptions({ ...base, slotStart: inMin(60), clientActiveOnsiteBookings: 3 })
+        .onsite,
+    ).toBe('last_minute');
+    expect(
+      resolvePaymentOptions({
+        ...base,
+        slotStart: inMin(240),
+        clientRestrictedUntil: until,
+        clientActiveOnsiteBookings: 3,
+      }).onsite,
+    ).toBe('client_restricted');
   });
 });

@@ -15,7 +15,11 @@ import type { Prisma } from '@prisma/client';
 
 import { prisma } from '@/lib/db/prisma';
 import { isExclusionViolation } from '@/lib/db/prisma-errors';
-import { getClientOnsiteEligibility, sanctionsRepository } from '@/lib/services/sanctions';
+import {
+  checkProviderNoShowRate,
+  getClientOnsiteEligibility,
+  sanctionsRepository,
+} from '@/lib/services/sanctions';
 import {
   NO_SHOW_UNDO_WINDOW_MS,
   getNoShowMarkWindow,
@@ -113,6 +117,9 @@ export async function markBookingNoShow(
   const eligibility = outcome.sanctionApplied
     ? await getClientOnsiteEligibility(booking.clientId, now)
     : null;
+  // Antiabuso: aviso a soporte si el negocio marca demasiados no
+  // presentados en el local. Fuera de la transacción y nunca lanza.
+  if (booking.paymentMode === 'onsite') await checkProviderNoShowRate(booking.providerId, now);
   return {
     ...base,
     changed: true,

@@ -100,28 +100,40 @@
         "heading": "How a booking works",
         "items": [
           "The price you see is the final price the venue sets for that service.",
-          "When you choose a time slot, we hold it for 30 minutes so you can complete payment. If you do not pay within that time, the slot becomes available again.",
-          "The booking is confirmed once payment is complete. We send you the confirmation by email.",
+          "If you pay online, when you choose a time slot we hold it for 30 minutes so you can complete payment. If you do not pay within that time, the slot becomes available again.",
+          "If you pay online, the booking is confirmed once payment is complete; if you choose to pay at the venue, it is confirmed straight away. We send you the confirmation by email.",
           "We only offer time slots that start at least 30 minutes after the moment of booking.",
-          "When you book, the contract for the service is formed between you and the venue or professional."
+          "When you book, the contract for the service is formed between you and the venue or professional.",
+          "If, 72 hours after the appointment starts, the venue has not marked it as completed or as a no-show, we treat it as completed and invite you to review it."
         ]
       },
       {
         "heading": "Payments",
         "paragraphs": [
-          "Payment is made online when you book, using the methods offered by Stripe, our payment provider. Yaiwell collects the amount on behalf of the venue and transfers it to them after deducting its commission. We do not store your full card details."
+          "You can pay online when you book, using the methods offered by Stripe, our payment provider. Yaiwell collects the amount on behalf of the venue and transfers it to them after deducting its commission. We do not store your full card details.",
+          "If the venue offers it and the appointment starts more than 2 hours after you book, you can also choose to pay at the venue: you pay the venue directly on the day. Last-minute bookings are always paid online.",
+          "You can have at most 3 upcoming pay-at-venue bookings at a time. Beyond that, further bookings are paid online."
         ]
       },
       {
         "heading": "Cancellations and refunds",
         "items": [
-          "If you have made a booking, you can cancel it free of charge up to 2 hours before the service starts by writing to us at {email}. We refund 100% of the amount.",
-          "Last-minute bookings, those starting less than 2 hours after they are made, are paid on the spot and cannot be cancelled or refunded. We let you know before you pay.",
-          "If you do not turn up for an appointment, there is no refund.",
-          "The venue can cancel a booking up to 2 hours before it starts. In that case we refund you 100% automatically and let you know by email.",
+          "You can cancel your booking in the app up to 2 hours before the service starts. If you paid online, we refund 100% automatically, including the Yaiwell commission. If you were going to pay at the venue, cancelling costs nothing.",
+          "Last-minute bookings, those starting less than 2 hours after they are made, are paid online on the spot and, once paid, cannot be cancelled or refunded. We let you know before you pay.",
+          "If you have not yet completed payment for a booking, you can cancel it at no cost.",
+          "The venue can cancel a booking up to 2 hours before it starts. In that case, if you paid online, we refund you 100% automatically. We let you know by email.",
           "If the venue cannot see you for any other reason, we also refund you 100%: just write to us.",
           "If your payment arrives when the time slot is no longer available, there is no booking and we refund you 100% automatically.",
           "Refunds go back to the same payment method. Depending on your bank, they may take 5 to 10 days to appear."
+        ]
+      },
+      {
+        "heading": "If you do not turn up",
+        "items": [
+          "If you miss your appointment, the venue can mark it as a no-show from the start time until 72 hours afterwards.",
+          "If you paid online, there is no refund.",
+          "If you were going to pay at the venue, it counts as 1 strike. With 3 strikes in 12 months, for the following 3 months you will only be able to book by paying online. Strikes older than 12 months no longer count.",
+          "If you think it is a mistake, write to us at {email}. The venue can undo the mark within the following 24 hours; after that, only our support team can review it and cancel the strike."
         ]
       },
       {
@@ -143,11 +155,32 @@
         "heading": "If you offer services",
         "items": [
           "We review every business by hand before publishing it. The details you give us (name, tax ID, address, services, prices, opening hours and photos) must be accurate and up to date.",
-          "You undertake to honour confirmed bookings at the published time and price. You can only cancel up to 2 hours before; the client receives a full refund.",
-          "Yaiwell charges a commission on each booking, according to your plan, calculated on what the client pays (including any discount). Current rates are shown on the page for professionals.",
-          "You receive payouts through your Stripe account, which you must set up and keep active.",
+          "You undertake to honour confirmed bookings at the published time and price. You can only cancel up to 2 hours before; if the client paid online, they receive a full refund.",
+          "Yaiwell charges a commission per booking according to your plan, calculated on what the client pays (including any discount). For bookings paid online it is deducted from the payment; for completed pay-at-venue bookings it is invoiced to you separately.",
+          "You receive online payouts through your Stripe account, which you must set up and keep active.",
+          "Mark each booking as completed or as a no-show. If you have not done so 72 hours after it starts, it is treated as completed.",
+          "Only mark someone as a no-show if they really did not turn up. Our support team can review these marks and cancel unjustified strikes.",
           "You are responsible for providing the service and for your tax and professional obligations.",
-          "We may suspend or remove a business that breaches these terms or that builds up justified cancellations or complaints."
+          "We may suspend or remove a business that breaches these terms or that builds up cancellations, unjustified no-shows or justified complaints."
+        ]
+      },
+      {
+        "heading": "Plans for businesses",
+        "items": [
+          "There are four plans: Free, Basic, Pro and Premium. Each one sets how many services you can publish, its monthly fee (Free has none) and the commission per booking. Current rates are shown on the page for professionals and fees include VAT.",
+          "Paid plans are a monthly subscription managed through Stripe that renews automatically each month.",
+          "You can change plan whenever you like. If you upgrade, the change applies straight away and you are charged the pro-rata difference; if you downgrade, it applies at the end of the period already paid.",
+          "If you cancel your subscription, you keep your plan until the end of the paid period and then move to Free.",
+          "If we cannot collect the fee, Stripe retries several times. If it remains unpaid, your business moves to Free and services above its limit are hidden until you pay again."
+        ]
+      },
+      {
+        "heading": "Pay at the venue for businesses",
+        "items": [
+          "Offering pay at the venue is optional. To turn it on you must save a payment method and have no outstanding commissions.",
+          "For these bookings you charge the client directly at your venue. We invoice you the commission on completed pay-at-venue bookings, together with your plan fee or in a monthly invoice.",
+          "If a pay-at-venue booking is marked as a no-show, no commission is charged.",
+          "If we cannot collect your commissions, we turn off pay at the venue for new bookings until you pay them. Online payment keeps working."
         ]
       },
       {

@@ -198,10 +198,17 @@ export interface RetryRefundResult {
  *  - `available`: se puede elegir.
  *  - `last_minute`: empieza a menos de 2 h; solo online (la UI lo explica).
  *  - `client_restricted`: el cliente está bloqueado hasta `restrictedUntil`.
+ *  - `limit_reached`: el cliente ya tiene el máximo de reservas futuras
+ *    en el local (`MAX_ACTIVE_ONSITE_BOOKINGS`); esta, online.
  *  - `not_offered`: el negocio no lo ofrece ahora (desactivado, sin método
  *    de pago para comisiones o con deuda). La UI no enseña la opción.
  */
-export type OnsitePaymentOption = 'available' | 'last_minute' | 'client_restricted' | 'not_offered';
+export type OnsitePaymentOption =
+  | 'available'
+  | 'last_minute'
+  | 'client_restricted'
+  | 'limit_reached'
+  | 'not_offered';
 
 /**
  * Métodos de pago que puede elegir el cliente en el paso de resumen.

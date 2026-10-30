@@ -100,28 +100,40 @@
         "heading": "Com funciona una reserva",
         "items": [
           "El preu que veus és el preu final que fixa el centre per a aquest servei.",
-          "En triar una hora te la guardem 30 minuts perquè completis el pagament. Si no pagues en aquest temps, l’hora torna a quedar lliure.",
-          "La reserva es confirma quan el pagament s’ha completat. T’enviem la confirmació per correu.",
+          "Si pagues en línia, en triar una hora te la guardem 30 minuts perquè completis el pagament. Si no pagues en aquest temps, l’hora torna a quedar lliure.",
+          "Si pagues en línia, la reserva es confirma quan el pagament s’ha completat; si tries pagar al local, es confirma al moment. T’enviem la confirmació per correu.",
           "Només oferim hores que comencin com a mínim 30 minuts després del moment de reservar.",
-          "En reservar, el contracte del servei es forma entre tu i el centre o professional."
+          "En reservar, el contracte del servei es forma entre tu i el centre o professional.",
+          "Si 72 hores després de l’inici de la cita el centre no l’ha marcada com a finalitzada ni com a no presentada, la donem per completada i et convidem a valorar-la."
         ]
       },
       {
         "heading": "Pagaments",
         "paragraphs": [
-          "El pagament es fa en línia en reservar, amb els mitjans que ofereix Stripe, el nostre proveïdor de pagaments. Yaiwell cobra l’import en nom del centre i l’hi transfereix descomptant-ne la comissió. No guardem les dades completes de la teva targeta."
+          "Pots pagar en línia en reservar, amb els mitjans que ofereix Stripe, el nostre proveïdor de pagaments. Yaiwell cobra l’import en nom del centre i l’hi transfereix descomptant-ne la comissió. No guardem les dades completes de la teva targeta.",
+          "Si el centre ho ofereix i la cita comença més de 2 hores després de reservar, també pots triar pagar al local: pagues directament al centre el dia de la cita. Les reserves d’última hora es paguen sempre en línia.",
+          "Pots tenir com a màxim 3 reserves futures per pagar al local alhora. A partir d’aquí, les següents es paguen en línia."
         ]
       },
       {
         "heading": "Cancel·lacions i devolucions",
         "items": [
-          "Si has fet una reserva, pots cancel·lar-la gratis fins a 2 hores abans de l’inici del servei escrivint-nos a {email}. Et retornem el 100 % de l’import.",
-          "Les reserves d’última hora, les que comencen menys de 2 hores després de fer-les, es paguen al moment i no admeten cancel·lació ni devolució. T’ho avisem abans de pagar.",
-          "Si no et presentes a una cita, no hi ha devolució.",
-          "El centre pot cancel·lar una reserva fins a 2 hores abans del seu inici. En aquest cas et retornem el 100 % de manera automàtica i t’avisem per correu.",
+          "Pots cancel·lar la reserva des de l’app fins a 2 hores abans de l’inici del servei. Si vas pagar en línia, et retornem el 100 % de manera automàtica, comissió de Yaiwell inclosa. Si havies de pagar al local, cancel·lar no té cap cost.",
+          "Les reserves d’última hora, les que comencen menys de 2 hores després de fer-les, es paguen en línia al moment i, un cop pagades, no admeten cancel·lació ni devolució. T’ho avisem abans de pagar.",
+          "Si encara no has completat el pagament d’una reserva, la pots cancel·lar sense cost.",
+          "El centre pot cancel·lar una reserva fins a 2 hores abans del seu inici. En aquest cas, si vas pagar en línia, et retornem el 100 % de manera automàtica. T’avisem per correu.",
           "Si el centre no et pot atendre per qualsevol altre motiu, també et retornem el 100 %: escriu-nos.",
           "Si el teu pagament arriba quan l’hora ja no està disponible, no hi ha reserva i et retornem el 100 % de manera automàtica.",
           "Les devolucions tornen al mateix mitjà de pagament. Segons el teu banc, poden trigar de 5 a 10 dies a aparèixer."
+        ]
+      },
+      {
+        "heading": "Si no et presentes",
+        "items": [
+          "Si no vas a la cita, el centre la pot marcar com a no presentada des de l’hora d’inici i fins a 72 hores després.",
+          "Si vas pagar en línia, no hi ha devolució.",
+          "Si havies de pagar al local, compta com a 1 sanció. Amb 3 sancions en 12 mesos, durant els 3 mesos següents només podràs reservar pagant en línia. Les sancions de més de 12 mesos deixen de comptar.",
+          "Si creus que és un error, escriu-nos a {email}. El centre pot desfer la marca durant les 24 hores següents; després, només el nostre equip de suport la pot revisar i anul·lar la sanció."
         ]
       },
       {
@@ -143,11 +155,32 @@
         "heading": "Si ofereixes serveis",
         "items": [
           "Revisem a mà cada negoci abans de publicar-lo. Les dades que ens donis (nom, NIF, adreça, serveis, preus, horaris i fotos) han de ser veraces i estar al dia.",
-          "Et comprometes a atendre les reserves confirmades a l’hora i al preu publicats. Només pots cancel·lar fins a 2 hores abans; la clientela rep la devolució íntegra.",
-          "Yaiwell cobra una comissió per cada reserva, segons el pla que tinguis contractat, calculada sobre el que paga la clientela (amb descompte, si n’hi ha). Les tarifes vigents són a la pàgina per a professionals.",
-          "Reps els cobraments a través del teu compte de Stripe, que has de configurar i mantenir actiu.",
+          "Et comprometes a atendre les reserves confirmades a l’hora i al preu publicats. Només pots cancel·lar fins a 2 hores abans; si la clientela va pagar en línia, rep la devolució íntegra.",
+          "Yaiwell cobra una comissió per reserva segons el teu pla, calculada sobre el que paga la clientela (amb descompte, si n’hi ha). En les reserves pagades en línia es descompta del cobrament; en les reserves al local completades se’t factura a part.",
+          "Reps els cobraments en línia a través del teu compte de Stripe, que has de configurar i mantenir actiu.",
+          "Marca cada reserva com a finalitzada o com a no presentada. Si a les 72 hores de l’inici no ho has fet, es dona per completada.",
+          "Marca com a no presentat només qui de debò no ha vingut. El nostre equip de suport pot revisar aquestes marques i anul·lar les sancions injustificades.",
           "Ets responsable de prestar el servei i de les teves obligacions fiscals i professionals.",
-          "Podem suspendre o retirar un negoci que incompleixi aquestes condicions o que acumuli cancel·lacions o queixes justificades."
+          "Podem suspendre o retirar un negoci que incompleixi aquestes condicions o que acumuli cancel·lacions, no presentats injustificats o queixes justificades."
+        ]
+      },
+      {
+        "heading": "Plans per a negocis",
+        "items": [
+          "Hi ha quatre plans: Gratis, Bàsic, Pro i Premium. Cadascun fixa quants serveis pots publicar, la quota mensual (Gratis no en té) i la comissió per reserva. Les tarifes vigents són a la pàgina per a professionals i les quotes inclouen l’IVA.",
+          "Els plans de pagament són una subscripció mensual que es gestiona amb Stripe i es renova sola cada mes.",
+          "Pots canviar de pla quan vulguis. Si puges de pla, el canvi s’aplica al moment i se’t cobra la part proporcional; si baixes, s’aplica al final del període ja pagat.",
+          "Si cancel·les la subscripció, mantens el pla fins al final del període pagat i després passes a Gratis.",
+          "Si no podem cobrar la quota, Stripe ho reintenta diverses vegades. Si continua sense pagar-se, el teu negoci passa a Gratis i els serveis que superin el límit queden ocults fins que tornis a pagar."
+        ]
+      },
+      {
+        "heading": "Pagament al local per a negocis",
+        "items": [
+          "Oferir el pagament al local és opcional. Per activar-lo has de guardar un mètode de pagament i no tenir comissions pendents.",
+          "En aquestes reserves cobres directament a la clientela al teu local. La comissió de les reserves al local completades te la facturem, juntament amb la quota del teu pla o en una factura mensual.",
+          "Si una reserva al local es marca com a no presentada, no es cobra comissió.",
+          "Si no et podem cobrar les comissions, desactivem el pagament al local per a reserves noves fins que les paguis. El pagament en línia continua funcionant."
         ]
       },
       {

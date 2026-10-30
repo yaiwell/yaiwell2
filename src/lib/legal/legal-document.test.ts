@@ -58,5 +58,9 @@ describe('getLegalDocument', () => {
     expect(text).toContain('2 horas antes');
     expect(text).toContain('última hora');
     expect(text).toContain('30 días');
+    expect(text).toContain('desde la app');
+    expect(text).toContain('pagar en el local');
+    expect(text).toContain('3 sanciones en 12 meses');
+    expect(text).toContain('72 horas');
   });
 });

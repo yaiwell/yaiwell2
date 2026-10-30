@@ -13,6 +13,14 @@ export {
   listActiveSanctionsForSupport,
   revokeSanction,
 } from './sanctions.service';
+export {
+  NO_SHOW_ALERT_MIN_BOOKINGS,
+  NO_SHOW_ALERT_RATE_THRESHOLD,
+  NO_SHOW_ALERT_WINDOW_DAYS,
+  checkProviderNoShowRate,
+  shouldAlertNoShowRate,
+} from './sanctions.alerts';
+export type { OnsiteNoShowStats } from './sanctions.alerts';
 export { sanctionsRepository } from './sanctions.repository';
 export type { NoShowSanctionData, SanctionRevocation } from './sanctions.repository';
 

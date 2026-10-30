@@ -1067,7 +1067,8 @@
         "hint": "Pagues al centre el dia de la cita. Cancel·lació gratuïta i sense càrrec fins a 2 h abans.",
         "lastMinute": "No disponible: les reserves que comencen d’aquí a menys de 2 h es paguen en línia en reservar.",
         "restricted": "No disponible de moment: després de 3 absències sense cancel·lar en 12 mesos, durant 3 mesos només es pot reservar pagant en línia.",
-        "restrictedUntil": "No disponible fins al {date}: després de 3 absències sense cancel·lar en 12 mesos, durant 3 mesos només es pot reservar pagant en línia."
+        "restrictedUntil": "No disponible fins al {date}: després de 3 absències sense cancel·lar en 12 mesos, durant 3 mesos només es pot reservar pagant en línia.",
+        "limitReached": "No disponible: ja tens {max} reserves pendents de pagar al local. Aquesta, paga-la en línia."
       }
     },
     "onsite": {
@@ -1086,6 +1087,7 @@
         "lastMinute": "Aquesta hora comença d’aquí a menys de 2 h: només es pot reservar pagant en línia.",
         "restricted": "Ara mateix només pots reservar pagant en línia.",
         "restrictedUntil": "Fins al {date} només pots reservar pagant en línia.",
+        "limitReached": "Ja tens {max} reserves pendents de pagar al local: aquesta, paga-la en línia.",
         "notOffered": "Aquest centre ja no accepta el pagament al local. Pots pagar en línia.",
         "generic": "Alguna cosa ha fallat en confirmar la reserva. Torna-ho a provar.",
         "payOnline": "Pagar en línia",

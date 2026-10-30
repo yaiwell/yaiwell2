@@ -160,9 +160,22 @@ describe('createOnsiteBookingAction', () => {
     expect(mocks.scheduleNotification).not.toHaveBeenCalled();
   });
 
+  it('tope de reservas en el local: devuelve limit_reached sin fecha', async () => {
+    mocks.createOnsiteBooking.mockRejectedValue(
+      new mocks.OnsitePaymentNotAllowedError('limit_reached'),
+    );
+    expect(await createOnsiteBookingAction(INPUT)).toEqual({
+      ok: false,
+      code: 'ONSITE_NOT_ALLOWED',
+      reason: 'limit_reached',
+      restrictedUntilIso: null,
+    });
+  });
+
   it.each([
     ['cliente bloqueado', 'client_restricted'],
     ['a 1h59 (última hora)', 'last_minute'],
+    ['con 3 reservas en el local', 'limit_reached'],
   ])('%s con pending que sustituir → no la cancela', async (_label, reason) => {
     // El servicio valida antes de llamar a `releasePending`: aquí lanza
     // sin llamarlo, como haría con el local no permitido.

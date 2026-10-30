@@ -11,6 +11,12 @@ vi.mock('@/lib/db/prisma', async () => {
   return { prisma: createPrismaMock() };
 });
 
+// La alerta de tasa de no presentados tiene sus propios tests
+// (`booking.no-show.alert.test.ts` y `sanctions.alerts.test.ts`).
+vi.mock('@/lib/services/sanctions/sanctions.alerts', () => ({
+  checkProviderNoShowRate: vi.fn(async () => {}),
+}));
+
 import { prisma } from '@/lib/db/prisma';
 
 import {

@@ -21,7 +21,7 @@ export const LEGAL_CONTACT_EMAIL = 'hola@yaiwell.com';
  */
 const UPDATED_AT: Record<LegalDocumentKind, Date> = {
   privacy: new Date('2026-10-29T12:00:00.000Z'),
-  terms: new Date('2026-10-29T12:00:00.000Z'),
+  terms: new Date('2026-10-30T12:00:00.000Z'),
   cookies: new Date('2026-10-29T12:00:00.000Z'),
 };
 

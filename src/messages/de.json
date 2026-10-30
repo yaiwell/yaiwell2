@@ -1067,7 +1067,8 @@
         "hint": "Du bezahlst am Termin direkt vor Ort. Kostenlose Stornierung ohne Gebühren bis 2 Std. vorher.",
         "lastMinute": "Nicht verfügbar: Buchungen, die in weniger als 2 Std. beginnen, werden bei der Buchung online bezahlt.",
         "restricted": "Derzeit nicht verfügbar: Nach 3 nicht wahrgenommenen Terminen ohne Stornierung in 12 Monaten kann 3 Monate lang nur mit Online-Zahlung gebucht werden.",
-        "restrictedUntil": "Bis {date} nicht verfügbar: Nach 3 nicht wahrgenommenen Terminen ohne Stornierung in 12 Monaten kann 3 Monate lang nur mit Online-Zahlung gebucht werden."
+        "restrictedUntil": "Bis {date} nicht verfügbar: Nach 3 nicht wahrgenommenen Terminen ohne Stornierung in 12 Monaten kann 3 Monate lang nur mit Online-Zahlung gebucht werden.",
+        "limitReached": "Nicht verfügbar: Du hast bereits {max} Buchungen, die vor Ort zu bezahlen sind. Bezahle diese bitte online."
       }
     },
     "onsite": {
@@ -1086,6 +1087,7 @@
         "lastMinute": "Diese Uhrzeit beginnt in weniger als 2 Std.: Sie kann nur mit Online-Zahlung gebucht werden.",
         "restricted": "Im Moment kannst du nur mit Online-Zahlung buchen.",
         "restrictedUntil": "Bis {date} kannst du nur mit Online-Zahlung buchen.",
+        "limitReached": "Du hast bereits {max} Buchungen, die vor Ort zu bezahlen sind: Bezahle diese bitte online.",
         "notOffered": "Dieser Betrieb akzeptiert keine Zahlung vor Ort mehr. Du kannst online bezahlen.",
         "generic": "Beim Bestätigen der Buchung ist etwas schiefgelaufen. Versuche es erneut.",
         "payOnline": "Online bezahlen",

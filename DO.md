@@ -10,6 +10,12 @@
 
 ## 2026-10-30
 
+### 2026-10-30 — Antiabuso del pago en el local y términos actualizados
+
+- **Tope de 3 reservas futuras en el local** por cliente (`MAX_ACTIVE_ONSITE_BOOKINGS`), comprobado en la regla pura, en las opciones de pago y dentro de la transacción de creación con un bloqueo por cliente; motivo `limit_reached` en la UI.
+- **Alerta a soporte** (Sentry, `domain: sanctions`) si un negocio supera el 20 % de no presentados en el local en 30 días con al menos 5 reservas; una incidencia por negocio y día (fingerprint), sin bloqueo.
+- **`/terminos` actualizados** en 4 idiomas (2026-10-30): cancelación desde la app, pago en el local, no presentados y sanciones, tope de 3, cierre automático a las 72 h, planes de negocio y comisiones del local. Pendiente de revisión legal.
+
 ### 2026-10-30 — Pago en el local, no presentados y sanciones
 
 P4 + P12 + P13 (`Plan` → pieza A de datos y dominio con `db-migration-guard` → B `stripe-payments` y C `general-purpose` en paralelo → `business-rules-auditor` + `conventions-reviewer`; P1 y P2 aplicados salvo E2E y antiabuso, en TODO). Diseño en `docs/design-onsite-payment-2026-10-30.md`; decisiones en CLAUDE.md §4.bis.

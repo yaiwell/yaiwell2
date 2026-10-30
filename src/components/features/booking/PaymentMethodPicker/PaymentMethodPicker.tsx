@@ -2,6 +2,8 @@
 
 import { useTranslations } from 'next-intl';
 
+import { MAX_ACTIVE_ONSITE_BOOKINGS } from '@/lib/utils/booking-payment-mode';
+
 import { formatRestrictionDate, resolvePickerView } from './PaymentMethodPicker.logic';
 import { paymentMethodPickerStyles as s } from './PaymentMethodPicker.styles';
 import type { PaymentMethodPickerProps } from './PaymentMethodPicker.types';
@@ -30,6 +32,9 @@ export function PaymentMethodPicker({
   const onsiteDisabled = view.onsiteDisabledReason !== null;
   const onsiteHint = (() => {
     if (view.onsiteDisabledReason === 'last_minute') return t('onsite.lastMinute');
+    if (view.onsiteDisabledReason === 'limit_reached') {
+      return t('onsite.limitReached', { max: MAX_ACTIVE_ONSITE_BOOKINGS });
+    }
     if (view.onsiteDisabledReason !== 'client_restricted') return t('onsite.hint');
     return view.restrictedUntilIso
       ? t('onsite.restrictedUntil', {

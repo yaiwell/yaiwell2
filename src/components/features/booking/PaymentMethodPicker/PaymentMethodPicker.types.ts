@@ -8,7 +8,7 @@ import type { BookingPaymentMethod } from '../BookingFlow/BookingFlow.types';
  */
 
 /** Por qué el pago en el local se enseña desactivado. */
-export type OnsiteDisabledReason = 'last_minute' | 'client_restricted';
+export type OnsiteDisabledReason = 'last_minute' | 'client_restricted' | 'limit_reached';
 
 /** Lo que el selector pinta, ya decidido a partir de la consulta. */
 export type PaymentMethodPickerView =

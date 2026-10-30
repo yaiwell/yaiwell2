@@ -29,3 +29,20 @@ export type BookingPaymentModeValue = (typeof BOOKING_PAYMENT_MODES)[number];
 export function isOnsiteAllowedByLeadTime(slotStart: Date, now: Date): boolean {
   return !isLastMinuteAtCreation(slotStart, now);
 }
+
+/**
+ * Tope de reservas futuras en el local por cliente (CLAUDE.md §4.bis,
+ * antiabuso decidido 2026-10-30). Cuentan las `confirmed` con pago en el
+ * local que aún no han empezado; con este número ya alcanzado, la
+ * siguiente solo se puede pagar online.
+ */
+export const MAX_ACTIVE_ONSITE_BOOKINGS = 3;
+
+/**
+ * Si el cliente ya tiene el máximo de reservas futuras en el local.
+ *
+ * @param activeOnsiteBookings — reservas `confirmed` en el local con inicio posterior a ahora.
+ */
+export function isOnsiteLimitReached(activeOnsiteBookings: number): boolean {
+  return activeOnsiteBookings >= MAX_ACTIVE_ONSITE_BOOKINGS;
+}

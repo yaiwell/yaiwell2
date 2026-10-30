@@ -5,7 +5,7 @@
  * así que nunca discrepan.
  */
 
-import { isOnsiteAllowedByLeadTime } from '@/lib/utils/booking-payment-mode';
+import { isOnsiteAllowedByLeadTime, isOnsiteLimitReached } from '@/lib/utils/booking-payment-mode';
 
 import type { OnsitePaymentBlockReason } from './checkout.errors';
 import type { OnsitePaymentOption, PaymentOptions } from './checkout.types';
@@ -39,6 +39,11 @@ export interface PaymentOptionsInput {
   providerReady: boolean;
   /** Bloqueo vigente del cliente, o `null` (sin bloqueo o sin sesión). */
   clientRestrictedUntil: Date | null;
+  /**
+   * Reservas futuras del cliente ya en el local (`confirmed`, sin
+   * empezar). 0 sin sesión: se comprobará al reservar.
+   */
+  clientActiveOnsiteBookings: number;
 }
 
 /**
@@ -47,6 +52,8 @@ export interface PaymentOptionsInput {
  *  2. Antelación: a menos de 2 h es última hora, solo online (a 2h00
  *     justas se permite).
  *  3. Cliente: bloqueado por sanciones hasta `restrictedUntil`.
+ *  4. Cliente: ya tiene el tope de reservas futuras en el local (antiabuso,
+ *     2026-10-30). Va después del bloqueo porque este dice hasta cuándo.
  */
 export function resolvePaymentOptions(input: PaymentOptionsInput): PaymentOptions {
   const onsite = resolveOnsiteOption(input);
@@ -64,6 +71,7 @@ function resolveOnsiteOption(input: PaymentOptionsInput): OnsitePaymentOption {
   if (!input.providerReady) return 'not_offered';
   if (!isOnsiteAllowedByLeadTime(input.slotStart, input.now)) return 'last_minute';
   if (input.clientRestrictedUntil) return 'client_restricted';
+  if (isOnsiteLimitReached(input.clientActiveOnsiteBookings)) return 'limit_reached';
   return 'available';
 }
 

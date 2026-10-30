@@ -64,4 +64,14 @@ describe('PaymentMethodPicker', () => {
     expect(onsite).toBeDisabled();
     expect(onsite).toHaveAccessibleDescription(/hasta el 10\/02/);
   });
+
+  it('con el tope de reservas en el local lo enseña desactivado con el motivo', () => {
+    renderPicker(ready('limit_reached'));
+    const onsite = screen.getByRole('radio', { name: /Pagar en el local/ });
+
+    expect(onsite).toBeDisabled();
+    expect(onsite).toHaveAccessibleDescription(
+      /ya tienes 3 reservas pendientes de pagar en el local/,
+    );
+  });
 });

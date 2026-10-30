@@ -100,28 +100,40 @@
         "heading": "So funktioniert eine Buchung",
         "items": [
           "Der angezeigte Preis ist der Endpreis, den das Studio für diese Leistung festlegt.",
-          "Wenn du eine Uhrzeit wählst, reservieren wir sie 30 Minuten lang für dich, damit du die Zahlung abschließen kannst. Zahlst du in dieser Zeit nicht, wird die Uhrzeit wieder frei.",
-          "Die Buchung ist bestätigt, sobald die Zahlung abgeschlossen ist. Die Bestätigung schicken wir dir per E-Mail.",
+          "Wenn du online zahlst und eine Uhrzeit wählst, reservieren wir sie 30 Minuten lang für dich, damit du die Zahlung abschließen kannst. Zahlst du in dieser Zeit nicht, wird die Uhrzeit wieder frei.",
+          "Wenn du online zahlst, ist die Buchung bestätigt, sobald die Zahlung abgeschlossen ist; wenn du dich für die Zahlung vor Ort entscheidest, ist sie sofort bestätigt. Die Bestätigung schicken wir dir per E-Mail.",
           "Wir bieten nur Uhrzeiten an, die mindestens 30 Minuten nach dem Zeitpunkt der Buchung beginnen.",
-          "Mit der Buchung kommt der Vertrag über die Leistung zwischen dir und dem Studio oder der Fachkraft zustande."
+          "Mit der Buchung kommt der Vertrag über die Leistung zwischen dir und dem Studio oder der Fachkraft zustande.",
+          "Hat das Studio den Termin 72 Stunden nach Beginn weder als erledigt noch als nicht erschienen markiert, gilt er als erledigt und wir laden dich ein, ihn zu bewerten."
         ]
       },
       {
         "heading": "Zahlungen",
         "paragraphs": [
-          "Die Zahlung erfolgt online bei der Buchung, mit den Zahlungsmitteln, die Stripe, unser Zahlungsdienstleister, anbietet. Yaiwell zieht den Betrag im Namen des Studios ein und überweist ihn abzüglich der Provision an das Studio. Wir speichern deine vollständigen Kartendaten nicht."
+          "Du kannst bei der Buchung online zahlen, mit den Zahlungsmitteln, die Stripe, unser Zahlungsdienstleister, anbietet. Yaiwell zieht den Betrag im Namen des Studios ein und überweist ihn abzüglich der Provision an das Studio. Wir speichern deine vollständigen Kartendaten nicht.",
+          "Wenn das Studio es anbietet und der Termin mehr als 2 Stunden nach der Buchung beginnt, kannst du auch vor Ort zahlen: Du zahlst am Tag des Termins direkt beim Studio. Last-Minute-Buchungen werden immer online bezahlt.",
+          "Du kannst höchstens 3 künftige Buchungen mit Zahlung vor Ort gleichzeitig haben. Weitere Buchungen werden dann online bezahlt."
         ]
       },
       {
         "heading": "Stornierungen und Erstattungen",
         "items": [
-          "Wenn du gebucht hast, kannst du bis 2 Stunden vor Beginn der Leistung kostenlos stornieren, indem du uns an {email} schreibst. Wir erstatten dir 100 % des Betrags.",
-          "Last-Minute-Buchungen, also solche, die weniger als 2 Stunden nach der Buchung beginnen, werden sofort bezahlt und können weder storniert noch erstattet werden. Darauf weisen wir dich vor dem Bezahlen hin.",
-          "Wenn du zu einem Termin nicht erscheinst, gibt es keine Erstattung.",
-          "Das Studio kann eine Buchung bis 2 Stunden vor Beginn stornieren. In diesem Fall erstatten wir dir automatisch 100 % und informieren dich per E-Mail.",
+          "Du kannst deine Buchung bis 2 Stunden vor Beginn der Leistung in der App stornieren. Wenn du online bezahlt hast, erstatten wir dir automatisch 100 %, einschließlich der Yaiwell-Provision. Wenn du vor Ort zahlen wolltest, ist die Stornierung kostenlos.",
+          "Last-Minute-Buchungen, also solche, die weniger als 2 Stunden nach der Buchung beginnen, werden sofort online bezahlt und können nach der Zahlung weder storniert noch erstattet werden. Darauf weisen wir dich vor dem Bezahlen hin.",
+          "Wenn du die Zahlung für eine Buchung noch nicht abgeschlossen hast, kannst du sie kostenlos stornieren.",
+          "Das Studio kann eine Buchung bis 2 Stunden vor Beginn stornieren. Wenn du online bezahlt hast, erstatten wir dir in diesem Fall automatisch 100 %. Wir informieren dich per E-Mail.",
           "Wenn das Studio dich aus einem anderen Grund nicht bedienen kann, erstatten wir dir ebenfalls 100 %: Schreib uns einfach.",
           "Wenn deine Zahlung eingeht, nachdem die Uhrzeit nicht mehr verfügbar ist, kommt keine Buchung zustande und wir erstatten dir automatisch 100 %.",
           "Erstattungen gehen auf dasselbe Zahlungsmittel zurück. Je nach Bank kann es 5 bis 10 Tage dauern, bis sie erscheinen."
+        ]
+      },
+      {
+        "heading": "Wenn du nicht erscheinst",
+        "items": [
+          "Wenn du nicht zu deinem Termin kommst, kann das Studio ihn ab der Anfangszeit und bis 72 Stunden danach als nicht erschienen markieren.",
+          "Wenn du online bezahlt hast, gibt es keine Erstattung.",
+          "Wenn du vor Ort zahlen wolltest, zählt das als 1 Verwarnung. Mit 3 Verwarnungen in 12 Monaten kannst du in den folgenden 3 Monaten nur noch mit Online-Zahlung buchen. Verwarnungen, die älter als 12 Monate sind, zählen nicht mehr.",
+          "Wenn du glaubst, dass es ein Fehler ist, schreib uns an {email}. Das Studio kann die Markierung innerhalb der folgenden 24 Stunden rückgängig machen; danach kann nur noch unser Support sie prüfen und die Verwarnung aufheben."
         ]
       },
       {
@@ -143,11 +155,32 @@
         "heading": "Wenn du Leistungen anbietest",
         "items": [
           "Wir prüfen jedes Unternehmen von Hand, bevor wir es veröffentlichen. Die Angaben, die du uns machst (Name, Steuernummer, Adresse, Leistungen, Preise, Öffnungszeiten und Fotos), müssen wahr und aktuell sein.",
-          "Du verpflichtest dich, bestätigte Buchungen zur veröffentlichten Uhrzeit und zum veröffentlichten Preis wahrzunehmen. Du kannst nur bis 2 Stunden vorher stornieren; die Kundschaft erhält dann die volle Erstattung.",
-          "Yaiwell berechnet für jede Buchung eine Provision je nach deinem gebuchten Tarif, berechnet auf den Betrag, den die Kundschaft zahlt (gegebenenfalls mit Rabatt). Die aktuellen Tarife findest du auf der Seite für Profis.",
-          "Deine Auszahlungen erhältst du über dein Stripe-Konto, das du einrichten und aktiv halten musst.",
+          "Du verpflichtest dich, bestätigte Buchungen zur veröffentlichten Uhrzeit und zum veröffentlichten Preis wahrzunehmen. Du kannst nur bis 2 Stunden vorher stornieren; hat die Kundschaft online bezahlt, erhält sie die volle Erstattung.",
+          "Yaiwell berechnet je Buchung eine Provision nach deinem Tarif, berechnet auf den Betrag, den die Kundschaft zahlt (gegebenenfalls mit Rabatt). Bei online bezahlten Buchungen wird sie von der Zahlung abgezogen; bei erledigten Buchungen mit Zahlung vor Ort stellen wir sie dir gesondert in Rechnung.",
+          "Deine Online-Auszahlungen erhältst du über dein Stripe-Konto, das du einrichten und aktiv halten musst.",
+          "Markiere jede Buchung als erledigt oder als nicht erschienen. Hast du das 72 Stunden nach Beginn nicht getan, gilt sie als erledigt.",
+          "Markiere nur Personen als nicht erschienen, die wirklich nicht gekommen sind. Unser Support kann diese Markierungen prüfen und unberechtigte Verwarnungen aufheben.",
           "Du bist für die Erbringung der Leistung sowie für deine steuerlichen und beruflichen Pflichten verantwortlich.",
-          "Wir können ein Unternehmen sperren oder entfernen, das gegen diese Bedingungen verstößt oder bei dem sich berechtigte Stornierungen oder Beschwerden häufen."
+          "Wir können ein Unternehmen sperren oder entfernen, das gegen diese Bedingungen verstößt oder bei dem sich Stornierungen, unberechtigte Nicht-erschienen-Markierungen oder berechtigte Beschwerden häufen."
+        ]
+      },
+      {
+        "heading": "Tarife für Unternehmen",
+        "items": [
+          "Es gibt vier Tarife: Kostenlos, Basis, Pro und Premium. Jeder legt fest, wie viele Leistungen du veröffentlichen kannst, die Monatsgebühr (Kostenlos hat keine) und die Provision je Buchung. Die aktuellen Tarife findest du auf der Seite für Profis; die Gebühren enthalten die Mehrwertsteuer.",
+          "Die kostenpflichtigen Tarife sind ein Monatsabo, das über Stripe verwaltet wird und sich jeden Monat automatisch verlängert.",
+          "Du kannst den Tarif jederzeit wechseln. Wechselst du in einen höheren Tarif, gilt das sofort und wir berechnen dir die anteilige Differenz; wechselst du in einen niedrigeren, gilt das zum Ende des bereits bezahlten Zeitraums.",
+          "Wenn du das Abo kündigst, behältst du deinen Tarif bis zum Ende des bezahlten Zeitraums und wechselst danach zu Kostenlos.",
+          "Wenn wir die Gebühr nicht einziehen können, versucht Stripe es mehrmals erneut. Bleibt sie unbezahlt, wechselt dein Unternehmen zu Kostenlos und Leistungen über dem Limit werden ausgeblendet, bis du wieder zahlst."
+        ]
+      },
+      {
+        "heading": "Zahlung vor Ort für Unternehmen",
+        "items": [
+          "Die Zahlung vor Ort anzubieten ist freiwillig. Um sie zu aktivieren, musst du eine Zahlungsmethode hinterlegen und darfst keine offenen Provisionen haben.",
+          "Bei diesen Buchungen kassierst du direkt bei der Kundschaft vor Ort. Die Provision für erledigte Buchungen mit Zahlung vor Ort stellen wir dir in Rechnung, zusammen mit deiner Tarifgebühr oder in einer monatlichen Rechnung.",
+          "Wird eine Buchung mit Zahlung vor Ort als nicht erschienen markiert, fällt keine Provision an.",
+          "Wenn wir deine Provisionen nicht einziehen können, deaktivieren wir die Zahlung vor Ort für neue Buchungen, bis du sie bezahlt hast. Die Online-Zahlung funktioniert weiter."
         ]
       },
       {

@@ -30,4 +30,36 @@ export const onsiteRepository = {
       },
     });
   },
+
+  /**
+   * Reservas futuras del cliente con pago en el local que aún cuentan
+   * para el tope (`MAX_ACTIVE_ONSITE_BOOKINGS`): `confirmed` y con inicio
+   * posterior a `now`. Las pasadas, canceladas u online no cuentan.
+   * Usa el índice `(clientId, startAt)`.
+   *
+   * @param client — transacción en curso para contar junto a la creación.
+   */
+  async countActiveOnsiteBookings(
+    clientId: string,
+    now: Date,
+    client: Prisma.TransactionClient = prisma,
+  ): Promise<number> {
+    return client.booking.count({
+      where: { clientId, paymentMode: 'onsite', status: 'confirmed', startAt: { gt: now } },
+    });
+  },
+
+  /**
+   * Serializa hasta el fin de la transacción las reservas en el local de
+   * un mismo cliente: dos peticiones simultáneas con profesionales
+   * distintos no comparten el bloqueo por profesional, y sin esto las
+   * dos verían 2 reservas y acabarían en 4.
+   *
+   * Prefijo propio para no compartir clave con `lockProfessional`. Se
+   * toma siempre después del bloqueo del profesional y nunca al revés,
+   * así que no hay ciclo de esperas posible.
+   */
+  async lockClientOnsite(tx: Prisma.TransactionClient, clientId: string): Promise<void> {
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${`onsite-client:${clientId}`}))`;
+  },
 };

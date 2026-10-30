@@ -26,7 +26,13 @@ vi.mock('@/lib/services/booking', async () => {
 });
 vi.mock('@/lib/services/sanctions', () => ({ getClientOnsiteEligibility: eligibilityMock }));
 vi.mock('./checkout.onsite.repository', () => ({
-  onsiteRepository: { findProviderOnsiteStatus: findStatusMock },
+  onsiteRepository: {
+    findProviderOnsiteStatus: findStatusMock,
+    // El tope de reservas en el local tiene sus propios tests
+    // (`checkout.onsite.limit.test.ts`); aquí el cliente no tiene ninguna.
+    countActiveOnsiteBookings: vi.fn(async () => 0),
+    lockClientOnsite: vi.fn(async () => {}),
+  },
 }));
 
 import { OnsiteBookingTooLateError, ServiceNotFoundError } from '@/lib/services/booking';

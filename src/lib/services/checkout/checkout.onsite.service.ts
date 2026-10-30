@@ -1,7 +1,10 @@
 import 'server-only';
 
+import type { Prisma } from '@prisma/client';
+
 import { OnsiteBookingTooLateError, createBooking } from '@/lib/services/booking';
 import { getClientOnsiteEligibility } from '@/lib/services/sanctions';
+import { isOnsiteLimitReached } from '@/lib/utils/booking-payment-mode';
 
 import { OnsitePaymentNotAllowedError } from './checkout.errors';
 import {
@@ -36,7 +39,8 @@ export interface OnsiteBookingHooks {
 
 /**
  * Calcula las opciones a partir del hueco: negocio, antelación y, si hay
- * cliente con sesión, su bloqueo por sanciones. Compartido por la
+ * cliente con sesión, su bloqueo por sanciones y cuántas reservas futuras
+ * tiene ya en el local. Compartido por la
  * consulta de la UI y por la creación, para que no discrepen.
  */
 async function computeOptions(
@@ -48,15 +52,21 @@ async function computeOptions(
   const providerReady = isProviderOnsiteReady(
     await onsiteRepository.findProviderOnsiteStatus(providerId),
   );
-  // Sin negocio dispuesto no hace falta mirar las sanciones del cliente.
-  const eligibility =
-    providerReady && clientId ? await getClientOnsiteEligibility(clientId, now) : null;
+  // Sin negocio dispuesto no hace falta mirar nada del cliente.
+  const [eligibility, activeOnsite] =
+    providerReady && clientId
+      ? await Promise.all([
+          getClientOnsiteEligibility(clientId, now),
+          onsiteRepository.countActiveOnsiteBookings(clientId, now),
+        ])
+      : [null, 0];
   const restrictedUntil = eligibility?.restrictedUntil ?? null;
   const options = resolvePaymentOptions({
     slotStart,
     now,
     providerReady,
     clientRestrictedUntil: restrictedUntil,
+    clientActiveOnsiteBookings: activeOnsite,
   });
   return { options, restrictedUntil };
 }
@@ -96,8 +106,8 @@ export async function getPaymentOptions(
  * @param clientId — `User.id` del cliente autenticado.
  * @param now — instante de referencia; inyectable para tests.
  * @param hooks — `releasePending` para soltar antes la `pending` propia.
- * @throws OnsitePaymentNotAllowedError — `last_minute`, `provider` o
- *   `client_restricted` (con `restrictedUntil`).
+ * @throws OnsitePaymentNotAllowedError — `last_minute`, `provider`,
+ *   `client_restricted` (con `restrictedUntil`) o `limit_reached`.
  * @throws ServiceNotFoundError | ServicePausedError | ProfessionalNotResolvedError
  * @throws SlotUnavailableError — el hueco se ocupó mientras tanto.
  */
@@ -131,12 +141,7 @@ export async function createOnsiteBooking(
       {
         paymentMode: 'onsite',
         now,
-        // Se relee dentro de la transacción: si el negocio lo desactivó o
-        // entró en deuda desde la comprobación de arriba, no se reserva.
-        precondition: async (tx) => {
-          const status = await onsiteRepository.findProviderOnsiteStatus(providerId, tx);
-          if (!isProviderOnsiteReady(status)) throw new OnsitePaymentNotAllowedError('provider');
-        },
+        precondition: (tx) => recheckInTransaction(tx, providerId, clientId, now),
       },
     );
   } catch (err) {
@@ -155,4 +160,26 @@ export async function createOnsiteBooking(
     slotStartIso: booking.startAt.toISOString(),
     slotEndIso: booking.endAt.toISOString(),
   };
+}
+
+/**
+ * Lo que puede cambiar entre la comprobación previa y la creación, releído
+ * dentro de la transacción (tras el bloqueo del profesional):
+ *  - el negocio lo desactivó o entró en deuda → `provider`;
+ *  - el cliente llegó al tope de reservas en el local con otra petición
+ *    simultánea → `limit_reached`. Bloqueo por cliente antes de contar,
+ *    para que dos peticiones a la vez no pasen las dos con 2.
+ */
+async function recheckInTransaction(
+  tx: Prisma.TransactionClient,
+  providerId: string,
+  clientId: string,
+  now: Date,
+): Promise<void> {
+  const status = await onsiteRepository.findProviderOnsiteStatus(providerId, tx);
+  if (!isProviderOnsiteReady(status)) throw new OnsitePaymentNotAllowedError('provider');
+
+  await onsiteRepository.lockClientOnsite(tx, clientId);
+  const active = await onsiteRepository.countActiveOnsiteBookings(clientId, now, tx);
+  if (isOnsiteLimitReached(active)) throw new OnsitePaymentNotAllowedError('limit_reached');
 }

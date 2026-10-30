@@ -1067,7 +1067,8 @@
         "hint": "Pagas en el centro el día de la cita. Cancelación gratuita y sin cargo hasta 2 h antes.",
         "lastMinute": "No disponible: las reservas que empiezan en menos de 2 h se pagan online al reservar.",
         "restricted": "No disponible por ahora: tras 3 ausencias sin cancelar en 12 meses, durante 3 meses solo se puede reservar pagando online.",
-        "restrictedUntil": "No disponible hasta el {date}: tras 3 ausencias sin cancelar en 12 meses, durante 3 meses solo se puede reservar pagando online."
+        "restrictedUntil": "No disponible hasta el {date}: tras 3 ausencias sin cancelar en 12 meses, durante 3 meses solo se puede reservar pagando online.",
+        "limitReached": "No disponible: ya tienes {max} reservas pendientes de pagar en el local. Esta, págala online."
       }
     },
     "onsite": {
@@ -1086,6 +1087,7 @@
         "lastMinute": "Esta hora empieza en menos de 2 h: solo se puede reservar pagando online.",
         "restricted": "Ahora mismo solo puedes reservar pagando online.",
         "restrictedUntil": "Hasta el {date} solo puedes reservar pagando online.",
+        "limitReached": "Ya tienes {max} reservas pendientes de pagar en el local: esta, págala online.",
         "notOffered": "Este centro ya no acepta el pago en el local. Puedes pagar online.",
         "generic": "Algo ha fallado al confirmar la reserva. Inténtalo de nuevo.",
         "payOnline": "Pagar online",

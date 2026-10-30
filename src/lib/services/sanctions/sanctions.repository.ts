@@ -152,4 +152,25 @@ export const sanctionsRepository = {
       select: { id: true, userId: true, revokedAt: true },
     });
   },
+
+  /**
+   * Reservas en el local de un negocio que ya empezaron entre `since` y
+   * `now` (completadas, no presentadas o aún `confirmed` sin cerrar) y
+   * cuántas de ellas son `no_show`. Base de la alerta de tasa de no
+   * presentados. Usa el índice `(providerId, startAt)`.
+   */
+  async countOnsiteStartedSince(providerId: string, since: Date, now: Date, db: Db = prisma) {
+    const where = {
+      providerId,
+      paymentMode: 'onsite' as const,
+      startAt: { gte: since, lte: now },
+    };
+    const [total, noShows] = await Promise.all([
+      db.booking.count({
+        where: { ...where, status: { in: ['completed', 'no_show', 'confirmed'] } },
+      }),
+      db.booking.count({ where: { ...where, status: 'no_show' } }),
+    ]);
+    return { total, noShows };
+  },
 };

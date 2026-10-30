@@ -98,28 +98,40 @@
         "heading": "Cómo funciona una reserva",
         "items": [
           "El precio que ves es el precio final que fija el centro para ese servicio.",
-          "Al elegir una hora te la guardamos 30 minutos para que completes el pago. Si no pagas en ese tiempo, la hora vuelve a quedar libre.",
-          "La reserva se confirma cuando el pago se completa. Te enviamos la confirmación por email.",
+          "Si pagas online, al elegir una hora te la guardamos 30 minutos para que completes el pago. Si no pagas en ese tiempo, la hora vuelve a quedar libre.",
+          "Si pagas online, la reserva se confirma cuando el pago se completa; si eliges pagar en el local, se confirma al momento. Te enviamos la confirmación por email.",
           "Solo ofrecemos horas que empiecen al menos 30 minutos después del momento de reservar.",
-          "Al reservar, el contrato del servicio se forma entre tú y el centro o profesional."
+          "Al reservar, el contrato del servicio se forma entre tú y el centro o profesional.",
+          "Si 72 horas después del inicio de la cita el centro no la ha marcado como finalizada ni como no presentada, la damos por completada y te invitamos a valorarla."
         ]
       },
       {
         "heading": "Pagos",
         "paragraphs": [
-          "El pago se hace online al reservar, con los medios que ofrece Stripe, nuestro proveedor de pagos. Yaiwell cobra el importe en nombre del centro y se lo transfiere descontando su comisión. No guardamos los datos completos de tu tarjeta."
+          "Puedes pagar online al reservar, con los medios que ofrece Stripe, nuestro proveedor de pagos. Yaiwell cobra el importe en nombre del centro y se lo transfiere descontando su comisión. No guardamos los datos completos de tu tarjeta.",
+          "Si el centro lo ofrece y la cita empieza más de 2 horas después de reservar, también puedes elegir pagar en el local: pagas directamente al centro el día de la cita. Las reservas de última hora se pagan siempre online.",
+          "Puedes tener como mucho 3 reservas futuras para pagar en el local a la vez. A partir de ahí, las siguientes se pagan online."
         ]
       },
       {
         "heading": "Cancelaciones y devoluciones",
         "items": [
-          "Si eres cliente, puedes cancelar gratis hasta 2 horas antes del inicio del servicio escribiéndonos a {email}. Te devolvemos el 100 % del importe.",
-          "Las reservas de última hora, las que empiezan menos de 2 horas después de hacerlas, se pagan al momento y no admiten cancelación ni devolución. Te lo avisamos antes de pagar.",
-          "Si no te presentas a una cita, no hay devolución.",
-          "El centro puede cancelar una reserva hasta 2 horas antes de su inicio. En ese caso te devolvemos el 100 % de forma automática y te avisamos por email.",
+          "Puedes cancelar tu reserva desde la app hasta 2 horas antes del inicio del servicio. Si pagaste online, te devolvemos el 100 % de forma automática, comisión de Yaiwell incluida. Si ibas a pagar en el local, cancelar no tiene ningún coste.",
+          "Las reservas de última hora, las que empiezan menos de 2 horas después de hacerlas, se pagan online al momento y, una vez pagadas, no admiten cancelación ni devolución. Te lo avisamos antes de pagar.",
+          "Si todavía no has completado el pago de una reserva, puedes cancelarla sin coste.",
+          "El centro puede cancelar una reserva hasta 2 horas antes de su inicio. En ese caso, si pagaste online, te devolvemos el 100 % de forma automática. Te avisamos por email.",
           "Si el centro no puede atenderte por cualquier otro motivo, también te devolvemos el 100 %: escríbenos.",
           "Si tu pago llega cuando la hora ya no está disponible, no hay reserva y te devolvemos el 100 % de forma automática.",
           "Las devoluciones vuelven al mismo medio de pago. Según tu banco, pueden tardar de 5 a 10 días en aparecer."
+        ]
+      },
+      {
+        "heading": "Si no te presentas",
+        "items": [
+          "Si no acudes a tu cita, el centro puede marcarla como no presentada desde la hora de inicio y hasta 72 horas después.",
+          "Si pagaste online, no hay devolución.",
+          "Si ibas a pagar en el local, cuenta como 1 sanción. Con 3 sanciones en 12 meses, durante los 3 meses siguientes solo podrás reservar pagando online. Las sanciones de más de 12 meses dejan de contar.",
+          "Si crees que es un error, escríbenos a {email}. El centro puede deshacer la marca durante las 24 horas siguientes; después, solo nuestro equipo de soporte puede revisarla y anular la sanción."
         ]
       },
       {
@@ -141,11 +153,32 @@
         "heading": "Si ofreces servicios",
         "items": [
           "Revisamos a mano cada negocio antes de publicarlo. Los datos que nos des (nombre, NIF, dirección, servicios, precios, horarios y fotos) tienen que ser veraces y estar al día.",
-          "Te comprometes a atender las reservas confirmadas a la hora y al precio publicados. Solo puedes cancelar hasta 2 horas antes; el cliente recibe la devolución íntegra.",
-          "Yaiwell cobra una comisión por cada reserva, según el plan que tengas contratado, calculada sobre lo que paga el cliente (con descuento, si lo hay). Las tarifas vigentes están en la página para profesionales.",
-          "Recibes los cobros a través de tu cuenta de Stripe, que tienes que configurar y mantener activa.",
+          "Te comprometes a atender las reservas confirmadas a la hora y al precio publicados. Solo puedes cancelar hasta 2 horas antes; si el cliente pagó online, recibe la devolución íntegra.",
+          "Yaiwell cobra una comisión por reserva según tu plan, calculada sobre lo que paga el cliente (con descuento, si lo hay). En las reservas pagadas online se descuenta del cobro; en las reservas en el local completadas se te factura aparte.",
+          "Recibes los cobros online a través de tu cuenta de Stripe, que tienes que configurar y mantener activa.",
+          "Marca cada reserva como finalizada o como no presentada. Si a las 72 horas del inicio no lo has hecho, se da por completada.",
+          "Marca como no presentado solo a quien de verdad no ha venido. Nuestro equipo de soporte puede revisar estas marcas y anular las sanciones injustificadas.",
           "Eres responsable de prestar el servicio y de tus obligaciones fiscales y profesionales.",
-          "Podemos suspender o retirar un negocio que incumpla estas condiciones o que acumule cancelaciones o quejas justificadas."
+          "Podemos suspender o retirar un negocio que incumpla estas condiciones o que acumule cancelaciones, no presentados injustificados o quejas justificadas."
+        ]
+      },
+      {
+        "heading": "Planes para negocios",
+        "items": [
+          "Hay cuatro planes: Gratis, Básico, Pro y Premium. Cada uno fija cuántos servicios puedes publicar, su cuota mensual (Gratis no tiene) y la comisión por reserva. Las tarifas vigentes están en la página para profesionales y las cuotas incluyen el IVA.",
+          "Los planes de pago son una suscripción mensual que se gestiona con Stripe y se renueva sola cada mes.",
+          "Puedes cambiar de plan cuando quieras. Si subes de plan, el cambio se aplica al momento y se te cobra la parte proporcional; si bajas, se aplica al final del periodo ya pagado.",
+          "Si cancelas la suscripción, mantienes tu plan hasta el final del periodo pagado y después pasas a Gratis.",
+          "Si no podemos cobrar la cuota, Stripe lo reintenta varias veces. Si sigue sin pagarse, tu negocio pasa a Gratis y los servicios que superen su límite quedan ocultos hasta que vuelvas a pagar."
+        ]
+      },
+      {
+        "heading": "Pago en el local para negocios",
+        "items": [
+          "Ofrecer el pago en el local es opcional. Para activarlo tienes que guardar un método de pago y no tener comisiones pendientes.",
+          "En estas reservas cobras directamente al cliente en tu local. La comisión de las reservas en el local completadas te la facturamos, junto a la cuota de tu plan o en una factura mensual.",
+          "Si una reserva en el local se marca como no presentada, no se cobra comisión.",
+          "Si no podemos cobrarte las comisiones, desactivamos el pago en el local para reservas nuevas hasta que las pagues. El pago online sigue funcionando."
         ]
       },
       {
