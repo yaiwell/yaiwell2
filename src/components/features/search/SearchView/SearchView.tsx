@@ -152,8 +152,11 @@ export function SearchView({ initial, categories }: SearchViewProps) {
           <div
             className={cn(
               s.listColumn,
-              mobileTab === 'list' ? 'block' : 'hidden',
-              'lg:block',
+              // `flex` (no `block`): con `block` se perdía el `gap` de
+              // `listColumn` y los filtros activos quedaban pegados a la
+              // primera tarjeta.
+              mobileTab === 'list' ? 'flex' : 'hidden',
+              'lg:flex',
               isPending && s.listColumnPending,
             )}
             aria-busy={isPending}

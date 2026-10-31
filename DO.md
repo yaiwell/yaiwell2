@@ -10,6 +10,10 @@
 
 ## 2026-10-31
 
+### 2026-10-31 — Separación entre filtros activos y resultados
+
+- La columna de resultados de `/buscar` usaba `block` en lugar de `flex` y perdía su `gap`: la etiqueta del filtro activo («Disponibles ahora») quedaba pegada a la primera tarjeta. Ahora hay 16 px en móvil y escritorio; la pestaña «Mapa» sigue ocultando la lista.
+
 ### 2026-10-31 — Textos de la web alineados con lo construido
 
 Detectado al redactar el documento para la clienta (recorrido completo del código con 4 Explore en paralelo).
