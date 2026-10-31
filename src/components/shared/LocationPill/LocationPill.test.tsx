@@ -69,6 +69,20 @@ describe('LocationPill', () => {
     expect(screen.getByText(esMessages.location.pill.fallbackTitle)).toBeInTheDocument();
   });
 
+  it('sin ubicación, el primer toque ya la pide (sin pasar por «Activar»)', () => {
+    renderPill();
+    fireEvent.click(screen.getByRole('button', { name: esMessages.location.pill.openAria }));
+    expect(mocks.request).toHaveBeenCalledTimes(1);
+  });
+
+  it('con la ubicación activa, el toque solo abre la tarjeta', () => {
+    mocks.status = 'granted';
+    renderPill();
+    fireEvent.click(screen.getByRole('button', { name: esMessages.location.pill.openAria }));
+    expect(mocks.request).not.toHaveBeenCalled();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
   it('en estado granted ofrece "Quitar ubicación" y dispara clear()', () => {
     mocks.status = 'granted';
     renderPill();

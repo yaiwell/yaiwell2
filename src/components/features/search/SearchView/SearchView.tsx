@@ -58,6 +58,8 @@ export function SearchView({ initial, categories }: SearchViewProps) {
     userLocation,
     hasRealLocation,
     nearMeOnly,
+    nearMeLocating,
+    nearMeLocationFailed,
     handleToggleNearMe,
     handleDisableNearMe,
     handleQueryChange,
@@ -97,6 +99,8 @@ export function SearchView({ initial, categories }: SearchViewProps) {
             discountOnly={initial.filters.discountOnly}
             hasAdvancedFilters={hasAdvancedFilters}
             nearMeOnly={nearMeOnly}
+            nearMeLocating={nearMeLocating}
+            nearMeLocationFailed={nearMeLocationFailed}
             nearMeRadiusKm={NEAR_ME_RADIUS_KM}
             onCategoryChange={handleCategoryChange}
             onAvailabilityToggle={handleAvailabilityToggle}

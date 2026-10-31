@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * Hook que gestiona la apertura del popover del LocationPill.
  *
  * Encapsula:
- *  - Estado `open` con su `toggle`/`close`/`open`.
+ *  - Estado `open` con su `toggle`/`show`/`close`.
  *  - Cierre al hacer click fuera del contenedor (ref).
  *  - Cierre al pulsar `Escape`.
  *  - Cierre al recibir un evento de scroll global (UX: si el usuario
@@ -22,6 +22,7 @@ export function useLocationPillPopover() {
 
   const close = useCallback(() => setOpen(false), []);
   const toggle = useCallback(() => setOpen((prev) => !prev), []);
+  const show = useCallback(() => setOpen(true), []);
 
   useEffect(() => {
     if (!open) return;
@@ -51,5 +52,5 @@ export function useLocationPillPopover() {
     };
   }, [open]);
 
-  return { open, toggle, close, containerRef };
+  return { open, toggle, show, close, containerRef };
 }

@@ -1,7 +1,15 @@
 'use client';
 
+import { Globe } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 
 import { useLangSwitcher } from './LangSwitcher.logic';
@@ -9,64 +17,46 @@ import { langSwitcherStyles as s } from './LangSwitcher.styles';
 import type { LangSwitcherProps } from './LangSwitcher.types';
 
 /**
- * Selector de idioma para la barra de navegación.
+ * Selector de idioma de la cabecera.
  *
- * **Desktop**: renderiza un toggle pill con los 4 locales soportados
- * (es/ca/en/de). Caben porque los códigos son de 2 chars y el header
- * tiene espacio.
- *
- * **Mobile (compact)**: con 4 idiomas el toggle pill rompería el header
- * (375px), así que conmutamos a un `<select>` nativo. Esto cuesta
- * accesibilidad (no anuncia cambio de locale antes de pulsar) pero gana
- * espacio y mantiene el patrón nativo del SO que los usuarios reconocen.
- * La lógica de cambio sigue siendo la misma (`changeLocale`).
+ * Un único desplegable propio (Radix Select) para móvil y escritorio: el
+ * `<select>` nativo abría en Android una hoja gris del sistema que
+ * desentonaba con la marca, y el toggle de 4 códigos ocupaba media
+ * cabecera. El botón muestra solo el código («ES») y la lista, el nombre
+ * de cada idioma en su propia lengua, que es como cada usuario lo busca.
  */
 export function LangSwitcher({ compact = false }: LangSwitcherProps) {
   const { locales, currentLocale, changeLocale, isPending } = useLangSwitcher();
   const t = useTranslations('langSwitcher');
 
-  if (compact) {
-    return (
-      <select
-        className={s.select}
-        value={currentLocale}
-        disabled={isPending}
-        onChange={(e) => changeLocale(e.target.value as (typeof locales)[number])}
+  return (
+    <Select
+      value={currentLocale}
+      onValueChange={(value) => changeLocale(value as (typeof locales)[number])}
+      disabled={isPending}
+    >
+      <SelectTrigger
+        className={cn(s.trigger, compact && s.triggerCompact)}
         aria-label={t('groupLabel')}
         data-component="lang-switcher"
       >
+        <Globe className={s.globe} aria-hidden="true" />
+        {/* Forzamos el código corto: por defecto Radix pintaría el nombre
+            completo del idioma seleccionado. */}
+        <SelectValue>{currentLocale.toUpperCase()}</SelectValue>
+      </SelectTrigger>
+      <SelectContent align="end" className={s.content}>
         {locales.map((locale) => (
-          <option key={locale} value={locale}>
-            {locale.toUpperCase()}
-          </option>
-        ))}
-      </select>
-    );
-  }
-
-  return (
-    <div
-      className={s.root}
-      role="group"
-      aria-label={t('groupLabel')}
-      data-component="lang-switcher"
-    >
-      {locales.map((locale) => {
-        const isActive = locale === currentLocale;
-        return (
-          <button
+          <SelectItem
             key={locale}
-            type="button"
-            onClick={() => changeLocale(locale)}
-            disabled={isPending}
-            aria-pressed={isActive}
-            className={cn(s.button, isActive && s.buttonActive)}
+            value={locale}
+            lang={locale}
             data-component={`lang-switcher-option-${locale}`}
           >
-            {locale}
-          </button>
-        );
-      })}
-    </div>
+            {t(`names.${locale}`)}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

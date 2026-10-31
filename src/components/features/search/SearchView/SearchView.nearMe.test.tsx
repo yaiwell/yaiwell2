@@ -20,11 +20,7 @@ vi.mock('@/components/shared/UserLocationProvider', () => ({
 }));
 
 /** Factory minimalista de proveedor para no acoplarnos al fixture real. */
-function makeProvider(
-  id: string,
-  lat: number,
-  lng: number,
-): ProviderWithAvailability {
+function makeProvider(id: string, lat: number, lng: number): ProviderWithAvailability {
   return {
     id,
     slug: `slug-${id}`,
@@ -99,15 +95,12 @@ describe('useNearMe', () => {
 
   it('marca nearMeYieldedEmpty cuando el filtro no deja ningún resultado', () => {
     mockUseUserLocation.mockReturnValue({
-      location: { ...BCN_CENTER, source: 'fallback', capturedAt: Date.now() },
-      hasRealLocation: false,
+      location: { ...BCN_CENTER, source: 'gps', capturedAt: Date.now() },
+      hasRealLocation: true,
     });
 
     // Todos a > 10 km del usuario, fuera del radio de 5 km.
-    const providers = [
-      makeProvider('a', 41.5, 2.3),
-      makeProvider('b', 41.55, 2.35),
-    ];
+    const providers = [makeProvider('a', 41.5, 2.3), makeProvider('b', 41.55, 2.35)];
 
     const { result } = renderHook(() => useNearMe(providers));
 
@@ -154,5 +147,46 @@ describe('useNearMe', () => {
 
     // El punto está dentro del radio; debe permanecer.
     expect(result.current.displayProviders).toHaveLength(1);
+  });
+
+  it('sin ubicación real la pide antes de activar el filtro', async () => {
+    const request = vi.fn().mockResolvedValue(true);
+    mockUseUserLocation.mockReturnValue({
+      location: { ...BCN_CENTER, source: 'fallback', capturedAt: Date.now() },
+      hasRealLocation: false,
+      status: 'idle',
+      request,
+    });
+    const onNearMeChange = vi.fn();
+    const { result } = renderHook(() => useNearMe([], { onNearMeChange }));
+
+    await act(async () => {
+      result.current.handleToggleNearMe();
+    });
+
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(result.current.nearMeOnly).toBe(true);
+    expect(onNearMeChange).toHaveBeenCalledWith(true);
+    expect(result.current.nearMeLocationFailed).toBe(false);
+  });
+
+  it('si no consigue la ubicación deja el filtro apagado y lo avisa', async () => {
+    const request = vi.fn().mockResolvedValue(false);
+    mockUseUserLocation.mockReturnValue({
+      location: { ...BCN_CENTER, source: 'fallback', capturedAt: Date.now() },
+      hasRealLocation: false,
+      status: 'denied',
+      request,
+    });
+    const onNearMeChange = vi.fn();
+    const { result } = renderHook(() => useNearMe([], { onNearMeChange }));
+
+    await act(async () => {
+      result.current.handleToggleNearMe();
+    });
+
+    expect(result.current.nearMeOnly).toBe(false);
+    expect(onNearMeChange).not.toHaveBeenCalled();
+    expect(result.current.nearMeLocationFailed).toBe(true);
   });
 });

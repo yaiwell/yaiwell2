@@ -38,7 +38,13 @@
     "bottomNavLabel": "Navegación inferior"
   },
   "langSwitcher": {
-    "groupLabel": "Idioma"
+    "groupLabel": "Idioma",
+    "names": {
+      "es": "Español",
+      "ca": "Català",
+      "en": "English",
+      "de": "Deutsch"
+    }
   },
   "providerGallery": {
     "galleryLabel": "Galería de fotos",
@@ -224,6 +230,8 @@
       "sheetSectionLabel": "Huecos liberados"
     },
     "nearMeChip": "Cerca de ti",
+    "nearMeLocating": "Localizando…",
+    "nearMeLocationFailed": "No hemos podido saber dónde estás. Revisa que el navegador tenga permiso de ubicación y vuelve a probar.",
     "nearMeChipAria": "Filtrar a profesionales en un radio de {radius} km",
     "resultsCount": "{count, plural, one {# resultado} other {# resultados}}"
   },

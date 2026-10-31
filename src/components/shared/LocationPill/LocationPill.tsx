@@ -27,16 +27,25 @@ import { toVisualState, type LocationPillProps, type PillVisualState } from './L
 export function LocationPill({ className }: LocationPillProps = {}) {
   const t = useTranslations('location');
   const { status, request, clear } = useUserLocation();
-  const { open, toggle, close, containerRef } = useLocationPillPopover();
+  const { open, toggle, show, close, containerRef } = useLocationPillPopover();
 
   const visual = toVisualState(status);
 
-  // Pedimos permiso y cerramos el popover en cuanto la promesa resuelve
-  // (independientemente del resultado: el provider habrá actualizado el
-  // estado y la UI se redibujará sola).
+  // Un solo toque: si aún no hay ubicación, el propio icono la pide (antes
+  // había que abrir la tarjeta y pulsar «Activar»). La tarjeta se abre para
+  // mostrar «Localizando…» y se cierra sola si sale bien; si falla, se
+  // queda abierta explicando qué pasa.
+  const handleTrigger = async () => {
+    if (open || (visual !== 'default' && visual !== 'unavailable')) {
+      toggle();
+      return;
+    }
+    show();
+    if (await request()) close();
+  };
+
   const handleEnable = async () => {
-    await request();
-    close();
+    if (await request()) close();
   };
 
   // Olvidar la ubicación: borra cookie y vuelve a fallback. Cerramos
@@ -50,8 +59,8 @@ export function LocationPill({ className }: LocationPillProps = {}) {
     <div ref={containerRef} className={cn(s.root, className)} data-component="location-pill">
       <button
         type="button"
-        onClick={toggle}
-        className={s.trigger}
+        onClick={handleTrigger}
+        className={cn(s.trigger, visual === 'granted' && s.triggerGranted)}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={t('pill.openAria')}
@@ -69,12 +78,7 @@ export function LocationPill({ className }: LocationPillProps = {}) {
           aria-label={t('pill.ariaLabel')}
           data-component="location-pill-popover"
         >
-          <PopoverContent
-            visual={visual}
-            onEnable={handleEnable}
-            onClear={handleClear}
-            t={t}
-          />
+          <PopoverContent visual={visual} onEnable={handleEnable} onClear={handleClear} t={t} />
         </div>
       )}
     </div>
@@ -190,12 +194,7 @@ function describeState(
       title: t('pill.unavailableTitle'),
       body: t('unavailable'),
       action: (
-        <Button
-          type="button"
-          size="sm"
-          onClick={onEnable}
-          data-component="location-pill-retry"
-        >
+        <Button type="button" size="sm" onClick={onEnable} data-component="location-pill-retry">
           {t('retry')}
         </Button>
       ),
@@ -208,12 +207,7 @@ function describeState(
     title: t('pill.fallbackTitle'),
     body: t('pill.fallbackBody'),
     action: (
-      <Button
-        type="button"
-        size="sm"
-        onClick={onEnable}
-        data-component="location-pill-enable"
-      >
+      <Button type="button" size="sm" onClick={onEnable} data-component="location-pill-enable">
         {t('permissionEnable')}
       </Button>
     ),

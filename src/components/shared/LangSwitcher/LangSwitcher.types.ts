@@ -3,9 +3,8 @@
  */
 export interface LangSwitcherProps {
   /**
-   * Versión compacta para barras de navegación móviles.
-   * Cuando es `true`, oculta el código del idioma inactivo para ahorrar
-   * espacio horizontal en pantallas pequeñas.
+   * Versión compacta para la cabecera móvil: oculta el icono del globo
+   * para ahorrar ancho en pantallas pequeñas.
    */
   compact?: boolean;
 }

@@ -6,11 +6,7 @@
  * arrastrar el código del provider en sí.
  */
 
-import type {
-  LocationErrorCode,
-  LocationStatus,
-  UserLocation,
-} from '@/lib/services/location';
+import type { LocationErrorCode, LocationStatus, UserLocation } from '@/lib/services/location';
 
 export interface UserLocationContextValue {
   /** Estado actual del flujo de geolocalización. */
@@ -31,9 +27,10 @@ export interface UserLocationContextValue {
   /**
    * Pide la ubicación al navegador. Resuelve cuando termina (con éxito,
    * denegación, timeout o no soportado). Nunca lanza: los errores se
-   * exponen vía `error` y `status`.
+   * exponen vía `error` y `status`. Devuelve `true` si se obtuvo la
+   * posición, para que quien la pidió actúe sin esperar a otro render.
    */
-  request: () => Promise<void>;
+  request: () => Promise<boolean>;
   /** Limpia la ubicación guardada y vuelve al estado fallback. */
   clear: () => void;
 }

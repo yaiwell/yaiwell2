@@ -74,6 +74,8 @@ export function useSearchView(initial: SearchViewInitialState) {
     userLocation,
     hasRealLocation,
     nearMeOnly,
+    nearMeLocating,
+    nearMeLocationFailed,
     displayProviders,
     nearMeYieldedEmpty,
     handleToggleNearMe,
@@ -224,6 +226,8 @@ export function useSearchView(initial: SearchViewInitialState) {
     userLocation,
     hasRealLocation,
     nearMeOnly,
+    nearMeLocating,
+    nearMeLocationFailed,
     handleToggleNearMe,
     handleDisableNearMe,
 

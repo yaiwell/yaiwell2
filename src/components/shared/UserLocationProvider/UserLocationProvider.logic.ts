@@ -1,11 +1,17 @@
 'use client';
 
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   BARCELONA_CENTER,
-  GEOLOCATION_MAX_AGE_MS,
-  GEOLOCATION_TIMEOUT_MS,
   readLocationCookie,
   writeLocationCookie,
   clearLocationCookie,
@@ -14,6 +20,10 @@ import {
   type UserLocation,
 } from '@/lib/services/location';
 
+import {
+  queryGeolocationPermission,
+  readCurrentPosition,
+} from './UserLocationProvider.geolocation';
 import type { UserLocationContextValue } from './UserLocationProvider.types';
 
 /**
@@ -40,28 +50,6 @@ function buildFallbackLocation(): UserLocation {
 }
 
 /**
- * Mapea el código nativo de `GeolocationPositionError` a nuestro
- * `LocationErrorCode` tipado.
- *
- * Las constantes (1, 2, 3) están fijadas por la especificación W3C; las
- * usamos numéricas porque algunos navegadores no exponen las propiedades
- * `PERMISSION_DENIED` / `POSITION_UNAVAILABLE` / `TIMEOUT` como
- * enumerables en el prototipo.
- */
-function mapGeolocationError(err: GeolocationPositionError): LocationErrorCode {
-  switch (err.code) {
-    case 1:
-      return 'PERMISSION_DENIED';
-    case 2:
-      return 'POSITION_UNAVAILABLE';
-    case 3:
-      return 'TIMEOUT';
-    default:
-      return 'POSITION_UNAVAILABLE';
-  }
-}
-
-/**
  * Hook de consumo del contexto.
  *
  * Si el componente vive fuera del provider devolvemos un fallback inerte
@@ -77,7 +65,7 @@ export function useUserLocation(): UserLocationContextValue {
     location: buildFallbackLocation(),
     hasRealLocation: false,
     error: 'NOT_SUPPORTED',
-    request: async () => undefined,
+    request: async () => false,
     clear: () => undefined,
   };
 }
@@ -119,58 +107,44 @@ export function useUserLocationState({
   // de arriba. Evitamos un `useEffect` posterior porque dispararía un render
   // adicional y porque React Compiler lo señala como cascading render.
 
-  const request = useCallback(async (): Promise<void> => {
+  // Petición en curso compartida: el banner, la pill y el buscador pueden
+  // pedir la ubicación casi a la vez y no queremos dos lecturas ni dos
+  // avisos del navegador seguidos.
+  const inflight = useRef<Promise<boolean> | null>(null);
+
+  const request = useCallback((): Promise<boolean> => {
+    if (inflight.current) return inflight.current;
+
     // Branch defensivo: en entornos sin navigator (SSR, tests sin polyfill)
     // marcamos NOT_SUPPORTED sin lanzar excepción.
     if (typeof navigator === 'undefined' || !('geolocation' in navigator)) {
       setError('NOT_SUPPORTED');
       setStatus('unavailable');
-      return;
+      return Promise.resolve(false);
     }
 
     setStatus('requesting');
     setError(null);
 
-    // Envolvemos la API basada en callbacks en una promesa para poder
-    // usar async/await y unificar la gestión de éxito/error.
-    await new Promise<void>((resolve) => {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const next: UserLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-            accuracyMeters: Number.isFinite(position.coords.accuracy)
-              ? position.coords.accuracy
-              : undefined,
-            capturedAt: Date.now(),
-            source: 'gps',
-          };
-          // Persistimos primero la cookie para que cualquier SSR posterior
-          // (navegación con `router.push`) ya la encuentre.
-          writeLocationCookie(next);
-          setLocation(next);
-          setStatus('granted');
-          setError(null);
-          resolve();
-        },
-        (err) => {
-          const code = mapGeolocationError(err);
-          setError(code);
-          setStatus(code === 'PERMISSION_DENIED' ? 'denied' : 'unavailable');
-          // Mantenemos la `location` actual (fallback o última conocida)
-          // para que la UI pueda seguir mostrando algo útil.
-          resolve();
-        },
-        {
-          // `enableHighAccuracy: false` evita activar el GPS del móvil
-          // (más rápido, ahorra batería). Para el caso de uso "ver qué
-          // tengo cerca a 1-3 km" la precisión Wi-Fi/IP es suficiente.
-          enableHighAccuracy: false,
-          timeout: GEOLOCATION_TIMEOUT_MS,
-          maximumAge: GEOLOCATION_MAX_AGE_MS,
-        },
-      );
+    const run = readCurrentPosition().then((result) => {
+      inflight.current = null;
+      if (result.ok) {
+        // Persistimos primero la cookie para que cualquier SSR posterior
+        // (navegación con `router.push`) ya la encuentre.
+        writeLocationCookie(result.location);
+        setLocation(result.location);
+        setStatus('granted');
+        setError(null);
+        return true;
+      }
+      // Mantenemos la `location` actual (fallback o última conocida)
+      // para que la UI pueda seguir mostrando algo útil.
+      setError(result.code);
+      setStatus(result.code === 'PERMISSION_DENIED' ? 'denied' : 'unavailable');
+      return false;
     });
+    inflight.current = run;
+    return run;
   }, []);
 
   const clear = useCallback(() => {
@@ -179,6 +153,51 @@ export function useUserLocationState({
     setStatus('idle');
     setError(null);
   }, []);
+
+  // Estado de partida (cookie con GPS o no). Se fija una vez para que el
+  // efecto de abajo no se repita en cada cambio de estado.
+  const [startedWithRealLocation] = useState(status === 'granted');
+
+  // Sincronización con el permiso real del navegador, sin mostrar avisos:
+  //  - Si ya lo concedió pero no tenemos su posición (cookie caducada o
+  //    borrada), la leemos en silencio. Antes le volvíamos a pedir
+  //    permiso aunque ya lo hubiera dado.
+  //  - Si lo tiene bloqueado, lo decimos desde el principio en lugar de
+  //    ofrecer un «Activar» que no puede funcionar.
+  //  - Si lo cambia en los ajustes con la web abierta, reaccionamos.
+  useEffect(() => {
+    let permission: PermissionStatus | null = null;
+    let cancelled = false;
+
+    const apply = (state: PermissionState, isChange: boolean) => {
+      if (state === 'granted' && (isChange || !startedWithRealLocation)) {
+        void request();
+      } else if (state === 'denied') {
+        if (isChange) {
+          // Revocado en los ajustes: dejamos de usar la posición guardada.
+          clearLocationCookie();
+          setLocation(buildFallbackLocation());
+        }
+        setError('PERMISSION_DENIED');
+        setStatus('denied');
+      }
+    };
+    const onChange = () => {
+      if (permission) apply(permission.state, true);
+    };
+
+    void queryGeolocationPermission().then((result) => {
+      if (cancelled || !result) return;
+      permission = result;
+      apply(result.state, false);
+      result.addEventListener('change', onChange);
+    });
+
+    return () => {
+      cancelled = true;
+      permission?.removeEventListener('change', onChange);
+    };
+  }, [request, startedWithRealLocation]);
 
   const hasRealLocation = location.source === 'gps' || location.source === 'manual';
 

@@ -44,13 +44,22 @@ export function useNearMe(
 
   // Ubicación del usuario (real o fallback BCN). El provider siempre
   // devuelve algo, así que nunca tenemos que comprobar `null` aquí.
-  const { location: userLocation, hasRealLocation } = useUserLocation();
+  const {
+    location: userLocation,
+    hasRealLocation,
+    status: locationStatus,
+    request: requestLocation,
+  } = useUserLocation();
 
   // El filtro se aplica en cliente sobre la lista ya ordenada por
   // proximidad, pero su valor viaja en la URL (`?near=me`). Guardamos
   // copia local para que el chip responda al instante, sin esperar a
   // que termine la navegación.
   const [nearMeOnly, setNearMeOnly] = useState(initialNearMeOnly);
+
+  // `true` si el último intento de activar «Cerca de ti» no pudo obtener la
+  // ubicación (permiso denegado o el dispositivo no se sitúa).
+  const [locationFailed, setLocationFailed] = useState(false);
 
   // Si la URL cambia por fuera (atrás/adelante del navegador), el valor
   // inicial que llega del server cambia y hay que re-sincronizar. Se
@@ -110,11 +119,25 @@ export function useNearMe(
   // Calculamos el siguiente valor fuera del updater de `setState`: el
   // callback de URL es un efecto secundario y React puede invocar los
   // updaters dos veces en StrictMode.
+  //
+  // Al encender el filtro sin ubicación real la pedimos primero. Antes
+  // se activaba igualmente y filtraba alrededor del centro de Barcelona:
+  // el chip decía «Cerca de ti» sin saber dónde estaba el usuario. Si no
+  // la conseguimos, el chip se queda apagado y avisamos. Solo es asíncrono
+  // en ese caso: con ubicación el cambio se aplica en el mismo clic.
   const handleToggleNearMe = useCallback(() => {
     const next = !nearMeOnly;
-    setNearMeOnly(next);
-    onNearMeChange?.(next);
-  }, [nearMeOnly, onNearMeChange]);
+    const apply = () => {
+      setLocationFailed(false);
+      setNearMeOnly(next);
+      onNearMeChange?.(next);
+    };
+    if (next && !hasRealLocation) {
+      void requestLocation().then((ok) => (ok ? apply() : setLocationFailed(true)));
+      return;
+    }
+    apply();
+  }, [nearMeOnly, hasRealLocation, requestLocation, onNearMeChange]);
 
   const handleDisableNearMe = useCallback(() => {
     setNearMeOnly(false);
@@ -125,6 +148,8 @@ export function useNearMe(
     userLocation,
     hasRealLocation,
     nearMeOnly,
+    nearMeLocating: locationStatus === 'requesting' || locationStatus === 'prompting',
+    nearMeLocationFailed: locationFailed && !hasRealLocation,
     displayProviders,
     nearMeYieldedEmpty,
     handleToggleNearMe,

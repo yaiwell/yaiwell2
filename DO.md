@@ -8,6 +8,21 @@
 
 ## 2026-10-29
 
+## 2026-10-31
+
+### 2026-10-31 — Cabecera y filtros en móvil: idioma, ubicación y barra de búsqueda
+
+P1 + P2 (feedback del dev con capturas del móvil).
+
+- **Selector de idioma**: desplegable propio (Radix Select) en móvil y escritorio en lugar del `<select>` nativo (hoja gris de Android) y del toggle de 4 códigos; el botón muestra el código y la lista, cada idioma en su lengua.
+- **Ubicación**:
+  - el chip «Cerca de ti» del buscador ahora pide la ubicación antes de filtrar; antes se activaba sin ella y filtraba alrededor de Barcelona. Si no se consigue, se queda apagado y avisa;
+  - un toque en la pill de la cabecera la activa (antes, pill + «Activar»), y activa se ve con el color de «Cerca de ti»;
+  - si el navegador ya dio permiso y falta la posición guardada, se lee en silencio en vez de volver a pedirla; si lo tiene bloqueado se dice desde el principio; se reacciona si cambia el permiso con la web abierta;
+  - segundo intento con GPS cuando la lectura rápida por red falla, y una sola petición a la vez aunque la pidan varios componentes.
+- **Barra de filtros en móvil**: una fila deslizable (toggles · separador · categorías) con degradado al final y «Filtros» fijo como icono; antes la fila de acciones no cabía a 375 px y cortaba «Cerca de ti». En escritorio queda igual.
+- Probado en el navegador a 375 px y 1280 px; 2283 tests unitarios, typecheck, lint y build en verde.
+
 ## 2026-10-30
 
 ### 2026-10-30 — E2E de cancelación, conversión a profesional y pago en el local

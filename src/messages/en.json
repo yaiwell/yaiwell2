@@ -38,7 +38,13 @@
     "bottomNavLabel": "Bottom navigation"
   },
   "langSwitcher": {
-    "groupLabel": "Language"
+    "groupLabel": "Language",
+    "names": {
+      "es": "Español",
+      "ca": "Català",
+      "en": "English",
+      "de": "Deutsch"
+    }
   },
   "providerGallery": {
     "galleryLabel": "Photo gallery",
@@ -224,6 +230,8 @@
       "sheetSectionLabel": "Released slots"
     },
     "nearMeChip": "Near you",
+    "nearMeLocating": "Locating…",
+    "nearMeLocationFailed": "We couldn't find your location. Check that your browser has location permission and try again.",
     "nearMeChipAria": "Filter to professionals within a {radius} km radius",
     "resultsCount": "{count, plural, one {# result} other {# results}}"
   },

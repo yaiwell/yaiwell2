@@ -38,7 +38,13 @@
     "bottomNavLabel": "Untere Navigation"
   },
   "langSwitcher": {
-    "groupLabel": "Sprache"
+    "groupLabel": "Sprache",
+    "names": {
+      "es": "Español",
+      "ca": "Català",
+      "en": "English",
+      "de": "Deutsch"
+    }
   },
   "providerGallery": {
     "galleryLabel": "Fotogalerie",
@@ -224,6 +230,8 @@
       "sheetSectionLabel": "Freigegebene Termine"
     },
     "nearMeChip": "In deiner Nähe",
+    "nearMeLocating": "Standort wird ermittelt…",
+    "nearMeLocationFailed": "Wir konnten deinen Standort nicht ermitteln. Prüfe, ob dein Browser die Standortfreigabe hat, und versuch es noch einmal.",
     "nearMeChipAria": "Profis im Umkreis von {radius} km filtern",
     "resultsCount": "{count, plural, one {# Ergebnis} other {# Ergebnisse}}"
   },

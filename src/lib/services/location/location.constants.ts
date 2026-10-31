@@ -42,6 +42,15 @@ export const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 export const GEOLOCATION_TIMEOUT_MS = 10_000;
 
 /**
+ * Timeout del segundo intento, con GPS (`enableHighAccuracy: true`).
+ *
+ * Solo se usa si la lectura rápida por Wi-Fi/red falla: en Android con la
+ * «precisión de ubicación» de Google desactivada la lectura de red suele
+ * fallar y el GPS necesita más margen para el primer fix.
+ */
+export const GEOLOCATION_HIGH_ACCURACY_TIMEOUT_MS = 15_000;
+
+/**
  * Edad máxima aceptada de una posición cacheada por el navegador.
  *
  * 5 minutos: si el navegador ya tiene una posición reciente, la usamos

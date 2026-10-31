@@ -22,6 +22,10 @@ export interface FiltersBarProps {
   hasAdvancedFilters: boolean;
   /** Estado del toggle "Cerca de ti" (filtra por radio respecto al usuario). */
   nearMeOnly: boolean;
+  /** `true` mientras se pide la ubicación al activar "Cerca de ti". */
+  nearMeLocating?: boolean;
+  /** `true` si no se pudo obtener la ubicación al activar "Cerca de ti". */
+  nearMeLocationFailed?: boolean;
   /** Radio (en km) que aplica el chip "Cerca de ti", para etiqueta accesible. */
   nearMeRadiusKm: number;
   /** Cambia la categoría activa. `null` = quitar filtro. */

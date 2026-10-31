@@ -38,7 +38,13 @@
     "bottomNavLabel": "Navegació inferior"
   },
   "langSwitcher": {
-    "groupLabel": "Idioma"
+    "groupLabel": "Idioma",
+    "names": {
+      "es": "Español",
+      "ca": "Català",
+      "en": "English",
+      "de": "Deutsch"
+    }
   },
   "providerGallery": {
     "galleryLabel": "Galeria de fotos",
@@ -224,6 +230,8 @@
       "sheetSectionLabel": "Forats alliberats"
     },
     "nearMeChip": "A prop teu",
+    "nearMeLocating": "Localitzant…",
+    "nearMeLocationFailed": "No hem pogut saber on ets. Comprova que el navegador tingui permís d'ubicació i torna-ho a provar.",
     "nearMeChipAria": "Filtrar a professionals en un radi de {radius} km",
     "resultsCount": "{count, plural, one {# resultat} other {# resultats}}"
   },
