@@ -1435,8 +1435,8 @@
       "cancellationBody": "Cancel up to 2 hours before the start at no cost. Below that window the amount isn't refundable.",
       "punctualityTitle": "Arrive 5 minutes early",
       "punctualityBody": "So the team can prepare your session calmly and start on time.",
-      "paymentTitle": "Secure online payment",
-      "paymentBody": "Your booking is confirmed instantly with payment. No surprises at the centre.",
+      "paymentTitle": "Secure payment",
+      "paymentBody": "Pay online when you book or, if the venue offers it, at the venue. Your booking is confirmed instantly.",
       "ratingHint": "You'll only be able to review the service after the professional marks it as completed."
     },
     "cta": {
@@ -1500,7 +1500,7 @@
         "free": {
           "name": "Free",
           "tagline": "Try Yaiwell with no strings attached.",
-          "feature1": "Up to 5 published services",
+          "feature1": "1 published service",
           "feature2": "Unlimited online bookings",
           "feature3": "Secure payment with Stripe",
           "feature4": "Public profile on the marketplace"
@@ -1508,24 +1508,24 @@
         "basic": {
           "name": "Basic",
           "tagline": "For professionals starting to fill their diary.",
-          "feature1": "Up to 20 published services",
+          "feature1": "Up to 10 published services",
           "feature2": "Automatic email reminders",
-          "feature3": "Basic occupancy statistics",
+          "feature3": "Weekly summary of revenue and bookings",
           "feature4": "Email support within 48 h"
         },
         "pro": {
           "name": "Pro",
-          "tagline": "For centres with several professionals.",
-          "feature1": "Unlimited services",
-          "feature2": "Multi-professional management",
+          "tagline": "For venues with a wide menu.",
+          "feature1": "Up to 50 published services",
+          "feature2": "Optional pay-at-venue",
           "feature3": "Last-minute slot promotions",
           "feature4": "Priority support within 24 h"
         },
         "premium": {
           "name": "Premium",
-          "tagline": "For groups with multiple centres.",
-          "feature1": "Multi-centre under one account",
-          "feature2": "Consolidated control panel",
+          "tagline": "For businesses that want no limits.",
+          "feature1": "Unlimited services",
+          "feature2": "The lowest commission on Yaiwell",
           "feature3": "Dedicated account manager",
           "feature4": "Onboarding assisted by our team"
         }
@@ -1557,7 +1557,7 @@
         },
         "verification": {
           "question": "What do I need to sign up?",
-          "answer": "An email, your VAT/company number and, depending on the category, some professional documentation (insurance, certificates). We'll guide you through it step by step."
+          "answer": "An email and your business details: name, address and, if you like, your tax ID. To get paid, Stripe will ask for your ID or company number and your IBAN. We guide you step by step."
         }
       }
     },

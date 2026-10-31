@@ -191,6 +191,6 @@ describe('ForProvidersLanding', () => {
     renderWithIntl(<ForProvidersLanding plans={plans} />);
 
     const sales = screen.getByRole('link', { name: 'Hablar con ventas' });
-    expect(sales).toHaveAttribute('href', 'mailto:hola@yaiwell.es');
+    expect(sales).toHaveAttribute('href', 'mailto:hola@yaiwell.com');
   });
 });

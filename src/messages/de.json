@@ -1435,8 +1435,8 @@
       "cancellationBody": "Storniere bis 2 Stunden vor Beginn kostenlos. Unterhalb dieser Frist ist der Betrag nicht erstattbar.",
       "punctualityTitle": "Komm 5 Minuten früher",
       "punctualityBody": "Damit das Team deine Session in Ruhe vorbereitet und ihr pünktlich starten könnt.",
-      "paymentTitle": "Sichere Online-Zahlung",
-      "paymentBody": "Deine Buchung wird mit der Zahlung sofort bestätigt. Keine Überraschungen vor Ort.",
+      "paymentTitle": "Sichere Zahlung",
+      "paymentBody": "Zahl online bei der Buchung oder, wenn das Studio es anbietet, vor Ort. Deine Buchung ist sofort bestätigt.",
       "ratingHint": "Du kannst den Service erst bewerten, nachdem die Fachperson ihn als abgeschlossen markiert hat."
     },
     "cta": {
@@ -1500,7 +1500,7 @@
         "free": {
           "name": "Kostenlos",
           "tagline": "Um Yaiwell unverbindlich auszuprobieren.",
-          "feature1": "Bis zu 5 veröffentlichte Services",
+          "feature1": "1 veröffentlichte Leistung",
           "feature2": "Unbegrenzte Online-Buchungen",
           "feature3": "Sichere Zahlung mit Stripe",
           "feature4": "Öffentliches Profil im Marktplatz"
@@ -1508,24 +1508,24 @@
         "basic": {
           "name": "Basis",
           "tagline": "Für Profis, die ihren Kalender füllen wollen.",
-          "feature1": "Bis zu 20 veröffentlichte Services",
+          "feature1": "Bis zu 10 veröffentlichte Leistungen",
           "feature2": "Automatische E-Mail-Erinnerungen",
-          "feature3": "Basis-Auslastungsstatistiken",
+          "feature3": "Wöchentliche Übersicht über Umsatz und Buchungen",
           "feature4": "E-Mail-Support innerhalb von 48 Std."
         },
         "pro": {
           "name": "Pro",
-          "tagline": "Für Studios mit mehreren Profis.",
-          "feature1": "Unbegrenzte Services",
-          "feature2": "Multi-Profi-Verwaltung",
+          "tagline": "Für Studios mit großem Angebot.",
+          "feature1": "Bis zu 50 veröffentlichte Leistungen",
+          "feature2": "Optionale Zahlung vor Ort",
           "feature3": "Last-Minute-Termin-Aktionen",
           "feature4": "Priorisierter Support innerhalb von 24 Std."
         },
         "premium": {
           "name": "Premium",
-          "tagline": "Für Gruppen mit mehreren Studios.",
-          "feature1": "Mehrere Studios unter einem Account",
-          "feature2": "Konsolidiertes Kontrollpanel",
+          "tagline": "Für Betriebe, die keine Grenzen wollen.",
+          "feature1": "Unbegrenzte Leistungen",
+          "feature2": "Die niedrigste Provision bei Yaiwell",
           "feature3": "Persönlicher Account Manager",
           "feature4": "Onboarding mit Unterstützung vom Team"
         }
@@ -1557,7 +1557,7 @@
         },
         "verification": {
           "question": "Was brauche ich zur Anmeldung?",
-          "answer": "Eine E-Mail-Adresse, deine USt-IdNr./Steuernummer und je nach Kategorie einige berufliche Dokumente (Versicherung, Zertifikate). Wir führen dich Schritt für Schritt durch die Anmeldung."
+          "answer": "Eine E-Mail-Adresse und die Daten deines Betriebs: Name, Adresse und, wenn du willst, deine Steuernummer. Für Auszahlungen fragt Stripe nach deinem Ausweis oder deiner Firmennummer und deiner IBAN. Wir begleiten dich Schritt für Schritt."
         }
       }
     },

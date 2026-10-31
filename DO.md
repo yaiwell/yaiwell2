@@ -10,6 +10,15 @@
 
 ## 2026-10-31
 
+### 2026-10-31 — Textos de la web alineados con lo construido
+
+Detectado al redactar el documento para la clienta (recorrido completo del código con 4 Explore en paralelo).
+
+- «Para profesionales»: límites reales de servicios por plan (1 / 10 / 50 / ilimitados) y fuera las promesas que aún no existen (multi-profesional, multi-centro, panel consolidado, estadísticas de ocupación); FAQ de alta sin pedir documentación que el asistente no recoge.
+- Email de «Hablar con ventas» unificado a hola@yaiwell.com.
+- Ficha del servicio: el bloque de pago menciona también el pago en el local.
+- 4 idiomas.
+
 ### 2026-10-31 — Cabecera y filtros en móvil: idioma, ubicación y barra de búsqueda
 
 P1 + P2 (feedback del dev con capturas del móvil).

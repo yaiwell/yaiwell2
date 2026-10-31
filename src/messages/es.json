@@ -1435,8 +1435,8 @@
       "cancellationBody": "Cancela hasta 2 horas antes del inicio sin coste. Por debajo de ese margen el importe no es reembolsable.",
       "punctualityTitle": "Llega 5 minutos antes",
       "punctualityBody": "Para que el equipo prepare tu sesión con calma y empieces puntual.",
-      "paymentTitle": "Pago seguro online",
-      "paymentBody": "Tu reserva se confirma al instante con el pago. Sin sorpresas en el centro.",
+      "paymentTitle": "Pago seguro",
+      "paymentBody": "Paga online al reservar o, si el centro lo ofrece, en el local. Tu reserva se confirma al instante.",
       "ratingHint": "Solo podrás valorar el servicio después de que el profesional lo marque como completado."
     },
     "cta": {
@@ -1500,7 +1500,7 @@
         "free": {
           "name": "Gratis",
           "tagline": "Para probar Yaiwell sin compromiso.",
-          "feature1": "Hasta 5 servicios publicados",
+          "feature1": "1 servicio publicado",
           "feature2": "Reservas online ilimitadas",
           "feature3": "Pago seguro con Stripe",
           "feature4": "Ficha pública en el marketplace"
@@ -1508,24 +1508,24 @@
         "basic": {
           "name": "Básico",
           "tagline": "Para profesionales que empiezan a llenar agenda.",
-          "feature1": "Hasta 20 servicios publicados",
+          "feature1": "Hasta 10 servicios publicados",
           "feature2": "Recordatorios automáticos por email",
-          "feature3": "Estadísticas básicas de ocupación",
+          "feature3": "Resumen semanal de ingresos y reservas",
           "feature4": "Soporte por email en 48 h"
         },
         "pro": {
           "name": "Pro",
-          "tagline": "Para centros con varios profesionales.",
-          "feature1": "Servicios ilimitados",
-          "feature2": "Gestión multi-profesional",
+          "tagline": "Para centros con una carta amplia.",
+          "feature1": "Hasta 50 servicios publicados",
+          "feature2": "Pago en el local opcional",
           "feature3": "Promociones de huecos sueltos",
           "feature4": "Soporte prioritario en 24 h"
         },
         "premium": {
           "name": "Premium",
-          "tagline": "Para grupos con varios centros.",
-          "feature1": "Multi-centro bajo una cuenta",
-          "feature2": "Panel de control consolidado",
+          "tagline": "Para negocios que no quieren límites.",
+          "feature1": "Servicios ilimitados",
+          "feature2": "La comisión más baja de Yaiwell",
           "feature3": "Account manager dedicado",
           "feature4": "Onboarding asistido por el equipo"
         }
@@ -1557,7 +1557,7 @@
         },
         "verification": {
           "question": "¿Qué necesito para darme de alta?",
-          "answer": "Un email, tu NIF/CIF y, según la categoría, alguna documentación profesional (seguro, certificados). Te guiamos paso a paso en el alta."
+          "answer": "Un email y los datos de tu negocio: nombre, dirección y, si quieres, tu NIF/CIF. Para cobrar, Stripe te pedirá tu DNI o CIF y tu IBAN. Te guiamos paso a paso en el alta."
         }
       }
     },

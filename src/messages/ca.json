@@ -1435,8 +1435,8 @@
       "cancellationBody": "Cancel·la fins a 2 hores abans de l'inici sense cost. Per sota d'aquest marge l'import no és reemborsable.",
       "punctualityTitle": "Arriba 5 minuts abans",
       "punctualityBody": "Perquè l'equip prepari la teva sessió amb calma i comencis puntual.",
-      "paymentTitle": "Pagament segur en línia",
-      "paymentBody": "La teva reserva es confirma a l'instant amb el pagament. Sense sorpreses al centre.",
+      "paymentTitle": "Pagament segur",
+      "paymentBody": "Paga en línia en reservar o, si el centre ho ofereix, al local. La reserva es confirma a l’instant.",
       "ratingHint": "Només podràs valorar el servei després que el professional el marqui com a completat."
     },
     "cta": {
@@ -1500,7 +1500,7 @@
         "free": {
           "name": "Gratis",
           "tagline": "Per provar Yaiwell sense compromís.",
-          "feature1": "Fins a 5 serveis publicats",
+          "feature1": "1 servei publicat",
           "feature2": "Reserves en línia il·limitades",
           "feature3": "Pagament segur amb Stripe",
           "feature4": "Fitxa pública al marketplace"
@@ -1508,24 +1508,24 @@
         "basic": {
           "name": "Bàsic",
           "tagline": "Per a professionals que comencen a omplir agenda.",
-          "feature1": "Fins a 20 serveis publicats",
+          "feature1": "Fins a 10 serveis publicats",
           "feature2": "Recordatoris automàtics per email",
-          "feature3": "Estadístiques bàsiques d'ocupació",
+          "feature3": "Resum setmanal d’ingressos i reserves",
           "feature4": "Suport per email en 48 h"
         },
         "pro": {
           "name": "Pro",
-          "tagline": "Per a centres amb diversos professionals.",
-          "feature1": "Serveis il·limitats",
-          "feature2": "Gestió multi-professional",
+          "tagline": "Per a centres amb una carta àmplia.",
+          "feature1": "Fins a 50 serveis publicats",
+          "feature2": "Pagament al local opcional",
           "feature3": "Promocions de forats solts",
           "feature4": "Suport prioritari en 24 h"
         },
         "premium": {
           "name": "Premium",
-          "tagline": "Per a grups amb diversos centres.",
-          "feature1": "Multi-centre sota un únic compte",
-          "feature2": "Panell de control consolidat",
+          "tagline": "Per a negocis que no volen límits.",
+          "feature1": "Serveis il·limitats",
+          "feature2": "La comissió més baixa de Yaiwell",
           "feature3": "Account manager dedicat",
           "feature4": "Onboarding assistit per l'equip"
         }
@@ -1557,7 +1557,7 @@
         },
         "verification": {
           "question": "Què necessito per donar-me d'alta?",
-          "answer": "Un email, el teu NIF/CIF i, segons la categoria, alguna documentació professional (assegurança, certificats). Et guiem pas a pas en l'alta."
+          "answer": "Un correu i les dades del teu negoci: nom, adreça i, si vols, el teu NIF/CIF. Per cobrar, Stripe et demanarà el DNI o CIF i l’IBAN. T’acompanyem pas a pas en l’alta."
         }
       }
     },
