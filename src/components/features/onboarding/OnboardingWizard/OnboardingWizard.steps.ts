@@ -92,3 +92,25 @@ export function isStepReady(
       return false;
   }
 }
+
+/**
+ * Paso en el que se retoma el asistente al abrirlo.
+ *
+ * - Con negocio ya creado: el que diga el servidor, nunca antes del 4
+ *   (los pasos 1-3 ya están guardados en el negocio).
+ * - Sin negocio: el del borrador, pero nunca más allá del primer paso de
+ *   1-3 que esté incompleto. Antes se podía aterrizar en el paso 3 con
+ *   los pasos 1 y 2 vacíos, y «Siguiente» no hacía nada.
+ */
+export function resumeStep(draft: OnboardingDraft, server: OnboardingApiState): OnboardingStep {
+  if (server.providerId) {
+    return Math.max(draft.step, stepFromApiState(server), 4) as OnboardingStep;
+  }
+  // El paso 2 se evalúa sin la comprobación del slug (se repite al volver).
+  const firstIncomplete = ([1, 2, 3] as const).find(
+    (step) => !isStepReady(step, draft, 'available'),
+  );
+  return firstIncomplete === undefined
+    ? draft.step
+    : (Math.min(draft.step, firstIncomplete) as OnboardingStep);
+}

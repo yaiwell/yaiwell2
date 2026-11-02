@@ -31,6 +31,7 @@ import type { OnboardingWizardProps } from './OnboardingWizard.types';
  */
 export function OnboardingWizard(props: OnboardingWizardProps) {
   const { initialState, categoriesPreloaded, locale, userPending, plans, initialPlan } = props;
+  const { draftOwnerId } = props;
   const t = useTranslations('onboarding');
   const tCommon = useTranslations('onboarding.common');
   const tErrors = useTranslations('onboarding.errors');
@@ -55,6 +56,7 @@ export function OnboardingWizard(props: OnboardingWizardProps) {
     locale,
     userPending,
     initialPlan,
+    draftOwnerId,
     onComplete: (href) => router.push(href),
   });
 

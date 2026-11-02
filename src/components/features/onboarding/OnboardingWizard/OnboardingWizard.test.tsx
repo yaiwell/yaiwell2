@@ -194,6 +194,7 @@ const baseProps: OnboardingWizardProps = {
     { tier: 'premium', monthlyPriceCents: 9900, commissionRateBps: 600, maxServices: 999 },
   ],
   initialPlan: 'free',
+  draftOwnerId: 'user_owner',
 };
 
 function renderWizard(overrides?: Partial<typeof baseProps>) {
@@ -254,14 +255,42 @@ describe('OnboardingWizard', () => {
   it('el paso 5 muestra los planes con el del registro preseleccionado', async () => {
     window.sessionStorage.setItem(
       DRAFT_STORAGE_KEY,
-      JSON.stringify({ step: 5, locale: 'es', businessType: 'centro' }),
+      JSON.stringify({ step: 5, locale: 'es', ownerId: 'user_owner', businessType: 'centro' }),
     );
-    renderWizard({ initialPlan: 'pro' });
+    renderWizard({
+      initialPlan: 'pro',
+      initialState: { ...baseProps.initialState, providerId: 'existing-provider', step: 4 },
+    });
     expect(
       await screen.findByRole('heading', { name: es.onboarding.planStep.title }),
     ).toBeInTheDocument();
     expect(screen.getByTestId('onboarding-plan-pro')).toBeChecked();
     expect(screen.getByText(es.onboarding.planStep.paidNote)).toBeInTheDocument();
     expect(screen.getByTestId('onboarding-next')).not.toBeDisabled();
+  });
+
+  it('ignora y borra el borrador de otra cuenta de la misma pestaña', async () => {
+    window.sessionStorage.setItem(
+      DRAFT_STORAGE_KEY,
+      JSON.stringify({
+        step: 3,
+        locale: 'es',
+        ownerId: 'user_other',
+        businessType: 'centro',
+        businessName: 'Otro negocio',
+      }),
+    );
+    renderWizard();
+    expect(await screen.findByRole('heading', { name: '¿Cómo trabajas?' })).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: /Centro/ })).not.toBeChecked();
+  });
+
+  it('no deja entrar al paso 3 con los pasos 1 y 2 vacíos', async () => {
+    window.sessionStorage.setItem(
+      DRAFT_STORAGE_KEY,
+      JSON.stringify({ step: 3, locale: 'es', ownerId: 'user_owner' }),
+    );
+    renderWizard();
+    expect(await screen.findByRole('heading', { name: '¿Cómo trabajas?' })).toBeInTheDocument();
   });
 });

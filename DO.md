@@ -8,6 +8,17 @@
 
 ## 2026-10-29
 
+## 2026-11-02
+
+### 2026-11-02 — Alta de negocio: retomar en el paso correcto y borrador por cuenta
+
+P1 (reportado por el dev con dos cuentas reales).
+
+- **Paso de retomar en el servidor**: con negocio creado y sin servicio se vuelve al paso 4; con servicio, el alta está completada y `/onboarding` lleva al panel. Antes un negocio sin fotos (regla de cuando el paso 3 era «fotos») volvía al paso 3, la ubicación, con el formulario vacío y sin poder avanzar, aunque tuviera servicios publicados (le pasó a Studio Aura, que no se modificó).
+- **Borrador por cuenta**: el borrador de `sessionStorage` guarda la cuenta de Clerk y se descarta si es de otra; antes, al cambiar de cuenta en la misma pestaña, la nueva heredaba datos y paso de la anterior.
+- **Nunca en un paso con los anteriores vacíos**: sin negocio se retoma en el primer paso incompleto; con negocio, nunca antes del 4. Volver atrás tras crear el negocio ya no intenta crearlo de nuevo.
+- Tests unitarios nuevos; E2E de «hazte profesional» en verde. El E2E del asistente completo sigue fallando igual que antes del cambio (cuenta fija de pruebas pendiente, ver TODO).
+
 ## 2026-10-31
 
 ### 2026-10-31 — Separación entre filtros activos y resultados

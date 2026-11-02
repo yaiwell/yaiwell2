@@ -36,6 +36,12 @@ export type PlanTierChoice = 'free' | 'basic' | 'pro' | 'premium';
 export interface OnboardingDraft {
   step: OnboardingStep;
   locale: AppLocale;
+  /**
+   * Cuenta (id de Clerk) que rellenó el borrador. `sessionStorage` vive
+   * por pestaña, no por cuenta: sin esto, quien cambiaba de cuenta en la
+   * misma pestaña heredaba los datos y el paso de la anterior.
+   */
+  ownerId?: string;
   // Paso 1.
   businessType?: BusinessType;
   // Paso 2.
@@ -114,4 +120,6 @@ export interface OnboardingInitialProps {
   plans: PublicPlan[];
   /** Plan elegido en el registro (`unsafeMetadata.selectedPlan`) o Gratis. */
   initialPlan: PlanTierChoice;
+  /** Id de Clerk de la cuenta en sesión: el borrador solo vale para ella. */
+  draftOwnerId: string;
 }

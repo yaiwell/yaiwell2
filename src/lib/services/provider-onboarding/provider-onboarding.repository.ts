@@ -24,6 +24,7 @@ import type { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/db/prisma';
 import type { StorableLocalizedText } from '@/lib/i18n';
 
+import { nextOnboardingStep } from './provider-onboarding.step';
 import type {
   BusinessType,
   OnboardingState,
@@ -338,23 +339,7 @@ export const providerOnboardingRepository = {
     const hasFirstService = provider._count.services > 0;
     const planTier = provider.plan.tier;
 
-    // Calculamos el siguiente paso pendiente. Si el proveedor solo
-    // tiene Provider creado, le toca subir fotos (paso 3). Si tiene
-    // fotos, le toca crear servicio (paso 4). Si tiene servicio, le
-    // toca elegir plan (paso 5). Si todo cuadra y ya hay plan, el
-    // wizard está completado.
-    let step: OnboardingState['step'];
-    if (!hasPhotos) {
-      step = 3;
-    } else if (!hasFirstService) {
-      step = 4;
-    } else {
-      // Aunque el provider arranca con planId=free, distinguimos el
-      // paso 5 como "elegir plan" solo cuando aún no tomó decisión
-      // explícita. Como no hay flag de "ha confirmado plan", marcamos
-      // completado en cuanto tiene servicio.
-      step = 'completed';
-    }
+    const step = nextOnboardingStep(hasFirstService);
 
     return {
       providerId: provider.id,

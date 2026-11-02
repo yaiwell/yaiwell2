@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AppLocale } from '@/i18n/routing';
 
 import type { SlugStatus } from '../steps/BusinessDataStep';
-import { apiGetState, loadDraft, saveDraft } from '../shared';
+import { apiGetState, clearDraft, loadDraft, saveDraft } from '../shared';
 import type {
   OnboardingApiError,
   OnboardingApiState,
@@ -14,7 +14,7 @@ import type {
   PlanTierChoice,
 } from '../shared';
 
-import { emptyDraft, isStepReady, stepFromApiState } from './OnboardingWizard.steps';
+import { emptyDraft, isStepReady, resumeStep, stepFromApiState } from './OnboardingWizard.steps';
 import { useOnboardingMutations } from './useOnboardingMutations';
 
 /** Total de pasos del wizard. */
@@ -38,13 +38,18 @@ export function useOnboardingWizard(params: {
   userPending: boolean;
   /** Plan preseleccionado en el registro (o Gratis). */
   initialPlan: PlanTierChoice;
+  /** Cuenta en sesión: un borrador de otra cuenta se descarta. */
+  draftOwnerId: string;
   /** Navegación interna al terminar (panel, o plan con aviso). */
   onComplete: (href: string) => void;
 }) {
-  const { initialState, locale, userPending, initialPlan, onComplete } = params;
+  const { initialState, locale, userPending, initialPlan, draftOwnerId, onComplete } = params;
 
   // Estado del draft. Hidratamos en el mount con `loadDraft()` (cliente).
-  const [draft, setDraft] = useState<OnboardingDraft>(() => emptyDraft(locale, initialPlan));
+  const [draft, setDraft] = useState<OnboardingDraft>(() => ({
+    ...emptyDraft(locale, initialPlan),
+    ownerId: draftOwnerId,
+  }));
   const [hydrated, setHydrated] = useState(false);
 
   // `providerId` que devuelve la mutación del paso 1-3 al crear el
@@ -67,27 +72,21 @@ export function useOnboardingWizard(params: {
   // al montar: leer sessionStorage requiere window, así que es un caso
   // legítimo de setState en useEffect (no hay alternativa SSR-safe).
   useEffect(() => {
-    const persisted = loadDraft();
-    if (persisted && persisted.locale === locale) {
-      // Si el apiState ya tiene providerId avanzado, respetamos su step
-      // por encima del draft (idempotencia: la fuente de verdad es el
-      // server). Si no, recogemos el draft tal cual.
-      const stepFromServer = stepFromApiState(initialState);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDraft({
-        ...persisted,
-        selectedPlan: persisted.selectedPlan ?? initialPlan,
-        step: Math.max(persisted.step, stepFromServer) as OnboardingStep,
-      });
-    } else {
-      // Sin draft válido: arrancamos en el paso que diga el server.
-      setDraft({
-        ...emptyDraft(locale, initialPlan),
-        step: stepFromApiState(initialState),
-      });
-    }
+    const stored = loadDraft();
+    // Un borrador de otra cuenta (o anterior a guardar la cuenta) no se
+    // reutiliza: se borra para no mezclar datos entre personas.
+    const persisted = stored && stored.ownerId === draftOwnerId ? stored : null;
+    if (stored && !persisted) clearDraft();
+    const base =
+      persisted && persisted.locale === locale
+        ? { ...persisted, selectedPlan: persisted.selectedPlan ?? initialPlan }
+        : { ...emptyDraft(locale, initialPlan), ownerId: draftOwnerId };
+    // El paso lo decide `resumeStep`: nunca uno con pasos previos sin
+    // rellenar, y si el negocio ya existe, nunca antes del 4.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setDraft({ ...base, step: resumeStep(base, initialState) });
     setHydrated(true);
-  }, [initialPlan, initialState, locale]);
+  }, [draftOwnerId, initialPlan, initialState, locale]);
 
   // Persistimos el draft con debounce cada vez que cambia.
   useEffect(() => {
@@ -148,6 +147,12 @@ export function useOnboardingWizard(params: {
       return;
     }
     if (draft.step === 3) {
+      // Si el negocio ya existe (volvió atrás tras crearlo), no se crea
+      // otra vez: el servidor lo rechazaría con «ya tienes negocio».
+      if (providerId) {
+        goToStep(4);
+        return;
+      }
       const created = await createProvider();
       if (created) goToStep(4);
       return;
@@ -164,7 +169,7 @@ export function useOnboardingWizard(params: {
     if (draft.step === 6) {
       await finalizePlan();
     }
-  }, [createFirstService, createProvider, draft.step, finalizePlan, goToStep]);
+  }, [createFirstService, createProvider, draft.step, finalizePlan, goToStep, providerId]);
 
   const handleBack = useCallback(() => {
     setStepError(null);

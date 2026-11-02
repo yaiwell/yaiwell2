@@ -377,7 +377,7 @@ describe('loadOnboardingState', () => {
   it('devuelve estado parcial cuando solo hay Provider sin fotos ni servicio', async () => {
     const statePartial = {
       providerId: PROVIDER_ID,
-      step: 3 as const,
+      step: 4 as const,
       hasPhotos: false,
       hasFirstService: false,
       planTier: 'free',
@@ -386,7 +386,7 @@ describe('loadOnboardingState', () => {
 
     const result = await loadOnboardingState(OWNER_ID);
 
-    expect(result.step).toBe(3);
+    expect(result.step).toBe(4);
     expect(result.hasPhotos).toBe(false);
   });
 

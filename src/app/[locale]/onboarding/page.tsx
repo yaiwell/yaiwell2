@@ -183,6 +183,7 @@ export default async function OnboardingPage({ params }: OnboardingPageProps) {
       userPending={userPending}
       plans={plans}
       initialPlan={initialPlan}
+      draftOwnerId={clerkUserId ?? ''}
     />
   );
 }
