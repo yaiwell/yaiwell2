@@ -22,6 +22,7 @@ import {
   buildCalendarWeek,
   type PanelScheduleBlock,
   type PanelSlotOffer,
+  type PanelTeamMember,
 } from '@/components/features/provider-panel/WeeklyCalendar';
 import type { AppLocale } from '@/i18n/routing';
 import { isPanelPreviewActive } from '@/lib/auth/panel-preview';
@@ -29,19 +30,27 @@ import { requireCurrentProvider } from '@/lib/auth/server';
 import { fakePanelBookings } from '@/lib/fake-data/panel-bookings';
 import { fakePanelScheduleBlocks } from '@/lib/fake-data/panel-schedule-blocks';
 import { fakePanelFreeSlots, fakePanelSlotOffers } from '@/lib/fake-data/panel-slot-offers';
+import { fakePanelTeam } from '@/lib/fake-data/panel-team';
 import { toIntlLocale } from '@/lib/i18n';
 import {
+  filterByProfessional,
+  getPanelActiveTeam,
   getPanelReleasableFreeSlots,
   getPanelWeekBookings,
   getPanelWeekScheduleBlocks,
   getPanelWeekSlotOffers,
+  resolveProfessionalFilter,
   toPreviewBookingActions,
 } from '@/lib/services/provider-panel';
 import { getMadridWeekRange, parseWeekParam } from '@/lib/utils/madrid-week';
 
 interface PanelCalendarPageProps {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ semana?: string | string[]; liberar?: string | string[] }>;
+  searchParams: Promise<{
+    semana?: string | string[];
+    liberar?: string | string[];
+    pro?: string | string[];
+  }>;
 }
 
 /**
@@ -70,6 +79,11 @@ interface PanelCalendarPageProps {
  * bloqueos de la semana se pintan rayados en la cuadrícula. El botón
  * no sale en modo preview: no hay negocio real que bloquear.
  *
+ * Con más de un profesional activo, `?pro=<id>` filtra todo (citas,
+ * ofertas, bloqueos y huecos libres) por profesional y preselecciona
+ * ese profesional al bloquear horas. Un id que no es del equipo se
+ * ignora. El filtro se aplica en los services, junto al `providerId`.
+ *
  * En modo preview enseñamos datos de ejemplo con las acciones
  * deshabilitadas y sin navegación (los ejemplos no tienen fecha).
  */
@@ -89,25 +103,34 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
   const query = await searchParams;
   const weekKey = preview ? parseWeekParam(undefined, now) : parseWeekParam(query.semana, now);
 
+  let team: PanelTeamMember[];
+  let professionalId: string | null;
   let bookings: PanelBookingAction[];
   let slotOffers: PanelSlotOffer[];
   let freeSlots: PanelFreeSlot[];
   let scheduleBlocks: PanelScheduleBlock[];
   if (preview) {
-    bookings = toPreviewBookingActions(fakePanelBookings);
-    slotOffers = fakePanelSlotOffers;
-    freeSlots = fakePanelFreeSlots;
-    scheduleBlocks = fakePanelScheduleBlocks;
+    // El filtro también funciona con los ejemplos: así se ve cómo queda.
+    team = fakePanelTeam;
+    professionalId = resolveProfessionalFilter(query.pro, team);
+    bookings = filterByProfessional(toPreviewBookingActions(fakePanelBookings), professionalId);
+    slotOffers = filterByProfessional(fakePanelSlotOffers, professionalId);
+    freeSlots = filterByProfessional(fakePanelFreeSlots, professionalId);
+    scheduleBlocks = filterByProfessional(fakePanelScheduleBlocks, professionalId);
   } else {
     const { id: providerId } = await requireCurrentProvider(panelLocale);
     const weekStart = getMadridWeekRange(weekKey).start;
+    // El equipo va antes: el filtro solo vale si el id es de este negocio.
+    team = await getPanelActiveTeam(providerId);
+    professionalId = resolveProfessionalFilter(query.pro, team);
     [bookings, slotOffers, freeSlots, scheduleBlocks] = await Promise.all([
-      getPanelWeekBookings(providerId, weekStart, panelLocale, now),
-      getPanelWeekSlotOffers(providerId, weekStart, panelLocale, now),
-      getPanelReleasableFreeSlots(providerId, panelLocale, now),
-      getPanelWeekScheduleBlocks(providerId, weekKey),
+      getPanelWeekBookings(providerId, weekStart, panelLocale, now, professionalId),
+      getPanelWeekSlotOffers(providerId, weekStart, panelLocale, now, professionalId),
+      getPanelReleasableFreeSlots(providerId, panelLocale, now, professionalId),
+      getPanelWeekScheduleBlocks(providerId, weekKey, professionalId),
     ]);
   }
+  const hasTeam = team.length > 1;
 
   const releaseRequest = preview ? null : findReleaseRequest(bookings, query.liberar);
 
@@ -119,7 +142,13 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
           <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {preview ? null : <ScheduleBlockDialog locale={panelLocale} />}
+          {preview ? null : (
+            <ScheduleBlockDialog
+              locale={panelLocale}
+              team={team}
+              defaultProfessionalId={professionalId}
+            />
+          )}
           <PanelPreviewToggle
             locale={panelLocale}
             active={preview}
@@ -132,7 +161,11 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
 
       {preview ? <PreviewBanner /> : null}
       <ReleaseSlotPromptProvider locale={panelLocale} initialRequest={releaseRequest}>
-        <FreeSlotsSection slots={freeSlots} readOnly={preview} />
+        <FreeSlotsSection
+          slots={freeSlots}
+          readOnly={preview}
+          showProfessional={hasTeam && professionalId === null}
+        />
         <WeeklyCalendar
           bookings={bookings}
           slotOffers={slotOffers}
@@ -141,6 +174,8 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
           locale={panelLocale}
           readOnly={preview}
           now={now}
+          team={team}
+          selectedProfessionalId={professionalId}
         />
         <BookingActionsList bookings={bookings} locale={panelLocale} readOnly={preview} now={now} />
       </ReleaseSlotPromptProvider>

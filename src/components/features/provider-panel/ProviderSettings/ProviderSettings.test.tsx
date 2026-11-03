@@ -99,6 +99,12 @@ const messages = {
         },
       },
     },
+    team: {
+      settingsLink: {
+        description: 'Cada profesional tiene su horario.',
+        cta: 'Horarios del equipo',
+      },
+    },
   },
 };
 
@@ -129,7 +135,7 @@ const NEW_SUGGESTION = {
   kind: 'address',
 };
 
-function renderSettings() {
+function renderSettings(schedule: WeeklySchedule | null = EMPTY_SCHEDULE) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
   return render(
     <QueryClientProvider client={client}>
@@ -145,7 +151,7 @@ function renderSettings() {
             address: CURRENT_ADDRESS,
             photos: [],
           }}
-          schedule={EMPTY_SCHEDULE}
+          schedule={schedule}
           locale="es"
         />
       </NextIntlClientProvider>
@@ -157,6 +163,33 @@ beforeEach(() => {
   vi.clearAllMocks();
   updateSettingsMock.mockResolvedValue({ ok: true });
   updateScheduleMock.mockResolvedValue({ ok: true });
+});
+
+describe('ProviderSettings — horario con equipo', () => {
+  it('con varios profesionales enlaza a los horarios del equipo y no guarda horario', async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal('fetch', vi.fn());
+    renderSettings(null);
+
+    expect(screen.getByRole('link', { name: /Horarios del equipo/ })).toHaveAttribute(
+      'href',
+      expect.stringContaining('/panel/equipo'),
+    );
+    expect(screen.queryByText('Lunes')).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Guardar cambios' }));
+
+    await waitFor(() => expect(updateSettingsMock).toHaveBeenCalledOnce());
+    expect(updateScheduleMock).not.toHaveBeenCalled();
+  });
+
+  it('el autónomo sigue editando su horario aquí', () => {
+    vi.stubGlobal('fetch', vi.fn());
+    renderSettings();
+
+    expect(screen.getByText('Lunes')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Horarios del equipo/ })).not.toBeInTheDocument();
+  });
 });
 
 describe('ProviderSettings — contacto privado', () => {

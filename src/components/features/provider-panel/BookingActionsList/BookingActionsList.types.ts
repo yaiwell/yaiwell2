@@ -51,6 +51,11 @@ export interface PanelBookingAction {
   endTime: string;
   clientName: string;
   serviceName: string;
+  /**
+   * Profesional que atiende la cita (filtro y carriles del calendario).
+   * Ausente en los datos de ejemplo antiguos del modo preview.
+   */
+  professionalId?: string | null;
   professionalName: string | null;
   status: PanelBookingActionStatus;
   priceCents: number;

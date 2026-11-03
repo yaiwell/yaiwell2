@@ -1,4 +1,4 @@
-import type { RootCategoryRef, Service, ServiceWithRootCategory } from '@/types/domain';
+import type { RootCategoryRef, ServiceWithRootCategory } from '@/types/domain';
 
 /**
  * Tipos específicos del componente ProviderServicesList.
@@ -35,7 +35,7 @@ export interface ProviderServicesListProps {
 /** Props del sheet de detalle de servicio. */
 export interface ServiceDetailSheetProps {
   /** Servicio seleccionado; `null` cuando el sheet está cerrado. */
-  service: Service | null;
+  service: ServiceWithRootCategory | null;
   /** Estado controlado de apertura del sheet. */
   open: boolean;
   /** Callback cuando Radix solicita cambiar el estado de apertura. */

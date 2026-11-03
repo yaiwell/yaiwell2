@@ -1,7 +1,10 @@
-import type { CheckoutActionState } from '@/app/[locale]/centro/[slugWithId]/reservar/actions';
+import type {
+  CheckoutActionState,
+  CreateBookingCheckoutActionInput,
+} from '@/app/[locale]/centro/[slugWithId]/reservar/actions';
 import { isLastMinuteBooking } from '@/lib/utils/booking-last-minute';
 
-import type { CheckoutState } from './BookingFlow.types';
+import type { BookingDraft, CheckoutState } from './BookingFlow.types';
 
 /**
  * Transiciones del checkout que llevan datos de "última hora".
@@ -52,5 +55,29 @@ export function readyCheckout(
     isLastMinute: result.isLastMinute,
     estimatedLastMinute,
     slotStartIso: result.slotStartIso,
+    professionalId: result.professionalId,
+  };
+}
+
+/**
+ * Entrada de `createBookingCheckoutAction` a partir del borrador.
+ *
+ * Con «cualquiera disponible» (`professionalId: null`) el campo no
+ * viaja y el servidor asigna profesional dentro de la transacción.
+ *
+ * @param serviceId — servicio del flujo.
+ * @param draft — borrador con hueco ya elegido.
+ * @param slotStartIso — inicio del hueco (ya comprobado por el caller).
+ */
+export function buildCheckoutInput(
+  serviceId: string,
+  draft: BookingDraft,
+  slotStartIso: string,
+): CreateBookingCheckoutActionInput {
+  return {
+    serviceId,
+    slotStartIso,
+    ...(draft.professionalId && { professionalId: draft.professionalId }),
+    notes: draft.notes.trim() || undefined,
   };
 }

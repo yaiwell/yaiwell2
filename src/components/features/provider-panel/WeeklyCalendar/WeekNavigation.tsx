@@ -4,23 +4,25 @@ import { useTranslations } from 'next-intl';
 import { buttonVariants } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
 
+import { calendarHref } from './WeeklyCalendar.links';
 import { weeklyCalendarStyles as s } from './WeeklyCalendar.styles';
 import type { CalendarWeekNav } from './WeeklyCalendar.types';
 
-/** Ruta del calendario; la semana viaja en `?semana=` con la clave del lunes. */
-const CALENDAR_PATH = '/panel/calendario';
-
-function weekHref(weekKey: string) {
-  return { pathname: CALENDAR_PATH, query: { semana: weekKey } };
+interface WeekNavigationProps {
+  nav: CalendarWeekNav;
+  /** Profesional del filtro, que se conserva al cambiar de semana. */
+  professionalId?: string | null;
 }
 
 /**
  * Navegación entre semanas con enlaces normales (sin JavaScript): cada
  * semana tiene su URL, se puede compartir y el botón «atrás» del
- * navegador funciona. «Hoy» vuelve a la URL limpia.
+ * navegador funciona. «Hoy» vuelve a la semana actual sin perder el
+ * filtro por profesional.
  */
-export function WeekNavigation({ nav }: { nav: CalendarWeekNav }) {
+export function WeekNavigation({ nav, professionalId = null }: WeekNavigationProps) {
   const t = useTranslations('providerPanel.calendar.nav');
+  const weekHref = (week: string) => calendarHref({ week, professionalId });
   const iconButton = buttonVariants({ variant: 'outline', size: 'icon-lg' });
 
   return (
@@ -46,7 +48,7 @@ export function WeekNavigation({ nav }: { nav: CalendarWeekNav }) {
       </Link>
       {!nav.isCurrentWeek && (
         <Link
-          href={CALENDAR_PATH}
+          href={calendarHref({ professionalId })}
           className={buttonVariants({ variant: 'ghost', size: 'sm' })}
           data-component="weekly-calendar-nav-today"
         >

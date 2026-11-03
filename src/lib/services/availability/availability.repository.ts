@@ -5,7 +5,7 @@ import { activeBookingWhere } from '@/lib/services/booking/booking.hold';
 // Ruta directa por lo mismo: el servicio de bloqueos usa este módulo.
 import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks/schedule-blocks.repository';
 
-import type { ProfessionalScheduleBundle } from './availability.types';
+import { availabilityTeamRepository } from './availability.repository.team';
 
 /**
  * Repositorio del dominio `availability`.
@@ -19,8 +19,13 @@ import type { ProfessionalScheduleBundle } from './availability.types';
  *    Solo lecturas tipadas.
  *  - Los tests del service mockean este módulo (vía `vi.mock` sobre
  *    `@/lib/db/prisma`) para no necesitar BD real.
+ *  - Las lecturas de equipo y cupo del plan viven en
+ *    `availability.repository.team.ts` y se exponen aquí mismo: los
+ *    consumidores siguen usando solo `availabilityRepository`.
  */
 export const availabilityRepository = {
+  ...availabilityTeamRepository,
+
   /**
    * Devuelve el horario semanal en crudo y el buffer del profesional.
    *
@@ -71,116 +76,6 @@ export const availabilityRepository = {
       select: { startAt: true, endAt: true },
       orderBy: { startAt: 'asc' },
     });
-  },
-
-  /**
-   * Resuelve los datos mínimos de un Service necesarios para calcular
-   * disponibilidad: providerId, duración y los profesionales que lo
-   * prestan (tabla `service_professionals`, migración 9h). Filtra
-   * `isActive` y `deletedAt` para que servicios pausados o borrados no
-   * ofrezcan slots, y deja fuera a los profesionales dados de baja.
-   *
-   * `professionalIds` sale ordenado por antigüedad del profesional
-   * (`createdAt asc`): es el desempate final de «cualquiera disponible»
-   * y el orden estable en que se recorren los candidatos.
-   */
-  async findServiceForAvailability(serviceId: string): Promise<{
-    id: string;
-    providerId: string;
-    durationMinutes: number;
-    professionalIds: string[];
-  } | null> {
-    const row = await prisma.service.findFirst({
-      where: { id: serviceId, deletedAt: null, isActive: true },
-      select: {
-        id: true,
-        providerId: true,
-        durationMinutes: true,
-        professionals: {
-          where: { professional: { deletedAt: null } },
-          orderBy: [{ professional: { createdAt: 'asc' } }, { professionalId: 'asc' }],
-          select: { professionalId: true },
-        },
-      },
-    });
-    if (!row) return null;
-    return {
-      id: row.id,
-      providerId: row.providerId,
-      durationMinutes: row.durationMinutes,
-      professionalIds: row.professionals.map((link) => link.professionalId),
-    };
-  },
-
-  /**
-   * Horarios en crudo de varios profesionales en una sola consulta, para
-   * calcular la rejilla de un servicio con varios profesionales sin N+1.
-   * Los dados de baja no aparecen.
-   */
-  async findProfessionalSchedules(
-    professionalIds: readonly string[],
-  ): Promise<{ id: string; schedule: unknown; bufferMinutes: number }[]> {
-    if (professionalIds.length === 0) return [];
-    return prisma.professional.findMany({
-      where: { id: { in: professionalIds as string[] }, deletedAt: null },
-      select: { id: true, schedule: true, bufferMinutes: true },
-    });
-  },
-
-  /**
-   * Lectura BATCH de los horarios de todos los profesionales de un
-   * conjunto de proveedores, junto a la duración del servicio más corto
-   * que cada uno puede prestar.
-   *
-   * Existe para que el listado público pueda pintar disponibilidad real
-   * sin caer en la cascada N×M (un query por proveedor × profesional)
-   * que hacía inviable conectarlo. Una sola consulta cubre toda la
-   * página de resultados.
-   *
-   * La subquery de duración solo cuenta los servicios que ese
-   * profesional presta según `service_professionals` (migración 9h):
-   * con varios profesionales, uno que no presta ningún servicio activo
-   * no puede dar «disponible ahora» al centro.
-   *
-   * Filtra servicios pausados (`isActive = false`) y borrados: un
-   * proveedor sin catálogo activo devuelve `NULL` y acabará como `busy`.
-   */
-  async findScheduleBundlesForProviders(
-    providerIds: readonly string[],
-  ): Promise<ProfessionalScheduleBundle[]> {
-    if (providerIds.length === 0) return [];
-
-    // Los ids del schema Prisma son columnas `text`, no `uuid` nativo:
-    // el cast debe ser a `text[]` (un `::uuid[]` reventaría la query).
-    const rows = await prisma.$queryRaw<
-      {
-        professionalId: string;
-        providerId: string;
-        schedule: unknown;
-        bufferMinutes: number;
-        minServiceDurationMinutes: number | null;
-      }[]
-    >`
-      SELECT
-        pr.id AS "professionalId",
-        pr."providerId",
-        pr.schedule,
-        pr."bufferMinutes",
-        (
-          SELECT MIN(s."durationMinutes")
-          FROM services s
-          JOIN service_professionals sp ON sp."serviceId" = s.id
-          WHERE sp."professionalId" = pr.id
-            AND s."providerId" = pr."providerId"
-            AND s."isActive" = true
-            AND s."deletedAt" IS NULL
-        )::int AS "minServiceDurationMinutes"
-      FROM professionals pr
-      WHERE pr."providerId" = ANY(${providerIds as string[]}::text[])
-        AND pr."deletedAt" IS NULL
-    `;
-
-    return rows;
   },
 
   /**

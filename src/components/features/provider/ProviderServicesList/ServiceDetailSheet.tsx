@@ -7,7 +7,7 @@ import { Dialog } from 'radix-ui';
 import { Link } from '@/i18n/navigation';
 import { pickLocalized } from '@/lib/i18n';
 
-import { formatPriceCents } from './ProviderServicesList.logic';
+import { formatPriceCents, getSoleProfessionalName } from './ProviderServicesList.logic';
 import { serviceDetailSheetStyles as s } from './ServiceDetailSheet.styles';
 import type { ServiceDetailSheetProps } from './ProviderServicesList.types';
 
@@ -86,7 +86,9 @@ export function ServiceDetailSheet({
                   <User className={s.metaIcon} aria-hidden />
                   <div className={s.metaBody}>
                     <span className={s.metaLabel}>{t('professionalLabel')}</span>
-                    <span className={s.metaValue}>{t('anyProfessional')}</span>
+                    <span className={s.metaValue}>
+                      {getSoleProfessionalName(service) ?? t('anyProfessional')}
+                    </span>
                   </div>
                 </div>
               </div>

@@ -128,6 +128,30 @@ describe('getPanelWeekBookings', () => {
     expect(booking.clientName).toBe('anon@example.com');
     expect(booking.professionalName).toBeNull();
   });
+
+  it('expone el profesional de cada reserva', async () => {
+    mockedFindMany.mockResolvedValueOnce([bookingRecord({ professionalId: 'pro-ana' })] as never);
+
+    const [booking] = await getPanelWeekBookings('prov-1', NOW_WINTER, 'es');
+
+    expect(booking.professionalId).toBe('pro-ana');
+    expect(booking.professionalName).toBe('Marina');
+  });
+
+  it('filtra por profesional en la query, sin soltar el providerId', async () => {
+    mockedFindMany.mockResolvedValue([] as never);
+
+    await getPanelWeekBookings('prov-1', NOW_WINTER, 'es', NOW_WINTER, 'pro-luis');
+    const filtered = mockedFindMany.mock.calls[0]?.[0] as {
+      where: { providerId: string; professionalId?: string };
+    };
+    expect(filtered.where.providerId).toBe('prov-1');
+    expect(filtered.where.professionalId).toBe('pro-luis');
+
+    await getPanelWeekBookings('prov-1', NOW_WINTER, 'es', NOW_WINTER, null);
+    const all = mockedFindMany.mock.calls[1]?.[0] as { where: Record<string, unknown> };
+    expect(all.where).not.toHaveProperty('professionalId');
+  });
 });
 
 describe('toPreviewBookingActions', () => {

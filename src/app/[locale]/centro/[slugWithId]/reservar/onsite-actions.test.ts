@@ -39,6 +39,9 @@ vi.mock('@/lib/services/checkout', () => ({
   getBookingForConfirmation: mocks.getBookingForConfirmation,
   getPaymentOptions: mocks.getPaymentOptions,
 }));
+vi.mock('@/lib/services/providers', () => ({
+  getBookedProfessional: vi.fn(async () => ({ id: 'pro-9', name: 'Ana' })),
+}));
 vi.mock('@/lib/services/notifications', () => ({
   notifyBookingConfirmed: mocks.notifyBookingConfirmed,
   scheduleNotification: mocks.scheduleNotification,
@@ -189,6 +192,32 @@ describe('createOnsiteBookingAction', () => {
 
     expect(result).toMatchObject({ ok: false, code: 'ONSITE_NOT_ALLOWED', reason });
     expect(mocks.cancelBookingByClientWithRefund).not.toHaveBeenCalled();
+  });
+
+  it('devuelve el profesional asignado («cualquiera») o el elegido', async () => {
+    expect(await createOnsiteBookingAction(INPUT)).toMatchObject({
+      ok: true,
+      professionalId: 'pro-9',
+    });
+    expect(await createOnsiteBookingAction({ ...INPUT, professionalId: 'pro-2' })).toMatchObject({
+      ok: true,
+      professionalId: 'pro-2',
+    });
+    expect(mocks.createOnsiteBooking).toHaveBeenLastCalledWith(
+      expect.objectContaining({ professionalId: 'pro-2' }),
+      'user-1',
+      expect.any(Date),
+      {},
+    );
+  });
+
+  it('profesional elegido que ya no presta el servicio → PROFESSIONAL_UNAVAILABLE', async () => {
+    const { ProfessionalNotResolvedError } = await import('@/lib/services/checkout');
+    mocks.createOnsiteBooking.mockRejectedValue(new ProfessionalNotResolvedError());
+    expect(await createOnsiteBookingAction({ ...INPUT, professionalId: 'pro-2' })).toEqual({
+      ok: false,
+      code: 'PROFESSIONAL_UNAVAILABLE',
+    });
   });
 
   it('hueco ocupado → SLOT_UNAVAILABLE', async () => {

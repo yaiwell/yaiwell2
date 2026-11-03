@@ -1,6 +1,14 @@
 'use client';
 
-import { CalendarDays, LayoutDashboard, Scissors, Settings, Star, UserRound } from 'lucide-react';
+import {
+  CalendarDays,
+  LayoutDashboard,
+  Scissors,
+  Settings,
+  Star,
+  UserRound,
+  Users,
+} from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { switchUiModeAction } from '@/app/[locale]/cuenta/ui-mode.actions';
@@ -17,6 +25,7 @@ const navItems: PanelNavItem[] = [
   { href: '/panel', labelKey: 'dashboard', icon: LayoutDashboard },
   { href: '/panel/calendario', labelKey: 'calendar', icon: CalendarDays },
   { href: '/panel/servicios', labelKey: 'services', icon: Scissors },
+  { href: '/panel/equipo', labelKey: 'team', icon: Users },
   { href: '/panel/centro', labelKey: 'settings', icon: Settings },
   { href: '/panel/valoraciones', labelKey: 'reviews', icon: Star },
 ];

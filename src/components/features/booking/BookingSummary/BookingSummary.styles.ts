@@ -18,6 +18,8 @@ export const bookingSummaryStyles = {
   row: 'flex items-start justify-between gap-4',
   rowLabel: 'text-xs font-medium uppercase tracking-wide text-muted-foreground',
   rowValue: 'text-sm text-foreground text-right',
+  // Profesional: avatar pequeño + nombre, alineado como el resto de valores.
+  rowValueWithAvatar: 'flex items-center justify-end gap-2 text-sm text-foreground',
   rowValueStrong: 'text-sm font-semibold text-foreground text-right',
   // Aclaración bajo el precio previsto de un hueco con descuento.
   priceHint: 'mt-1 block text-xs font-normal text-muted-foreground text-right',

@@ -5,10 +5,12 @@ import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks';
 import { getMadridDayRange, getMadridWeekRange, getWeekDateKeys } from '@/lib/utils/madrid-week';
 
 import { timeInMadrid, type PanelWeekday } from './panel-madrid-time';
+import { filterByProfessional } from './panel-professional-filter';
 
 /** Bloqueo tal y como lo devuelve el repositorio del dominio. */
 interface ScheduleBlockRecord {
   id: string;
+  professionalId?: string | null;
   startAt: Date;
   endAt: Date;
   reason: string | null;
@@ -26,10 +28,12 @@ interface ScheduleBlockRecord {
  *
  * @param block — bloqueo completo (puede empezar o acabar fuera de la semana).
  * @param dateKeys — los 7 días (`YYYY-MM-DD`) de la semana, de lunes a domingo.
+ * @param professionalName — nombre del profesional bloqueado, si se conoce.
  */
 export function splitScheduleBlockByMadridDay(
   block: ScheduleBlockRecord,
   dateKeys: string[],
+  professionalName: string | null = null,
 ): PanelScheduleBlock[] {
   const segments: PanelScheduleBlock[] = [];
 
@@ -48,6 +52,8 @@ export function splitScheduleBlockByMadridDay(
       startTime: startsAtMidnight ? '00:00' : timeInMadrid(start),
       endTime: endsAtMidnight ? '24:00' : timeInMadrid(end),
       reason: block.reason,
+      professionalId: block.professionalId ?? null,
+      professionalName,
       startAtIso: block.startAt.toISOString(),
       endAtIso: block.endAt.toISOString(),
       isFullDay: startsAtMidnight && endsAtMidnight,
@@ -66,16 +72,25 @@ export function splitScheduleBlockByMadridDay(
  *
  * @param providerId — Provider del usuario autenticado.
  * @param weekStartKey — lunes de la semana (`YYYY-MM-DD`).
+ * @param professionalId — filtro `?pro=` ya validado; `null` = todos.
  * @returns un tramo por bloqueo y día, en el orden del repositorio.
  */
 export async function getPanelWeekScheduleBlocks(
   providerId: string,
   weekStartKey: string,
+  professionalId: string | null = null,
 ): Promise<PanelScheduleBlock[]> {
   const { start, end } = getMadridWeekRange(weekStartKey);
-  const blocks = await scheduleBlocksRepository.findForProviderRange(providerId, start, end);
+  const found = await scheduleBlocksRepository.findForProviderRange(providerId, start, end);
+  const blocks = filterByProfessional(found, professionalId);
   if (blocks.length === 0) return [];
 
+  // El nombre sale del equipo activo: el bloqueo de alguien ya de baja
+  // se sigue pintando, sin nombre.
+  const team = await scheduleBlocksRepository.findActiveProfessionals(providerId);
+  const names = new Map(team.map((member) => [member.id, member.name]));
   const dateKeys = getWeekDateKeys(weekStartKey);
-  return blocks.flatMap((block) => splitScheduleBlockByMadridDay(block, dateKeys));
+  return blocks.flatMap((block) =>
+    splitScheduleBlockByMadridDay(block, dateKeys, names.get(block.professionalId) ?? null),
+  );
 }

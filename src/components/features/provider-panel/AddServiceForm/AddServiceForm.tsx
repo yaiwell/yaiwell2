@@ -6,13 +6,19 @@ import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Link } from '@/i18n/navigation';
 import type { AppLocale } from '@/i18n/routing';
-import { pickLocalized } from '@/lib/i18n';
 
 import { PlanLimitNotice } from '../PlanLimitNotice';
 
-import { useAddServiceForm, useAddServiceSubmit } from './AddServiceForm.logic';
+import {
+  useAddServiceForm,
+  useAddServiceSubmit,
+  useTranslateServiceError,
+} from './AddServiceForm.logic';
 import { addServiceFormStyles as s } from './AddServiceForm.styles';
+import { useServiceProfessionals } from './AddServiceForm.team';
 import type { AddServiceFormProps } from './AddServiceForm.types';
+import { ServiceCategoryFields } from './ServiceCategoryFields';
+import { ServiceProfessionalsField } from './ServiceProfessionalsField';
 
 /**
  * Formulario de alta de servicio con cascada categoría → tipo → subtipo.
@@ -31,8 +37,12 @@ export function AddServiceForm({
   serviceId,
   initialValues,
   planLimitReached: initialPlanLimitReached,
+  professionals = [],
+  initialProfessionalIds,
 }: AddServiceFormProps) {
   const t = useTranslations('providerPanel.addService');
+  const translateError = useTranslateServiceError();
+  const team = useServiceProfessionals(professionals, initialProfessionalIds);
   const {
     draft,
     rootOptions,
@@ -54,8 +64,10 @@ export function AddServiceForm({
     locale: locale as AppLocale,
     serviceId,
     draft,
-    translateError: (code) => t(`errors.${code}`),
+    translateError,
     initialPlanLimitReached,
+    professionalIds: team.professionalIds,
+    professionalsEmptyMessage: team.emptyMessage,
   });
 
   return (
@@ -70,82 +82,16 @@ export function AddServiceForm({
         <p className={s.subtitle}>{isEditing ? t('editSubtitle') : t('subtitle')}</p>
       </header>
 
-      <section className={s.card} data-component="add-service-category-card">
-        <header>
-          <h2 className={s.cardTitle}>{t('categoryStep.title')}</h2>
-          <p className={s.cardSubtitle}>{t('categoryStep.subtitle')}</p>
-        </header>
-
-        <div className={s.fieldGrid}>
-          <div className={s.field}>
-            <label className={s.label} htmlFor="add-service-root">
-              {t('categoryStep.rootLabel')}
-            </label>
-            <select
-              id="add-service-root"
-              className={s.select}
-              value={draft.rootCategoryId ?? ''}
-              onChange={(e) => selectRoot(e.target.value)}
-              data-component="add-service-select-root"
-            >
-              <option value="">{t('categoryStep.rootPlaceholder')}</option>
-              {rootOptions.map((root) => (
-                <option key={root.id} value={root.id}>
-                  {pickLocalized(root.name, locale)}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={s.field}>
-            <label className={s.label} htmlFor="add-service-type">
-              {t('categoryStep.typeLabel')}
-            </label>
-            <select
-              id="add-service-type"
-              className={s.select}
-              value={draft.typeId ?? ''}
-              onChange={(e) => selectType(e.target.value)}
-              disabled={!draft.rootCategoryId}
-              data-component="add-service-select-type"
-            >
-              <option value="">{t('categoryStep.typePlaceholder')}</option>
-              {typeOptions.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {pickLocalized(type.name, locale)}
-                </option>
-              ))}
-            </select>
-            {!draft.rootCategoryId && (
-              <span className={s.hint}>{t('categoryStep.hintAfterRoot')}</span>
-            )}
-          </div>
-
-          <div className={s.field}>
-            <label className={s.label} htmlFor="add-service-subtype">
-              {t('categoryStep.subtypeLabel')}
-            </label>
-            <select
-              id="add-service-subtype"
-              className={s.select}
-              value={draft.subtypeId ?? ''}
-              onChange={(e) => selectSubtype(e.target.value)}
-              disabled={!draft.typeId}
-              data-component="add-service-select-subtype"
-            >
-              <option value="">{t('categoryStep.subtypePlaceholder')}</option>
-              {subtypeOptions.map((subtype) => (
-                <option key={subtype.id} value={subtype.id}>
-                  {pickLocalized(subtype.name, locale)}
-                </option>
-              ))}
-            </select>
-            {!draft.typeId && draft.rootCategoryId && (
-              <span className={s.hint}>{t('categoryStep.hintAfterType')}</span>
-            )}
-          </div>
-        </div>
-      </section>
+      <ServiceCategoryFields
+        locale={locale}
+        draft={draft}
+        rootOptions={rootOptions}
+        typeOptions={typeOptions}
+        subtypeOptions={subtypeOptions}
+        onSelectRoot={selectRoot}
+        onSelectType={selectType}
+        onSelectSubtype={selectSubtype}
+      />
 
       <section className={s.card} data-component="add-service-details-card">
         <header>
@@ -215,6 +161,15 @@ export function AddServiceForm({
             />
           </div>
         </div>
+
+        {team.enabled ? (
+          <ServiceProfessionalsField
+            options={professionals}
+            selected={team.selected}
+            onToggle={team.toggle}
+            disabled={isPending}
+          />
+        ) : null}
       </section>
 
       {planLimitReached ? <PlanLimitNotice /> : null}

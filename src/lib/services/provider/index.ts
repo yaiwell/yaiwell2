@@ -20,6 +20,7 @@ export type { GeolocatedAddress } from './provider.address';
 
 export {
   ProviderHasNoProfessionalError,
+  ProviderHasTeamError,
   ProviderLocationRequiredError,
   ProviderNotFoundError,
   ProviderValidationError,

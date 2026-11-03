@@ -27,6 +27,21 @@ export interface SlotPickerProps {
    * abre en su día y, si sigue libre, queda seleccionado.
    */
   initialSlotIso?: string | null;
+  /**
+   * Profesional elegido (CLAUDE.md §4.bis «Equipo»); `null`/ausente pide
+   * la unión de huecos del equipo («cualquiera disponible»).
+   */
+  professionalId?: string | null;
+  /**
+   * La hora elegida ya no está en la agenda consultada (p. ej. tras
+   * cambiar de profesional): el flujo debe limpiarla.
+   */
+  onSelectionGone?: () => void;
+  /**
+   * Con profesional elegido, el 404 significa «ese profesional ya no
+   * presta el servicio»: se ofrece volver a «cualquiera».
+   */
+  onResetProfessional?: () => void;
 }
 
 /**

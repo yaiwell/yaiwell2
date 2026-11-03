@@ -41,6 +41,8 @@ export interface PanelBooking {
   endTime: string;
   clientName: string;
   serviceName: string;
+  /** Profesional de ejemplo (para enseñar el filtro y los carriles). */
+  professionalId?: string | null;
   professionalName: string | null;
   status: PanelBookingStatus;
   priceCents: number;
@@ -60,6 +62,8 @@ export interface PositionedRow {
   /** Altura del bloque en píxeles, según la duración. */
   heightPx: number;
   priceLabel: string;
+  /** Carril dentro de la columna si se solapa con otros elementos. */
+  lane?: LaneSlot;
 }
 
 /**
@@ -75,6 +79,8 @@ export interface PanelSlotOffer {
   startTime: string;
   endTime: string;
   serviceName: string;
+  /** Profesional cuyo hueco es (filtro por profesional del calendario). */
+  professionalId?: string | null;
   professionalName: string | null;
   discounts: SlotOfferDiscounts;
   /** % que se aplicaría a quien reserve ahora (0 si el tramo vigente no rebaja). */
@@ -90,14 +96,14 @@ export interface PositionedOffer {
   offer: PanelSlotOffer;
   topPx: number;
   heightPx: number;
-  /**
-   * Si pisa un bloque de reserva (la cancelada de la que nace, por
-   * ejemplo), se pinta en la mitad derecha para que ambos sigan
-   * siendo visibles y tocables.
-   */
-  compact: boolean;
   priceLabel: string;
   currentPriceLabel: string;
+  /**
+   * Carril dentro de la columna: si pisa una reserva (la cancelada de la
+   * que nace, por ejemplo) u otro elemento, se pintan uno al lado del
+   * otro para que todos sigan visibles y tocables.
+   */
+  lane?: LaneSlot;
 }
 
 /**
@@ -118,6 +124,9 @@ export interface PanelScheduleBlock {
   /** Fin del tramo en el día (`HH:mm`, `24:00` si sigue al día siguiente). */
   endTime: string;
   reason: string | null;
+  /** Profesional bloqueado (cada bloqueo es de un profesional). */
+  professionalId?: string | null;
+  professionalName?: string | null;
   /** Inicio del bloqueo completo en ISO-8601 UTC; `null` en el modo preview. */
   startAtIso: string | null;
   /** Fin del bloqueo completo en ISO-8601 UTC; `null` en el modo preview. */
@@ -131,6 +140,22 @@ export interface PositionedScheduleBlock {
   block: PanelScheduleBlock;
   topPx: number;
   heightPx: number;
+  lane?: LaneSlot;
+}
+
+/**
+ * Carril de un elemento dentro de su columna de día: `lane` empieza en
+ * 0 y `laneCount` es cuántos carriles necesita su grupo de solapes.
+ */
+export interface LaneSlot {
+  lane: number;
+  laneCount: number;
+}
+
+/** Profesional activo del negocio, para el filtro y el diálogo de bloqueo. */
+export interface PanelTeamMember {
+  id: string;
+  name: string;
 }
 
 /** Cabecera de un día de la semana mostrada. */
@@ -147,6 +172,8 @@ export interface CalendarDay {
  * clave de su lunes, que es lo que viaja en `?semana=`.
  */
 export interface CalendarWeekNav {
+  /** Lunes de la semana mostrada (`YYYY-MM-DD`). */
+  weekKey: string;
   startLabel: string;
   endLabel: string;
   previousWeek: string;
@@ -174,6 +201,10 @@ export interface WeeklyCalendarProps {
   readOnly: boolean;
   /** Momento de referencia para la ventana de 2 h (inyectable en tests). */
   now?: Date;
+  /** Equipo activo; con más de un profesional se enseña el filtro. */
+  team?: PanelTeamMember[];
+  /** Profesional del filtro `?pro=`; `null` = todos. */
+  selectedProfessionalId?: string | null;
 }
 
 /** Props compartidas por las vistas que pintan columnas de día. */
@@ -185,6 +216,8 @@ export interface CalendarColumnsProps {
   hours: number[];
   locale: SupportedLocale;
   readOnly: boolean;
+  /** Pinta el nombre del profesional en cada bloque (vista «Todos»). */
+  showProfessional: boolean;
 }
 
 /**

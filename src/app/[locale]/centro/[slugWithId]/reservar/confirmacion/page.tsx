@@ -7,7 +7,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { BookingConfirmation } from '@/components/features/booking/BookingConfirmation';
 import { routing, type AppLocale } from '@/i18n/routing';
 import { getBookingForConfirmation } from '@/lib/services/checkout';
-import { getProviderDetail } from '@/lib/services/providers';
+import { getBookedProfessional, getProviderDetail } from '@/lib/services/providers';
 import { ensureUserFromClerk } from '@/lib/services/user';
 import { isBookingPaymentSettled } from '@/lib/utils/booking-payment-status';
 import { parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
@@ -78,7 +78,12 @@ export default async function BookingConfirmationPage({
     notFound();
   }
 
-  const detail = await getProviderDetail(providerId);
+  // Quién atenderá: el de la reserva (con «cualquiera», el que asignó el
+  // servidor). Misma comprobación de titularidad que la reserva.
+  const [detail, professional] = await Promise.all([
+    getProviderDetail(providerId),
+    getBookedProfessional(booking.id, user.id),
+  ]);
   const service = detail?.services.find((s) => s.id === booking.serviceId);
   if (!detail || !service) {
     notFound();
@@ -104,6 +109,7 @@ export default async function BookingConfirmationPage({
         // está liquidado, el copy lo dice en lugar de prometer una
         // confirmación falsa. Mismo criterio que el camino sin 3DS.
         paymentPending={!isBookingPaymentSettled(booking.status)}
+        professional={professional}
       />
     </section>
   );

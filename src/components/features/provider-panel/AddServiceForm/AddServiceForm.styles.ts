@@ -28,6 +28,14 @@ export const addServiceFormStyles = {
   textarea:
     'min-h-[120px] w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground transition-colors focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30',
 
+  // Selector «Quién lo presta».
+  professionals: 'flex flex-col gap-2 border-0 p-0',
+  professionalsList: 'flex flex-col gap-2 sm:flex-row sm:flex-wrap',
+  professionalOption:
+    'flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-border bg-background px-3 text-sm text-foreground has-[:checked]:border-primary has-[:checked]:bg-primary/5',
+  checkbox: 'size-4 accent-primary',
+  outOfPlanBadge: 'rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium text-muted-foreground',
+
   actions: 'flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:justify-end',
   notice:
     'rounded-2xl border border-dashed border-border bg-muted/40 p-3 text-xs text-muted-foreground',

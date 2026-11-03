@@ -321,6 +321,10 @@
       "title": "Centro no encontrado",
       "subtitle": "Es posible que ya no esté disponible o que el enlace sea incorrecto.",
       "backToSearch": "Volver a la búsqueda"
+    },
+    "team": {
+      "title": "El equipo",
+      "subtitle": "Las personas que te atenderán."
     }
   },
   "ratingSummary": {
@@ -339,7 +343,8 @@
       "addService": "Añadir servicio",
       "providerLabel": "Negocio activo",
       "sidebarNavLabel": "Navegación del panel",
-      "bottomNavLabel": "Accesos rápidos del panel"
+      "bottomNavLabel": "Accesos rápidos del panel",
+      "team": "Equipo"
     },
     "preview": {
       "show": "Ver con datos de ejemplo",
@@ -603,12 +608,17 @@
           "reason": "Motivo (opcional)",
           "reasonPlaceholder": "Vacaciones, formación, médico…",
           "reasonHint": "Solo lo ves tú.",
-          "reasonCounter": "{count}/{max}"
+          "reasonCounter": "{count}/{max}",
+          "professional": "Profesional",
+          "professionalPlaceholder": "Elige a quién bloqueas",
+          "professionalHint": "«Todo el equipo» bloquea esas horas a cada profesional.",
+          "allTeam": "Todo el equipo"
         },
         "issues": {
           "required": "Indica la fecha y la hora de inicio y de fin.",
           "step": "Las horas van en pasos de 5 minutos (10:00, 10:05, 10:10…).",
-          "endBeforeStart": "El final tiene que ser posterior al inicio."
+          "endBeforeStart": "El final tiene que ser posterior al inicio.",
+          "professional": "Elige un profesional o «Todo el equipo»."
         },
         "created": {
           "title": "Horas bloqueadas",
@@ -648,9 +658,15 @@
           "conflictHint": "Cancélalas antes desde el calendario o elige otro rango.",
           "notFound": "No encontramos tu negocio. Recarga la página.",
           "forbidden": "No tienes permiso para bloquear horas en este negocio.",
-          "internal": "No hemos podido bloquear las horas. Inténtalo de nuevo."
+          "internal": "No hemos podido bloquear las horas. Inténtalo de nuevo.",
+          "professionalRequired": "Elige a qué profesional bloqueas o marca «Todo el equipo»."
         }
-      }
+      },
+      "filter": {
+        "region": "Filtrar por profesional",
+        "all": "Todos"
+      },
+      "withProfessional": "{label} · {professional}"
     },
     "services": {
       "title": "Servicios ofrecidos",
@@ -686,6 +702,13 @@
         "hiddenBadge": "Oculto por tu plan",
         "reached": "Has llegado al máximo de servicios publicados de tu plan. Mejora tu plan para publicar más.",
         "upgradeCta": "Mejora tu plan"
+      },
+      "form": {
+        "professionalsLabel": "Quién lo presta",
+        "professionalsHelp": "Marca a quién de tu equipo se puede reservar este servicio.",
+        "professionalsRequired": "Elige al menos a un profesional.",
+        "professionalsInvalid": "Alguno de los profesionales elegidos ya no está en tu equipo. Recarga la página y vuelve a elegir.",
+        "professionalsOutOfPlan": "Fuera de tu plan"
       }
     },
     "addService": {
@@ -1014,6 +1037,83 @@
           "generic": "No se ha podido guardar. Inténtalo de nuevo en unos minutos."
         }
       }
+    },
+    "team": {
+      "title": "Equipo",
+      "subtitle": "Quién atiende en tu negocio, con su horario y sus servicios.",
+      "addCta": "Añadir profesional",
+      "counter": "{active} de {max} profesionales de tu plan",
+      "counterUnlimited": "{active} profesionales · Sin límite",
+      "upgradeCta": "Mejora tu plan",
+      "limitReached": "Has llegado al máximo de profesionales de tu plan.",
+      "outOfPlanNotice": "Hay profesionales fuera de tu plan: no aceptan reservas nuevas hasta que lo mejores.",
+      "unstaffedTitle": "Servicios que no se pueden reservar",
+      "unstaffedDescription": "Nadie de tu equipo con reservas abiertas presta estos servicios. Asígnaselos a alguien o mejora tu plan.",
+      "empty": "Aún no hay nadie en tu equipo.",
+      "serviceCount": "{count, plural, =0 {Sin servicios} one {# servicio} other {# servicios}}",
+      "status": {
+        "active": "Activo",
+        "outOfPlan": "Fuera de tu plan",
+        "inactive": "De baja"
+      },
+      "edit": "Editar",
+      "form": {
+        "newTitle": "Nuevo profesional",
+        "newSubtitle": "Su perfil, su horario y los servicios que presta.",
+        "editTitle": "Editar profesional",
+        "back": "Volver al equipo",
+        "profileTitle": "Perfil",
+        "nameLabel": "Nombre",
+        "namePlaceholder": "Ej. Laura",
+        "bioLabel": "Presentación (opcional)",
+        "bioPlaceholder": "Especialidades, experiencia…",
+        "bioCounter": "{count}/{max}",
+        "photoLabel": "Foto (opcional)",
+        "photoHelp": "Sale en tu ficha junto a su nombre.",
+        "scheduleTitle": "Horario",
+        "scheduleSubtitle": "Cuándo acepta reservas. Puedes añadir varios tramos por día.",
+        "servicesTitle": "Servicios que presta",
+        "servicesSubtitle": "Solo recibirá reservas de los servicios que marques.",
+        "servicesEmpty": "Aún no tienes servicios. Podrás asignárselos al crearlos.",
+        "submitCreate": "Añadir al equipo",
+        "submitSave": "Guardar cambios",
+        "saving": "Guardando…",
+        "saved": "Cambios guardados.",
+        "inactiveNotice": "Está de baja. Reactívalo para editarlo y para que vuelva a aceptar reservas.",
+        "outOfPlanNotice": "Fuera de tu plan: no acepta reservas nuevas hasta que mejores el plan."
+      },
+      "errors": {
+        "VALIDATION": "Revisa los campos: el nombre es obligatorio y la presentación admite hasta 300 caracteres.",
+        "NOT_FOUND": "Este profesional ya no está en tu equipo. Recarga la página.",
+        "INACTIVE": "Está de baja. Reactívalo antes de editarlo.",
+        "PHOTO_INVALID": "No hemos podido usar esa foto. Súbela de nuevo.",
+        "SERVICES_INVALID": "Alguno de los servicios ya no existe. Recarga la página y vuelve a elegir.",
+        "PLAN_LIMIT": "Has llegado al máximo de profesionales de tu plan. Mejora tu plan para añadir más.",
+        "HAS_FUTURE_BOOKINGS": "Tiene citas pendientes. Cancélalas antes de darlo de baja.",
+        "LAST_ACTIVE": "Tu negocio necesita al menos un profesional activo.",
+        "UNSTAFFED_SERVICES": "Algunos servicios se quedarían sin nadie que los preste. Asígnaselos a otra persona o pausa esos servicios.",
+        "INTERNAL": "No hemos podido guardar los cambios. Inténtalo de nuevo en unos segundos."
+      },
+      "deactivate": {
+        "button": "Dar de baja",
+        "title": "¿Dar de baja a {name}?",
+        "description": "Dejará de salir en tu ficha y no recibirá reservas nuevas. Su historial se conserva y puedes reactivarlo cuando quieras.",
+        "bookingsTitle": "Antes tienes que cancelar sus citas futuras:",
+        "bookingsHelp": "Cancélalas desde el calendario (el cliente recibe la devolución). Cuando no quede ninguna, podrás darlo de baja.",
+        "calendarLink": "Ir al calendario",
+        "unstaffedTitle": "Estos servicios se quedarían sin nadie:",
+        "confirm": "Dar de baja",
+        "cancel": "Cancelar",
+        "pending": "Dando de baja…"
+      },
+      "reactivate": {
+        "button": "Reactivar",
+        "pending": "Reactivando…"
+      },
+      "settingsLink": {
+        "description": "Cada profesional de tu equipo tiene su propio horario.",
+        "cta": "Horarios del equipo"
+      }
     }
   },
   "booking": {
@@ -1169,6 +1269,14 @@
         "payOnline": "Pagar online",
         "viewMyBookings": "Ver mis reservas"
       }
+    },
+    "professionalPicker": {
+      "legend": "¿Quién quieres que te atienda?",
+      "anyHint": "Con «Cualquier profesional disponible» ves los huecos de todo el equipo y te asignamos a quien esté libre.",
+      "unavailable": "Ese profesional ya no presta este servicio.",
+      "chooseAgain": "Elegir otro profesional",
+      "professionalGone": "El profesional que elegiste ya no presta este servicio. Hemos vuelto a «Cualquier profesional disponible»: elige hora para continuar.",
+      "assignedLabel": "Te atiende"
     }
   },
   "customerArea": {
@@ -1490,9 +1598,7 @@
       "eyebrow": "Servicio",
       "durationLabel": "Duración",
       "priceLabel": "Precio",
-      "professionalLabel": "Profesional asignado",
-      "anyProfessional": "Cualquier profesional disponible del centro",
-      "professionalPhotoAlt": "Foto de {name}"
+      "anyProfessional": "Cualquier profesional disponible del centro"
     },
     "description": {
       "title": "Sobre este servicio"
@@ -1511,6 +1617,10 @@
       "reserve": "Reservar",
       "fromPrice": "desde {price}",
       "secureNote": "Confirmación inmediata. Pago seguro."
+    },
+    "team": {
+      "title": "Quién lo presta",
+      "chooseHint": "Al reservar podrás elegir quién te atiende o dejar que te asignemos a quien esté libre."
     }
   },
   "forProviders": {

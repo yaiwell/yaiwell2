@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { InvalidScheduleError, ProfessionalNotFoundError } from './availability.errors';
+import { InvalidScheduleError, AvailabilityProfessionalNotFoundError } from './availability.errors';
 import { getAvailableSlots, isSlotAvailable } from './availability.service';
 import type { WeeklySchedule } from './availability.types';
 
@@ -254,7 +254,7 @@ describe('getAvailableSlots', () => {
     expect(slots).toEqual([]);
   });
 
-  it('lanza ProfessionalNotFoundError si el profesional no existe', async () => {
+  it('lanza AvailabilityProfessionalNotFoundError si el profesional no existe', async () => {
     mockedProfessionalFindFirst.mockResolvedValueOnce(null);
 
     await expect(
@@ -263,7 +263,7 @@ describe('getAvailableSlots', () => {
         date: MONDAY_UTC,
         serviceDurationMinutes: 60,
       }),
-    ).rejects.toBeInstanceOf(ProfessionalNotFoundError);
+    ).rejects.toBeInstanceOf(AvailabilityProfessionalNotFoundError);
   });
 
   it('lanza InvalidScheduleError si el JSON del horario no parsea', async () => {
@@ -329,11 +329,11 @@ describe('isSlotAvailable', () => {
     expect(result).toBe(false);
   });
 
-  it('lanza ProfessionalNotFoundError si el profesional no existe', async () => {
+  it('lanza AvailabilityProfessionalNotFoundError si el profesional no existe', async () => {
     mockedProfessionalFindFirst.mockResolvedValueOnce(null);
 
     await expect(
       isSlotAvailable(PROFESSIONAL_ID, new Date(Date.UTC(2026, 5, 1, 12, 0, 0, 0)), 60),
-    ).rejects.toBeInstanceOf(ProfessionalNotFoundError);
+    ).rejects.toBeInstanceOf(AvailabilityProfessionalNotFoundError);
   });
 });

@@ -13,12 +13,14 @@ import {
   type PanelBookingStatus,
 } from '@/components/features/provider-panel/WeeklyCalendar/WeeklyCalendar.types';
 
+import { FAKE_PANEL_PRO_MARINA, FAKE_PANEL_PRO_POL } from './panel-team';
+
 // Re-export para no romper imports antiguos.
 export type { PanelBooking, PanelBookingStatus };
 export { PANEL_CALENDAR_START_HOUR, PANEL_CALENDAR_END_HOUR };
 
 /**
- * 20 reservas distribuidas por la semana del proveedor activo.
+ * 21 reservas distribuidas por la semana del proveedor activo.
  *
  * Mezcla de servicios de la peluquería `Atelier Norte` (prov-01) para
  * dar verosimilitud. Algunas en estado `pending` o `cancelled` para que
@@ -33,6 +35,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '10:00',
     clientName: 'Marta R.',
     serviceName: 'Corte mujer',
+    professionalId: FAKE_PANEL_PRO_MARINA,
     professionalName: 'Marina',
     status: 'completed',
     priceCents: 5500,
@@ -44,6 +47,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '12:15',
     clientName: 'Joan M.',
     serviceName: 'Corte hombre',
+    professionalId: FAKE_PANEL_PRO_POL,
     professionalName: 'Pol',
     status: 'completed',
     priceCents: 3800,
@@ -55,9 +59,23 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '18:00',
     clientName: 'Núria P.',
     serviceName: 'Color completo',
+    professionalId: FAKE_PANEL_PRO_MARINA,
     professionalName: 'Marina',
     status: 'confirmed',
     priceCents: 9500,
+  },
+  {
+    // Coincide con la de Marina: en «Todos» se pintan lado a lado.
+    id: 'bk-121',
+    weekday: 0,
+    startTime: '16:30',
+    endTime: '17:15',
+    clientName: 'Guillem V.',
+    serviceName: 'Corte hombre',
+    professionalId: FAKE_PANEL_PRO_POL,
+    professionalName: 'Pol',
+    status: 'confirmed',
+    priceCents: 3800,
   },
 
   // Martes
@@ -68,6 +86,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '11:00',
     clientName: 'Laia B.',
     serviceName: 'Corte mujer',
+    professionalId: FAKE_PANEL_PRO_POL,
     professionalName: 'Pol',
     status: 'confirmed',
     priceCents: 5500,
@@ -79,6 +98,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '14:15',
     clientName: 'Carmen S.',
     serviceName: 'Peinado evento',
+    professionalId: FAKE_PANEL_PRO_MARINA,
     professionalName: 'Marina',
     status: 'confirmed',
     priceCents: 6500,
@@ -90,6 +110,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '18:30',
     clientName: 'Pol G.',
     serviceName: 'Corte mujer',
+    professionalId: FAKE_PANEL_PRO_POL,
     professionalName: 'Pol',
     status: 'pending',
     priceCents: 5500,
@@ -103,6 +124,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '10:30',
     clientName: 'Aitor F.',
     serviceName: 'Corte hombre',
+    professionalId: FAKE_PANEL_PRO_POL,
     professionalName: 'Pol',
     status: 'confirmed',
     priceCents: 3800,
@@ -114,6 +136,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '14:00',
     clientName: 'Helena V.',
     serviceName: 'Color completo',
+    professionalId: FAKE_PANEL_PRO_MARINA,
     professionalName: 'Marina',
     status: 'confirmed',
     priceCents: 9500,
@@ -125,6 +148,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '19:00',
     clientName: 'Berta A.',
     serviceName: 'Corte mujer',
+    professionalId: FAKE_PANEL_PRO_MARINA,
     professionalName: 'Marina',
     status: 'cancelled',
     priceCents: 5500,
@@ -138,6 +162,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '11:00',
     clientName: 'Marc D.',
     serviceName: 'Corte hombre',
+    professionalId: FAKE_PANEL_PRO_POL,
     professionalName: 'Pol',
     status: 'completed',
     priceCents: 3800,
@@ -149,6 +174,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '12:30',
     clientName: 'Anna G.',
     serviceName: 'Corte mujer',
+    professionalId: FAKE_PANEL_PRO_MARINA,
     professionalName: 'Marina',
     status: 'confirmed',
     priceCents: 5500,
@@ -160,6 +186,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '18:00',
     clientName: 'Roger P.',
     serviceName: 'Color completo',
+    professionalId: FAKE_PANEL_PRO_MARINA,
     professionalName: 'Marina',
     status: 'confirmed',
     priceCents: 9500,
@@ -171,6 +198,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '19:45',
     clientName: 'Ona C.',
     serviceName: 'Peinado evento',
+    professionalId: FAKE_PANEL_PRO_POL,
     professionalName: 'Pol',
     status: 'confirmed',
     priceCents: 6500,
@@ -184,6 +212,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '10:00',
     clientName: 'Xavi T.',
     serviceName: 'Corte hombre',
+    professionalId: FAKE_PANEL_PRO_POL,
     professionalName: 'Pol',
     status: 'confirmed',
     priceCents: 3800,
@@ -195,6 +224,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '12:00',
     clientName: 'Eulàlia O.',
     serviceName: 'Corte mujer',
+    professionalId: FAKE_PANEL_PRO_MARINA,
     professionalName: 'Marina',
     status: 'confirmed',
     priceCents: 5500,
@@ -206,6 +236,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '14:15',
     clientName: 'Núria S.',
     serviceName: 'Peinado evento',
+    professionalId: FAKE_PANEL_PRO_MARINA,
     professionalName: 'Marina',
     status: 'confirmed',
     priceCents: 6500,
@@ -217,6 +248,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '19:00',
     clientName: 'Sergi R.',
     serviceName: 'Color completo',
+    professionalId: FAKE_PANEL_PRO_MARINA,
     professionalName: 'Marina',
     status: 'pending',
     priceCents: 9500,
@@ -230,6 +262,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '11:00',
     clientName: 'Clàudia M.',
     serviceName: 'Corte mujer',
+    professionalId: FAKE_PANEL_PRO_MARINA,
     professionalName: 'Marina',
     status: 'confirmed',
     priceCents: 5500,
@@ -241,6 +274,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '12:15',
     clientName: 'Roberto N.',
     serviceName: 'Corte hombre',
+    professionalId: FAKE_PANEL_PRO_POL,
     professionalName: 'Pol',
     status: 'confirmed',
     priceCents: 3800,
@@ -252,6 +286,7 @@ export const fakePanelBookings: PanelBooking[] = [
     endTime: '14:00',
     clientName: 'Carla N.',
     serviceName: 'Corte mujer',
+    professionalId: FAKE_PANEL_PRO_MARINA,
     professionalName: 'Marina',
     status: 'confirmed',
     priceCents: 5500,

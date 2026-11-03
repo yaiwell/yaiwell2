@@ -7,7 +7,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
  */
 vi.mock('server-only', () => ({}));
 vi.mock('@/lib/services/schedule-blocks', () => ({
-  scheduleBlocksRepository: { findForProviderRange: vi.fn() },
+  scheduleBlocksRepository: { findForProviderRange: vi.fn(), findActiveProfessionals: vi.fn() },
 }));
 
 import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks';
@@ -15,11 +15,18 @@ import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks';
 import { getPanelWeekScheduleBlocks } from './panel-schedule-blocks.service';
 
 const mockedFind = vi.mocked(scheduleBlocksRepository.findForProviderRange);
+const mockedTeam = vi.mocked(scheduleBlocksRepository.findActiveProfessionals);
 
-function record(startAt: string, endAt: string, reason: string | null = null) {
+function record(
+  startAt: string,
+  endAt: string,
+  reason: string | null = null,
+  professionalId = 'pro-1',
+  id = 'blk-1',
+) {
   return {
-    id: 'blk-1',
-    professionalId: 'pro-1',
+    id,
+    professionalId,
     startAt: new Date(startAt),
     endAt: new Date(endAt),
     reason,
@@ -29,6 +36,11 @@ function record(startAt: string, endAt: string, reason: string | null = null) {
 describe('getPanelWeekScheduleBlocks', () => {
   beforeEach(() => {
     mockedFind.mockReset();
+    mockedTeam.mockReset();
+    mockedTeam.mockResolvedValue([
+      { id: 'pro-1', name: 'Ana' },
+      { id: 'pro-2', name: 'Luis' },
+    ]);
   });
 
   it('consulta la semana de Madrid del lunes dado', async () => {
@@ -55,6 +67,8 @@ describe('getPanelWeekScheduleBlocks', () => {
       startTime: '13:00',
       endTime: '15:30',
       reason: 'Médico',
+      professionalId: 'pro-1',
+      professionalName: 'Ana',
       startAtIso: '2026-01-14T12:00:00.000Z',
       endAtIso: '2026-01-14T14:30:00.000Z',
       isFullDay: false,
@@ -109,5 +123,32 @@ describe('getPanelWeekScheduleBlocks', () => {
     expect(segments.map((s) => [s.weekday, s.startTime, s.endTime])).toEqual([
       [6, '10:00', '12:00'],
     ]);
+  });
+
+  it('filtra por profesional y pone el nombre de cada uno', async () => {
+    mockedFind.mockResolvedValue([
+      record('2026-01-14T12:00:00.000Z', '2026-01-14T13:00:00.000Z', null, 'pro-1', 'blk-1'),
+      record('2026-01-14T12:00:00.000Z', '2026-01-14T13:00:00.000Z', null, 'pro-2', 'blk-2'),
+      // De alguien ya de baja: se pinta, sin nombre.
+      record('2026-01-15T12:00:00.000Z', '2026-01-15T13:00:00.000Z', null, 'pro-old', 'blk-3'),
+    ]);
+
+    const all = await getPanelWeekScheduleBlocks('prov-1', '2026-01-12');
+    expect(all.map((b) => [b.id, b.professionalId, b.professionalName])).toEqual([
+      ['blk-1', 'pro-1', 'Ana'],
+      ['blk-2', 'pro-2', 'Luis'],
+      ['blk-3', 'pro-old', null],
+    ]);
+
+    const onlyLuis = await getPanelWeekScheduleBlocks('prov-1', '2026-01-12', 'pro-2');
+    expect(onlyLuis.map((b) => b.id)).toEqual(['blk-2']);
+  });
+
+  it('con el filtro y sin bloqueos suyos no consulta el equipo', async () => {
+    mockedFind.mockResolvedValueOnce([
+      record('2026-01-14T12:00:00.000Z', '2026-01-14T13:00:00.000Z', null, 'pro-1'),
+    ]);
+    await expect(getPanelWeekScheduleBlocks('prov-1', '2026-01-12', 'pro-2')).resolves.toEqual([]);
+    expect(mockedTeam).not.toHaveBeenCalled();
   });
 });

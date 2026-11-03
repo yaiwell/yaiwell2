@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { NextIntlClientProvider } from 'next-intl';
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { categoriesHierarchy } from '@/lib/fake-data/categories-hierarchy';
 
@@ -9,12 +9,25 @@ import { AddServiceForm } from './AddServiceForm';
 
 // Mock de la server action — el módulo importa `auth` de @clerk/nextjs/server
 // y otros símbolos `server-only` que romperían el render en happy-dom.
+const { createServiceMock } = vi.hoisted(() => ({
+  createServiceMock: vi.fn(async (..._args: unknown[]) => ({ ok: true as const })),
+}));
+
 vi.mock('@/app/[locale]/panel/servicios/nuevo/actions', () => ({
-  createServiceAction: vi.fn(async () => ({ ok: true as const })),
+  createServiceAction: createServiceMock,
 }));
 
 const messages = {
   providerPanel: {
+    services: {
+      form: {
+        professionalsLabel: 'Quién lo presta',
+        professionalsHelp: 'Marca a quién se puede reservar.',
+        professionalsRequired: 'Elige al menos a un profesional.',
+        professionalsInvalid: 'Alguno ya no está en tu equipo.',
+        professionalsOutOfPlan: 'Fuera de tu plan',
+      },
+    },
     addService: {
       title: 'Añadir servicio',
       subtitle: 'Define un nuevo servicio.',
@@ -112,5 +125,72 @@ describe('AddServiceForm', () => {
     const subtypeSelect = screen.getByLabelText('Subtipo') as HTMLSelectElement;
     expect(subtypeSelect).not.toBeDisabled();
     expect(screen.getByRole('option', { name: 'Corte' })).toBeInTheDocument();
+  });
+});
+
+describe('AddServiceForm — «Quién lo presta»', () => {
+  const TEAM = [
+    { id: 'pro-a', name: 'Ana', outOfPlan: false },
+    { id: 'pro-b', name: 'Bea', outOfPlan: true },
+  ];
+
+  beforeEach(() => {
+    createServiceMock.mockClear();
+  });
+
+  /** Rellena lo mínimo para que el envío llegue a la action. */
+  async function fillAndSubmit(user: ReturnType<typeof userEvent.setup>) {
+    await user.selectOptions(screen.getByLabelText('Categoría'), 'cat-beauty');
+    await user.type(screen.getByLabelText('Nombre'), 'Corte');
+    await user.type(screen.getByLabelText('Duración (minutos)'), '30');
+    await user.type(screen.getByLabelText('Precio (€)'), '20');
+    await user.click(screen.getByRole('button', { name: 'Publicar servicio' }));
+  }
+
+  function renderWithTeam(professionals = TEAM) {
+    return render(
+      <NextIntlClientProvider locale="es" messages={messages}>
+        <AddServiceForm
+          locale="es"
+          categoriesTree={categoriesHierarchy}
+          professionals={professionals}
+        />
+      </NextIntlClientProvider>,
+    );
+  }
+
+  it('no aparece con un solo profesional y no envía professionalIds', async () => {
+    const user = userEvent.setup();
+    renderWithTeam([TEAM[0]!]);
+
+    expect(screen.queryByText('Quién lo presta')).not.toBeInTheDocument();
+    await fillAndSubmit(user);
+
+    await vi.waitFor(() => expect(createServiceMock).toHaveBeenCalledOnce());
+    expect(createServiceMock.mock.calls[0]![1]).toMatchObject({ professionalIds: undefined });
+  });
+
+  it('con equipo, arranca con todos marcados y envía los elegidos', async () => {
+    const user = userEvent.setup();
+    renderWithTeam();
+
+    expect(screen.getByText('Fuera de tu plan')).toBeInTheDocument();
+    await user.click(screen.getByRole('checkbox', { name: /Bea/ }));
+    await fillAndSubmit(user);
+
+    await vi.waitFor(() => expect(createServiceMock).toHaveBeenCalledOnce());
+    expect(createServiceMock.mock.calls[0]![1]).toMatchObject({ professionalIds: ['pro-a'] });
+  });
+
+  it('exige al menos uno sin llamar al servidor', async () => {
+    const user = userEvent.setup();
+    renderWithTeam();
+
+    await user.click(screen.getByRole('checkbox', { name: /Ana/ }));
+    await user.click(screen.getByRole('checkbox', { name: /Bea/ }));
+    await fillAndSubmit(user);
+
+    expect(await screen.findByText('Elige al menos a un profesional.')).toBeInTheDocument();
+    expect(createServiceMock).not.toHaveBeenCalled();
   });
 });

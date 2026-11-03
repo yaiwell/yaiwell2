@@ -54,6 +54,7 @@ const haircut: ServiceWithRootCategory = {
   durationMinutes: 45,
   priceCents: 3500,
   rootCategory: BEAUTY_ROOT,
+  professionals: [],
 };
 
 function renderList(services: ServiceWithRootCategory[]) {

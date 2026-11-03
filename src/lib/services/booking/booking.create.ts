@@ -11,6 +11,9 @@ import type { Prisma } from '@prisma/client';
 // que importa este dominio.
 import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks/schedule-blocks.repository';
 import { findLiveOfferForSlot } from '@/lib/services/slot-offers';
+// Ruta directa: el barrel de `team` arrastra servicios con
+// `provider-onboarding` y cerraría un ciclo con este dominio.
+import { getBookableProfessionalIds } from '@/lib/services/team/team.bookable';
 import { computeCommissionCents, priceSlot } from '@/lib/utils/slot-offer-pricing';
 
 import { SlotUnavailableError } from './booking.errors';
@@ -37,13 +40,16 @@ export interface BookForProfessionalContext {
  * Crea la reserva para `professionalId` dentro de `tx`.
  *
  * Bajo un bloqueo por profesional hasta el fin de la transacción:
+ *  0. El profesional sigue activo, presta el servicio y entra en el
+ *     cupo del plan del negocio (los N más antiguos).
  *  1. Comprobación extra del caller (`precondition`, p. ej. pago en el local).
  *  2. Sin solape con reservas activas del profesional.
  *  3. Sin bloqueo de agenda que pise la franja.
  *  4. Precio con el descuento de su oferta viva en esa hora, si la hay,
  *     y comisión sobre lo cobrado.
  *
- * @throws SlotUnavailableError — solape o bloqueo de agenda. El caller
+ * @throws SlotUnavailableError — profesional no reservable, solape o
+ *   bloqueo de agenda. El caller
  *   lo usa para probar con el siguiente candidato.
  */
 export async function bookForProfessional(
@@ -55,6 +61,20 @@ export async function bookForProfessional(
   // un hueco liberado con descuento) se serializan, y el segundo ya ve
   // la reserva del primero en la comprobación de solape.
   await bookingRepository.lockProfessional(tx, professionalId);
+  // La baja de un profesional toma este mismo lock: si se dio de baja
+  // mientras el cliente elegía hora, la reserva no se crea con él (en
+  // «cualquiera» se pasa al siguiente candidato). Lo mismo si dejó de
+  // prestar el servicio o quedó fuera del cupo tras bajar de plan: el
+  // `professionalId` llega del cliente y no basta con lo que pintó la UI.
+  if (
+    !(await bookingRepository.isProfessionalActiveForService(tx, professionalId, ctx.serviceId))
+  ) {
+    throw new SlotUnavailableError();
+  }
+  const bookable = await getBookableProfessionalIds(ctx.providerId, tx);
+  if (!bookable.includes(professionalId)) {
+    throw new SlotUnavailableError();
+  }
   if (ctx.precondition) await ctx.precondition(tx);
 
   const overlapping = await bookingRepository.findOverlapping(

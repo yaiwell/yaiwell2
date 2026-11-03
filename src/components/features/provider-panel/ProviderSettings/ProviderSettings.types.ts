@@ -48,8 +48,11 @@ export interface SettingsProvider {
 /** Props del componente de configuración del centro. */
 export interface ProviderSettingsProps {
   provider: SettingsProvider;
-  /** Horario semanal actual (del primer Professional del provider). */
-  schedule: WeeklySchedule;
+  /**
+   * Horario semanal del único profesional (autónomo). `null` si el
+   * negocio tiene equipo: cada horario se edita en `/panel/equipo`.
+   */
+  schedule: WeeklySchedule | null;
   locale: SupportedLocale;
 }
 
@@ -85,6 +88,7 @@ export type SaveErrorCode =
   | 'LOCATION_REQUIRED'
   | 'VALIDATION'
   | 'NO_PROFESSIONAL'
+  | 'HAS_TEAM'
   | 'INTERNAL';
 
 /** Notice mostrado al usuario tras intentar guardar. */

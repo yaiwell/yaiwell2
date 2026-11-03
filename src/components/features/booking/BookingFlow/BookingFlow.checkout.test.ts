@@ -32,6 +32,7 @@ describe('readyCheckout', () => {
         slotStartIso: '2026-10-05T12:15:00.000Z',
         slotEndIso: '2026-10-05T13:15:00.000Z',
         isLastMinute: false,
+        professionalId: 'pro-1',
       },
       false,
     );
@@ -45,6 +46,7 @@ describe('readyCheckout', () => {
       isLastMinute: false,
       estimatedLastMinute: false,
       slotStartIso: '2026-10-05T12:15:00.000Z',
+      professionalId: 'pro-1',
     });
   });
 });

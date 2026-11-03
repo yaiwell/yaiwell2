@@ -2,7 +2,7 @@ import { getEarliestBookableStart } from '@/lib/utils/booking-lead-time';
 
 import { computeAvailableSlots, getUtcDayBounds, isSlotFree } from './availability.calc';
 import { BUSINESS_TIMEZONE, BUSY_MARGIN_MS } from './availability.constants';
-import { InvalidScheduleError, ProfessionalNotFoundError } from './availability.errors';
+import { InvalidScheduleError, AvailabilityProfessionalNotFoundError } from './availability.errors';
 import { availabilityRepository } from './availability.repository';
 import { getAvailableSlotsSchema, weeklyScheduleSchema } from './availability.validation';
 import type { Slot, WeeklySchedule } from './availability.types';
@@ -18,7 +18,7 @@ import type { Slot, WeeklySchedule } from './availability.types';
  * Centralizamos esto en un helper porque tanto `getAvailableSlots` como
  * `isSlotAvailable` necesitan el horario y el buffer.
  *
- * @throws ProfessionalNotFoundError si no existe (o está soft-deleted).
+ * @throws AvailabilityProfessionalNotFoundError si no existe (o está soft-deleted).
  * @throws InvalidScheduleError si el JSON no encaja con `WeeklySchedule`.
  */
 async function loadValidatedSchedule(
@@ -26,7 +26,7 @@ async function loadValidatedSchedule(
 ): Promise<{ schedule: WeeklySchedule; bufferMinutes: number }> {
   const record = await availabilityRepository.findProfessionalSchedule(professionalId);
   if (!record) {
-    throw new ProfessionalNotFoundError();
+    throw new AvailabilityProfessionalNotFoundError();
   }
 
   const parsed = weeklyScheduleSchema.safeParse(record.schedule);
@@ -61,7 +61,7 @@ async function loadValidatedSchedule(
  * @param input — `{ professionalId, date, serviceDurationMinutes }`, validado con Zod.
  * @param now — instante de referencia para la antelación mínima;
  *   inyectable para tests.
- * @throws ProfessionalNotFoundError, InvalidScheduleError.
+ * @throws AvailabilityProfessionalNotFoundError, InvalidScheduleError.
  */
 export async function getAvailableSlots(input: unknown, now: Date = new Date()): Promise<Slot[]> {
   // 1. Validamos input en el borde — defensa frente a callers ajenos.
@@ -112,7 +112,7 @@ export async function getAvailableSlots(input: unknown, now: Date = new Date()):
  * comprueba que ninguna reserva activa ni bloqueo de agenda lo haya
  * ocupado en el ínterin.
  *
- * @throws ProfessionalNotFoundError si el profesional no existe.
+ * @throws AvailabilityProfessionalNotFoundError si el profesional no existe.
  */
 export async function isSlotAvailable(
   professionalId: string,
@@ -123,7 +123,7 @@ export async function isSlotAvailable(
   // no tiene sentido y devolver `true` sería un falso positivo peligroso.
   const exists = await availabilityRepository.findProfessionalSchedule(professionalId);
   if (!exists) {
-    throw new ProfessionalNotFoundError();
+    throw new AvailabilityProfessionalNotFoundError();
   }
 
   // Tomamos un margen de 24h alrededor del slot para cubrir reservas

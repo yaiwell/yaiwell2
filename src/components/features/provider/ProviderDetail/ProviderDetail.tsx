@@ -3,6 +3,10 @@ import { ProviderHeader } from '@/components/features/provider/ProviderHeader';
 import { ProviderInfoPanel } from '@/components/features/provider/ProviderInfoPanel';
 import { ProviderReviewsSection } from '@/components/features/provider/ProviderReviewsSection';
 import { ProviderServicesList } from '@/components/features/provider/ProviderServicesList';
+import {
+  ProviderTeamSection,
+  shouldShowTeam,
+} from '@/components/features/provider/ProviderTeamSection';
 import { buildProviderSlugWithId } from '@/lib/utils/provider-slug';
 
 import { providerDetailStyles as s } from './ProviderDetail.styles';
@@ -17,8 +21,9 @@ import type { ProviderDetailProps } from './ProviderDetail.types';
  *  2. Galería (impacto visual antes del precio)
  *  3. Nav de secciones (sticky en mobile)
  *  4. Servicios — propósito primario del visitante
- *  5. Reseñas — confianza social
- *  6. Información — mapa + horario para confirmar antes de reservar
+ *  5. El equipo — quién atiende (solo si aporta algo, ver `shouldShowTeam`)
+ *  6. Reseñas — confianza social
+ *  7. Información — mapa + horario para confirmar antes de reservar
  *
  * Cada sección hija renderiza su propio `<h2>` interno. El compositor
  * solo aporta el `<section id="...">` ancla con `aria-labelledby` para
@@ -32,6 +37,7 @@ export function ProviderDetail({
   services,
   reviews,
   ratingBreakdown,
+  team,
   schedule,
   locale,
 }: ProviderDetailProps) {
@@ -59,6 +65,18 @@ export function ProviderDetail({
             providerSlugWithId={providerSlugWithId}
           />
         </section>
+
+        {/* Sin pestaña propia en la nav móvil: es una sección corta que
+            queda entre servicios y reseñas, a un scroll de ambas. */}
+        {shouldShowTeam(team) && (
+          <section
+            id="section-team"
+            className={s.sectionAnchor}
+            aria-labelledby="provider-team-heading"
+          >
+            <ProviderTeamSection team={team} />
+          </section>
+        )}
 
         <section
           id="section-reviews"

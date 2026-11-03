@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { MAX_SLOT_OFFER_DISCOUNT_PCT } from '@/lib/utils/slot-offer-pricing';
 
 import { bookingActionDialogStyles as d } from '../BookingActionsList/BookingActionsList.styles';
-import { getTierMin, useReleaseSlotForm } from './ReleaseSlotDialog.logic';
+import { getTierMin, useReleaseSlotForm, useReleaseSlotSubtitle } from './ReleaseSlotDialog.logic';
 import { releaseSlotStyles as s } from './ReleaseSlotDialog.styles';
 import type { ReleaseSlotFormProps } from './ReleaseSlotDialog.types';
 
@@ -22,6 +22,7 @@ import type { ReleaseSlotFormProps } from './ReleaseSlotDialog.types';
 export function ReleaseSlotForm({ locale, request, onClose }: ReleaseSlotFormProps) {
   const t = useTranslations('providerPanel.calendar.slotOffers');
   const { target, notice } = request;
+  const subtitle = useReleaseSlotSubtitle(target);
   const { tiers, discounts, currentTier, issue, errorKey, done, isPending, step, submit } =
     useReleaseSlotForm(target, locale);
 
@@ -46,11 +47,7 @@ export function ReleaseSlotForm({ locale, request, onClose }: ReleaseSlotFormPro
         <Dialog.Title className={d.title}>
           {target.kind === 'cancelled' ? t('releaseTitle') : t('releaseFreeTitle')}
         </Dialog.Title>
-        {target.kind === 'free' && (
-          <p className={s.subtitle}>
-            {t('releaseFreeSubtitle', { service: target.serviceName, time: target.startTime })}
-          </p>
-        )}
+        {subtitle && <p className={s.subtitle}>{subtitle}</p>}
       </div>
 
       {notice === 'refundFailed' && (

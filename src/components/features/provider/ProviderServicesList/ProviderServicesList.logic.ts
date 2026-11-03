@@ -3,7 +3,7 @@
 import { useCallback, useState } from 'react';
 
 import { toIntlLocale } from '@/lib/i18n';
-import type { Service, ServiceWithRootCategory } from '@/types/domain';
+import type { ServiceWithRootCategory } from '@/types/domain';
 
 import type { ServiceGroup, SupportedLocale } from './ProviderServicesList.types';
 
@@ -81,15 +81,15 @@ export function formatPriceCents(cents: number, locale: SupportedLocale): string
  * animación, evitando un parpadeo visual durante el desmontado.
  */
 export function useServiceSheet(): {
-  selectedService: Service | null;
+  selectedService: ServiceWithRootCategory | null;
   isOpen: boolean;
-  openWith: (service: Service) => void;
+  openWith: (service: ServiceWithRootCategory) => void;
   setOpen: (open: boolean) => void;
 } {
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+  const [selectedService, setSelectedService] = useState<ServiceWithRootCategory | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
-  const openWith = useCallback((service: Service) => {
+  const openWith = useCallback((service: ServiceWithRootCategory) => {
     setSelectedService(service);
     setIsOpen(true);
   }, []);
@@ -102,4 +102,13 @@ export function useServiceSheet(): {
   }, []);
 
   return { selectedService, isOpen, openWith, setOpen };
+}
+
+/**
+ * Nombre a enseñar en «Profesional» del sheet: el del único profesional
+ * que presta el servicio, o `null` si hay varios (o ninguno) y se puede
+ * elegir al reservar.
+ */
+export function getSoleProfessionalName(service: ServiceWithRootCategory): string | null {
+  return service.professionals.length === 1 ? service.professionals[0]!.name : null;
 }

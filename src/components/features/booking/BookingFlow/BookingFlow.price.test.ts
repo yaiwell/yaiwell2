@@ -22,6 +22,7 @@ const READY: Extract<CheckoutState, { status: 'ready' }> = {
   isLastMinute: true,
   estimatedLastMinute: true,
   slotStartIso: '2026-10-28T16:00:00.000Z',
+  professionalId: null,
 };
 
 describe('resolveDisplayedPrice', () => {

@@ -59,6 +59,8 @@ vi.mock('@/lib/services/provider-onboarding', async () => {
   };
 });
 
+import { ServiceProfessionalsInvalidError } from '@/lib/services/provider-onboarding';
+
 import { createServiceAction, updateServiceAction } from './actions';
 
 const RAW = {
@@ -124,6 +126,14 @@ describe('createServiceAction', () => {
     expect(createFirstServiceMock.mock.calls[1][1].professionalIds).toBeUndefined();
   });
 
+  it('devuelve PROFESSIONALS_INVALID si «Quién lo presta» no vale', async () => {
+    createFirstServiceMock.mockRejectedValueOnce(new ServiceProfessionalsInvalidError());
+
+    const result = await createServiceAction('es', { ...RAW, professionalIds: ['otro'] });
+
+    expect(result).toEqual({ ok: false, code: 'PROFESSIONALS_INVALID' });
+  });
+
   it('rechaza un nombre vacío sin llegar al service', async () => {
     const result = await createServiceAction('de', { ...RAW, name: '   ' });
 
@@ -168,6 +178,24 @@ describe('updateServiceAction', () => {
       undefined,
       prismaMock,
     );
+  });
+
+  it('devuelve PROFESSIONALS_INVALID si el equipo elegido no vale', async () => {
+    prismaMock.service.findUnique.mockResolvedValue({
+      id: 'service-1',
+      providerId: 'provider-1',
+      deletedAt: null,
+      name: { es: 'Corte' },
+      description: {},
+    });
+    syncProfessionalsMock.mockRejectedValueOnce(new ServiceProfessionalsInvalidError());
+
+    const result = await updateServiceAction('service-1', 'es', {
+      ...RAW,
+      professionalIds: ['de-baja'],
+    });
+
+    expect(result).toEqual({ ok: false, code: 'PROFESSIONALS_INVALID' });
   });
 
   /** Devuelve el `data` con el que se llamó a `prisma.service.update`. */

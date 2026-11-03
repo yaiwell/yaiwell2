@@ -1,10 +1,11 @@
 import 'server-only';
 
 import { prisma } from '@/lib/db/prisma';
-import type { Review } from '@/types/domain';
+import type { PublicProfessional, Review } from '@/types/domain';
 
 import { toRatingBreakdown } from './providers.rating';
 import { providersRepository } from './providers.repository';
+import { findBookedProfessional, findPublicTeamByProvider } from './providers.team';
 import type { ProviderDetail, ProviderServiceDetail, RatingBreakdown } from './providers.types';
 
 /**
@@ -48,10 +49,13 @@ export async function getProviderDetail(providerId: string): Promise<ProviderDet
   // El desglose de notas va aparte (agregación en BD) en vez de
   // derivarse de `reviews`: esa lista es una muestra de las 20 últimas
   // y las barras se pintan sobre el total real de valoraciones.
-  const [services, reviews, ratingBreakdown] = await Promise.all([
+  // El equipo va en su propia consulta (y no como unión de los
+  // profesionales de cada servicio) para ordenarlo por antigüedad real.
+  const [services, reviews, ratingBreakdown, team] = await Promise.all([
     providersRepository.findServicesByProvider(providerId),
     findReviewsByProvider(providerId),
     countReviewsByRating(providerId),
+    findPublicTeamByProvider(providerId),
   ]);
 
   return {
@@ -59,6 +63,7 @@ export async function getProviderDetail(providerId: string): Promise<ProviderDet
     services,
     reviews,
     ratingBreakdown,
+    team,
   };
 }
 
@@ -78,10 +83,28 @@ export async function getProviderService(
   const provider = await providersRepository.findById(providerId);
   if (!provider) return null;
 
-  const service = await providersRepository.findServiceByProvider(providerId, serviceId);
-  if (!service) return null;
+  const found = await providersRepository.findServiceByProvider(providerId, serviceId);
+  if (!found) return null;
 
-  return { provider, service };
+  return { provider, service: found.service, professionals: found.professionals };
+}
+
+/**
+ * Profesional que atiende una reserva propia del cliente, para la
+ * pantalla de confirmación. Con «cualquiera disponible» es el que asignó
+ * el servidor al crear la reserva.
+ *
+ * Devuelve `null` si la reserva no existe o es de otro cliente, sin
+ * distinguir, para no confirmar la existencia de reservas ajenas.
+ *
+ * @param bookingId — reserva a consultar.
+ * @param clientUserId — `User.id` del cliente autenticado.
+ */
+export async function getBookedProfessional(
+  bookingId: string,
+  clientUserId: string,
+): Promise<PublicProfessional | null> {
+  return findBookedProfessional(bookingId, clientUserId);
 }
 
 // ============================================================================

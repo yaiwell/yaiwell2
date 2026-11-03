@@ -132,6 +132,7 @@ export default async function ProviderPage({ params }: ProviderPageProps) {
       services={detail.services}
       reviews={detail.reviews}
       ratingBreakdown={detail.ratingBreakdown}
+      team={detail.team}
       schedule={schedule}
       locale={locale as 'es' | 'ca' | 'en' | 'de'}
     />

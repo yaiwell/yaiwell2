@@ -1,4 +1,4 @@
-import type { LocalizedText, Provider, Service } from '@/types/domain';
+import type { LocalizedText, Provider, PublicProfessional, Service } from '@/types/domain';
 
 import type { SearchableProvider } from './providers.types';
 
@@ -106,5 +106,27 @@ export function mapPrismaService(row: {
     },
     durationMinutes: row.durationMinutes,
     priceCents: row.priceCents,
+  };
+}
+
+/**
+ * Mapea un profesional de Prisma a su forma pública.
+ *
+ * Construye el objeto campo a campo (y no con un spread) para que una
+ * columna añadida a la `select` por error —`userId`, horario— nunca
+ * llegue al cliente. Foto y bio vacías o con solo espacios cuentan como
+ * ausentes: la UI pinta iniciales y no deja un párrafo en blanco.
+ */
+export function mapPublicProfessional(row: {
+  id: string;
+  name: string;
+  photo: string | null;
+  bio: string | null;
+}): PublicProfessional {
+  return {
+    id: row.id,
+    name: row.name.trim(),
+    photo: row.photo?.trim() || null,
+    bio: row.bio?.trim() || null,
   };
 }

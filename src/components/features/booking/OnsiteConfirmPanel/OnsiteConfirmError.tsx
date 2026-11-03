@@ -39,8 +39,10 @@ export function OnsiteConfirmError({
 }: OnsiteConfirmErrorProps) {
   const t = useTranslations('booking.onsite.errors');
   const tCheckout = useTranslations('booking.checkout');
+  const tPicker = useTranslations('booking.professionalPicker');
   const action = resolveOnsiteErrorAction(error);
-  const message = resolveMessage(t, error, locale);
+  const professionalGone = error.code === 'PROFESSIONAL_UNAVAILABLE';
+  const message = professionalGone ? tPicker('unavailable') : resolveMessage(t, error, locale);
 
   return (
     <div className={s.statusBox} role="alert" data-component="booking-onsite-error">
@@ -59,7 +61,7 @@ export function OnsiteConfirmError({
       )}
       {action === 'chooseSlot' && (
         <button type="button" onClick={onChooseAnotherSlot} className={s.retryButton}>
-          {tCheckout('chooseAnotherSlot')}
+          {professionalGone ? tPicker('chooseAgain') : tCheckout('chooseAnotherSlot')}
         </button>
       )}
       {action === 'payOnline' && (
@@ -119,6 +121,8 @@ function resolveMessage(
       return t('notOffered');
     case 'VALIDATION':
     case 'INTERNAL':
+    // Lo pinta el componente con el copy de `booking.professionalPicker`.
+    case 'PROFESSIONAL_UNAVAILABLE':
       return t('generic');
   }
 }

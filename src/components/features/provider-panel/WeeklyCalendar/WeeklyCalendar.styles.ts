@@ -62,12 +62,14 @@ export const weeklyCalendarStyles = {
   bookingTitle: 'block truncate font-semibold',
   bookingMeta: 'block truncate text-[10px] opacity-80',
 
+  // Nombre del profesional en el bloque (vista «Todos» con equipo).
+  bookingPro: 'block truncate text-[10px] font-medium opacity-90',
+
   // Hueco liberado con descuento: borde discontinuo para que nunca se
-  // confunda con una reserva. Por encima de los bloques de reserva.
+  // confunda con una reserva. Por encima de los bloques de reserva. Si
+  // comparte franja con otros, su carril lo coloca en línea.
   offerBlock:
-    'absolute z-[1] overflow-hidden rounded-lg border border-dashed border-primary/60 bg-card/95 px-2 py-1 text-left text-[11px] leading-tight text-primary shadow-sm transition-shadow outline-none hover:z-10 hover:shadow-md focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring cursor-pointer',
-  offerBlockFull: 'inset-x-1',
-  offerBlockCompact: 'left-1/2 right-1',
+    'absolute inset-x-1 z-[1] overflow-hidden rounded-lg border border-dashed border-primary/60 bg-card/95 px-2 py-1 text-left text-[11px] leading-tight text-primary shadow-sm transition-shadow outline-none hover:z-10 hover:shadow-md focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring cursor-pointer',
 
   // Bloqueo puntual de agenda: gris rayado, sin sombra ni color de
   // marca, para que se lea como «no disponible» y nunca como reserva u
@@ -82,6 +84,13 @@ export const weeklyCalendarStyles = {
   legendTitle: 'text-xs font-semibold text-foreground',
   legendChip: 'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5',
   legendDot: 'inline-block size-2 rounded-full',
+
+  // Filtro por profesional (fichas enlazadas: `?pro=`).
+  filter: 'flex flex-wrap items-center gap-1.5',
+  filterChip:
+    'inline-flex min-h-9 items-center rounded-full border border-border px-3 text-xs font-medium text-muted-foreground transition-colors outline-none hover:border-foreground/30 hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring',
+  filterChipActive:
+    'border-primary bg-primary text-primary-foreground hover:text-primary-foreground',
 } as const;
 
 /** Detalle de una reserva (diálogo que abre el bloque). */

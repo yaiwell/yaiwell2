@@ -16,12 +16,16 @@ import { useReleaseSlotPrompt } from './ReleaseSlotPrompt.logic';
 export function ReleaseFreeSlotButton({
   serviceId,
   serviceName,
+  professionalId,
+  professionalName = null,
   startAtIso,
   startTime,
   disabled = false,
 }: ReleaseFreeSlotButtonProps) {
   const t = useTranslations('providerPanel.calendar.slotOffers.free');
+  const tc = useTranslations('providerPanel.calendar');
   const openPrompt = useReleaseSlotPrompt();
+  const ariaLabel = t('releaseAriaLabel', { service: serviceName, time: startTime });
 
   return (
     <Button
@@ -30,13 +34,26 @@ export function ReleaseFreeSlotButton({
       size="sm"
       className={s.trigger}
       disabled={disabled || !openPrompt}
-      aria-label={t('releaseAriaLabel', { service: serviceName, time: startTime })}
+      aria-label={
+        professionalName
+          ? tc('withProfessional', { label: ariaLabel, professional: professionalName })
+          : ariaLabel
+      }
       onClick={() =>
         openPrompt?.({
-          target: { kind: 'free', serviceId, startAtIso, serviceName, startTime },
+          target: {
+            kind: 'free',
+            serviceId,
+            startAtIso,
+            serviceName,
+            startTime,
+            professionalId,
+            professionalName,
+          },
         })
       }
       data-component={`free-slot-release-${serviceId}-${startAtIso}`}
+      data-professional-id={professionalId}
     >
       <BadgePercent className="size-3.5" aria-hidden />
       {t('release')}

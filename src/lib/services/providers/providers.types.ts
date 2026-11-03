@@ -4,6 +4,7 @@ import type {
   PriceRange,
   Provider,
   ProviderWithAvailability,
+  PublicProfessional,
   Review,
   Service,
   ServiceWithRootCategory,
@@ -68,17 +69,31 @@ export interface ProviderDetail {
   services: ServiceWithRootCategory[];
   reviews: Review[];
   ratingBreakdown: RatingBreakdown;
+  /**
+   * Equipo público: profesionales activos que prestan algún servicio
+   * publicado, por antigüedad. Lo pinta la sección «El equipo».
+   */
+  team: PublicProfessional[];
+}
+
+/**
+ * Un servicio del catálogo junto a quién lo presta (tabla
+ * `service_professionals`, migración 9h), tal y como lo lee el
+ * repositorio.
+ */
+export interface ProviderServiceWithTeam {
+  service: Service;
+  /** Profesionales activos que lo prestan, por antigüedad. */
+  professionals: PublicProfessional[];
 }
 
 /**
  * Datos mínimos para renderizar la ficha pública de un servicio
- * concreto: el servicio y el proveedor al que pertenece. Quién lo
- * presta vive en `service_professionals` (migración 9h); la ficha aún
- * reserva con «cualquier profesional disponible».
+ * concreto: el servicio, el proveedor al que pertenece y quién lo
+ * presta (bloque «Quién lo presta»).
  */
-export interface ProviderServiceDetail {
+export interface ProviderServiceDetail extends ProviderServiceWithTeam {
   provider: Provider;
-  service: Service;
 }
 
 /**

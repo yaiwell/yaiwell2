@@ -37,7 +37,7 @@ export {
 export {
   InvalidScheduleError,
   ProfessionalNotForServiceError,
-  ProfessionalNotFoundError,
+  AvailabilityProfessionalNotFoundError,
   ServiceForAvailabilityNotFoundError,
 } from './availability.errors';
 export {

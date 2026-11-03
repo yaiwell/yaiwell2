@@ -42,6 +42,14 @@ export interface AddServiceDraft {
   priceEuros: string;
 }
 
+/** Profesional activo como opción de «Quién lo presta». */
+export interface ServiceProfessionalOption {
+  id: string;
+  name: string;
+  /** Activo pero fuera del cupo del plan: no acepta reservas nuevas. */
+  outOfPlan: boolean;
+}
+
 /** Props del formulario de alta/edición de servicio. */
 export interface AddServiceFormProps {
   locale: SupportedLocale;
@@ -67,6 +75,16 @@ export interface AddServiceFormProps {
    * el aviso para mejorar el plan sale desde el principio.
    */
   planLimitReached?: boolean;
+  /**
+   * Profesionales activos del negocio. Con uno o ninguno el selector
+   * «Quién lo presta» no se muestra y el servidor decide (todo el equipo
+   * en el alta, sin cambios en la edición).
+   */
+  professionals?: ServiceProfessionalOption[];
+  /**
+   * Quién lo presta ahora (edición). En el alta, por defecto, todos.
+   */
+  initialProfessionalIds?: string[];
 }
 
 /** Códigos de error que puede devolver la action de alta/edición. */

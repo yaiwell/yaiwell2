@@ -12,6 +12,7 @@ import { requireCurrentProvider } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
 import { getCategoriesTree } from '@/lib/services/provider-panel';
+import { listActiveProfessionalOptions } from '@/lib/services/team';
 import type { LocalizedText } from '@/types/domain';
 
 interface EditServicePageProps {
@@ -82,13 +83,18 @@ export default async function EditServicePage({ params }: EditServicePageProps) 
       durationMinutes: true,
       priceCents: true,
       categoryId: true,
+      // Quién lo presta ahora, para precargar «Quién lo presta».
+      professionals: { select: { professionalId: true } },
     },
   });
   if (!service) {
     notFound();
   }
 
-  const categoriesTree = await getCategoriesTree();
+  const [categoriesTree, professionals] = await Promise.all([
+    getCategoriesTree(),
+    listActiveProfessionalOptions(providerId),
+  ]);
   const categoryPath = findCategoryPath(categoriesTree, service.categoryId);
 
   const initialValues: AddServiceDraft = {
@@ -109,6 +115,8 @@ export default async function EditServicePage({ params }: EditServicePageProps) 
       categoriesTree={categoriesTree}
       serviceId={service.id}
       initialValues={initialValues}
+      professionals={professionals}
+      initialProfessionalIds={service.professionals.map((link) => link.professionalId)}
     />
   );
 }

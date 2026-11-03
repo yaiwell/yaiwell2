@@ -6,12 +6,17 @@
  * los códigos que la API expone hacia el frontend.
  */
 
-export class ProfessionalNotFoundError extends Error {
+/**
+ * El profesional no existe o está de baja. Lleva el prefijo del dominio
+ * para no confundirse con `ProfessionalNotFoundError` de `team`, que
+ * cubre el panel del equipo y se mapea distinto.
+ */
+export class AvailabilityProfessionalNotFoundError extends Error {
   readonly code = 'PROFESSIONAL_NOT_FOUND';
 
   constructor(message = 'Profesional no encontrado.') {
     super(message);
-    this.name = 'ProfessionalNotFoundError';
+    this.name = 'AvailabilityProfessionalNotFoundError';
   }
 }
 

@@ -31,7 +31,9 @@ import type { StorageBucket } from '@/lib/integrations/supabase';
  *        solicitante. (Owner del centro.)
  *   3. Validaciones técnicas del archivo (MIME, tamaño).
  *
- * Path generado en server: `<ownerId>/<uuid>.<ext>`. El UUID evita
+ * Path generado en server: `<ownerId>/<uuid>.<ext>`, o
+ * `<ownerId>/<folder>/<uuid>.<ext>` si llega `folder` (solo
+ * `professionals` en `provider-photos`: fotos del equipo). El UUID evita
  * enumeración por nombres predecibles y elimina colisiones; el nombre
  * original del archivo se descarta a propósito (PII y caracteres raros).
  *
@@ -39,6 +41,7 @@ import type { StorageBucket } from '@/lib/integrations/supabase';
  *  - `POST /api/storage/upload` (FormData)
  *     · `bucket`: StorageBucket
  *     · `ownerId`: string
+ *     · `folder`: opcional, ver `UPLOAD_FOLDERS`
  *     · `file`: File
  *  - 200: `{ publicUrl, path }`
  *  - 400: validación (`{ error: { code, message } }`)
@@ -48,10 +51,22 @@ import type { StorageBucket } from '@/lib/integrations/supabase';
  *  - 500: fallo storage o inesperado
  */
 
-const bodySchema = z.object({
-  bucket: z.enum(STORAGE_BUCKETS as readonly [StorageBucket, ...StorageBucket[]]),
-  ownerId: z.string().min(1, 'ownerId requerido.').max(128),
-});
+/**
+ * Subcarpetas permitidas dentro del `ownerId`. Lista cerrada: el path lo
+ * construye el servidor y no debe aceptar segmentos arbitrarios.
+ */
+const UPLOAD_FOLDERS = ['professionals'] as const;
+
+const bodySchema = z
+  .object({
+    bucket: z.enum(STORAGE_BUCKETS as readonly [StorageBucket, ...StorageBucket[]]),
+    ownerId: z.string().min(1, 'ownerId requerido.').max(128),
+    folder: z.enum(UPLOAD_FOLDERS).optional(),
+  })
+  // Las fotos del equipo son del negocio: solo tienen sentido en su bucket.
+  .refine((body) => !body.folder || body.bucket === 'provider-photos', {
+    message: 'Carpeta no permitida para este bucket.',
+  });
 
 interface SuccessBody {
   publicUrl: string;
@@ -117,11 +132,13 @@ export async function POST(request: NextRequest): Promise<NextResponse<SuccessBo
 
   const rawBucket = formData.get('bucket');
   const rawOwnerId = formData.get('ownerId');
+  const rawFolder = formData.get('folder');
   const rawFile = formData.get('file');
 
   const parsed = bodySchema.safeParse({
     bucket: typeof rawBucket === 'string' ? rawBucket : undefined,
     ownerId: typeof rawOwnerId === 'string' ? rawOwnerId : undefined,
+    folder: typeof rawFolder === 'string' && rawFolder ? rawFolder : undefined,
   });
   if (!parsed.success) {
     const first = parsed.error.issues[0];
@@ -135,7 +152,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<SuccessBo
       { status: 400 },
     );
   }
-  const { bucket, ownerId } = parsed.data;
+  const { bucket, ownerId, folder } = parsed.data;
 
   // El File no lo valida Zod (no es trivial en formdata polyfills);
   // lo verificamos a mano.
@@ -198,7 +215,8 @@ export async function POST(request: NextRequest): Promise<NextResponse<SuccessBo
   // 4. Subida vía wrapper.
   // -----------------------------------------------------------------
   const ext = extensionFromMime(mime);
-  const path = `${ownerId}/${randomUUID()}.${ext}`;
+  const prefix = folder ? `${ownerId}/${folder}` : ownerId;
+  const path = `${prefix}/${randomUUID()}.${ext}`;
 
   try {
     const result = await uploadImage({ bucket, path, file: rawFile, contentType: mime });

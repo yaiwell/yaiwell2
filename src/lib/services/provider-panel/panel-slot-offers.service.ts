@@ -11,6 +11,7 @@ import { priceSlot } from '@/lib/utils/slot-offer-pricing';
 import type { LocalizedText } from '@/types/domain';
 
 import { timeInMadrid, weekdayInMadrid } from './panel-madrid-time';
+import { filterByProfessional } from './panel-professional-filter';
 
 /** Nombre localizado y precio de cada servicio, en una sola query. */
 async function loadServices(serviceIds: string[], locale: AppLocale) {
@@ -41,16 +42,20 @@ async function loadServices(serviceIds: string[], locale: AppLocale) {
  * @param reference — cualquier instante de la semana a consultar.
  * @param locale — locale activo, para el nombre del servicio.
  * @param now — momento de referencia del % vigente.
+ * @param professionalId — filtro `?pro=` ya validado; `null` = todos.
  */
 export async function getPanelWeekSlotOffers(
   providerId: string,
   reference: Date,
   locale: AppLocale,
   now: Date = new Date(),
+  professionalId: string | null = null,
 ): Promise<PanelSlotOffer[]> {
   const { start, end } = getMadridWeekRange(getMadridWeekStartKey(reference));
-  const offers = (await getOpenOffersForProviderRange(providerId, start, end, now)).filter(
-    (o) => o.expiresAt > now,
+  const open = await getOpenOffersForProviderRange(providerId, start, end, now);
+  const offers = filterByProfessional(
+    open.filter((o) => o.expiresAt > now),
+    professionalId,
   );
   if (offers.length === 0) return [];
 
@@ -77,6 +82,7 @@ export async function getPanelWeekSlotOffers(
       startTime: timeInMadrid(o.startAt),
       endTime: timeInMadrid(o.endAt),
       serviceName: service?.name ?? '',
+      professionalId: o.professionalId,
       professionalName: professionalNames.get(o.professionalId) ?? null,
       discounts: o.discounts,
       currentDiscountPct: price.discountPct ?? 0,
@@ -88,14 +94,22 @@ export async function getPanelWeekSlotOffers(
 
 /**
  * Huecos libres de las próximas 2 h que el profesional puede liberar,
- * con el nombre del servicio localizado y la hora en Madrid.
+ * con el nombre del servicio localizado, la hora en Madrid y de qué
+ * profesional es cada uno (con equipo, la misma hora sale por cada
+ * profesional libre; al liberarla se envía su id).
+ *
+ * @param professionalId — filtro `?pro=` ya validado; `null` = todos.
  */
 export async function getPanelReleasableFreeSlots(
   providerId: string,
   locale: AppLocale,
   now: Date = new Date(),
+  professionalId: string | null = null,
 ): Promise<PanelFreeSlot[]> {
-  const slots = await listReleasableFreeSlots(providerId, now);
+  const slots = filterByProfessional(
+    await listReleasableFreeSlots(providerId, now),
+    professionalId,
+  );
   if (slots.length === 0) return [];
   const services = await loadServices(
     slots.map((s) => s.serviceId),
@@ -105,6 +119,8 @@ export async function getPanelReleasableFreeSlots(
   return slots.map((s) => ({
     serviceId: s.serviceId,
     serviceName: services.get(s.serviceId)?.name ?? '',
+    professionalId: s.professionalId,
+    professionalName: s.professionalName,
     startAtIso: s.startAtIso,
     startTime: timeInMadrid(new Date(s.startAtIso)),
     endTime: timeInMadrid(new Date(s.endAtIso)),

@@ -23,6 +23,7 @@ const repoMock = vi.hoisted(() => ({
   updateSettings: vi.fn(),
   upsertContact: vi.fn(),
   findFirstProfessional: vi.fn(),
+  countActiveProfessionals: vi.fn(),
   updateProfessionalSchedule: vi.fn(),
 }));
 
@@ -32,6 +33,7 @@ vi.mock('./provider.repository', () => ({
 
 import {
   ProviderHasNoProfessionalError,
+  ProviderHasTeamError,
   ProviderLocationRequiredError,
   ProviderNotFoundError,
 } from './provider.errors';
@@ -52,6 +54,8 @@ beforeEach(() => {
   // El repositorio devuelve el número de filas actualizadas; por defecto
   // simulamos que el UPDATE encontró su provider.
   repoMock.updateSettings.mockResolvedValue(1);
+  // Autónomo por defecto: un solo profesional, el horario es del negocio.
+  repoMock.countActiveProfessionals.mockResolvedValue(1);
 });
 
 describe('updateProviderSettings', () => {
@@ -306,8 +310,8 @@ describe('getProviderSchedule', () => {
 
     // Los 7 días vacíos: la UI pinta el editor sin tramos y el usuario
     // lo rellena. No bloqueamos el render por un seed antiguo.
-    expect(result.monday).toEqual([]);
-    expect(result.sunday).toEqual([]);
+    expect(result?.monday).toEqual([]);
+    expect(result?.sunday).toEqual([]);
   });
 
   it('lanza ProviderHasNoProfessionalError si no hay Professional', async () => {
@@ -364,6 +368,26 @@ describe('updateProviderSchedule', () => {
 
     await expect(updateProviderSchedule(PROVIDER_ID, SAMPLE_SCHEDULE)).rejects.toBeInstanceOf(
       ProviderHasNoProfessionalError,
+    );
+    expect(repoMock.updateProfessionalSchedule).not.toHaveBeenCalled();
+  });
+});
+
+describe('horario con equipo (varios profesionales activos)', () => {
+  it('getProviderSchedule devuelve null: el horario se edita por profesional', async () => {
+    repoMock.findFirstProfessional.mockResolvedValue({ id: 'prof-1', schedule: SAMPLE_SCHEDULE });
+    repoMock.countActiveProfessionals.mockResolvedValue(2);
+
+    await expect(getProviderSchedule(PROVIDER_ID)).resolves.toBeNull();
+  });
+
+  it('updateProviderSchedule rechaza con ProviderHasTeamError y no escribe', async () => {
+    repoMock.findSettings.mockResolvedValue({ description: { es: 'x' } });
+    repoMock.findFirstProfessional.mockResolvedValue({ id: 'prof-1', schedule: {} });
+    repoMock.countActiveProfessionals.mockResolvedValue(3);
+
+    await expect(updateProviderSchedule(PROVIDER_ID, SAMPLE_SCHEDULE)).rejects.toBeInstanceOf(
+      ProviderHasTeamError,
     );
     expect(repoMock.updateProfessionalSchedule).not.toHaveBeenCalled();
   });

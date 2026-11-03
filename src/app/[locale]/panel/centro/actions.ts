@@ -9,6 +9,7 @@ import { requireCurrentProvider } from '@/lib/auth/server';
 import type { WeeklySchedule } from '@/lib/services/availability';
 import {
   ProviderHasNoProfessionalError,
+  ProviderHasTeamError,
   ProviderLocationRequiredError,
   ProviderNotFoundError,
   updateProviderSchedule,
@@ -170,13 +171,14 @@ export async function updateProviderSettingsAction(
  *
  * `NO_PROFESSIONAL` cubre el caso patológico de un provider sin
  * Professional asociado (no debería ocurrir si el wizard creó el alta;
- * la UI lo trata como "contacta soporte").
+ * la UI lo trata como "contacta soporte"). `HAS_TEAM`: el negocio tiene
+ * varios profesionales y cada horario se edita en `/panel/equipo`.
  */
 export type UpdateProviderScheduleActionState =
   | { ok: true }
   | {
       ok: false;
-      code: 'PROVIDER_NOT_FOUND' | 'NO_PROFESSIONAL' | 'VALIDATION' | 'INTERNAL';
+      code: 'PROVIDER_NOT_FOUND' | 'NO_PROFESSIONAL' | 'HAS_TEAM' | 'VALIDATION' | 'INTERNAL';
       message?: string;
     };
 
@@ -207,6 +209,9 @@ export async function updateProviderScheduleAction(
     }
     if (err instanceof ProviderHasNoProfessionalError) {
       return { ok: false, code: 'NO_PROFESSIONAL' };
+    }
+    if (err instanceof ProviderHasTeamError) {
+      return { ok: false, code: 'HAS_TEAM' };
     }
     if (err instanceof ProviderNotFoundError) {
       return { ok: false, code: 'PROVIDER_NOT_FOUND' };

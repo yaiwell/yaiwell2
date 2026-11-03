@@ -48,7 +48,8 @@ interface PanelSettingsPageProps {
  * Configuración del centro (`/panel/centro`).
  *
  * Server Component que lee los datos del proveedor autenticado y los
- * pasa a sus bloques de UI: configuración del centro (datos + horario),
+ * pasa a sus bloques de UI: configuración del centro (datos + horario
+ * si es autónomo; con equipo, enlace a los horarios del equipo),
  * estado de pagos (Stripe Connect) y resumen del plan (Stripe Billing).
  *
  * Carga en paralelo provider + schedule + estado de pagos para no

@@ -25,6 +25,8 @@ export const bookingConfirmationStyles = {
   row: 'flex items-start justify-between gap-4',
   rowLabel: 'text-xs font-medium uppercase tracking-wide text-muted-foreground',
   rowValue: 'text-sm text-foreground text-right',
+  // Profesional: avatar pequeño + nombre, alineado como el resto de valores.
+  rowValueWithAvatar: 'flex items-center justify-end gap-2 text-sm text-foreground',
   rowValueMono: 'font-mono text-xs text-foreground text-right',
 
   // Botones de acción finales.

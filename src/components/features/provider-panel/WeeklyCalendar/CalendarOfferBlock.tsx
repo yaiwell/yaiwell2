@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { bookingActionDialogStyles as d } from '../BookingActionsList/BookingActionsList.styles';
 import type { SupportedLocale } from '../BookingActionsList/BookingActionsList.types';
 import { useWithdrawOffer } from './CalendarOfferBlock.logic';
+import { getLaneStyle } from './WeeklyCalendar.lanes';
 import { WEEKDAY_KEYS } from './WeeklyCalendar.logic';
 import { bookingDetailStyles as ds, weeklyCalendarStyles as s } from './WeeklyCalendar.styles';
 import type { PositionedOffer } from './WeeklyCalendar.types';
@@ -17,6 +18,8 @@ interface CalendarOfferBlockProps {
   positioned: PositionedOffer;
   locale: SupportedLocale;
   readOnly: boolean;
+  /** Pinta de quién es el hueco (vista «Todos» con equipo). */
+  showProfessional?: boolean;
   variant: 'week' | 'day';
 }
 
@@ -31,35 +34,41 @@ export function CalendarOfferBlock({
   positioned,
   locale,
   readOnly,
+  showProfessional = false,
   variant,
 }: CalendarOfferBlockProps) {
   const t = useTranslations('providerPanel.calendar');
   const to = useTranslations('providerPanel.calendar.slotOffers');
-  const { offer, topPx, heightPx, compact, priceLabel, currentPriceLabel } = positioned;
+  const { offer, topPx, heightPx, lane, priceLabel, currentPriceLabel } = positioned;
   const { withdraw, isPending, errorKey } = useWithdrawOffer(locale, offer.id);
   const hasDiscount = offer.currentDiscountPct > 0;
   const label = hasDiscount
     ? to('block.label', { pct: offer.currentDiscountPct })
     : to('block.labelNoDiscount');
+  const professional = showProfessional ? offer.professionalName : null;
+  const ariaLabel = to('block.ariaLabel', {
+    label,
+    service: offer.serviceName,
+    time: offer.startTime,
+  });
 
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
         <button
           type="button"
-          className={`${s.offerBlock} ${compact ? s.offerBlockCompact : s.offerBlockFull}`}
-          style={{ top: `${topPx}px`, height: `${heightPx}px` }}
-          aria-label={to('block.ariaLabel', {
-            label,
-            service: offer.serviceName,
-            time: offer.startTime,
-          })}
+          className={s.offerBlock}
+          style={{ top: `${topPx}px`, height: `${heightPx}px`, ...getLaneStyle(lane) }}
+          aria-label={
+            professional ? t('withProfessional', { label: ariaLabel, professional }) : ariaLabel
+          }
           data-component={`weekly-calendar-offer-${offer.id}${variant === 'day' ? '-day' : ''}`}
         >
           <span className={s.bookingTitle}>{label}</span>
           <span className={s.bookingMeta}>
             {offer.startTime} · {offer.serviceName}
           </span>
+          {professional && <span className={s.bookingPro}>{professional}</span>}
         </button>
       </Dialog.Trigger>
 

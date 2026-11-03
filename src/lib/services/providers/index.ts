@@ -6,6 +6,7 @@
  * está prohibido por convención del proyecto.
  */
 export {
+  getBookedProfessional,
   getFromPriceCents,
   getFromPriceCentsBatch,
   getProviderDetail,
@@ -17,6 +18,7 @@ export { InvalidSearchFiltersError, ProviderNotFoundError } from './providers.er
 export type {
   ProviderDetail,
   ProviderServiceDetail,
+  ProviderServiceWithTeam,
   RatingBreakdown,
   SearchProvidersFilters,
   SearchProvidersResult,

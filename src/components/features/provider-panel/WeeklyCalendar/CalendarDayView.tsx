@@ -25,6 +25,7 @@ export function CalendarDayView({
   hours,
   locale,
   readOnly,
+  showProfessional,
   initialDayIndex,
 }: CalendarDayViewProps) {
   const t = useTranslations('providerPanel.calendar');
@@ -100,6 +101,7 @@ export function CalendarDayView({
                 hours={hours}
                 locale={locale}
                 readOnly={readOnly}
+                showProfessional={showProfessional}
                 variant="day"
               />
             </div>

@@ -139,7 +139,6 @@
   - [ ] **Multi-negocio real**: implementar el alta de un segundo Provider asociado al mismo `User.id`. Afecta a `requireCurrentProvider` (hoy devuelve el primero) y al panel layout (necesita selector de negocio activo).
   - [x] **Acción "responder a reseña"** en `/panel/valoraciones` cableada via server action `replyToReviewAction` (reutiliza `replyToReview` del service) + nuevo Client Component `ReviewReplyForm` (estructura §6.bis, abre textarea inline al pulsar "Responder"; si ya hay `providerResponse` muestra card read-only). 4 tests UI (2026-06-29).
   - [x] **Persistencia del botón "Guardar"** en `/panel/centro` activada: nuevo módulo `lib/services/provider/` (separado de `provider-onboarding` y del `providers/` con fake-data) + `updateProviderSettingsAction`. `ProviderSettings` ahora Client Component con form controlado + `useTransition` + feedback real success/error. Descripción fusiona `LocalizedText` (mismo patrón que `updateServiceAction`). Inputs todavía no cubiertos (phone, email, ciudad/CP, horario) quedan `disabled` para señalar que aún no persisten. 6 tests del service (2026-06-29).
-  - [ ] Para centros con N profesionales el editor de horario edita el del **primer** profesional (deuda multi-profesional explícita en la sección Multi-negocio). Teléfono y email ya se guardan (2026-11-03); ciudad y CP se descartan (van en la dirección).
 - [x] Motor de scheduling (slots de disponibilidad reales) — `availability.service` con tests vía Prisma mockeado (2026-06-03). **Conectado a la ficha de servicio** (2026-06-30) y **al listado público y a la ficha de centro** (2026-07-27, ver `DO.md`).
   - [ ] **Refresco en cliente** de la disponibilidad del listado (endpoint `GET /api/providers/availability?ids=…` + TanStack Query cada 2-5 min) para pestañas abiertas mucho rato. Hoy el dato se congela en el render del Server Component, con hasta 5 min de desfase por el bucketing.
   - [ ] **Materializar en BD** (`Provider.nextAvailableAt` vía cron) si el catálogo crece: el cálculo puro ya está aislado en `computeProviderAvailability` y se reutilizaría tal cual. Disparador: >1500 profesionales o la query de horarios por encima de ~150 ms.
@@ -249,13 +248,20 @@
 - [ ] **Bloqueos de agenda, flecos** (auditoría 2026-11-03, P2):
   - [ ] `releaseCancelledSlot`/`releaseFreeSlot` sin transacción ni `lockProfessional`: una oferta liberada a la vez que se crea un bloqueo puede quedar `active` debajo (ya no se anuncia ni se vende, `keepFree` y `createBooking` la filtran; falta cerrar la carrera en origen).
   - [ ] Rama rápida de `lockAndConfirm` (retención vigente) sin mirar bloqueos: carrera en el límite de los 30 min. Tratar como conflicto toda `pending` con PaymentIntent en curso, o comprobar `hasActiveOverlap` también ahí.
-  - [ ] Hoy bloquea solo al primer profesional del negocio: con equipo, elegir profesional o bloquear a todos.
   - [ ] Máx. 60 días medido en ms: 60 días civiles que cruzan el cambio de hora de octubre dan `TOO_LONG`; y un fin en la hora duplicada de octubre toma la primera aparición. Comparar días civiles.
   - [ ] Quitar un bloqueo no restaura las ofertas que retiró: avisarlo en el diálogo.
   - [ ] `ScheduleBlockNoProfessionalError` acaba como `INTERNAL` y en Sentry: darle código propio.
+- [ ] **Equipo, flecos** (auditorías 2026-11-03):
+  - [ ] **Migración 9i**: repetir el relleno de `service_professionals` y borrar la columna obsoleta `services.professionalId` (hoy se sigue escribiendo con el primer profesional asignado).
+  - [ ] Editar un servicio publicado deja asignarlo solo a profesionales fuera de plan (el servicio queda sin huecos); `updateServiceAction` no toma el lock del negocio que usa el equipo. Exigir al menos uno dentro del cupo.
+  - [ ] Test que compare el corte de plan en SQL (`ROW_NUMBER` en `availability.repository.team.ts`) con `selectBookableIds`.
+  - [ ] `checkout` debería devolver el `professionalId` asignado (hoy la acción lo lee de la reserva con una consulta extra en «cualquiera»); y un error propio que distinga «el profesional elegido no lo presta» de «nadie lo presta».
+  - [ ] `SlotPicker.fetch.ts` duplica `fetchServiceSlots`: mover `professionalId` a `availability.client.ts`.
+  - [ ] Unificar `serviceTeamRepository.findActiveProfessionalIds` y `teamRepository.findActiveIds`.
+  - [ ] Reasignar las citas de un profesional a otro al darlo de baja (hoy hay que cancelarlas).
+  - [ ] `fake-data` importado en páginas del panel para el modo preview: aislarlo tras el flag de preview.
 - [ ] **`providers.vatNumber` legible con la clave pública** (auditoría 2026-11-03, P1 preexistente): `providers` tiene `GRANT SELECT` para `anon` y la policy `providers_public_read_approved` filtra filas, no columnas. La app no lee tablas por PostgREST (solo storage), así que se puede revocar el acceso de `anon`/`authenticated` a `providers` o mover el NIF a una tabla privada como `provider_contacts`. Decisión de arquitectura: ¿se mantiene la lectura pública para la futura app móvil? P13.
 - [ ] **Guardar datos y contacto del centro en una transacción**: hoy `upsertContact` va tras el UPDATE de `providers`; si falla, el centro queda guardado y el contacto no (la acción devuelve error y se reintenta).
-- [ ] **Reservas solapadas en el calendario del panel**: en centros con varios profesionales dos citas a la misma hora se pintan una encima de otra. Repartir el ancho de la columna o filtrar por profesional.
 - [ ] **E2E de onboarding falla con login por contraseña** (`tests/e2e/onboarding-wizard.spec.ts`): `clerk.signIn` con `strategy: 'password'` no deja la cookie `__session` y el panel redirige a `/entrar`. Pasarlo al login por ticket (`clerk.signIn({ page, emailAddress })`) como `customer-review` y `provider-calendar`.
 - [ ] **Backfill de `publicMetadata.role`** en cuentas de Clerk sin rol oficial (P2): mientras falte, el usuario puede ponerse `provider` reescribiendo su `unsafeMetadata`.
 - [ ] **Aviso al profesional que entra con una cuenta de Google de cliente** (P2): en `/registro` pestaña profesional, si la cuenta ya existe Clerk entra como cliente sin explicar nada.

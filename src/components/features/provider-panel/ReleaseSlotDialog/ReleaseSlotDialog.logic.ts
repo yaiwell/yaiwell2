@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState, useTransition } from 'react';
+import { useTranslations } from 'next-intl';
 
 import {
   releaseCancelledSlotAction,
@@ -131,6 +132,8 @@ export function useReleaseSlotForm(target: ReleaseSlotTarget, locale: SupportedL
             })
           : await releaseFreeSlotAction(locale, {
               serviceId: target.serviceId,
+              // Con equipo, el hueco es de un profesional concreto.
+              ...(target.professionalId ? { professionalId: target.professionalId } : {}),
               startAtIso: target.startAtIso,
               discounts: submitted,
             });
@@ -143,4 +146,19 @@ export function useReleaseSlotForm(target: ReleaseSlotTarget, locale: SupportedL
   }
 
   return { tiers, discounts, currentTier, issue, errorKey, done, isPending, step, submit };
+}
+
+/**
+ * Subtítulo del diálogo al liberar un hueco libre: servicio y hora y,
+ * con varios profesionales, de quién es la agenda. Una reserva
+ * cancelada no lleva subtítulo (`null`).
+ */
+export function useReleaseSlotSubtitle(target: ReleaseSlotTarget): string | null {
+  const t = useTranslations('providerPanel.calendar.slotOffers');
+  const tc = useTranslations('providerPanel.calendar');
+  if (target.kind !== 'free') return null;
+  const label = t('releaseFreeSubtitle', { service: target.serviceName, time: target.startTime });
+  return target.professionalName
+    ? tc('withProfessional', { label, professional: target.professionalName })
+    : label;
 }

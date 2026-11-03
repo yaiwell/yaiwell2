@@ -38,6 +38,7 @@ const OK_RESULT = {
   slotStartIso: SLOT_START,
   slotEndIso: SLOT_END,
   isLastMinute: false,
+  professionalId: null,
 };
 
 function renderFlow() {
@@ -154,6 +155,7 @@ describe('useBookingFlow', () => {
       originalPriceCents: null,
       discountPct: null,
       isLastMinute: false,
+      professionalId: null,
       // Depende del reloj real frente a SLOT_START; se prueba con `now`
       // fijo en BookingFlow.checkout.test.ts.
       estimatedLastMinute: expect.any(Boolean),

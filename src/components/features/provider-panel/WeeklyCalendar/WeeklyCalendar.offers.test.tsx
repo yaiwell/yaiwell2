@@ -128,8 +128,15 @@ describe('WeeklyCalendar · huecos liberados', () => {
       [openOffer()],
     );
 
-    const block = container.querySelector('[data-component="weekly-calendar-offer-offer-1"]');
-    expect(block?.className).toContain('left-1/2');
+    const offer = container.querySelector<HTMLElement>(
+      '[data-component="weekly-calendar-offer-offer-1"]',
+    );
+    const booking = container.querySelector<HTMLElement>(
+      '[data-component="weekly-calendar-booking-bk-1"]',
+    );
+    // Dos carriles: la reserva a la izquierda y la oferta a la derecha.
+    expect(booking?.style.right).toBe('calc(50% + 2px)');
+    expect(offer?.style.left).toBe('calc(50% + 2px)');
   });
 
   it('sin descuento vigente no anuncia un 0 %', () => {

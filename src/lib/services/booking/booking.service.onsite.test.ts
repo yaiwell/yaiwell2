@@ -12,12 +12,20 @@ vi.mock('@/lib/db/prisma', () => {
     booking: { findMany: vi.fn(), create: vi.fn() },
     // Sin bloqueos de agenda: `count` sin respuesta da `undefined` (no > 0).
     scheduleBlock: { count: vi.fn() },
+    // Profesional activo que presta el servicio: `bookForProfessional`
+    // lo comprueba tras el lock (el cupo del plan va en `team.bookable`).
+    professional: { findFirst: vi.fn(async () => ({ id: 'pro-active' })) },
     $executeRaw: vi.fn(),
     $transaction: vi.fn(),
   };
   prisma.$transaction.mockImplementation((fn: (tx: typeof prisma) => unknown) => fn(prisma));
   return { prisma };
 });
+
+// Cupo del plan: el profesional de estos tests entra siempre.
+vi.mock('@/lib/services/team/team.bookable', () => ({
+  getBookableProfessionalIds: vi.fn(async () => ['b2c3d4e5-f6a7-4890-9bcd-ef0123456789']),
+}));
 
 vi.mock('@/lib/services/slot-offers', () => ({
   findLiveOfferForSlot: vi.fn().mockResolvedValue(null),

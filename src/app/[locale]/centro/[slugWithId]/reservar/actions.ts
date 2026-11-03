@@ -1,30 +1,21 @@
 'use server';
 
 import { auth } from '@clerk/nextjs/server';
-import { z, ZodError } from 'zod';
+import { z } from 'zod';
 
-import {
-  ServiceNotFoundError,
-  ServicePausedError,
-  SlotUnavailableError,
-  isBookingTooSoonError,
-} from '@/lib/services/booking';
-import {
-  PaymentIntentCreationError,
-  ProfessionalNotResolvedError,
-  ProviderNotChargeableError,
-  createBookingCheckout,
-  getBookingForConfirmation,
-} from '@/lib/services/checkout';
-import { StripeOperationError } from '@/lib/services/payments';
+import { createBookingCheckout, getBookingForConfirmation } from '@/lib/services/checkout';
 import { ensureUserFromClerk } from '@/lib/services/user';
 import { isBookingPaymentSettled } from '@/lib/utils/booking-payment-status';
+
+import { mapCheckoutError } from './actions.errors';
+import { resolveBookedProfessionalId } from './booked-professional';
 
 /**
  * Server action que abre el checkout de una reserva.
  *
  * Es el único borde por el que el navegador puede iniciar un cobro. No
- * acepta importes ni profesional: sólo qué servicio y a qué hora. El
+ * acepta importes: sólo qué servicio, a qué hora y, opcionalmente, con
+ * qué profesional (validado en servidor contra el servicio). El
  * resto (precio, comisión, cuenta de destino) lo resuelve el service
  * contra BD, porque un cliente que pudiera mandar `priceCents` sería un
  * cliente que puede pagar un céntimo.
@@ -43,6 +34,9 @@ export type CheckoutErrorCode =
   | 'SERVICE_UNAVAILABLE'
   | 'SLOT_UNAVAILABLE'
   | 'SLOT_TOO_SOON'
+  // El profesional elegido ya no presta el servicio (baja, cambio de
+  // equipo): la UI vuelve al selector con «cualquiera disponible».
+  | 'PROFESSIONAL_UNAVAILABLE'
   | 'PROVIDER_NOT_CHARGEABLE'
   | 'PAYMENT_FAILED'
   // No lo devuelve `createBookingCheckoutAction` (una reserva recién
@@ -76,6 +70,12 @@ export type CheckoutActionState =
        * paso de pago usa este valor, no su propia estimación.
        */
       isLastMinute: boolean;
+      /**
+       * Profesional de la reserva: el elegido o, con «cualquiera», el que
+       * asignó el servidor. `null` si no se pudo leer (la confirmación
+       * omite la fila).
+       */
+      professionalId: string | null;
     }
   | { ok: false; code: CheckoutErrorCode };
 
@@ -120,6 +120,11 @@ export async function createBookingCheckoutAction(
 
   try {
     const session = await createBookingCheckout(input, user.id);
+    const professionalId = await resolveBookedProfessionalId(
+      session.bookingId,
+      user.id,
+      input?.professionalId,
+    );
     return {
       ok: true,
       bookingId: session.bookingId,
@@ -130,9 +135,10 @@ export async function createBookingCheckoutAction(
       slotStartIso: session.slotStartIso,
       slotEndIso: session.slotEndIso,
       isLastMinute: session.isLastMinute,
+      professionalId,
     };
   } catch (error) {
-    return { ok: false, code: mapCheckoutError(error) };
+    return { ok: false, code: mapCheckoutError(error, Boolean(input?.professionalId)) };
   }
 }
 
@@ -207,45 +213,4 @@ export async function getBookingStatusAction(input: unknown): Promise<BookingSta
     console.error('[reservar/actions] error al consultar el estado de la reserva:', error);
     return { ok: false, code: 'INTERNAL' };
   }
-}
-
-/**
- * Traduce los errores tipados del dominio a códigos de UI.
- *
- * Se separa del cuerpo de la action para que ésta se lea de un vistazo
- * y para poder testear el mapeo sin montar sesión de Clerk.
- */
-function mapCheckoutError(error: unknown): CheckoutErrorCode {
-  // Va antes del ZodError genérico: el hueco ha dejado de respetar la
-  // antelación mínima mientras el usuario rellenaba el flujo. No es un
-  // input roto, y la acción útil es la misma que con SLOT_UNAVAILABLE:
-  // elegir otra hora.
-  if (isBookingTooSoonError(error)) {
-    return 'SLOT_TOO_SOON';
-  }
-  if (error instanceof ZodError) {
-    return 'VALIDATION';
-  }
-  // Servicio borrado, pausado o sin profesional al que asignarlo: desde
-  // la perspectiva del cliente son el mismo problema, "esto ya no se
-  // puede reservar".
-  if (
-    error instanceof ServiceNotFoundError ||
-    error instanceof ServicePausedError ||
-    error instanceof ProfessionalNotResolvedError
-  ) {
-    return 'SERVICE_UNAVAILABLE';
-  }
-  if (error instanceof SlotUnavailableError) {
-    return 'SLOT_UNAVAILABLE';
-  }
-  if (error instanceof ProviderNotChargeableError) {
-    return 'PROVIDER_NOT_CHARGEABLE';
-  }
-  if (error instanceof PaymentIntentCreationError || error instanceof StripeOperationError) {
-    console.error('[reservar/actions] Stripe rechazó el checkout:', error.cause ?? error);
-    return 'PAYMENT_FAILED';
-  }
-  console.error('[reservar/actions] error inesperado al abrir el checkout:', error);
-  return 'INTERNAL';
 }

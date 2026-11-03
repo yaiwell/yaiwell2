@@ -321,6 +321,10 @@
       "title": "Studio nicht gefunden",
       "subtitle": "Möglicherweise ist es nicht mehr verfügbar oder der Link ist fehlerhaft.",
       "backToSearch": "Zurück zur Suche"
+    },
+    "team": {
+      "title": "Das Team",
+      "subtitle": "Die Menschen, die dich betreuen."
     }
   },
   "ratingSummary": {
@@ -339,7 +343,8 @@
       "addService": "Service hinzufügen",
       "providerLabel": "Aktives Geschäft",
       "sidebarNavLabel": "Panel-Navigation",
-      "bottomNavLabel": "Schnellzugriffe im Panel"
+      "bottomNavLabel": "Schnellzugriffe im Panel",
+      "team": "Team"
     },
     "preview": {
       "show": "Mit Beispieldaten ansehen",
@@ -603,12 +608,17 @@
           "reason": "Grund (optional)",
           "reasonPlaceholder": "Urlaub, Fortbildung, Arzttermin…",
           "reasonHint": "Das siehst nur du.",
-          "reasonCounter": "{count}/{max}"
+          "reasonCounter": "{count}/{max}",
+          "professional": "Fachkraft",
+          "professionalPlaceholder": "Wähle, wen du blockierst",
+          "professionalHint": "„Ganzes Team“ blockiert diese Zeit für jede Fachkraft.",
+          "allTeam": "Ganzes Team"
         },
         "issues": {
           "required": "Gib Datum und Uhrzeit für Beginn und Ende an.",
           "step": "Uhrzeiten gehen in 5-Minuten-Schritten (10:00, 10:05, 10:10…).",
-          "endBeforeStart": "Das Ende muss nach dem Beginn liegen."
+          "endBeforeStart": "Das Ende muss nach dem Beginn liegen.",
+          "professional": "Wähle eine Fachkraft oder „Ganzes Team“."
         },
         "created": {
           "title": "Zeit blockiert",
@@ -648,9 +658,15 @@
           "conflictHint": "Storniere sie zuerst im Kalender oder wähle einen anderen Zeitraum.",
           "notFound": "Wir finden dein Unternehmen nicht. Lade die Seite neu.",
           "forbidden": "Du darfst für dieses Unternehmen keine Zeit blockieren.",
-          "internal": "Wir konnten die Zeit nicht blockieren. Versuch es noch einmal."
+          "internal": "Wir konnten die Zeit nicht blockieren. Versuch es noch einmal.",
+          "professionalRequired": "Wähle, welche Fachkraft du blockierst, oder wähle „Ganzes Team“."
         }
-      }
+      },
+      "filter": {
+        "region": "Nach Fachkraft filtern",
+        "all": "Alle"
+      },
+      "withProfessional": "{label} · {professional}"
     },
     "services": {
       "title": "Angebotene Services",
@@ -686,6 +702,13 @@
         "hiddenBadge": "Durch deinen Tarif ausgeblendet",
         "reached": "Du hast die maximale Anzahl veröffentlichter Leistungen deines Tarifs erreicht. Wechsle in einen höheren Tarif, um mehr zu veröffentlichen.",
         "upgradeCta": "Tarif upgraden"
+      },
+      "form": {
+        "professionalsLabel": "Wer bietet es an",
+        "professionalsHelp": "Markiere, wer aus deinem Team für diese Leistung gebucht werden kann.",
+        "professionalsRequired": "Wähle mindestens eine Fachkraft aus.",
+        "professionalsInvalid": "Eine der gewählten Fachkräfte ist nicht mehr in deinem Team. Lade die Seite neu und wähle erneut.",
+        "professionalsOutOfPlan": "Außerhalb deines Tarifs"
       }
     },
     "addService": {
@@ -1014,6 +1037,83 @@
           "generic": "Speichern nicht möglich. Versuche es in ein paar Minuten erneut."
         }
       }
+    },
+    "team": {
+      "title": "Team",
+      "subtitle": "Wer in deinem Geschäft arbeitet, mit Arbeitszeiten und Leistungen.",
+      "addCta": "Fachkraft hinzufügen",
+      "counter": "{active} von {max} Fachkräften in deinem Tarif",
+      "counterUnlimited": "{active} Fachkräfte · Unbegrenzt",
+      "upgradeCta": "Tarif upgraden",
+      "limitReached": "Du hast die maximale Anzahl an Fachkräften in deinem Tarif erreicht.",
+      "outOfPlanNotice": "Einige Fachkräfte liegen außerhalb deines Tarifs: Sie nehmen keine neuen Buchungen an, bis du upgradest.",
+      "unstaffedTitle": "Leistungen, die nicht buchbar sind",
+      "unstaffedDescription": "Niemand aus deinem Team, der Buchungen annimmt, bietet diese Leistungen an. Weise sie jemandem zu oder upgrade deinen Tarif.",
+      "empty": "Noch niemand in deinem Team.",
+      "serviceCount": "{count, plural, =0 {Keine Leistungen} one {# Leistung} other {# Leistungen}}",
+      "status": {
+        "active": "Aktiv",
+        "outOfPlan": "Außerhalb deines Tarifs",
+        "inactive": "Deaktiviert"
+      },
+      "edit": "Bearbeiten",
+      "form": {
+        "newTitle": "Neue Fachkraft",
+        "newSubtitle": "Profil, Arbeitszeiten und angebotene Leistungen.",
+        "editTitle": "Fachkraft bearbeiten",
+        "back": "Zurück zum Team",
+        "profileTitle": "Profil",
+        "nameLabel": "Name",
+        "namePlaceholder": "z. B. Laura",
+        "bioLabel": "Vorstellung (optional)",
+        "bioPlaceholder": "Spezialgebiete, Erfahrung…",
+        "bioCounter": "{count}/{max}",
+        "photoLabel": "Foto (optional)",
+        "photoHelp": "Erscheint auf deiner Seite neben dem Namen.",
+        "scheduleTitle": "Arbeitszeiten",
+        "scheduleSubtitle": "Wann Buchungen möglich sind. Du kannst mehrere Zeitfenster pro Tag hinzufügen.",
+        "servicesTitle": "Angebotene Leistungen",
+        "servicesSubtitle": "Buchungen gibt es nur für die Leistungen, die du markierst.",
+        "servicesEmpty": "Du hast noch keine Leistungen. Du kannst sie beim Anlegen zuweisen.",
+        "submitCreate": "Zum Team hinzufügen",
+        "submitSave": "Änderungen speichern",
+        "saving": "Wird gespeichert…",
+        "saved": "Änderungen gespeichert.",
+        "inactiveNotice": "Deaktiviert. Aktiviere die Fachkraft wieder, um sie zu bearbeiten und wieder Buchungen anzunehmen.",
+        "outOfPlanNotice": "Außerhalb deines Tarifs: keine neuen Buchungen, bis du upgradest."
+      },
+      "errors": {
+        "VALIDATION": "Prüfe die Felder: Der Name ist Pflicht, die Vorstellung darf bis zu 300 Zeichen lang sein.",
+        "NOT_FOUND": "Diese Fachkraft ist nicht mehr in deinem Team. Lade die Seite neu.",
+        "INACTIVE": "Deaktiviert. Aktiviere die Fachkraft wieder, bevor du sie bearbeitest.",
+        "PHOTO_INVALID": "Wir konnten dieses Foto nicht verwenden. Lade es bitte erneut hoch.",
+        "SERVICES_INVALID": "Eine der Leistungen existiert nicht mehr. Lade die Seite neu und wähle erneut.",
+        "PLAN_LIMIT": "Du hast die maximale Anzahl an Fachkräften in deinem Tarif erreicht. Upgrade, um weitere hinzuzufügen.",
+        "HAS_FUTURE_BOOKINGS": "Es gibt noch anstehende Termine. Storniere sie, bevor du deaktivierst.",
+        "LAST_ACTIVE": "Dein Geschäft braucht mindestens eine aktive Fachkraft.",
+        "UNSTAFFED_SERVICES": "Einige Leistungen hätten dann niemanden mehr. Weise sie jemand anderem zu oder pausiere sie.",
+        "INTERNAL": "Wir konnten die Änderungen nicht speichern. Versuche es in ein paar Sekunden erneut."
+      },
+      "deactivate": {
+        "button": "Deaktivieren",
+        "title": "{name} deaktivieren?",
+        "description": "Die Fachkraft erscheint nicht mehr auf deiner Seite und bekommt keine neuen Buchungen. Der Verlauf bleibt erhalten und du kannst sie jederzeit wieder aktivieren.",
+        "bookingsTitle": "Zuerst musst du die anstehenden Termine stornieren:",
+        "bookingsHelp": "Storniere sie im Kalender (die Kundschaft bekommt eine Erstattung). Wenn keine mehr übrig sind, kannst du deaktivieren.",
+        "calendarLink": "Zum Kalender",
+        "unstaffedTitle": "Diese Leistungen hätten dann niemanden mehr:",
+        "confirm": "Deaktivieren",
+        "cancel": "Abbrechen",
+        "pending": "Wird deaktiviert…"
+      },
+      "reactivate": {
+        "button": "Wieder aktivieren",
+        "pending": "Wird aktiviert…"
+      },
+      "settingsLink": {
+        "description": "Jede Fachkraft in deinem Team hat eigene Arbeitszeiten.",
+        "cta": "Arbeitszeiten des Teams"
+      }
     }
   },
   "booking": {
@@ -1169,6 +1269,14 @@
         "payOnline": "Online bezahlen",
         "viewMyBookings": "Meine Buchungen ansehen"
       }
+    },
+    "professionalPicker": {
+      "legend": "Wer soll dich betreuen?",
+      "anyHint": "Mit „Egal welche Fachperson“ siehst du die freien Termine des ganzen Teams und wir teilen dir jemanden zu, der frei ist.",
+      "unavailable": "Diese Fachperson bietet diese Leistung nicht mehr an.",
+      "chooseAgain": "Andere Fachperson wählen",
+      "professionalGone": "Die Fachperson, die du gewählt hast, bietet diese Leistung nicht mehr an. Wir haben auf „Egal welche Fachperson“ zurückgestellt: Wähle eine Uhrzeit, um fortzufahren.",
+      "assignedLabel": "Bei"
     }
   },
   "customerArea": {
@@ -1490,9 +1598,7 @@
       "eyebrow": "Service",
       "durationLabel": "Dauer",
       "priceLabel": "Preis",
-      "professionalLabel": "Zugewiesene Fachperson",
-      "anyProfessional": "Egal welche Fachperson aus dem Studio",
-      "professionalPhotoAlt": "Foto von {name}"
+      "anyProfessional": "Egal welche Fachperson aus dem Studio"
     },
     "description": {
       "title": "Über diesen Service"
@@ -1511,6 +1617,10 @@
       "reserve": "Buchen",
       "fromPrice": "ab {price}",
       "secureNote": "Sofortige Bestätigung. Sichere Zahlung."
+    },
+    "team": {
+      "title": "Wer es anbietet",
+      "chooseHint": "Bei der Buchung kannst du wählen, wer dich betreut, oder wir teilen dir jemanden zu, der frei ist."
     }
   },
   "forProviders": {

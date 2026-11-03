@@ -5,7 +5,7 @@ import { z } from 'zod';
 import {
   InvalidScheduleError,
   ProfessionalNotForServiceError,
-  ProfessionalNotFoundError,
+  AvailabilityProfessionalNotFoundError,
   ServiceForAvailabilityNotFoundError,
 } from '@/lib/services/availability';
 import type { BookingSlot } from '@/lib/services/availability';
@@ -124,7 +124,10 @@ export async function GET(
         { status: 404 },
       );
     }
-    if (err instanceof ProfessionalNotFoundError || err instanceof ProfessionalNotForServiceError) {
+    if (
+      err instanceof AvailabilityProfessionalNotFoundError ||
+      err instanceof ProfessionalNotForServiceError
+    ) {
       return NextResponse.json(
         { error: { code: err.code, message: err.message } },
         { status: 404 },

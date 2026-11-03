@@ -74,11 +74,10 @@ export async function generateMetadata({ params }: ServicePageProps): Promise<Me
  *     URL la consume otro agente; aquí solo nos comprometemos al shape.
  *  4. Pasa todo al compositor presentacional `ServiceDetail`.
  *
- * Profesional asignado: el catálogo de Fase 0 no tiene profesionales
- * concretos por servicio (`service.professionalId` es siempre `null`),
- * por lo que pasamos `professional={null}` y la UI muestra el fallback
- * "cualquier profesional disponible del centro". Cuando se modele el
- * dominio `Professional` será cuestión de resolverlo aquí y pasarlo.
+ * Quién lo presta sale de `service_professionals` (migración 9h) vía
+ * `getProviderService`, ya filtrado a profesionales activos y solo con
+ * sus campos públicos. La columna heredada `service.professionalId` ya
+ * no se lee: el cliente elige profesional (o «cualquiera») al reservar.
  */
 export default async function ServicePage({ params }: ServicePageProps) {
   const { locale, slugWithId, serviceId } = await params;
@@ -91,7 +90,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
   const detail = await loadDetail(slugWithId, serviceId);
   if (!detail) notFound();
 
-  const { provider, service } = detail;
+  const { provider, service, professionals } = detail;
 
   // Reconstruimos el segmento canónico para los breadcrumbs y para el
   // CTA "Reservar". Aunque la URL original ya contiene `slugWithId`,
@@ -104,7 +103,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
     <ServiceDetail
       provider={provider}
       service={service}
-      professional={null}
+      professionals={professionals}
       locale={locale as 'es' | 'ca' | 'en' | 'de'}
       reserveHref={reserveHref}
       providerSlugWithId={canonicalSlugWithId}

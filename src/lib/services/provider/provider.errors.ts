@@ -72,3 +72,15 @@ export class ProviderHasNoProfessionalError extends Error {
     this.name = 'ProviderHasNoProfessionalError';
   }
 }
+
+/**
+ * El negocio tiene varios profesionales activos: el horario ya no es uno
+ * solo del negocio, se edita por profesional en `/panel/equipo`.
+ */
+export class ProviderHasTeamError extends Error {
+  readonly code = 'HAS_TEAM';
+  constructor(message = 'Provider has several professionals; edit schedules per professional.') {
+    super(message);
+    this.name = 'ProviderHasTeamError';
+  }
+}

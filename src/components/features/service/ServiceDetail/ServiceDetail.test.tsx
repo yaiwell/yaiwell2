@@ -20,15 +20,14 @@ vi.mock('@/i18n/navigation', () => ({
 }));
 
 import { ServiceDetail } from './ServiceDetail';
-import type { AssignedProfessional } from './ServiceDetail.types';
 
 /**
  * Tests de la ficha de servicio individual.
  *
  * Cubrimos las dos ramas visibles diferenciadas:
- *  - Sin profesional asignado → muestra "cualquier profesional".
- *  - Con profesional asignado → muestra nombre, rol y foto con alt
- *    accesible interpolado.
+ *  - Sin nadie que lo preste → muestra "cualquier profesional".
+ *  - Con profesionales → «Quién lo presta» con nombre, bio y foto, y el
+ *    aviso de que se elige al reservar cuando hay varios.
  *
  * También verificamos que:
  *  - El breadcrumb final usa el nombre del servicio en el locale activo.
@@ -43,11 +42,13 @@ const messages = {
       eyebrow: 'Servicio',
       durationLabel: 'Duración',
       priceLabel: 'Precio',
-      professionalLabel: 'Profesional asignado',
       anyProfessional: 'Cualquier profesional disponible del centro',
-      professionalPhotoAlt: 'Foto de {name}',
     },
     description: { title: 'Sobre este servicio' },
+    team: {
+      title: 'Quién lo presta',
+      chooseHint: 'Podrás elegir quién te atiende al reservar.',
+    },
     policy: {
       title: 'Antes de reservar',
       cancellationTitle: 'Cancelación flexible',
@@ -108,7 +109,7 @@ describe('ServiceDetail', () => {
       <ServiceDetail
         provider={provider}
         service={service}
-        professional={null}
+        professionals={[]}
         locale="es"
         reserveHref="/centro/atelier-norte-prov-01/reservar?serviceId=svc-01"
         providerSlugWithId="atelier-norte-prov-01"
@@ -127,51 +128,56 @@ describe('ServiceDetail', () => {
     expect(providerLink?.textContent).toBe('Atelier Norte');
   });
 
-  it('muestra el fallback "cualquier profesional" cuando no hay profesional asignado', () => {
+  it('muestra el fallback "cualquier profesional" cuando nadie presta el servicio', () => {
     renderWithIntl(
       <ServiceDetail
         provider={provider}
         service={service}
-        professional={null}
+        professionals={[]}
         locale="es"
         reserveHref="/r"
         providerSlugWithId="atelier-norte-prov-01"
       />,
     );
 
-    const card = screen.getByLabelText('Profesional asignado');
+    const block = screen.getByRole('region', { name: 'Quién lo presta' });
     expect(
-      within(card).getByText('Cualquier profesional disponible del centro'),
+      within(block).getByText('Cualquier profesional disponible del centro'),
     ).toBeInTheDocument();
-    // Sin profesional no hay imagen real, solo el fallback con la inicial.
-    expect(within(card).queryByRole('img')).not.toBeInTheDocument();
+    expect(block.querySelector('img')).toBeNull();
   });
 
-  it('muestra nombre, rol y foto del profesional cuando viene asignado', () => {
-    const professional: AssignedProfessional = {
-      id: 'pro-01',
-      name: 'Laia Vidal',
-      photoUrl: 'https://example.com/laia.jpg',
-      role: 'Estilista senior',
-    };
-
+  it('muestra quién lo presta: nombre, bio, foto e iniciales, y el aviso de elegir', () => {
     renderWithIntl(
       <ServiceDetail
         provider={provider}
         service={service}
-        professional={professional}
+        professionals={[
+          {
+            id: 'pro-01',
+            name: 'Laia Vidal',
+            photo: 'https://example.com/laia.jpg',
+            bio: 'Estilista senior',
+          },
+          { id: 'pro-02', name: 'Marc Soler', photo: null, bio: null },
+        ]}
         locale="es"
         reserveHref="/r"
         providerSlugWithId="atelier-norte-prov-01"
       />,
     );
 
-    const card = screen.getByLabelText('Profesional asignado');
-    expect(within(card).getByText('Laia Vidal')).toBeInTheDocument();
-    expect(within(card).getByText('Estilista senior')).toBeInTheDocument();
-
-    const photo = within(card).getByAltText('Foto de Laia Vidal') as HTMLImageElement;
-    expect(photo.src).toBe('https://example.com/laia.jpg');
+    const block = screen.getByRole('region', { name: 'Quién lo presta' });
+    expect(within(block).getByText('Laia Vidal')).toBeInTheDocument();
+    expect(within(block).getByText('Estilista senior')).toBeInTheDocument();
+    expect(within(block).getByText('Marc Soler')).toBeInTheDocument();
+    // Sin foto: iniciales en el avatar (decorativo).
+    expect(within(block).getByText('MS')).toBeInTheDocument();
+    const photo = block.querySelector('img') as HTMLImageElement | null;
+    expect(photo?.src).toBe('https://example.com/laia.jpg');
+    expect(
+      within(block).getByText('Podrás elegir quién te atiende al reservar.'),
+    ).toBeInTheDocument();
   });
 
   it('formatea el precio en euros y enlaza el CTA al reserveHref recibido', () => {
@@ -179,7 +185,7 @@ describe('ServiceDetail', () => {
       <ServiceDetail
         provider={provider}
         service={service}
-        professional={null}
+        professionals={[]}
         locale="es"
         reserveHref="/centro/atelier-norte-prov-01/reservar?serviceId=svc-01"
         providerSlugWithId="atelier-norte-prov-01"
@@ -206,7 +212,7 @@ describe('ServiceDetail', () => {
       <ServiceDetail
         provider={provider}
         service={service}
-        professional={null}
+        professionals={[]}
         locale="ca"
         reserveHref="/r"
         providerSlugWithId="atelier-norte-prov-01"

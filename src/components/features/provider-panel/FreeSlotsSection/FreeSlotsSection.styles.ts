@@ -13,5 +13,6 @@ export const freeSlotsSectionStyles = {
   itemMain: 'flex min-w-0 flex-col',
   itemTime: 'text-sm font-medium tabular-nums text-foreground',
   itemService: 'truncate text-sm text-muted-foreground',
+  itemProfessional: 'truncate text-xs font-medium text-foreground',
   more: 'text-xs text-muted-foreground',
 } as const;

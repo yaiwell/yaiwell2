@@ -13,6 +13,7 @@ import type { PhotoUploadState } from './PhotoUploader.types';
 interface UsePhotoUploaderInput {
   bucket: StorageBucket;
   ownerId: string;
+  folder?: 'professionals';
   maxFiles: number;
   initialUrls: readonly string[];
   onChange?: (urls: string[]) => void;
@@ -36,6 +37,7 @@ interface UsePhotoUploaderInput {
 export function usePhotoUploader({
   bucket,
   ownerId,
+  folder,
   maxFiles,
   initialUrls,
   onChange,
@@ -62,18 +64,29 @@ export function usePhotoUploader({
   // URLs iniciales (no hay cambio real respecto al input del consumidor).
   const isFirstRender = useRef(true);
 
+  // Último `onChange` del consumidor en un ref: así la notificación
+  // depende solo de `uploads`. Con `onChange` en las dependencias, un
+  // consumidor que pasa una función inline (nueva en cada render) volvía
+  // a recibir las URLs en cada render, actualizaba su estado, se volvía a
+  // pintar… y entraba en bucle («Maximum update depth exceeded» en la
+  // ficha de un profesional del equipo).
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
   // Notificación al consumidor con las URLs activas (subidas done).
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
-    if (!onChange) return;
+    if (!onChangeRef.current) return;
     const urls = uploads
       .filter((u) => u.status === 'done' && u.publicUrl)
       .map((u) => u.publicUrl as string);
-    onChange(urls);
-  }, [uploads, onChange]);
+    onChangeRef.current(urls);
+  }, [uploads]);
 
   const doneCount = uploads.filter((u) => u.status === 'done').length;
   const uploadingCount = uploads.filter((u) => u.status === 'uploading').length;
@@ -105,6 +118,7 @@ export function usePhotoUploader({
         const form = new FormData();
         form.append('bucket', bucket);
         form.append('ownerId', ownerId);
+        if (folder) form.append('folder', folder);
         form.append('file', file);
 
         const res = await fetch('/api/storage/upload', {
@@ -134,7 +148,7 @@ export function usePhotoUploader({
         );
       }
     },
-    [bucket, ownerId],
+    [bucket, ownerId, folder],
   );
 
   /**

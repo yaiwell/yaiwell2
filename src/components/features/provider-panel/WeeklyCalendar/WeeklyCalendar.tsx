@@ -11,8 +11,10 @@ import {
   groupRowsByWeekday,
 } from './WeeklyCalendar.logic';
 import { getScheduleBlockRangeSpans, groupScheduleBlocksByWeekday } from './WeeklyCalendar.blocks';
+import { assignLanesByWeekday } from './WeeklyCalendar.lanes';
 import { groupOffersByWeekday } from './WeeklyCalendar.offers';
 import { legendDotByStatus, weeklyCalendarStyles as s } from './WeeklyCalendar.styles';
+import { ProfessionalFilter } from './ProfessionalFilter';
 import { WeekNavigation } from './WeekNavigation';
 import type { PanelBookingStatus, WeeklyCalendarProps } from './WeeklyCalendar.types';
 
@@ -38,6 +40,10 @@ const LEGEND_STATUSES: PanelBookingStatus[] = [
  * puntuales de agenda, como franjas rayadas que se pueden quitar; solo
  * amplían las horas visibles los que no tocan medianoche.
  *
+ * Con más de un profesional activo se enseñan las fichas de filtro
+ * (`?pro=`) y, en «Todos», el nombre del profesional en cada bloque. Lo
+ * que coincide en una columna se reparte en carriles para no taparse.
+ *
  * Cuadrícula de 7 días desde `md`; por debajo, vista de un día.
  */
 export function WeeklyCalendar({
@@ -48,20 +54,32 @@ export function WeeklyCalendar({
   locale,
   readOnly,
   now,
+  team = [],
+  selectedProfessionalId = null,
 }: WeeklyCalendarProps) {
   const t = useTranslations('providerPanel.calendar');
   const rows = buildBookingActionRows(bookings, now);
   const hours = getHoursRange(rows, [...slotOffers, ...getScheduleBlockRangeSpans(scheduleBlocks)]);
   const formatPrice = (cents: number) => formatCurrencyFromCents(cents, locale);
   const grouped = groupRowsByWeekday(rows, hours[0], formatPrice);
-  const groupedOffers = groupOffersByWeekday(slotOffers, hours[0], grouped, formatPrice);
+  const groupedOffers = groupOffersByWeekday(slotOffers, hours[0], formatPrice);
   const groupedBlocks = groupScheduleBlocksByWeekday(scheduleBlocks, hours);
+  assignLanesByWeekday(grouped, groupedOffers, groupedBlocks);
   const { days, nav } = week;
+  const hasTeam = team.length > 1;
+  const showProfessional = hasTeam && selectedProfessionalId === null;
 
   return (
     <div className={s.root} data-component="weekly-calendar">
+      {hasTeam ? (
+        <ProfessionalFilter
+          team={team}
+          selectedId={selectedProfessionalId}
+          week={nav.isCurrentWeek ? null : nav.weekKey}
+        />
+      ) : null}
       <div className={s.toolbar}>
-        {readOnly ? null : <WeekNavigation nav={nav} />}
+        {readOnly ? null : <WeekNavigation nav={nav} professionalId={selectedProfessionalId} />}
         <p className={s.summary} data-component="weekly-calendar-summary">
           {t('summary', { count: bookings.length })}
         </p>
@@ -109,6 +127,7 @@ export function WeeklyCalendar({
                     hours={hours}
                     locale={locale}
                     readOnly={readOnly}
+                    showProfessional={showProfessional}
                     variant="week"
                   />
                 </div>
@@ -126,6 +145,7 @@ export function WeeklyCalendar({
         hours={hours}
         locale={locale}
         readOnly={readOnly}
+        showProfessional={showProfessional}
         initialDayIndex={getInitialDayIndex(days, grouped)}
       />
 

@@ -16,6 +16,9 @@ export function resolveOnsiteErrorAction(error: OnsiteBookingFailure): OnsiteErr
     case 'SLOT_UNAVAILABLE':
     case 'SLOT_TOO_SOON':
     case 'SERVICE_UNAVAILABLE':
+    // El flujo vuelve además a «cualquiera disponible» (ver
+    // `isProfessionalUnavailable`).
+    case 'PROFESSIONAL_UNAVAILABLE':
       return 'chooseSlot';
     case 'ONSITE_NOT_ALLOWED':
       return 'payOnline';

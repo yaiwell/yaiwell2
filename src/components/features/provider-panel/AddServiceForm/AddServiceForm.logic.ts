@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useMemo, useState, useTransition, type FormEvent } from 'react';
+import { useTranslations } from 'next-intl';
 
 import {
   createServiceAction,
@@ -133,12 +134,18 @@ export function useAddServiceSubmit({
   draft,
   translateError,
   initialPlanLimitReached = false,
+  professionalIds,
+  professionalsEmptyMessage,
 }: {
   locale: AppLocale;
   serviceId?: string;
   draft: AddServiceDraft;
   translateError: (code: CreateServiceErrorCode) => string;
   initialPlanLimitReached?: boolean;
+  /** `undefined` = no se envía (negocio con un solo profesional). */
+  professionalIds?: string[];
+  /** Si llega, el envío se corta con este mensaje (selector vacío). */
+  professionalsEmptyMessage?: string;
 }) {
   const [isPending, startTransition] = useTransition();
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -147,10 +154,15 @@ export function useAddServiceSubmit({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitError(null);
+    if (professionalsEmptyMessage) {
+      setSubmitError(professionalsEmptyMessage);
+      return;
+    }
+    const raw = { ...draft, professionalIds };
     startTransition(async () => {
       const result = serviceId
-        ? await updateServiceAction(serviceId, locale, draft)
-        : await createServiceAction(locale, draft);
+        ? await updateServiceAction(serviceId, locale, raw)
+        : await createServiceAction(locale, raw);
       if (!result || result.ok) return;
       if (result.code === 'PLAN_LIMIT_REACHED') {
         setPlanLimitReached(true);
@@ -161,4 +173,19 @@ export function useAddServiceSubmit({
   }
 
   return { isPending, submitError, planLimitReached, handleSubmit };
+}
+
+/**
+ * Traduce el código de error de la action a texto. El del equipo
+ * (`PROFESSIONALS_INVALID`) usa el copy del selector «Quién lo presta»,
+ * que es donde el negocio lo tiene que corregir.
+ */
+export function useTranslateServiceError(): (code: CreateServiceErrorCode) => string {
+  const t = useTranslations('providerPanel.addService');
+  const tForm = useTranslations('providerPanel.services.form');
+  return useCallback(
+    (code: CreateServiceErrorCode) =>
+      code === 'PROFESSIONALS_INVALID' ? tForm('professionalsInvalid') : t(`errors.${code}`),
+    [t, tForm],
+  );
 }

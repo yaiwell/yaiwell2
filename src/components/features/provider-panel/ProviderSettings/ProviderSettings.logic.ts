@@ -29,10 +29,11 @@ import type { ProviderSettingsDraft, SaveErrorCode, SaveNotice } from './Provide
 export function useProviderSettingsForm(
   locale: AppLocale,
   initialDraft: ProviderSettingsDraft,
-  initialSchedule: WeeklySchedule,
+  initialSchedule: WeeklySchedule | null,
 ) {
   const [draft, setDraft] = useState<ProviderSettingsDraft>(initialDraft);
-  const [schedule, setSchedule] = useState<WeeklySchedule>(initialSchedule);
+  // `null` = negocio con equipo: el horario no se guarda desde aquí.
+  const [schedule, setSchedule] = useState<WeeklySchedule | null>(initialSchedule);
   const [notice, setNotice] = useState<SaveNotice | null>(null);
   const [isPending, startTransition] = useTransition();
 
@@ -71,7 +72,9 @@ export function useProviderSettingsForm(
           contactPhone: draft.contactPhone,
           contactEmail: draft.contactEmail,
         }),
-        updateProviderScheduleAction(locale, schedule),
+        schedule
+          ? updateProviderScheduleAction(locale, schedule)
+          : Promise.resolve<UpdateProviderScheduleActionState>({ ok: true }),
       ]);
 
       const firstError = pickFirstError(settingsResult, scheduleResult);

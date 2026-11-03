@@ -350,7 +350,8 @@ test('móvil: la barra del panel va pegada abajo y sus enlaces no se pisan', asy
     expect(Math.round(box!.y + box!.height)).toBe(812);
 
     const links = nav.locator('a');
-    await expect(links).toHaveCount(5);
+    // Resumen, Calendario, Servicios, Equipo (2026-11-03), Mi negocio y Valoraciones.
+    await expect(links).toHaveCount(6);
     const rects = await links.evaluateAll((els) =>
       els.map((el) => {
         const r = el.getBoundingClientRect();

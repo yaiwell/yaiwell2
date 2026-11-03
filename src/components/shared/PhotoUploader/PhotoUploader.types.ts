@@ -28,6 +28,11 @@ export interface PhotoUploaderProps {
    *  - `provider-photos` / `service-photos`: el `providerId`.
    */
   ownerId: string;
+  /**
+   * Subcarpeta opcional dentro de `ownerId` (lista cerrada en
+   * `/api/storage/upload`). `professionals` = fotos del equipo.
+   */
+  folder?: 'professionals';
   /** Número máximo de fotos permitidas (incluye las iniciales). */
   maxFiles?: number;
   /**

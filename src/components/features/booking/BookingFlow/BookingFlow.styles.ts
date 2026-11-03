@@ -29,6 +29,9 @@ export const bookingFlowStyles = {
   notice:
     'rounded-2xl border border-dashed border-border bg-muted/50 px-4 py-3 text-sm text-muted-foreground',
 
+  // Paso de hueco: selector de profesional encima del calendario.
+  slotStep: 'flex flex-col gap-6',
+
   // Pie del flujo: navegación entre pasos.
   footer: 'flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between',
   backButton:

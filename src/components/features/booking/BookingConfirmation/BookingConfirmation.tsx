@@ -1,6 +1,7 @@
 import { CheckCircle2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { ProfessionalAvatar } from '@/components/shared/ProfessionalAvatar';
 import { Link } from '@/i18n/navigation';
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
@@ -35,8 +36,10 @@ export function BookingConfirmation({
   discountPct = null,
   paymentPending = false,
   paymentMode = 'online',
+  professional = null,
 }: BookingConfirmationProps) {
   const t = useTranslations('booking.confirmation');
+  const tPicker = useTranslations('booking.professionalPicker');
 
   // `en` y `de` son opcionales en `LocalizedText`: indexar a pelo dejaba
   // el nombre del servicio en blanco en esos dos idiomas.
@@ -75,6 +78,15 @@ export function BookingConfirmation({
           <dt className={s.rowLabel}>{t('serviceLabel')}</dt>
           <dd className={s.rowValue}>{serviceName}</dd>
         </div>
+        {professional && (
+          <div className={s.row} data-component="booking-confirmation-professional">
+            <dt className={s.rowLabel}>{tPicker('assignedLabel')}</dt>
+            <dd className={s.rowValueWithAvatar}>
+              <ProfessionalAvatar name={professional.name} photo={professional.photo} size="sm" />
+              {professional.name}
+            </dd>
+          </div>
+        )}
         <div className={s.row}>
           <dt className={s.rowLabel}>{t('whenLabel')}</dt>
           {/* `formatSlotDateLong` ya incluye la hora de inicio, así que

@@ -4,27 +4,33 @@ import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
+import type { PublicProfessional } from '@/types/domain';
 
 import { BookingConfirmation } from '../BookingConfirmation';
 import { BookingSummary } from '../BookingSummary';
 import { OnsiteConfirmPanel } from '../OnsiteConfirmPanel';
-import { SlotPicker } from '../SlotPicker';
+import { findProfessional } from '../ProfessionalPicker';
 
 import { BookingCheckoutPanel } from './BookingCheckoutPanel';
 import { useIsLastMinuteSlot } from './BookingFlow.lastMinute';
 import { useBookingFlow } from './BookingFlow.logic';
 import { resolveConfirmation, useBookingFlowPayment } from './BookingFlow.payment';
 import { useBookingPrice } from './BookingFlow.price';
-import { BOOKING_STEPS } from './BookingFlow.steps';
+import { resolveShownProfessional } from './BookingFlow.professional';
+import { BOOKING_STEPS, resolveStepTitle } from './BookingFlow.steps';
 import { bookingFlowStyles as s } from './BookingFlow.styles';
 import type { BookingFlowProps } from './BookingFlow.types';
 import { BookingFlowFooter } from './BookingFlowFooter';
+import { BookingSlotStep } from './BookingSlotStep';
+
+/** Lista vacía estable: un `[]` por defecto en cada render rompería el memo. */
+const EMPTY_PROFESSIONALS: PublicProfessional[] = [];
 
 /**
  * Orquestador del flujo de reserva.
  *
  * Renderiza cada paso en función del estado del hook `useBookingFlow`:
- *  1. `slot`: el usuario elige día y hora.
+ *  1. `slot`: el usuario elige profesional (si hay varios), día y hora.
  *  2. `summary`: revisa los datos, añade notas y elige cómo pagar.
  *  3. `payment`: online, se crea la reserva en `pending` y se cobra con
  *     Stripe; en el local, se confirma la reserva sin cobro (§4.bis).
@@ -39,13 +45,17 @@ export function BookingFlow({
   locale,
   providerSlugWithId,
   initialSlotIso,
+  professionals = EMPTY_PROFESSIONALS,
 }: BookingFlowProps) {
   const t = useTranslations('booking.flow');
   const tPolicy = useTranslations('booking.policy');
+  const tPicker = useTranslations('booking.professionalPicker');
 
-  const flow = useBookingFlow({ serviceId: service.id });
+  const professionalIds = useMemo(() => professionals.map((p) => p.id), [professionals]);
+  const flow = useBookingFlow({ serviceId: service.id, professionalIds });
   const { step, stepIndex, draft, checkout, slotExpired, paymentPending } = flow;
   const { goNext, selectSlot, updateDraft, completePayment, retryCheckout, expireCheckout } = flow;
+  const { selectProfessional, clearSlot } = flow;
   // Método de pago y reserva en el local; envuelve volver y «otra hora»
   // para que un error del local no sobreviva al cambio de paso.
   const payment = useBookingFlowPayment({ ...flow, serviceId: service.id });
@@ -100,26 +110,18 @@ export function BookingFlow({
           locale={locale}
           providerSlugWithId={providerSlugWithId}
           {...confirmed}
+          professional={resolveShownProfessional({
+            onsite: onsiteState,
+            checkout,
+            chosenId: draft.professionalId,
+            professionals,
+          })}
         />
       </section>
     );
   }
 
-  // Resolvemos el título del paso con literales para que next-intl
-  // pueda validar las claves en tiempo de compilación. Un mapa con
-  // `string` rompería el typecheck del template strict de mensajes.
-  const stepTitle = (() => {
-    switch (step) {
-      case 'slot':
-        return t('steps.slot');
-      case 'summary':
-        return t('steps.summary');
-      case 'payment':
-        return paymentMethod === 'onsite' ? t('steps.onsite') : t('steps.payment');
-      case 'confirmation':
-        return t('steps.confirmation');
-    }
-  })();
+  const stepTitle = resolveStepTitle(t, step, paymentMethod);
 
   return (
     <section className={s.root} data-component="booking-flow">
@@ -145,6 +147,12 @@ export function BookingFlow({
       {/* El hueco guardado puede haber caducado mientras el usuario se
           autenticaba. Lo decimos con claridad en lugar de devolverlo al
           calendario sin explicación. */}
+      {payment.professionalGone && (
+        <p className={s.notice} role="status" data-component="booking-flow-professional-gone">
+          {tPicker('professionalGone')}
+        </p>
+      )}
+
       {step === 'slot' && slotExpired && (
         <p className={s.notice} role="status" data-component="booking-flow-slot-expired">
           {t('slotExpiredNotice')}
@@ -159,17 +167,21 @@ export function BookingFlow({
 
       <div className={s.card}>
         {step === 'slot' && (
-          <SlotPicker
+          <BookingSlotStep
             providerId={provider.id}
             serviceId={service.id}
             serviceDurationMinutes={service.durationMinutes}
             locale={locale}
+            professionals={professionals}
+            professionalId={draft.professionalId}
             selectedStartIso={draft.slotStartIso}
             initialSlotIso={initialSlotIso}
-            onSelect={(slot) => {
+            onSelectProfessional={selectProfessional}
+            onSelectSlot={(slot) => {
               rememberSlot(slot);
               selectSlot(slot.startAtIso, slot.endAtIso);
             }}
+            onSlotGone={clearSlot}
           />
         )}
 
@@ -187,6 +199,7 @@ export function BookingFlow({
             paymentOptions={payment.paymentOptions}
             paymentMethod={paymentMethod}
             onPaymentMethodChange={payment.choosePaymentMethod}
+            professional={findProfessional(draft.professionalId, professionals)}
           />
         )}
 

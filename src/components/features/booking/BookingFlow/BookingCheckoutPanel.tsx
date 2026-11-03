@@ -56,6 +56,7 @@ export function BookingCheckoutPanel({
   onHoldExpired,
 }: BookingCheckoutPanelProps) {
   const t = useTranslations('booking.checkout');
+  const tPicker = useTranslations('booking.professionalPicker');
 
   if (checkout.status === 'ready') {
     // Manda el servidor: `checkout.isLastMinute` se calcula con su reloj
@@ -89,7 +90,11 @@ export function BookingCheckoutPanel({
     return (
       <div className={s.statusBox} role="alert" data-component="booking-checkout-error">
         <p className={s.statusTitle}>{t('errorTitle')}</p>
-        <p className={s.statusText}>{resolveErrorMessage(t, checkout.code)}</p>
+        <p className={s.statusText}>
+          {checkout.code === 'PROFESSIONAL_UNAVAILABLE'
+            ? tPicker('unavailable')
+            : resolveErrorMessage(t, checkout.code)}
+        </p>
         {checkout.code === 'UNAUTHENTICATED' ? (
           // El anónimo llega aquí con el hueco elegido y las notas
           // escritas. Los dos enlaces llevan `redirect_url` para
@@ -114,6 +119,17 @@ export function BookingCheckoutPanel({
               {t('signIn')}
             </Link>
           </>
+        ) : checkout.code === 'PROFESSIONAL_UNAVAILABLE' ? (
+          // El profesional elegido ya no presta el servicio: vuelta al
+          // selector con «cualquiera disponible» (lo resuelve el flujo).
+          <button
+            type="button"
+            onClick={onChooseAnotherSlot}
+            className={s.retryButton}
+            data-component="booking-checkout-choose-professional"
+          >
+            {tPicker('chooseAgain')}
+          </button>
         ) : checkout.code === 'SLOT_UNAVAILABLE' ||
           checkout.code === 'SLOT_TOO_SOON' ||
           checkout.code === 'HOLD_EXPIRED' ? (
@@ -158,7 +174,8 @@ export function BookingCheckoutPanel({
  */
 function resolveErrorMessage(
   t: ReturnType<typeof useTranslations<'booking.checkout'>>,
-  code: Extract<CheckoutState, { status: 'error' }>['code'],
+  // `PROFESSIONAL_UNAVAILABLE` tiene su copy en `booking.professionalPicker`.
+  code: Exclude<Extract<CheckoutState, { status: 'error' }>['code'], 'PROFESSIONAL_UNAVAILABLE'>,
 ): string {
   switch (code) {
     case 'UNAUTHENTICATED':

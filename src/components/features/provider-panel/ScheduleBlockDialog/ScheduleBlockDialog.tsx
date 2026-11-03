@@ -18,7 +18,12 @@ import { ScheduleBlockForm } from './ScheduleBlockForm';
  * El formulario se monta con `key` por apertura: cada vez arranca con
  * los valores por defecto del momento y sin errores de la vez anterior.
  */
-export function ScheduleBlockDialog({ locale, now }: ScheduleBlockDialogProps) {
+export function ScheduleBlockDialog({
+  locale,
+  now,
+  team = [],
+  defaultProfessionalId = null,
+}: ScheduleBlockDialogProps) {
   const t = useTranslations('providerPanel.calendar.scheduleBlocks');
   const { open, openedAt, formKey, handleOpenChange, close } = useScheduleBlockDialog(now);
 
@@ -43,7 +48,14 @@ export function ScheduleBlockDialog({ locale, now }: ScheduleBlockDialogProps) {
           data-component="schedule-block-dialog"
         >
           {open && (
-            <ScheduleBlockForm key={formKey} locale={locale} now={openedAt} onClose={close} />
+            <ScheduleBlockForm
+              key={formKey}
+              locale={locale}
+              now={openedAt}
+              team={team}
+              defaultProfessionalId={defaultProfessionalId}
+              onClose={close}
+            />
           )}
         </Dialog.Content>
       </Dialog.Portal>

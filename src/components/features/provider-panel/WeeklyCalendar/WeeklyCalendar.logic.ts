@@ -14,6 +14,7 @@ import {
   type CalendarDay,
   type CalendarWeek,
   type PanelBookingStatus,
+  type PanelTeamMember,
   type PositionedRow,
   type WeekdayKey,
 } from './WeeklyCalendar.types';
@@ -189,6 +190,7 @@ export function buildCalendarWeek(
       isToday: dateKey === todayKey,
     })),
     nav: {
+      weekKey: weekStartKey,
       startLabel: toLabel(dateKeys[0]),
       endLabel: toLabel(dateKeys[6]),
       previousWeek: addDaysToDateKey(weekStartKey, -7),
@@ -197,4 +199,30 @@ export function buildCalendarWeek(
       isCurrentWeek: weekStartKey === currentWeek,
     },
   };
+}
+
+/** Ficha del filtro de profesional del calendario. */
+export interface ProfessionalFilterOption {
+  /** `null` = «Todos». */
+  id: string | null;
+  name: string;
+  active: boolean;
+}
+
+/**
+ * Fichas del filtro «Todos / Ana / Luis»: primero «Todos» y luego el
+ * equipo en el orden recibido. Marca como activa la del profesional
+ * elegido (`null` = todos). Pura.
+ *
+ * @param allLabel — texto ya traducido de la ficha «Todos».
+ */
+export function buildProfessionalFilterOptions(
+  team: readonly PanelTeamMember[],
+  selectedId: string | null,
+  allLabel: string,
+): ProfessionalFilterOption[] {
+  return [
+    { id: null, name: allLabel },
+    ...team.map((member) => ({ id: member.id, name: member.name })),
+  ].map((option) => ({ ...option, active: option.id === selectedId }));
 }

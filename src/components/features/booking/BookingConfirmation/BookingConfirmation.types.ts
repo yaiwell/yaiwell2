@@ -1,4 +1,4 @@
-import type { Provider, Service } from '@/types/domain';
+import type { Provider, PublicProfessional, Service } from '@/types/domain';
 
 /**
  * Props del paso final de confirmación.
@@ -44,4 +44,9 @@ export interface BookingConfirmationProps {
    * copy dice cuánto se pagará en el negocio en vez de «total».
    */
   paymentMode?: 'online' | 'onsite';
+  /**
+   * Quién atenderá (CLAUDE.md §4.bis «Equipo»): el de la reserva, que con
+   * «cualquiera disponible» asignó el servidor. Ausente/`null` omite la fila.
+   */
+  professional?: PublicProfessional | null;
 }

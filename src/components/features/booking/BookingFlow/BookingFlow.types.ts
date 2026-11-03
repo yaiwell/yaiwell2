@@ -1,6 +1,6 @@
 import type { CheckoutErrorCode } from '@/app/[locale]/centro/[slugWithId]/reservar/actions';
 import type { AppLocale } from '@/i18n/routing';
-import type { Provider, Service } from '@/types/domain';
+import type { Provider, PublicProfessional, Service } from '@/types/domain';
 
 /**
  * Tipos específicos del orquestador del flujo de reserva.
@@ -36,12 +36,17 @@ export interface BookingDraft {
   bookingId: string | null;
   /** Método de pago elegido en el resumen. */
   paymentMethod: BookingPaymentMethod;
+  /**
+   * Profesional elegido (CLAUDE.md §4.bis «Equipo»); `null` =
+   * «cualquiera disponible», que asigna el servidor al reservar.
+   */
+  professionalId: string | null;
 }
 
 /**
  * Borrador que sobrevive al viaje a `/entrar` o `/registro`.
  *
- * Sólo intención del usuario: hueco, notas y método de pago. El `bookingId` queda fuera
+ * Sólo intención del usuario: hueco, notas, método de pago y profesional. El `bookingId` queda fuera
  * a propósito (ver `BookingFlow.draft.ts`). El `serviceId` viaja dentro
  * para poder descartar un borrador de otro servicio.
  */
@@ -51,6 +56,7 @@ export interface PersistedBookingDraft {
   slotEndIso: string | null;
   notes: string;
   paymentMethod: BookingPaymentMethod;
+  professionalId: string | null;
 }
 
 /**
@@ -83,6 +89,8 @@ export type CheckoutState =
       estimatedLastMinute: boolean;
       /** Inicio de la reserva tal y como quedó en BD. */
       slotStartIso: string;
+      /** Profesional asignado a la reserva (el elegido o el que puso el servidor). */
+      professionalId: string | null;
     }
   | { status: 'error'; code: CheckoutErrorCode };
 
@@ -100,4 +108,9 @@ export interface BookingFlowProps {
    * llega desde una etiqueta de oferta y queda preseleccionado.
    */
   initialSlotIso?: string | null;
+  /**
+   * Profesionales activos que prestan el servicio, por antigüedad. Con
+   * más de uno el cliente puede elegir; ausente equivale a ninguno.
+   */
+  professionals?: PublicProfessional[];
 }

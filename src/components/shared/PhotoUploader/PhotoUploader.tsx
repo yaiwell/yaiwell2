@@ -25,6 +25,7 @@ import type { PhotoUploaderProps } from './PhotoUploader.types';
 export function PhotoUploader({
   bucket,
   ownerId,
+  folder,
   maxFiles = 8,
   initialUrls = [],
   onChange,
@@ -46,7 +47,14 @@ export function PhotoUploader({
     handleRemove,
     remaining,
     maxFilesReached,
-  } = usePhotoUploader({ bucket, ownerId, maxFiles, initialUrls, onChange });
+  } = usePhotoUploader({
+    bucket,
+    ownerId,
+    folder,
+    maxFiles,
+    initialUrls,
+    onChange,
+  });
 
   const onDragEnter = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();

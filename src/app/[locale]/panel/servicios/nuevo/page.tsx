@@ -8,6 +8,7 @@ import { requireCurrentProvider } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
 import { getServiceUsage } from '@/lib/services/billing/billing.plan-limits';
 import { getCategoriesTree } from '@/lib/services/provider-panel';
+import { listActiveProfessionalOptions } from '@/lib/services/team';
 import { isUnlimitedServices } from '@/lib/utils/plan-limits';
 
 interface PanelNewServicePageProps {
@@ -36,9 +37,11 @@ export default async function PanelNewServicePage({ params }: PanelNewServicePag
 
   const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
   const { id: providerId } = await requireCurrentProvider(locale);
-  const [categoriesTree, usage] = await Promise.all([
+  const [categoriesTree, usage, professionals] = await Promise.all([
     getCategoriesTree(),
     getServiceUsage(prisma, providerId),
+    // Opciones de «Quién lo presta» (solo se muestra con 2 o más).
+    listActiveProfessionalOptions(providerId),
   ]);
   const planLimitReached =
     usage !== null &&
@@ -50,6 +53,7 @@ export default async function PanelNewServicePage({ params }: PanelNewServicePag
       locale={panelLocale}
       categoriesTree={categoriesTree}
       planLimitReached={planLimitReached}
+      professionals={professionals}
     />
   );
 }

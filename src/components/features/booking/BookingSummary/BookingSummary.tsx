@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
+import { ProfessionalAvatar } from '@/components/shared/ProfessionalAvatar';
 import { pickLocalized } from '@/lib/i18n/pickLocalized';
 
 import { DiscountedPrice } from '../DiscountedPrice';
@@ -40,6 +41,7 @@ export function BookingSummary({
   paymentOptions,
   paymentMethod = 'online',
   onPaymentMethodChange,
+  professional = null,
 }: BookingSummaryProps) {
   const t = useTranslations('booking.summary');
   const tPolicy = useTranslations('booking.policy');
@@ -102,7 +104,16 @@ export function BookingSummary({
         </div>
         <div className={s.row}>
           <dt className={s.rowLabel}>{t('professionalLabel')}</dt>
-          <dd className={s.rowValue}>{t('anyProfessional')}</dd>
+          {professional ? (
+            <dd className={s.rowValueWithAvatar} data-component="booking-summary-professional">
+              <ProfessionalAvatar name={professional.name} photo={professional.photo} size="sm" />
+              {professional.name}
+            </dd>
+          ) : (
+            <dd className={s.rowValue} data-component="booking-summary-professional">
+              {t('anyProfessional')}
+            </dd>
+          )}
         </div>
         <div className={s.row}>
           <dt className={s.rowLabel}>{totalLabel}</dt>

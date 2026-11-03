@@ -32,6 +32,8 @@ import { isCancelledSlotReleasable } from './panel-releasable';
  * @param locale — locale activo, para el nombre localizado del servicio.
  * @param now — reloj del servidor, para decidir si un hueco cancelado
  *   todavía se puede liberar con descuento.
+ * @param professionalId — filtro `?pro=` ya validado contra el equipo;
+ *   `null` = todo el equipo. Va en el `where`, junto al `providerId`.
  * @returns reservas de la semana ordenadas por inicio.
  */
 export async function getPanelWeekBookings(
@@ -39,6 +41,7 @@ export async function getPanelWeekBookings(
   reference: Date,
   locale: AppLocale,
   now: Date = new Date(),
+  professionalId: string | null = null,
 ): Promise<PanelBookingAction[]> {
   const { start, end } = getMadridWeekRange(getMadridWeekStartKey(reference));
 
@@ -46,6 +49,7 @@ export async function getPanelWeekBookings(
     where: {
       providerId,
       startAt: { gte: start, lt: end },
+      ...(professionalId ? { professionalId } : {}),
     },
     select: {
       id: true,
@@ -55,6 +59,7 @@ export async function getPanelWeekBookings(
       paymentMode: true,
       noShowAt: true,
       priceCents: true,
+      professionalId: true,
       client: { select: { fullName: true, email: true } },
       service: { select: { name: true } },
       professional: { select: { name: true } },
@@ -73,6 +78,7 @@ export async function getPanelWeekBookings(
     endTime: timeInMadrid(r.endAt),
     clientName: r.client.fullName ?? r.client.email,
     serviceName: pickLocalized(r.service.name as unknown as LocalizedText, locale),
+    professionalId: r.professionalId,
     professionalName: r.professional?.name ?? null,
     status: r.status as PanelBookingActionStatus,
     priceCents: r.priceCents,

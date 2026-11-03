@@ -35,6 +35,8 @@ export type CreateServiceActionState =
         | 'FORBIDDEN'
         // El plan ya no admite más servicios publicados: la UI ofrece mejorarlo.
         | 'PLAN_LIMIT_REACHED'
+        // «Quién lo presta» vacío, con alguien de otro negocio o de baja.
+        | 'PROFESSIONALS_INVALID'
         | 'INTERNAL';
       /** Mensaje legible opcional para mostrar al usuario. */
       message?: string;
@@ -69,8 +71,11 @@ export function createServiceFailure(err: unknown): ServiceActionFailure {
   if (err instanceof PlanServiceLimitReachedError) {
     return { ok: false, code: 'PLAN_LIMIT_REACHED' };
   }
-  // Profesionales que no son del negocio o de baja: entrada inválida.
-  if (err instanceof ServiceProfessionalsInvalidError) return validationFailure();
+  // Profesionales que no son del negocio o de baja: el formulario lo
+  // explica en el selector «Quién lo presta».
+  if (err instanceof ServiceProfessionalsInvalidError) {
+    return { ok: false, code: 'PROFESSIONALS_INVALID' };
+  }
   console.error('[panel/servicios/nuevo] createServiceAction error:', err);
   return { ok: false, code: 'INTERNAL' };
 }
@@ -78,7 +83,9 @@ export function createServiceFailure(err: unknown): ServiceActionFailure {
 /** Traduce los errores al guardar la edición de un servicio. */
 export function updateServiceFailure(err: unknown): ServiceActionFailure {
   if (err instanceof ZodError) return validationFailure(err.issues[0]?.message);
-  if (err instanceof ServiceProfessionalsInvalidError) return validationFailure();
+  if (err instanceof ServiceProfessionalsInvalidError) {
+    return { ok: false, code: 'PROFESSIONALS_INVALID' };
+  }
   console.error('[panel/servicios/[id]/editar] updateServiceAction error:', err);
   return { ok: false, code: 'INTERNAL' };
 }

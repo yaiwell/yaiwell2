@@ -7,18 +7,19 @@ import { pickLocalized } from '@/lib/i18n';
 import { formatPriceCents } from './ServiceDetail.logic';
 import { serviceDetailStyles as s } from './ServiceDetail.styles';
 import type { ServiceDetailProps } from './ServiceDetail.types';
+import { ServiceProfessionals } from './ServiceProfessionals';
 
 /**
  * Ficha pública de un servicio dentro de un proveedor.
  *
  * Server Component puramente presentacional: recibe el proveedor, el
- * servicio y los datos de profesional/CTA ya resueltos por la página,
+ * servicio, quién lo presta y el CTA ya resueltos por la página,
  * y los renderiza con la estética cálida del marketplace.
  *
  * Estructura visual:
  *  1. Breadcrumb (Inicio › Buscar › Centro › Servicio).
  *  2. Cabecera (eyebrow + nombre + enlace al centro).
- *  3. Profesional asignado (mock visual en Fase 0).
+ *  3. Quién lo presta (equipo que presta el servicio).
  *  4. Descripción larga.
  *  5. Cláusulas / política breve (cancelación 2h, puntualidad, pago).
  *  6. Panel lateral sticky con duración, precio y CTA "Reservar".
@@ -26,7 +27,7 @@ import type { ServiceDetailProps } from './ServiceDetail.types';
 export function ServiceDetail({
   provider,
   service,
-  professional,
+  professionals,
   locale,
   reserveHref,
   providerSlugWithId,
@@ -92,37 +93,7 @@ export function ServiceDetail({
 
       <div className={s.body}>
         <div className={s.mainCol}>
-          {/* Tarjeta de profesional asignado: usamos la foto del centro
-              como fallback decorativo cuando no hay profesional concreto;
-              la UI deja claro con el copy que "cualquier profesional" del
-              centro atenderá el servicio en ese caso. */}
-          <section
-            className={s.professionalCard}
-            aria-label={t('header.professionalLabel')}
-            data-component="service-detail-professional"
-          >
-            <div className={s.professionalAvatar}>
-              {professional ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={professional.photoUrl}
-                  alt={t('header.professionalPhotoAlt', { name: professional.name })}
-                  className={s.professionalAvatarImg}
-                />
-              ) : (
-                <span className={s.professionalAvatarFallback} aria-hidden>
-                  {provider.name.charAt(0)}
-                </span>
-              )}
-            </div>
-            <div className={s.professionalInfo}>
-              <span className={s.professionalLabel}>{t('header.professionalLabel')}</span>
-              <span className={s.professionalName}>
-                {professional ? professional.name : t('header.anyProfessional')}
-              </span>
-              {professional && <span className={s.professionalRole}>{professional.role}</span>}
-            </div>
-          </section>
+          <ServiceProfessionals professionals={professionals} providerName={provider.name} />
 
           <section className={s.section} data-component="service-detail-description">
             <h2 className={s.sectionTitle}>{t('description.title')}</h2>

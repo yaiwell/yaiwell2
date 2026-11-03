@@ -32,19 +32,14 @@ export const serviceDetailStyles = {
   body: 'grid grid-cols-1 gap-8 md:grid-cols-[minmax(0,1fr)_320px] md:gap-10 lg:grid-cols-[minmax(0,1fr)_360px]',
   mainCol: 'flex flex-col gap-8',
 
-  // Bloque de profesional asignado: tarjeta cálida con foto + datos.
+  // Bloque «Quién lo presta»: una tarjeta cálida por profesional.
+  professionalList: 'flex flex-col gap-3',
   professionalCard:
     'flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm md:p-5',
-  professionalAvatar:
-    'size-14 shrink-0 overflow-hidden rounded-full bg-muted ring-1 ring-border md:size-16',
-  // El `<img>` interno ocupa el círculo con object-cover para no deformarse.
-  professionalAvatarImg: 'h-full w-full object-cover',
-  professionalAvatarFallback:
-    'flex h-full w-full items-center justify-center bg-brand-peach-soft text-lg font-semibold text-foreground/70',
-  professionalInfo: 'flex flex-col gap-0.5',
-  professionalLabel: 'text-xs uppercase tracking-wide text-muted-foreground',
+  professionalInfo: 'flex min-w-0 flex-col gap-0.5',
   professionalName: 'font-display text-lg text-foreground md:text-xl',
   professionalRole: 'text-sm text-muted-foreground',
+  professionalHint: 'text-sm text-muted-foreground',
 
   // Sección de descripción.
   section: 'flex flex-col gap-3',

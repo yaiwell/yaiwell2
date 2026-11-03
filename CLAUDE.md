@@ -172,6 +172,7 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
 - **Baja con citas futuras**: no se permite hasta que el negocio las cancele (regla de 2 h y devolución). Reasignar citas a otro profesional es una mejora posterior.
 - **«Cualquiera disponible»**: el cliente puede elegir profesional o dejarlo abierto. Se asigna primero a quien tenga esa hora con descuento; si no, a quien tenga menos citas ese día; a igualdad, al más antiguo. La asignación se decide en servidor dentro de la transacción de la reserva.
 - El cliente **ve quién le atenderá** (confirmación y correo) y la ficha muestra el equipo con foto y bio opcionales.
+- **Huecos con descuento con equipo**: la oferta es de un profesional concreto. «La misma hora nunca a dos precios» se aplica por profesional: en «cualquiera», una hora con oferta de A sale con descuento y se asigna a A; si el cliente elige a B, esa hora de B va a precio normal.
 
 ### Antelación mínima y reservas de última hora (decidido 2026-10-27)
 - Se puede reservar **hasta 30 minutos antes** del inicio, si hay hueco. El motor de disponibilidad no ofrece huecos por debajo de ese margen: todo lo que se muestra debe poder reservarse.

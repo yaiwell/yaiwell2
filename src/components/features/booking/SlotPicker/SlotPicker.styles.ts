@@ -52,6 +52,9 @@ export const slotPickerStyles = {
     'flex flex-col items-center gap-2 rounded-2xl border border-dashed border-border bg-muted/30 p-6 text-center',
   emptyTitle: 'text-sm font-medium text-foreground',
   emptySubtitle: 'text-xs text-muted-foreground',
+  // Salida a «cualquiera disponible» cuando el profesional elegido ya no vale.
+  resetButton:
+    'mt-1 inline-flex min-h-11 items-center justify-center rounded-full border border-border bg-card px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
 
   // Estado de carga: reproduce la forma real de la rejilla (dos títulos
   // de sección + dos bloques de huecos) para que al llegar los datos no

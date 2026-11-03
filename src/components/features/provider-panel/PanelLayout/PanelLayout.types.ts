@@ -9,7 +9,7 @@ import type { LucideIcon } from 'lucide-react';
 export interface PanelNavItem {
   href: string;
   /** Clave dentro del namespace `providerPanel.nav`. */
-  labelKey: 'dashboard' | 'calendar' | 'services' | 'settings' | 'reviews';
+  labelKey: 'dashboard' | 'calendar' | 'services' | 'team' | 'settings' | 'reviews';
   icon: LucideIcon;
 }
 

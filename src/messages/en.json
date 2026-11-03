@@ -321,6 +321,10 @@
       "title": "Centre not found",
       "subtitle": "It may no longer be available or the link could be incorrect.",
       "backToSearch": "Back to search"
+    },
+    "team": {
+      "title": "The team",
+      "subtitle": "The people who will look after you."
     }
   },
   "ratingSummary": {
@@ -339,7 +343,8 @@
       "addService": "Add service",
       "providerLabel": "Active business",
       "sidebarNavLabel": "Panel navigation",
-      "bottomNavLabel": "Panel quick access"
+      "bottomNavLabel": "Panel quick access",
+      "team": "Team"
     },
     "preview": {
       "show": "Preview with sample data",
@@ -603,12 +608,17 @@
           "reason": "Reason (optional)",
           "reasonPlaceholder": "Holidays, training, doctor…",
           "reasonHint": "Only you can see this.",
-          "reasonCounter": "{count}/{max}"
+          "reasonCounter": "{count}/{max}",
+          "professional": "Professional",
+          "professionalPlaceholder": "Choose who to block",
+          "professionalHint": "“Whole team” blocks this time for every professional.",
+          "allTeam": "Whole team"
         },
         "issues": {
           "required": "Enter the start and end date and time.",
           "step": "Times go in 5-minute steps (10:00, 10:05, 10:10…).",
-          "endBeforeStart": "The end must be after the start."
+          "endBeforeStart": "The end must be after the start.",
+          "professional": "Choose a professional or “Whole team”."
         },
         "created": {
           "title": "Time blocked",
@@ -648,9 +658,15 @@
           "conflictHint": "Cancel them first from the calendar or choose another period.",
           "notFound": "We couldn't find your business. Reload the page.",
           "forbidden": "You don't have permission to block time for this business.",
-          "internal": "We couldn't block the time. Please try again."
+          "internal": "We couldn't block the time. Please try again.",
+          "professionalRequired": "Choose which professional to block or select “Whole team”."
         }
-      }
+      },
+      "filter": {
+        "region": "Filter by professional",
+        "all": "Everyone"
+      },
+      "withProfessional": "{label} · {professional}"
     },
     "services": {
       "title": "Services on offer",
@@ -686,6 +702,13 @@
         "hiddenBadge": "Hidden by your plan",
         "reached": "You have reached the maximum number of published services on your plan. Upgrade your plan to publish more.",
         "upgradeCta": "Upgrade your plan"
+      },
+      "form": {
+        "professionalsLabel": "Who provides it",
+        "professionalsHelp": "Tick who on your team can be booked for this service.",
+        "professionalsRequired": "Choose at least one professional.",
+        "professionalsInvalid": "One of the chosen professionals is no longer on your team. Reload the page and choose again.",
+        "professionalsOutOfPlan": "Outside your plan"
       }
     },
     "addService": {
@@ -1014,6 +1037,83 @@
           "generic": "It couldn’t be saved. Try again in a few minutes."
         }
       }
+    },
+    "team": {
+      "title": "Team",
+      "subtitle": "Who works at your business, with their schedule and services.",
+      "addCta": "Add professional",
+      "counter": "{active} of {max} professionals on your plan",
+      "counterUnlimited": "{active} professionals · Unlimited",
+      "upgradeCta": "Upgrade your plan",
+      "limitReached": "You've reached the maximum number of professionals on your plan.",
+      "outOfPlanNotice": "Some professionals are outside your plan: they won't take new bookings until you upgrade.",
+      "unstaffedTitle": "Services that can't be booked",
+      "unstaffedDescription": "Nobody on your team who takes bookings provides these services. Assign them to someone or upgrade your plan.",
+      "empty": "There's nobody on your team yet.",
+      "serviceCount": "{count, plural, =0 {No services} one {# service} other {# services}}",
+      "status": {
+        "active": "Active",
+        "outOfPlan": "Outside your plan",
+        "inactive": "Deactivated"
+      },
+      "edit": "Edit",
+      "form": {
+        "newTitle": "New professional",
+        "newSubtitle": "Their profile, schedule and the services they provide.",
+        "editTitle": "Edit professional",
+        "back": "Back to team",
+        "profileTitle": "Profile",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Laura",
+        "bioLabel": "Introduction (optional)",
+        "bioPlaceholder": "Specialities, experience…",
+        "bioCounter": "{count}/{max}",
+        "photoLabel": "Photo (optional)",
+        "photoHelp": "Shown on your page next to their name.",
+        "scheduleTitle": "Schedule",
+        "scheduleSubtitle": "When they take bookings. You can add several time slots per day.",
+        "servicesTitle": "Services they provide",
+        "servicesSubtitle": "They'll only get bookings for the services you tick.",
+        "servicesEmpty": "You don't have any services yet. You can assign them when you create them.",
+        "submitCreate": "Add to team",
+        "submitSave": "Save changes",
+        "saving": "Saving…",
+        "saved": "Changes saved.",
+        "inactiveNotice": "Deactivated. Reactivate them to edit and to take bookings again.",
+        "outOfPlanNotice": "Outside your plan: no new bookings until you upgrade."
+      },
+      "errors": {
+        "VALIDATION": "Check the fields: the name is required and the introduction can be up to 300 characters.",
+        "NOT_FOUND": "This professional is no longer on your team. Reload the page.",
+        "INACTIVE": "Deactivated. Reactivate them before editing.",
+        "PHOTO_INVALID": "We couldn't use that photo. Please upload it again.",
+        "SERVICES_INVALID": "One of the services no longer exists. Reload the page and choose again.",
+        "PLAN_LIMIT": "You've reached the maximum number of professionals on your plan. Upgrade to add more.",
+        "HAS_FUTURE_BOOKINGS": "They have upcoming appointments. Cancel them before deactivating.",
+        "LAST_ACTIVE": "Your business needs at least one active professional.",
+        "UNSTAFFED_SERVICES": "Some services would be left with nobody to provide them. Assign them to someone else or pause them.",
+        "INTERNAL": "We couldn't save the changes. Try again in a few seconds."
+      },
+      "deactivate": {
+        "button": "Deactivate",
+        "title": "Deactivate {name}?",
+        "description": "They'll no longer appear on your page or get new bookings. Their history is kept and you can reactivate them at any time.",
+        "bookingsTitle": "First you need to cancel their upcoming appointments:",
+        "bookingsHelp": "Cancel them from the calendar (the client gets a refund). Once none are left, you can deactivate them.",
+        "calendarLink": "Go to calendar",
+        "unstaffedTitle": "These services would be left with nobody:",
+        "confirm": "Deactivate",
+        "cancel": "Cancel",
+        "pending": "Deactivating…"
+      },
+      "reactivate": {
+        "button": "Reactivate",
+        "pending": "Reactivating…"
+      },
+      "settingsLink": {
+        "description": "Each professional on your team has their own schedule.",
+        "cta": "Team schedules"
+      }
     }
   },
   "booking": {
@@ -1169,6 +1269,14 @@
         "payOnline": "Pay online",
         "viewMyBookings": "View my bookings"
       }
+    },
+    "professionalPicker": {
+      "legend": "Who would you like to see?",
+      "anyHint": "With “Any available professional” you see the whole team’s free slots and we assign whoever is free.",
+      "unavailable": "This professional no longer offers this service.",
+      "chooseAgain": "Choose another professional",
+      "professionalGone": "The professional you chose no longer offers this service. We’ve switched back to “Any available professional”: pick a time to continue.",
+      "assignedLabel": "With"
     }
   },
   "customerArea": {
@@ -1490,9 +1598,7 @@
       "eyebrow": "Service",
       "durationLabel": "Duration",
       "priceLabel": "Price",
-      "professionalLabel": "Assigned professional",
-      "anyProfessional": "Any available professional from the centre",
-      "professionalPhotoAlt": "Photo of {name}"
+      "anyProfessional": "Any available professional from the centre"
     },
     "description": {
       "title": "About this service"
@@ -1511,6 +1617,10 @@
       "reserve": "Book",
       "fromPrice": "from {price}",
       "secureNote": "Instant confirmation. Secure payment."
+    },
+    "team": {
+      "title": "Who offers it",
+      "chooseHint": "When booking you can choose who looks after you or let us assign whoever is free."
     }
   },
   "forProviders": {

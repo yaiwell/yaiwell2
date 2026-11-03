@@ -6,5 +6,6 @@ export type {
   PanelBookingStatus,
   PanelScheduleBlock,
   PanelSlotOffer,
+  PanelTeamMember,
   WeeklyCalendarProps,
 } from './WeeklyCalendar.types';

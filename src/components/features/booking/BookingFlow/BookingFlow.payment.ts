@@ -8,6 +8,7 @@ import type { BookingConfirmationProps } from '../BookingConfirmation/BookingCon
 import type { DisplayedBookingPrice } from '../DiscountedPrice';
 
 import { useOnsiteBooking, type OnsiteBookingState } from './BookingFlow.onsite';
+import { isProfessionalUnavailable } from './BookingFlow.professional';
 import {
   resolveEffectivePaymentMethod,
   usePaymentOptions,
@@ -29,7 +30,8 @@ export interface BookingFlowPaymentDeps {
   checkout: CheckoutState;
   updateDraft: (patch: Partial<BookingDraft>) => void;
   goBack: () => void;
-  chooseAnotherSlot: () => void;
+  /** Con `true` vuelve también a «cualquiera disponible». */
+  chooseAnotherSlot: (resetProfessional?: boolean) => void;
   completePayment: () => void;
   discardCheckout: () => void;
 }
@@ -130,6 +132,9 @@ export function useBookingFlowPayment(deps: BookingFlowPaymentDeps) {
   // Hueco para el que el plazo del local venció mientras el cliente
   // estaba en el paso de confirmar: vuelve al resumen con online y aviso.
   const [expiredSlot, setExpiredSlot] = useState<string | null>(null);
+  // El profesional elegido dejó de prestar el servicio al reservar: el
+  // flujo vuelve a «cualquiera» y lo avisa hasta que se elige hora.
+  const [professionalGone, setProfessionalGone] = useState(false);
   const onsiteLeadTimeExpired = expiredSlot !== null && expiredSlot === draft.slotStartIso;
   const paymentOptions = onsiteLeadTimeExpired
     ? withOnsiteLastMinute(fetchedOptions)
@@ -168,6 +173,7 @@ export function useBookingFlowPayment(deps: BookingFlowPaymentDeps) {
       serviceId,
       slotStartIso: draft.slotStartIso,
       notes: draft.notes,
+      professionalId: draft.professionalId,
       replacesPendingBookingId: pendingToReplace(checkout, draft),
     });
   }, [onsite, serviceId, draft, checkout, choosePaymentMethod, goBack]);
@@ -184,9 +190,11 @@ export function useBookingFlowPayment(deps: BookingFlowPaymentDeps) {
   }, [resetOnsite, goBack]);
 
   const chooseAnotherSlotFromStep = useCallback(() => {
+    const resetProfessional = isProfessionalUnavailable(checkout, onsite.state);
     resetOnsite();
-    chooseAnotherSlot();
-  }, [resetOnsite, chooseAnotherSlot]);
+    chooseAnotherSlot(resetProfessional);
+    setProfessionalGone(resetProfessional);
+  }, [checkout, onsite.state, resetOnsite, chooseAnotherSlot]);
 
   return {
     paymentOptions,
@@ -195,6 +203,8 @@ export function useBookingFlowPayment(deps: BookingFlowPaymentDeps) {
     waitingForOptions,
     /** Aviso en el resumen: el local caducó al confirmar (solo con ese hueco). */
     onsiteLeadTimeExpired: onsiteLeadTimeExpired && step === 'summary',
+    /** Aviso en el paso de hueco: se volvió a «cualquiera» (hasta elegir hora). */
+    professionalGone: professionalGone && step === 'slot' && draft.slotStartIso === null,
     choosePaymentMethod,
     confirmOnsite,
     payOnline,

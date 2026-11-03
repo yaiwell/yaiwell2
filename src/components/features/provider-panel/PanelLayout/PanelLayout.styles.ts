@@ -40,11 +40,13 @@ export const panelLayoutStyles = {
   // flotaba a `bottom-20` (heredado de cuando convivía con la global).
   bottomNav:
     'fixed inset-x-0 bottom-0 z-40 border-t border-border/60 bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70 lg:hidden',
-  // `grid-cols-5` reparte el ancho a partes iguales; con `min-w-0` en los
+  // `grid-cols-6` reparte el ancho a partes iguales; con `min-w-0` en los
   // enlaces, una etiqueta larga («Valoraciones», «Mein Geschäft») baja a
-  // dos líneas en lugar de empujar y pisar a la de al lado.
+  // dos líneas en lugar de empujar y pisar a la de al lado. Con seis
+  // pestañas a 375 px quedan ~58 px por pestaña: por eso el hueco y el
+  // padding lateral son mínimos.
   bottomNavInner:
-    'mx-auto grid max-w-md grid-cols-5 gap-1 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]',
+    'mx-auto grid max-w-md grid-cols-6 gap-0.5 px-1 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]',
   bottomNavLink:
     'flex min-h-11 min-w-0 flex-col items-center justify-start gap-1 rounded-2xl px-0.5 py-1.5 text-center text-[10px] leading-tight font-medium text-muted-foreground transition-colors duration-150 hover:text-foreground focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-95',
   bottomNavLinkActive: 'bg-primary/10 text-foreground',

@@ -4,17 +4,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { createBookingCheckoutAction } from '@/app/[locale]/centro/[slugWithId]/reservar/actions';
 
-import { creatingCheckout, readyCheckout } from './BookingFlow.checkout';
+import { buildCheckoutInput, creatingCheckout, readyCheckout } from './BookingFlow.checkout';
+import { useCheckoutState } from './BookingFlow.checkoutState';
 import { clearBookingDraft } from './BookingFlow.draft';
 import { useBookingDraft } from './BookingFlow.persistence';
+import { useProfessionalChoice } from './BookingFlow.professional';
 import { useBookingPaymentStatus } from './BookingFlow.status';
 import { BOOKING_STEPS, nextStep, previousStep } from './BookingFlow.steps';
-import type {
-  BookingDraft,
-  BookingPaymentMethod,
-  BookingStep,
-  CheckoutState,
-} from './BookingFlow.types';
+import type { BookingDraft, BookingPaymentMethod, BookingStep } from './BookingFlow.types';
 
 export { BOOKING_STEPS } from './BookingFlow.steps';
 
@@ -23,7 +20,7 @@ export { BOOKING_STEPS } from './BookingFlow.steps';
  *
  * Encapsula:
  *  - Paso activo y navegación adelante/atrás.
- *  - Draft con la información acumulada (slot, notas, id de reserva),
+ *  - Draft con la información acumulada (slot, profesional, notas, id),
  *    persistido en `sessionStorage` para que sobreviva al viaje a
  *    `/entrar` o `/registro`.
  *  - Apertura del checkout de Stripe al entrar en el paso de pago.
@@ -34,26 +31,29 @@ export { BOOKING_STEPS } from './BookingFlow.steps';
  * usuario introduce la tarjeta y dos clientes no compiten por el mismo
  * hueco en los segundos del formulario.
  */
-export function useBookingFlow(args: { serviceId: string }) {
-  const { serviceId } = args;
+export function useBookingFlow(args: {
+  serviceId: string;
+  /** Quienes prestan el servicio: validan el profesional del borrador. */
+  professionalIds?: readonly string[];
+}) {
+  const { serviceId, professionalIds } = args;
 
   const [step, setStep] = useState<BookingStep>('slot');
-  const [checkout, setCheckout] = useState<CheckoutState>({ status: 'idle' });
+  const { checkout, checkoutRef, commitCheckout, resetCheckout, expireCheckout } =
+    useCheckoutState();
   // El borrador se recupera de `sessionStorage` al montar y se guarda en
   // cada cambio: así sobrevive al viaje a `/entrar` o `/registro`.
   // `slotExpired` avisa de que el hueco guardado ya no admite reserva.
-  const { draft, setDraft, slotExpired, setSlotExpired } = useBookingDraft(serviceId);
+  const { draft, setDraft, slotExpired, setSlotExpired } = useBookingDraft(
+    serviceId,
+    professionalIds,
+  );
 
-  // Espejos del estado en refs para leerlo en los callbacks sin meterlo
-  // en sus dependencias. Se sincronizan en un efecto, no en el render:
+  // Espejo del borrador en ref para leerlo en los callbacks sin meterlo
+  // en sus dependencias. Se sincroniza en un efecto, no en el render:
   // escribir una ref al renderizar puede dejar un valor obsoleto tras un
   // re-render interrumpido; los handlers corren después del commit.
-  const checkoutRef = useRef<CheckoutState>(checkout);
   const draftRef = useRef<BookingDraft>(draft);
-
-  useEffect(() => {
-    checkoutRef.current = checkout;
-  }, [checkout]);
 
   useEffect(() => {
     draftRef.current = draft;
@@ -81,21 +81,18 @@ export function useBookingFlow(args: { serviceId: string }) {
     }
     if (!draft.slotStartIso) return;
 
-    // Escribimos también la ref: el estado de React no se refleja hasta
-    // el siguiente render y un doble disparo en el mismo tick crearía
-    // dos reservas para el mismo hueco.
+    // `commitCheckout` escribe también la ref: el estado de React no se
+    // refleja hasta el siguiente render y un doble disparo en el mismo
+    // tick crearía dos reservas para el mismo hueco.
     const creating = creatingCheckout(draft.slotStartIso);
-    checkoutRef.current = creating;
-    setCheckout(creating);
+    commitCheckout(creating);
 
-    const result = await createBookingCheckoutAction({
-      serviceId,
-      slotStartIso: draft.slotStartIso,
-      notes: draft.notes.trim() || undefined,
-    });
+    const result = await createBookingCheckoutAction(
+      buildCheckoutInput(serviceId, draft, draft.slotStartIso),
+    );
 
     if (!result.ok) {
-      setCheckout({ status: 'error', code: result.code });
+      commitCheckout({ status: 'error', code: result.code });
       return;
     }
 
@@ -107,8 +104,8 @@ export function useBookingFlow(args: { serviceId: string }) {
       slotStartIso: result.slotStartIso,
       slotEndIso: result.slotEndIso,
     }));
-    setCheckout(readyCheckout(result, creating.estimatedLastMinute));
-  }, [serviceId, draft.slotStartIso, draft.notes, setDraft]);
+    commitCheckout(readyCheckout(result, creating.estimatedLastMinute));
+  }, [serviceId, draft, setDraft, checkoutRef, commitCheckout]);
 
   const goNext = useCallback(
     (paymentMethod: BookingPaymentMethod = 'online') => {
@@ -158,13 +155,16 @@ export function useBookingFlow(args: { serviceId: string }) {
         bookingId: slotChanged ? null : prev.bookingId,
       }));
 
-      if (slotChanged) {
-        checkoutRef.current = { status: 'idle' };
-        setCheckout({ status: 'idle' });
-      }
+      if (slotChanged) resetCheckout();
     },
-    [setDraft, setSlotExpired],
+    [setDraft, setSlotExpired, resetCheckout],
   );
+
+  const { selectProfessional, clearSlot } = useProfessionalChoice({
+    draftRef,
+    setDraft,
+    resetCheckout,
+  });
 
   /**
    * Vuelve al calendario descartando el hueco actual.
@@ -172,28 +172,30 @@ export function useBookingFlow(args: { serviceId: string }) {
    * Es la salida del callejón `SLOT_UNAVAILABLE`: alguien se adelantó y
    * reintentar el mismo hueco fallaría siempre. Limpiamos hueco y
    * checkout para que el usuario elija otro y el flujo cree una reserva
-   * nueva.
+   * nueva. Con `resetProfessional` (el profesional elegido ya no presta
+   * el servicio) vuelve además a «cualquiera»; el aviso lo pone el caller.
    */
-  const chooseAnotherSlot = useCallback(() => {
-    checkoutRef.current = { status: 'idle' };
-    setCheckout({ status: 'idle' });
-    setDraft((prev) => ({ ...prev, slotStartIso: null, slotEndIso: null, bookingId: null }));
-    setSlotExpired(true);
-    setStep('slot');
-  }, [setDraft, setSlotExpired]);
+  const chooseAnotherSlot = useCallback(
+    (resetProfessional = false) => {
+      resetCheckout();
+      setDraft((prev) => ({
+        ...prev,
+        slotStartIso: null,
+        slotEndIso: null,
+        bookingId: null,
+        professionalId: resetProfessional ? null : prev.professionalId,
+      }));
+      setSlotExpired(!resetProfessional);
+      setStep('slot');
+    },
+    [setDraft, setSlotExpired, resetCheckout],
+  );
 
   /** La reserva `pending` del checkout se soltó (cambio a pagar en el local). */
   const discardCheckout = useCallback(() => {
-    checkoutRef.current = { status: 'idle' };
-    setCheckout({ status: 'idle' });
+    resetCheckout();
     setDraft((prev) => ({ ...prev, bookingId: null }));
-  }, [setDraft]);
-
-  /** Retención vencida antes de pagar (nada cobrado): el panel ofrece otra hora. */
-  const expireCheckout = useCallback(() => {
-    checkoutRef.current = { status: 'error', code: 'HOLD_EXPIRED' };
-    setCheckout(checkoutRef.current);
-  }, []);
+  }, [setDraft, resetCheckout]);
 
   /**
    * Avanza a la confirmación tras un pago resuelto sin redirección.
@@ -230,6 +232,8 @@ export function useBookingFlow(args: { serviceId: string }) {
     goBack,
     updateDraft,
     selectSlot,
+    selectProfessional,
+    clearSlot,
     chooseAnotherSlot,
     completePayment,
     retryCheckout,

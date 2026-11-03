@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { bookingActionDialogStyles as d } from '../BookingActionsList/BookingActionsList.styles';
 import type { SupportedLocale } from '../BookingActionsList/BookingActionsList.types';
 import { formatBlockRange, useRemoveScheduleBlock } from './CalendarScheduleBlock.logic';
+import { getLaneStyle } from './WeeklyCalendar.lanes';
 import { WEEKDAY_KEYS } from './WeeklyCalendar.logic';
 import {
   bookingDetailStyles as ds,
@@ -21,6 +22,8 @@ interface CalendarScheduleBlockProps {
   positioned: PositionedScheduleBlock;
   locale: SupportedLocale;
   readOnly: boolean;
+  /** Pinta de quién es el bloqueo (vista «Todos» con equipo). */
+  showProfessional?: boolean;
   variant: 'week' | 'day';
 }
 
@@ -36,16 +39,19 @@ export function CalendarScheduleBlock({
   positioned,
   locale,
   readOnly,
+  showProfessional = false,
   variant,
 }: CalendarScheduleBlockProps) {
   const t = useTranslations('providerPanel.calendar');
   const tb = useTranslations('providerPanel.calendar.scheduleBlocks');
-  const { block, topPx, heightPx } = positioned;
+  const { block, topPx, heightPx, lane } = positioned;
   const remover = useRemoveScheduleBlock(locale, block.id);
   const time = block.isFullDay ? tb('fullDay') : `${block.startTime}–${block.endTime}`;
   const range =
     formatBlockRange(block.startAtIso, block.endAtIso, locale) ??
     `${t(`weekdays.${WEEKDAY_KEYS[block.weekday]}`)} · ${time}`;
+  const professional = showProfessional ? (block.professionalName ?? null) : null;
+  const ariaLabel = tb('block.ariaLabel', { time });
 
   return (
     <Dialog.Root onOpenChange={(open) => (open ? undefined : remover.reset())}>
@@ -53,12 +59,15 @@ export function CalendarScheduleBlock({
         <button
           type="button"
           className={s.scheduleBlock}
-          style={{ top: `${topPx}px`, height: `${heightPx}px` }}
-          aria-label={tb('block.ariaLabel', { time })}
+          style={{ top: `${topPx}px`, height: `${heightPx}px`, ...getLaneStyle(lane) }}
+          aria-label={
+            professional ? t('withProfessional', { label: ariaLabel, professional }) : ariaLabel
+          }
           data-component={`weekly-calendar-block-${block.segmentKey}${variant === 'day' ? '-day' : ''}`}
         >
           <span className={s.bookingTitle}>{tb('block.label')}</span>
           <span className={s.bookingMeta}>{block.reason ?? time}</span>
+          {professional && <span className={s.bookingPro}>{professional}</span>}
         </button>
       </Dialog.Trigger>
 
@@ -79,6 +88,12 @@ export function CalendarScheduleBlock({
           <dl className={ds.list}>
             <dt className={ds.term}>{t('details.when')}</dt>
             <dd className={ds.value}>{range}</dd>
+            {block.professionalName && (
+              <>
+                <dt className={ds.term}>{t('details.professional')}</dt>
+                <dd className={ds.value}>{block.professionalName}</dd>
+              </>
+            )}
             {block.reason && (
               <>
                 <dt className={ds.term}>{tb('detail.reason')}</dt>

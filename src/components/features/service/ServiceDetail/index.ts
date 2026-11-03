@@ -1,2 +1,2 @@
 export { ServiceDetail } from './ServiceDetail';
-export type { AssignedProfessional, ServiceDetailProps } from './ServiceDetail.types';
+export type { ServiceDetailProps } from './ServiceDetail.types';

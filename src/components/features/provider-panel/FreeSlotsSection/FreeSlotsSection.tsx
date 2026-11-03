@@ -15,10 +15,17 @@ const MAX_VISIBLE_SLOTS = 10;
  * Sección «Huecos libres en las próximas 2 h»: lo que el profesional
  * podría liberar con descuento ahora mismo.
  *
+ * Con equipo, la misma hora sale una vez por cada profesional libre y se
+ * indica de quién es: «Liberar» envía ese profesional.
+ *
  * Server Component: solo los botones cruzan a cliente, y abren el
  * diálogo compartido que monta la página (`ReleaseSlotPromptProvider`).
  */
-export function FreeSlotsSection({ slots, readOnly }: FreeSlotsSectionProps) {
+export function FreeSlotsSection({
+  slots,
+  readOnly,
+  showProfessional = false,
+}: FreeSlotsSectionProps) {
   const t = useTranslations('providerPanel.calendar.slotOffers.free');
   const visible = slots.slice(0, MAX_VISIBLE_SLOTS);
   const hidden = slots.length - visible.length;
@@ -43,16 +50,29 @@ export function FreeSlotsSection({ slots, readOnly }: FreeSlotsSectionProps) {
       ) : (
         <ul className={s.list}>
           {visible.map((slot) => (
-            <li key={`${slot.serviceId}-${slot.startAtIso}`} className={s.item}>
+            <li
+              key={`${slot.serviceId}-${slot.professionalId}-${slot.startAtIso}`}
+              className={s.item}
+            >
               <div className={s.itemMain}>
                 <span className={s.itemTime}>
                   {slot.startTime}–{slot.endTime}
                 </span>
                 <span className={s.itemService}>{slot.serviceName}</span>
+                {showProfessional && (
+                  <span
+                    className={s.itemProfessional}
+                    data-component={`free-slot-professional-${slot.professionalId}`}
+                  >
+                    {slot.professionalName}
+                  </span>
+                )}
               </div>
               <ReleaseFreeSlotButton
                 serviceId={slot.serviceId}
                 serviceName={slot.serviceName}
+                professionalId={slot.professionalId}
+                professionalName={showProfessional ? slot.professionalName : null}
                 startAtIso={slot.startAtIso}
                 startTime={slot.startTime}
                 disabled={readOnly}

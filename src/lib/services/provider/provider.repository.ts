@@ -182,6 +182,11 @@ export const providerRepository = {
     return row;
   },
 
+  /** Profesionales activos del negocio (decide si el horario es único). */
+  async countActiveProfessionals(providerId: string): Promise<number> {
+    return prisma.professional.count({ where: { providerId, deletedAt: null } });
+  },
+
   /**
    * Actualiza el `schedule` JSON de un Professional concreto. La
    * validación de la forma del JSON la hace el service con

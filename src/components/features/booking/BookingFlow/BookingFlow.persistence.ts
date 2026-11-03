@@ -21,6 +21,7 @@ const EMPTY_DRAFT: BookingDraft = {
   notes: '',
   bookingId: null,
   paymentMethod: 'online',
+  professionalId: null,
 };
 
 export interface BookingDraftState {
@@ -36,8 +37,15 @@ export interface BookingDraftState {
  *
  * @param serviceId — servicio del flujo; un borrador de otro servicio
  *   se descarta.
+ * @param allowedProfessionalIds — quienes prestan el servicio; un
+ *   profesional guardado que ya no está vuelve a «cualquiera».
  */
-export function useBookingDraft(serviceId: string): BookingDraftState {
+export function useBookingDraft(
+  serviceId: string,
+  allowedProfessionalIds: readonly string[] = [],
+): BookingDraftState {
+  // Clave estable para el efecto: el array llega nuevo en cada render.
+  const allowedKey = allowedProfessionalIds.join(',');
   const [draft, setDraft] = useState<BookingDraft>(EMPTY_DRAFT);
   const [slotExpired, setSlotExpired] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -46,14 +54,15 @@ export function useBookingDraft(serviceId: string): BookingDraftState {
   // `window`, así que es un caso legítimo de `setState` dentro de un
   // efecto (no hay alternativa SSR-safe).
   useEffect(() => {
-    const restored = restoreBookingDraft(serviceId);
+    const allowed = allowedKey ? allowedKey.split(',') : [];
+    const restored = restoreBookingDraft(serviceId, new Date(), allowed);
     if (restored) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setDraft(restored.draft);
       setSlotExpired(restored.slotExpired);
     }
     setHydrated(true);
-  }, [serviceId]);
+  }, [serviceId, allowedKey]);
 
   // Persistimos tras cada cambio. Antes de hidratar no escribimos: el
   // borrador vacío inicial machacaría lo guardado.

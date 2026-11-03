@@ -1,3 +1,5 @@
+import type { Prisma } from '@prisma/client';
+
 import type { LocalizedText, RootCategoryRef } from '@/types/domain';
 
 /**
@@ -26,6 +28,26 @@ export interface CategoryChainNode {
  * un ciclo en los datos.
  */
 export const MAX_CATEGORY_DEPTH = 3;
+
+/** Campos de cada nodo de la cadena de ancestros. */
+const CATEGORY_NODE_FIELDS = { id: true, slug: true, name: true, parentId: true } as const;
+
+/**
+ * Selección Prisma de la categoría de un servicio con sus ancestros,
+ * bajando exactamente `MAX_CATEGORY_DEPTH` niveles en el mismo SELECT
+ * (join anidado). Es la entrada de `resolveRootCategory`.
+ */
+export const CATEGORY_CHAIN_SELECT = {
+  select: {
+    ...CATEGORY_NODE_FIELDS,
+    parent: {
+      select: {
+        ...CATEGORY_NODE_FIELDS,
+        parent: { select: CATEGORY_NODE_FIELDS },
+      },
+    },
+  },
+} satisfies Prisma.CategoryDefaultArgs;
 
 /**
  * Resuelve la categoría **raíz** de un servicio subiendo por la cadena

@@ -44,6 +44,7 @@ describe('saveBookingDraft / loadBookingDraft', () => {
       notes: 'Primera vez',
       bookingId: 'bk-1',
       paymentMethod: 'onsite',
+      professionalId: 'pro-1',
     });
 
     // Antes del debounce todavía no hay nada escrito.
@@ -56,6 +57,7 @@ describe('saveBookingDraft / loadBookingDraft', () => {
       slotEndIso: FUTURE_END,
       notes: 'Primera vez',
       paymentMethod: 'onsite',
+      professionalId: 'pro-1',
     });
   });
 
@@ -69,6 +71,7 @@ describe('saveBookingDraft / loadBookingDraft', () => {
       notes: '',
       bookingId: 'bk-de-otro',
       paymentMethod: 'online',
+      professionalId: null,
     });
     vi.advanceTimersByTime(300);
 
@@ -94,6 +97,7 @@ describe('saveBookingDraft / loadBookingDraft', () => {
       notes: 'x',
       bookingId: null,
       paymentMethod: 'online',
+      professionalId: null,
     });
     clearBookingDraft();
     vi.advanceTimersByTime(300);
@@ -118,6 +122,7 @@ describe('restoreBookingDraft', () => {
         notes: 'Vengo con mi hija',
         bookingId: null,
         paymentMethod: 'online',
+        professionalId: null,
       },
       slotExpired: false,
     });
@@ -141,6 +146,7 @@ describe('restoreBookingDraft', () => {
         notes: 'Alérgica al amoníaco',
         bookingId: null,
         paymentMethod: 'online',
+        professionalId: null,
       },
       slotExpired: true,
     });

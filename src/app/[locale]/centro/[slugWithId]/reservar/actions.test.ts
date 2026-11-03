@@ -8,8 +8,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
  * aunque ambos lleguen como `ZodError`. Así la UI puede ofrecer "elegir
  * otro hueco" en vez de un "algo ha ido mal".
  *
- * `mapCheckoutError` no se exporta (un fichero `'use server'` solo
- * puede exportar acciones), así que lo probamos a través de la action.
+ * `mapCheckoutError` vive en `actions.errors.ts`; lo probamos a través
+ * de la action para cubrir también qué le pasa (profesional elegido).
  */
 
 vi.mock('@clerk/nextjs/server', () => ({
@@ -33,6 +33,11 @@ vi.mock('@/lib/services/checkout', () => {
   };
 });
 
+const providersMock = vi.hoisted(() => ({ getBookedProfessional: vi.fn() }));
+
+// Lectura del profesional asignado («cualquiera»), sin arrastrar Prisma.
+vi.mock('@/lib/services/providers', () => providersMock);
+
 vi.mock('@/lib/services/payments', () => ({
   StripeOperationError: class StripeOperationError extends Error {},
 }));
@@ -45,6 +50,7 @@ vi.mock('@/lib/services/booking', async () => {
 });
 
 import { createBookingSchema } from '@/lib/services/booking/booking.validation';
+import { ProfessionalNotResolvedError } from '@/lib/services/checkout';
 
 import { createBookingCheckoutAction } from './actions';
 
@@ -127,6 +133,69 @@ describe('createBookingCheckoutAction — mapeo de errores', () => {
       amountCents: 3600,
       originalPriceCents: 4500,
       discountPct: 20,
+    });
+  });
+});
+
+describe('createBookingCheckoutAction — profesional (§4.bis «Equipo»)', () => {
+  const SESSION = {
+    bookingId: 'bk-1',
+    clientSecret: 'pi_secret',
+    amountCents: 4500,
+    originalPriceCents: null,
+    discountPct: null,
+    slotStartIso: '2026-10-05T10:00:00.000Z',
+    slotEndIso: '2026-10-05T11:00:00.000Z',
+    isLastMinute: false,
+  };
+
+  it('con profesional elegido lo pasa al servicio y lo devuelve sin leer la reserva', async () => {
+    checkoutMock.createBookingCheckout.mockResolvedValue(SESSION);
+
+    const result = await createBookingCheckoutAction({ ...INPUT, professionalId: 'pro-2' });
+
+    expect(checkoutMock.createBookingCheckout).toHaveBeenCalledWith(
+      expect.objectContaining({ professionalId: 'pro-2' }),
+      'user-1',
+    );
+    expect(result).toMatchObject({ ok: true, professionalId: 'pro-2' });
+    expect(providersMock.getBookedProfessional).not.toHaveBeenCalled();
+  });
+
+  it('con «cualquiera» devuelve el profesional que asignó el servidor', async () => {
+    checkoutMock.createBookingCheckout.mockResolvedValue(SESSION);
+    providersMock.getBookedProfessional.mockResolvedValue({ id: 'pro-9', name: 'Ana' });
+
+    const result = await createBookingCheckoutAction(INPUT);
+
+    expect(providersMock.getBookedProfessional).toHaveBeenCalledWith('bk-1', 'user-1');
+    expect(result).toMatchObject({ ok: true, professionalId: 'pro-9' });
+  });
+
+  it('si no se puede leer el asignado, la reserva sigue adelante sin él', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    checkoutMock.createBookingCheckout.mockResolvedValue(SESSION);
+    providersMock.getBookedProfessional.mockRejectedValue(new Error('db down'));
+
+    const result = await createBookingCheckoutAction(INPUT);
+
+    expect(result).toMatchObject({ ok: true, bookingId: 'bk-1', professionalId: null });
+  });
+
+  it('profesional elegido que ya no presta el servicio → PROFESSIONAL_UNAVAILABLE', async () => {
+    checkoutMock.createBookingCheckout.mockRejectedValue(new ProfessionalNotResolvedError());
+
+    await expect(
+      createBookingCheckoutAction({ ...INPUT, professionalId: 'pro-2' }),
+    ).resolves.toEqual({ ok: false, code: 'PROFESSIONAL_UNAVAILABLE' });
+  });
+
+  it('sin profesional elegido, nadie a quien asignar sigue siendo SERVICE_UNAVAILABLE', async () => {
+    checkoutMock.createBookingCheckout.mockRejectedValue(new ProfessionalNotResolvedError());
+
+    await expect(createBookingCheckoutAction(INPUT)).resolves.toEqual({
+      ok: false,
+      code: 'SERVICE_UNAVAILABLE',
     });
   });
 });

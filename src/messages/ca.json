@@ -321,6 +321,10 @@
       "title": "Centre no trobat",
       "subtitle": "És possible que ja no estigui disponible o que l'enllaç sigui incorrecte.",
       "backToSearch": "Tornar a la cerca"
+    },
+    "team": {
+      "title": "L’equip",
+      "subtitle": "Les persones que t’atendran."
     }
   },
   "ratingSummary": {
@@ -339,7 +343,8 @@
       "addService": "Afegir servei",
       "providerLabel": "Negoci actiu",
       "sidebarNavLabel": "Navegació del panell",
-      "bottomNavLabel": "Accessos ràpids del panell"
+      "bottomNavLabel": "Accessos ràpids del panell",
+      "team": "Equip"
     },
     "preview": {
       "show": "Veure amb dades d'exemple",
@@ -603,12 +608,17 @@
           "reason": "Motiu (opcional)",
           "reasonPlaceholder": "Vacances, formació, metge…",
           "reasonHint": "Només el veus tu.",
-          "reasonCounter": "{count}/{max}"
+          "reasonCounter": "{count}/{max}",
+          "professional": "Professional",
+          "professionalPlaceholder": "Tria a qui bloqueges",
+          "professionalHint": "«Tot l’equip» bloqueja aquestes hores a cada professional.",
+          "allTeam": "Tot l’equip"
         },
         "issues": {
           "required": "Indica la data i l'hora d'inici i de final.",
           "step": "Les hores van en passos de 5 minuts (10:00, 10:05, 10:10…).",
-          "endBeforeStart": "El final ha de ser posterior a l'inici."
+          "endBeforeStart": "El final ha de ser posterior a l'inici.",
+          "professional": "Tria un professional o «Tot l’equip»."
         },
         "created": {
           "title": "Hores bloquejades",
@@ -648,9 +658,15 @@
           "conflictHint": "Cancel·la-les abans des del calendari o tria un altre interval.",
           "notFound": "No trobem el teu negoci. Torna a carregar la pàgina.",
           "forbidden": "No tens permís per bloquejar hores en aquest negoci.",
-          "internal": "No hem pogut bloquejar les hores. Torna-ho a provar."
+          "internal": "No hem pogut bloquejar les hores. Torna-ho a provar.",
+          "professionalRequired": "Tria a quin professional bloqueges o marca «Tot l’equip»."
         }
-      }
+      },
+      "filter": {
+        "region": "Filtra per professional",
+        "all": "Tots"
+      },
+      "withProfessional": "{label} · {professional}"
     },
     "services": {
       "title": "Serveis oferts",
@@ -686,6 +702,13 @@
         "hiddenBadge": "Ocult pel teu pla",
         "reached": "Has arribat al màxim de serveis publicats del teu pla. Millora el teu pla per publicar-ne més.",
         "upgradeCta": "Millora el teu pla"
+      },
+      "form": {
+        "professionalsLabel": "Qui el fa",
+        "professionalsHelp": "Marca a qui del teu equip es pot reservar aquest servei.",
+        "professionalsRequired": "Tria almenys un professional.",
+        "professionalsInvalid": "Algun dels professionals triats ja no és al teu equip. Torna a carregar la pàgina i tria de nou.",
+        "professionalsOutOfPlan": "Fora del teu pla"
       }
     },
     "addService": {
@@ -1014,6 +1037,83 @@
           "generic": "No s’ha pogut desar. Torna-ho a provar d’aquí a uns minuts."
         }
       }
+    },
+    "team": {
+      "title": "Equip",
+      "subtitle": "Qui atén al teu negoci, amb el seu horari i els seus serveis.",
+      "addCta": "Afegeix un professional",
+      "counter": "{active} de {max} professionals del teu pla",
+      "counterUnlimited": "{active} professionals · Sense límit",
+      "upgradeCta": "Millora el teu pla",
+      "limitReached": "Has arribat al màxim de professionals del teu pla.",
+      "outOfPlanNotice": "Hi ha professionals fora del teu pla: no accepten reserves noves fins que el milloris.",
+      "unstaffedTitle": "Serveis que no es poden reservar",
+      "unstaffedDescription": "Ningú del teu equip amb reserves obertes fa aquests serveis. Assigna'ls a algú o millora el teu pla.",
+      "empty": "Encara no hi ha ningú al teu equip.",
+      "serviceCount": "{count, plural, =0 {Sense serveis} one {# servei} other {# serveis}}",
+      "status": {
+        "active": "Actiu",
+        "outOfPlan": "Fora del teu pla",
+        "inactive": "De baixa"
+      },
+      "edit": "Edita",
+      "form": {
+        "newTitle": "Nou professional",
+        "newSubtitle": "El seu perfil, el seu horari i els serveis que fa.",
+        "editTitle": "Edita el professional",
+        "back": "Torna a l'equip",
+        "profileTitle": "Perfil",
+        "nameLabel": "Nom",
+        "namePlaceholder": "Ex. Laura",
+        "bioLabel": "Presentació (opcional)",
+        "bioPlaceholder": "Especialitats, experiència…",
+        "bioCounter": "{count}/{max}",
+        "photoLabel": "Foto (opcional)",
+        "photoHelp": "Surt a la teva fitxa al costat del seu nom.",
+        "scheduleTitle": "Horari",
+        "scheduleSubtitle": "Quan accepta reserves. Pots afegir diversos trams per dia.",
+        "servicesTitle": "Serveis que fa",
+        "servicesSubtitle": "Només rebrà reserves dels serveis que marquis.",
+        "servicesEmpty": "Encara no tens serveis. Podràs assignar-los-hi en crear-los.",
+        "submitCreate": "Afegeix a l'equip",
+        "submitSave": "Desa els canvis",
+        "saving": "Desant…",
+        "saved": "Canvis desats.",
+        "inactiveNotice": "Està de baixa. Reactiva'l per editar-lo i perquè torni a acceptar reserves.",
+        "outOfPlanNotice": "Fora del teu pla: no accepta reserves noves fins que milloris el pla."
+      },
+      "errors": {
+        "VALIDATION": "Revisa els camps: el nom és obligatori i la presentació admet fins a 300 caràcters.",
+        "NOT_FOUND": "Aquest professional ja no és al teu equip. Torna a carregar la pàgina.",
+        "INACTIVE": "Està de baixa. Reactiva'l abans d'editar-lo.",
+        "PHOTO_INVALID": "No hem pogut fer servir aquesta foto. Torna-la a pujar.",
+        "SERVICES_INVALID": "Algun dels serveis ja no existeix. Torna a carregar la pàgina i tria de nou.",
+        "PLAN_LIMIT": "Has arribat al màxim de professionals del teu pla. Millora el teu pla per afegir-ne més.",
+        "HAS_FUTURE_BOOKINGS": "Té cites pendents. Cancel·la-les abans de donar-lo de baixa.",
+        "LAST_ACTIVE": "El teu negoci necessita almenys un professional actiu.",
+        "UNSTAFFED_SERVICES": "Alguns serveis es quedarien sense ningú que els faci. Assigna'ls a una altra persona o posa'ls en pausa.",
+        "INTERNAL": "No hem pogut desar els canvis. Torna-ho a provar d'aquí a uns segons."
+      },
+      "deactivate": {
+        "button": "Dona de baixa",
+        "title": "Vols donar de baixa {name}?",
+        "description": "Deixarà de sortir a la teva fitxa i no rebrà reserves noves. El seu historial es conserva i el pots reactivar quan vulguis.",
+        "bookingsTitle": "Abans has de cancel·lar les seves cites futures:",
+        "bookingsHelp": "Cancel·la-les des del calendari (el client rep la devolució). Quan no en quedi cap, el podràs donar de baixa.",
+        "calendarLink": "Ves al calendari",
+        "unstaffedTitle": "Aquests serveis es quedarien sense ningú:",
+        "confirm": "Dona de baixa",
+        "cancel": "Cancel·la",
+        "pending": "Donant de baixa…"
+      },
+      "reactivate": {
+        "button": "Reactiva",
+        "pending": "Reactivant…"
+      },
+      "settingsLink": {
+        "description": "Cada professional del teu equip té el seu propi horari.",
+        "cta": "Horaris de l'equip"
+      }
     }
   },
   "booking": {
@@ -1169,6 +1269,14 @@
         "payOnline": "Pagar en línia",
         "viewMyBookings": "Veure les meves reserves"
       }
+    },
+    "professionalPicker": {
+      "legend": "Qui vols que t’atengui?",
+      "anyHint": "Amb «Qualsevol professional disponible» veus les hores lliures de tot l’equip i t’assignem a qui estigui lliure.",
+      "unavailable": "Aquest professional ja no fa aquest servei.",
+      "chooseAgain": "Triar un altre professional",
+      "professionalGone": "El professional que vas triar ja no fa aquest servei. Hem tornat a «Qualsevol professional disponible»: tria una hora per continuar.",
+      "assignedLabel": "T’atén"
     }
   },
   "customerArea": {
@@ -1490,9 +1598,7 @@
       "eyebrow": "Servei",
       "durationLabel": "Durada",
       "priceLabel": "Preu",
-      "professionalLabel": "Professional assignat",
-      "anyProfessional": "Qualsevol professional disponible del centre",
-      "professionalPhotoAlt": "Foto de {name}"
+      "anyProfessional": "Qualsevol professional disponible del centre"
     },
     "description": {
       "title": "Sobre aquest servei"
@@ -1511,6 +1617,10 @@
       "reserve": "Reservar",
       "fromPrice": "des de {price}",
       "secureNote": "Confirmació immediata. Pagament segur."
+    },
+    "team": {
+      "title": "Qui el fa",
+      "chooseHint": "En reservar podràs triar qui t’atén o deixar que t’assignem a qui estigui lliure."
     }
   },
   "forProviders": {

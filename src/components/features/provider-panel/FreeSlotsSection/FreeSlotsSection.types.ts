@@ -5,6 +5,9 @@
 export interface PanelFreeSlot {
   serviceId: string;
   serviceName: string;
+  /** Profesional cuyo hueco es: se envía al liberarlo. */
+  professionalId: string;
+  professionalName: string;
   /** Inicio en ISO-8601 UTC: es lo que viaja a la action. */
   startAtIso: string;
   /** `HH:mm` en hora de Madrid. */
@@ -16,4 +19,6 @@ export interface FreeSlotsSectionProps {
   slots: PanelFreeSlot[];
   /** Modo preview: datos de ejemplo y botones deshabilitados. */
   readOnly: boolean;
+  /** Pinta de quién es cada hueco (negocios con más de un profesional). */
+  showProfessional?: boolean;
 }

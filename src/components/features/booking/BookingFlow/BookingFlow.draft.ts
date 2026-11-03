@@ -66,6 +66,8 @@ export function loadBookingDraft(serviceId: string): PersistedBookingDraft | nul
       notes: typeof parsed.notes === 'string' ? parsed.notes : '',
       // Borradores anteriores al pago en el local no traen método: online.
       paymentMethod: parsed.paymentMethod === 'onsite' ? 'onsite' : 'online',
+      // Borradores anteriores al equipo no traen profesional: «cualquiera».
+      professionalId: typeof parsed.professionalId === 'string' ? parsed.professionalId : null,
     };
   } catch {
     // Storage bloqueado (incógnito estricto, cuota) o JSON inválido: lo
@@ -87,12 +89,17 @@ export function loadBookingDraft(serviceId: string): PersistedBookingDraft | nul
  * cogido el hueco. Eso sólo lo sabe el servidor, y llega como
  * `SLOT_UNAVAILABLE` al abrir el checkout.
  *
+ * El profesional guardado se descarta igual si ya no presta el servicio
+ * (baja, cambio de equipo): se vuelve a «cualquiera disponible».
+ *
  * @param serviceId — servicio del flujo actual.
  * @param now — momento de referencia; parametrizable para tests.
+ * @param allowedProfessionalIds — quienes prestan el servicio ahora.
  */
 export function restoreBookingDraft(
   serviceId: string,
   now: Date = new Date(),
+  allowedProfessionalIds: readonly string[] = [],
 ): RestoredBookingDraft | null {
   const persisted = loadBookingDraft(serviceId);
   if (!persisted) return null;
@@ -107,6 +114,10 @@ export function restoreBookingDraft(
       notes: persisted.notes,
       bookingId: null,
       paymentMethod: persisted.paymentMethod,
+      professionalId:
+        persisted.professionalId && allowedProfessionalIds.includes(persisted.professionalId)
+          ? persisted.professionalId
+          : null,
     },
     slotExpired: hasSlot && !slotUsable,
   };
@@ -128,6 +139,7 @@ export function saveBookingDraft(serviceId: string, draft: BookingDraft): void {
     slotEndIso: draft.slotEndIso,
     notes: draft.notes,
     paymentMethod: draft.paymentMethod,
+    professionalId: draft.professionalId,
   };
   pendingSaveHandle = setTimeout(() => {
     pendingSaveHandle = null;

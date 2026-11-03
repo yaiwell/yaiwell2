@@ -72,6 +72,23 @@ export const bookingRepository = {
   },
 
   /**
+   * ¿Sigue activo (sin `deletedAt`) el profesional y presta el servicio?
+   * Se lee dentro de la tx, tras el lock. El cupo del plan se comprueba
+   * aparte (`getBookableProfessionalIds`).
+   */
+  async isProfessionalActiveForService(
+    tx: Prisma.TransactionClient,
+    professionalId: string,
+    serviceId: string,
+  ) {
+    const row = await tx.professional.findFirst({
+      where: { id: professionalId, deletedAt: null, serviceLinks: { some: { serviceId } } },
+      select: { id: true },
+    });
+    return row !== null;
+  },
+
+  /**
    * Localiza una reserva por id incluyendo el `provider` para que el
    * servicio pueda comprobar la titularidad sin un segundo round-trip.
    */

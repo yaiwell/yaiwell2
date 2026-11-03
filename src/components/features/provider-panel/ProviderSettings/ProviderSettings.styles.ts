@@ -14,6 +14,9 @@ export const providerSettingsStyles = {
   card: 'flex flex-col gap-5 rounded-3xl border border-border/60 bg-card p-6 shadow-sm',
   cardTitle: 'font-display text-lg text-foreground',
   cardSubtitle: 'text-sm text-muted-foreground',
+  // Enlace «Horarios del equipo» cuando el negocio tiene varios profesionales.
+  teamLink:
+    'inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
 
   fieldGrid: 'grid grid-cols-1 gap-4 sm:grid-cols-2',
   field: 'flex flex-col gap-1.5',

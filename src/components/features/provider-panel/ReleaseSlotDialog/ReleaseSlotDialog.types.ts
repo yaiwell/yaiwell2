@@ -24,6 +24,10 @@ export type ReleaseSlotTarget =
       startAtIso: string;
       serviceName: string;
       startTime: string;
+      /** Profesional cuyo hueco se libera (con equipo, imprescindible). */
+      professionalId?: string;
+      /** Nombre a enseñar en el diálogo; `null` si no hace falta (un solo profesional). */
+      professionalName?: string | null;
     };
 
 /** Aviso que acompaña al diálogo (p. ej., la cancelación sin reembolso). */
@@ -78,6 +82,10 @@ export interface ReleaseCancelledSlotButtonProps {
 export interface ReleaseFreeSlotButtonProps {
   serviceId: string;
   serviceName: string;
+  /** Profesional del hueco: viaja a la action. */
+  professionalId?: string;
+  /** Nombre a enseñar; `null` con un solo profesional. */
+  professionalName?: string | null;
   startAtIso: string;
   startTime: string;
   disabled?: boolean;

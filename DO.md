@@ -10,6 +10,19 @@
 
 ## 2026-11-02
 
+### 2026-11-03 — Equipo: varios profesionales por negocio
+
+P4 + P13 (`Plan` → migración 9h con `db-migration-guard` → fase A (núcleo) → fases B (panel de equipo), C (reserva pública) y D (calendario) en paralelo con ficheros disjuntos → `business-rules-auditor` + `conventions-reviewer` → correcciones → `e2e-tester`). Decisiones en CLAUDE.md §4.bis «Equipo».
+
+- **Migración 9h** (aplicada): `service_professionals` (N:M, rellena desde `services.professionalId`, sin acceso público), CHECK de nombre y bio en `professionals`, `plans.maxProfessionals` (Gratis 3, Básico 10, Pro 15, Premium sin límite).
+- **Núcleo**: motor por profesional y unión para «cualquiera»; `createBooking` asigna en servidor (oferta → menos citas ese día → más antiguo), cada candidato en su transacción con lock; tras el lock comprueba que el profesional siga activo, preste el servicio y esté dentro del cupo. Bloqueos por profesional o de todo el equipo; huecos con descuento y ocupación por profesional. Las reservas de la madrugada de Madrid ya cuentan.
+- **Panel «Equipo»** (`/panel/equipo`): alta, edición (foto, bio, horario propio, servicios que presta), baja (bloqueada con citas futuras; retira sus ofertas) y reactivación, con límite del plan («fuera de tu plan» para los que sobran al bajar). Pestaña nueva en el menú. «Quién lo presta» en el formulario de servicio. Con un solo profesional, Mi negocio sigue mostrando su horario.
+- **Reserva pública**: «Cualquier profesional disponible» o elegir uno; las horas cambian con el profesional; la confirmación dice quién atiende. La ficha muestra el equipo y la página de servicio quién lo presta (solo dentro del cupo).
+- **Calendario**: filtro por profesional (`?pro=`), citas, ofertas y bloqueos solapados en carriles, nombre del profesional en cada bloque, diálogo de bloqueo con selector y «Todo el equipo».
+- Fotos de profesionales solo desde la subida propia del negocio (mismo origen de Supabase y su carpeta).
+- `PhotoUploader` notificaba en cada render con un `onChange` inline y la ficha del profesional entraba en bucle («Maximum update depth»); ahora guarda el callback en un ref. Contador «X de Y» solo con los que entran en el cupo.
+- E2E nuevo `team.spec.ts` (8 tests: ficha y selector sin el fuera de cupo, huecos por profesional, coherencia UI ↔ API, «cualquiera» asigna a B con A ocupada, panel de equipo y filtro del calendario, baja bloqueada con citas y baja que libera cupo) y regresión de bloqueos, huecos con descuento, calendario, pago en el local, no presentados y cancelación. ~2600 tests unitarios.
+
 ### 2026-11-03 — Bloqueos de agenda, contacto privado del centro y ocupación real
 
 P4 + P13 (`Plan` → migración con `db-migration-guard` ×2 → dominio y motor + UI del calendario en paralelo (2 general-purpose) → `conventions-reviewer` + `business-rules-auditor`; P1 aplicado, P2 a TODO).

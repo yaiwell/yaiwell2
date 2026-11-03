@@ -41,6 +41,7 @@ function makeService(
     durationMinutes: 45,
     priceCents: 3500,
     rootCategory,
+    professionals: [],
   };
 }
 

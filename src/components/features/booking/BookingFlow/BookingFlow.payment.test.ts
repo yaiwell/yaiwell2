@@ -45,6 +45,7 @@ const DRAFT: BookingDraft = {
   notes: '',
   bookingId: null,
   paymentMethod: 'onsite',
+  professionalId: null,
 };
 
 const PRICE = { amountCents: 4500, originalPriceCents: null, discountPct: null, isEstimate: true };
@@ -113,6 +114,7 @@ describe('pendingToReplace y resolveConfirmation', () => {
       isLastMinute: false,
       estimatedLastMinute: false,
       slotStartIso: SLOT_A,
+      professionalId: null,
     };
     expect(pendingToReplace(ready, DRAFT)).toBe('bk-pending');
     expect(pendingToReplace({ status: 'idle' }, DRAFT)).toBeNull();
@@ -130,6 +132,7 @@ describe('pendingToReplace y resolveConfirmation', () => {
           discountPct: 20,
           slotStartIso: SLOT_A,
           slotEndIso: SLOT_B,
+          professionalId: null,
         },
       },
       DRAFT,
@@ -154,6 +157,7 @@ describe('useOnsiteBooking', () => {
     serviceId: 'svc-1',
     slotStartIso: SLOT_A,
     notes: '  ',
+    professionalId: null,
     replacesPendingBookingId: null,
   };
 
@@ -166,6 +170,7 @@ describe('useOnsiteBooking', () => {
       discountPct: null,
       slotStartIso: SLOT_A,
       slotEndIso: SLOT_B,
+      professionalId: 'pro-9',
     };
     mockedCreate.mockResolvedValue(created);
     const onCreated = vi.fn();

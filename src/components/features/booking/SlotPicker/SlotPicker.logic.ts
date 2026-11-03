@@ -9,7 +9,6 @@ import { useMemo, useState } from 'react';
 import {
   AvailabilitySlotsRequestError,
   BUSINESS_TIMEZONE,
-  fetchServiceSlots,
   type BookingSlot,
 } from '@/lib/services/availability/availability.client';
 import { toIntlLocale } from '@/lib/i18n';
@@ -18,6 +17,7 @@ import { buildUpcomingDays, getDateKey } from '@/lib/utils/calendar-days';
 
 import { useTickingNow } from '../shared/useTickingNow';
 
+import { fetchSlotsForProfessional, slotsQueryKey } from './SlotPicker.fetch';
 import { getInitialDayForSlot } from './SlotPicker.preselect';
 import type { DayTab, SlotPickerLocale } from './SlotPicker.types';
 
@@ -163,8 +163,9 @@ export function formatSlotTime(slot: BookingSlot, locale: SlotPickerLocale): str
  * `ProviderHeader.logic.ts`, evitando llamar `Date.now()` en render.
  *
  * `providerId` queda como prop por compat histórica del componente UI;
- * el endpoint resuelve provider+professional internamente desde el
- * `serviceId`, así que aquí no lo usamos para la query.
+ * el endpoint resuelve el negocio desde el `serviceId`. Con
+ * `professionalId` pide solo la agenda de ese profesional; sin él, la
+ * unión de huecos del equipo que presta el servicio.
  */
 export function useSlotPicker(args: {
   providerId: string;
@@ -174,7 +175,10 @@ export function useSlotPicker(args: {
   now?: Date;
   /** Hueco pedido por URL (`?slot=`): abre la tira en su día. */
   initialSlotIso?: string | null;
+  /** Profesional elegido; `null`/ausente = unión del equipo («cualquiera»). */
+  professionalId?: string | null;
 }) {
+  const professionalId = args.professionalId ?? null;
   // El instante de referencia se fija al montar el hook para que el
   // calendario no "salte" si el usuario tarda en interactuar.
   const [now] = useState<Date>(() => args.now ?? new Date());
@@ -200,10 +204,11 @@ export function useSlotPicker(args: {
 
   const dateKey = getDateKey(selectedDay);
   const query = useQuery<BookingSlot[]>({
-    // queryKey segmentado por serviceId + día: cache automático cuando
-    // el usuario vuelve a un día ya consultado.
-    queryKey: ['availability', args.serviceId, dateKey],
-    queryFn: ({ signal }) => fetchServiceSlots(args.serviceId, dateKey, signal),
+    // queryKey segmentado por servicio + día + profesional: cache
+    // automático al volver a un día (o a una agenda) ya consultados.
+    queryKey: slotsQueryKey(args.serviceId, dateKey, professionalId),
+    queryFn: ({ signal }) =>
+      fetchSlotsForProfessional(args.serviceId, dateKey, professionalId, signal),
     // Slots cambian poco en minutos: caché 60s para evitar refetch
     // agresivo al hacer click rápido entre días.
     staleTime: 60_000,

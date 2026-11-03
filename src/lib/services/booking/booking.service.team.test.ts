@@ -10,7 +10,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 type BookingRow = { professionalId: string; startAt: Date; endAt: Date };
 
-const { store, prismaMock, slotOffers, candidatesRepo } = vi.hoisted(() => {
+const { store, prismaMock, slotOffers, candidatesRepo, bookableIds } = vi.hoisted(() => {
   const store = { bookings: [] as BookingRow[], blockedProfessionals: [] as string[] };
   const prismaMock = {
     service: { findUnique: vi.fn() },
@@ -26,6 +26,9 @@ const { store, prismaMock, slotOffers, candidatesRepo } = vi.hoisted(() => {
         store.blockedProfessionals.includes(args.where.professionalId) ? 1 : 0,
       ),
     },
+    // Profesional activo que presta el servicio: `bookForProfessional`
+    // lo comprueba tras el lock.
+    professional: { findFirst: vi.fn() },
     $executeRaw: vi.fn(),
     $transaction: vi.fn(),
   };
@@ -42,11 +45,14 @@ const { store, prismaMock, slotOffers, candidatesRepo } = vi.hoisted(() => {
       findProfessionalsCreatedAt: vi.fn(),
       countActiveBookingsByProfessional: vi.fn(),
     },
+    // Cupo del plan (`team.bookable`), comprobado dentro de cada intento.
+    bookableIds: vi.fn(),
   };
 });
 
 vi.mock('@/lib/db/prisma', () => ({ prisma: prismaMock }));
 vi.mock('@/lib/services/slot-offers', () => slotOffers);
+vi.mock('@/lib/services/team/team.bookable', () => ({ getBookableProfessionalIds: bookableIds }));
 vi.mock('./booking.candidates.repository', () => ({
   bookingCandidatesRepository: candidatesRepo,
 }));
@@ -89,6 +95,10 @@ beforeEach(() => {
     id: 'bk-1',
     ...(args.data as object),
   }));
+  prismaMock.professional.findFirst.mockImplementation(async (args: { where: { id: string } }) => ({
+    id: args.where.id,
+  }));
+  bookableIds.mockResolvedValue([PRO_A, PRO_B]);
   slotOffers.findLiveOfferForSlot.mockResolvedValue(null);
   slotOffers.getBookableCandidates.mockResolvedValue([
     { professionalId: PRO_A, offer: null },
@@ -124,6 +134,17 @@ describe('createBooking · «cualquiera disponible»', () => {
 
   it('un bloqueo de agenda del primero también pasa al segundo', async () => {
     store.blockedProfessionals = [PRO_A];
+
+    const booking = await createBooking(input, 'client-1', { now: NOW });
+
+    expect(booking.professionalId).toBe(PRO_B);
+  });
+
+  it('un profesional dado de baja mientras se elegía hora pasa al siguiente', async () => {
+    // La baja se confirma justo antes del lock: dentro de la tx ya no está activo.
+    prismaMock.professional.findFirst.mockImplementation(async (args: { where: { id: string } }) =>
+      args.where.id === PRO_A ? null : { id: args.where.id },
+    );
 
     const booking = await createBooking(input, 'client-1', { now: NOW });
 

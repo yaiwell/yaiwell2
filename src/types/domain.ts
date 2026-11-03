@@ -205,6 +205,28 @@ export interface RootCategoryRef {
  */
 export interface ServiceWithRootCategory extends Service {
   rootCategory: RootCategoryRef | null;
+  /**
+   * Profesionales activos que prestan el servicio (tabla
+   * `service_professionals`), por antigüedad. Vacío si nadie lo presta.
+   */
+  professionals: PublicProfessional[];
+}
+
+/**
+ * Profesional tal y como se enseña al público: ficha del centro, página
+ * de servicio y selector de profesional al reservar (CLAUDE.md §4.bis
+ * «Equipo»).
+ *
+ * Solo lleva lo que el negocio publica a propósito. Nada de `userId`,
+ * horario, buffer ni contacto: eso es del panel.
+ */
+export interface PublicProfessional {
+  id: string;
+  name: string;
+  /** URL pública de la foto; `null` si no tiene (la UI pinta iniciales). */
+  photo: string | null;
+  /** Bio corta opcional; `null` si no hay. */
+  bio: string | null;
 }
 
 /**

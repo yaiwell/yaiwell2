@@ -9,7 +9,12 @@
  */
 import type { WeeklySchedule } from '@/lib/services/availability';
 import type { RatingBreakdown } from '@/lib/services/providers';
-import type { ProviderWithAvailability, Review, ServiceWithRootCategory } from '@/types/domain';
+import type {
+  ProviderWithAvailability,
+  PublicProfessional,
+  Review,
+  ServiceWithRootCategory,
+} from '@/types/domain';
 
 export interface ProviderDetailProps {
   provider: ProviderWithAvailability;
@@ -17,6 +22,8 @@ export interface ProviderDetailProps {
   services: ServiceWithRootCategory[];
   reviews: Review[];
   ratingBreakdown: RatingBreakdown;
+  /** Equipo público del centro (`ProviderDetail.team` del service). */
+  team: PublicProfessional[];
   /** Horario real del provider o `null` si no se pudo cargar. */
   schedule: WeeklySchedule | null;
   locale: 'es' | 'ca' | 'en' | 'de';

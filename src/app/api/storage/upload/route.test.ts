@@ -200,6 +200,49 @@ describe('POST /api/storage/upload', () => {
     expect(body.publicUrl).toMatch(/^https:\/\//);
   });
 
+  it('sube las fotos del equipo bajo <providerId>/professionals/', async () => {
+    authMock.mockResolvedValue({ userId: 'user_123' });
+    findFirstMock.mockResolvedValue({ owner: { clerkId: 'user_123' } });
+    uploadImageMock.mockResolvedValue({ publicUrl: 'https://cdn/x.jpg', path: 'x.jpg' });
+
+    const req = buildFormRequest({
+      bucket: 'provider-photos',
+      ownerId: 'prov-1',
+      folder: 'professionals',
+      file: buildJpegFile(),
+    });
+    const res = await POST(req);
+
+    expect(res.status).toBe(200);
+    const args = uploadImageMock.mock.calls[0]![0] as { path: string };
+    expect(args.path.startsWith('prov-1/professionals/')).toBe(true);
+  });
+
+  it('rechaza una carpeta fuera de la lista o en otro bucket', async () => {
+    authMock.mockResolvedValue({ userId: 'user_123' });
+
+    const unknown = await POST(
+      buildFormRequest({
+        bucket: 'provider-photos',
+        ownerId: 'prov-1',
+        folder: '../otro',
+        file: buildJpegFile(),
+      }),
+    );
+    const wrongBucket = await POST(
+      buildFormRequest({
+        bucket: 'avatars',
+        ownerId: 'user_123',
+        folder: 'professionals',
+        file: buildJpegFile(),
+      }),
+    );
+
+    expect(unknown.status).toBe(400);
+    expect(wrongBucket.status).toBe(400);
+    expect(uploadImageMock).not.toHaveBeenCalled();
+  });
+
   it('mapea StorageUploadError del wrapper a 500', async () => {
     authMock.mockResolvedValue({ userId: 'user_123' });
     uploadImageMock.mockRejectedValue(new StorageUploadError('boom'));

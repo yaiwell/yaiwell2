@@ -26,7 +26,11 @@ import type { WeeklySchedule } from '@/lib/services/availability';
 import type { LocalizedText } from '@/types/domain';
 
 import { parseGeolocatedAddress } from './provider.address';
-import { ProviderHasNoProfessionalError, ProviderNotFoundError } from './provider.errors';
+import {
+  ProviderHasNoProfessionalError,
+  ProviderHasTeamError,
+  ProviderNotFoundError,
+} from './provider.errors';
 import { providerRepository } from './provider.repository';
 import { updateProviderSettingsSchema } from './provider.validation';
 
@@ -120,29 +124,36 @@ function mergeDescription(
 }
 
 /**
- * Devuelve el `WeeklySchedule` actual del primer Professional del
- * provider, listo para precargar la UI del editor en `/panel/centro`.
+ * Devuelve el `WeeklySchedule` del único profesional del negocio, listo
+ * para precargar el editor de `/panel/centro`.
+ *
+ * Con varios profesionales activos cada uno tiene su horario y se edita
+ * en `/panel/equipo`: devolvemos `null` y la página enlaza allí. Con uno
+ * solo (el autónomo) el editor sigue en «Mi negocio», como siempre.
  *
  * Si el JSON en BD no encaja con la forma esperada (caso histórico de
  * un seed antiguo), devolvemos `EMPTY_SCHEDULE` en lugar de lanzar:
  * la UI puede pintarse vacía y el usuario lo rellena. La validación
  * estricta sí se aplica en `updateProviderSchedule` (escritura).
  *
+ * @returns el horario, o `null` si el negocio tiene equipo.
  * @throws ProviderHasNoProfessionalError si no hay Professional.
  */
-export async function getProviderSchedule(providerId: string): Promise<WeeklySchedule> {
-  // TODO(equipo, fase B): el horario pasa a editarse por profesional. Hasta
-  // entonces /panel/centro sigue mostrando el del primero (el titular).
-  const professional = await providerRepository.findFirstProfessional(providerId);
+export async function getProviderSchedule(providerId: string): Promise<WeeklySchedule | null> {
+  const [professional, activeCount] = await Promise.all([
+    providerRepository.findFirstProfessional(providerId),
+    providerRepository.countActiveProfessionals(providerId),
+  ]);
   if (!professional) {
     throw new ProviderHasNoProfessionalError();
   }
+  if (activeCount > 1) return null;
   const parsed = weeklyScheduleSchema.safeParse(professional.schedule);
   return parsed.success ? parsed.data : EMPTY_SCHEDULE;
 }
 
 /**
- * Persiste el horario semanal del primer Professional del provider.
+ * Persiste el horario semanal del único Professional del provider.
  *
  * Reutiliza `weeklyScheduleSchema` del módulo `availability` para
  * mantener UNA sola fuente de verdad sobre la forma del schedule
@@ -154,6 +165,8 @@ export async function getProviderSchedule(providerId: string): Promise<WeeklySch
  * @throws ProviderHasNoProfessionalError — si el provider no tiene
  *   Professional al que asignar el horario.
  * @throws ProviderNotFoundError — si el provider no existe.
+ * @throws ProviderHasTeamError — si tiene varios profesionales activos:
+ *   cada horario se guarda desde `/panel/equipo`.
  */
 export async function updateProviderSchedule(providerId: string, input: unknown): Promise<void> {
   const schedule = weeklyScheduleSchema.parse(input);
@@ -165,9 +178,15 @@ export async function updateProviderSchedule(providerId: string, input: unknown)
     throw new ProviderNotFoundError();
   }
 
-  const professional = await providerRepository.findFirstProfessional(providerId);
+  const [professional, activeCount] = await Promise.all([
+    providerRepository.findFirstProfessional(providerId),
+    providerRepository.countActiveProfessionals(providerId),
+  ]);
   if (!professional) {
     throw new ProviderHasNoProfessionalError();
+  }
+  if (activeCount > 1) {
+    throw new ProviderHasTeamError();
   }
 
   await providerRepository.updateProfessionalSchedule(

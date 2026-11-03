@@ -24,6 +24,8 @@ import {
 import { notifyBookingConfirmed, scheduleNotification } from '@/lib/services/notifications';
 import { ensureUserFromClerk } from '@/lib/services/user';
 
+import { resolveBookedProfessionalId } from './booked-professional';
+
 /**
  * Server actions del pago en el local (CLAUDE.md §4.bis, decidido
  * 2026-10-29 y 2026-10-30).
@@ -41,6 +43,8 @@ export type OnsiteBookingErrorCode =
   | 'SERVICE_UNAVAILABLE'
   | 'SLOT_UNAVAILABLE'
   | 'SLOT_TOO_SOON'
+  // El profesional elegido ya no presta el servicio: vuelta al selector.
+  | 'PROFESSIONAL_UNAVAILABLE'
   | 'ONSITE_NOT_ALLOWED'
   // La reserva `pending` que había que sustituir ya está pagada: el
   // cliente no debe acabar con dos reservas para la misma hora.
@@ -58,6 +62,8 @@ export type OnsiteBookingActionState =
       discountPct: number | null;
       slotStartIso: string;
       slotEndIso: string;
+      /** Profesional de la reserva (el elegido o el asignado); `null` si no se pudo leer. */
+      professionalId: string | null;
     }
   | {
       ok: false;
@@ -126,6 +132,11 @@ export async function createOnsiteBookingAction(
     );
     scheduleNotification(() => notifyBookingConfirmed(booking.bookingId));
     revalidatePath('/[locale]/mis-reservas', 'page');
+    const professionalId = await resolveBookedProfessionalId(
+      booking.bookingId,
+      user.id,
+      input.professionalId,
+    );
     return {
       ok: true,
       bookingId: booking.bookingId,
@@ -134,9 +145,10 @@ export async function createOnsiteBookingAction(
       discountPct: booking.discountPct,
       slotStartIso: booking.slotStartIso,
       slotEndIso: booking.slotEndIso,
+      professionalId,
     };
   } catch (error) {
-    return mapOnsiteError(error);
+    return mapOnsiteError(error, Boolean(input?.professionalId));
   }
 }
 
@@ -170,7 +182,10 @@ async function releaseOwnPending(bookingId: string, clientId: string): Promise<v
 }
 
 /** Traduce los errores del dominio a códigos de UI. */
-function mapOnsiteError(error: unknown): Extract<OnsiteBookingActionState, { ok: false }> {
+function mapOnsiteError(
+  error: unknown,
+  professionalChosen = false,
+): Extract<OnsiteBookingActionState, { ok: false }> {
   if (error instanceof PendingAlreadyPaidError) return { ok: false, code: 'PENDING_ALREADY_PAID' };
   if (error instanceof OnsitePaymentNotAllowedError) {
     return {
@@ -182,6 +197,10 @@ function mapOnsiteError(error: unknown): Extract<OnsiteBookingActionState, { ok:
   }
   if (isBookingTooSoonError(error)) return { ok: false, code: 'SLOT_TOO_SOON' };
   if (error instanceof ZodError) return { ok: false, code: 'VALIDATION' };
+  // Mismo criterio que el checkout online (ver `mapCheckoutError`).
+  if (professionalChosen && error instanceof ProfessionalNotResolvedError) {
+    return { ok: false, code: 'PROFESSIONAL_UNAVAILABLE' };
+  }
   if (
     error instanceof ServiceNotFoundError ||
     error instanceof ServicePausedError ||

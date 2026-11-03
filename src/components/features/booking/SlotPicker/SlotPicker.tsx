@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { SlotGridSkeleton } from './SlotGridSkeleton';
 import { groupSlots } from './SlotPicker.groups';
 import { useSlotPicker } from './SlotPicker.logic';
+import { useSelectedSlotGuard } from './SlotPicker.guard';
 import { useSlotPreselection } from './SlotPicker.preselect';
 import { slotPickerStyles as s } from './SlotPicker.styles';
 import type { SlotPickerProps } from './SlotPicker.types';
@@ -33,8 +34,12 @@ export function SlotPicker({
   onSelect,
   now,
   initialSlotIso,
+  professionalId = null,
+  onSelectionGone,
+  onResetProfessional,
 }: SlotPickerProps) {
   const t = useTranslations('booking.slotPicker');
+  const tPicker = useTranslations('booking.professionalPicker');
 
   const tOffer = useTranslations('booking.slotOffer');
 
@@ -57,7 +62,11 @@ export function SlotPicker({
     locale,
     now,
     initialSlotIso,
+    professionalId,
   });
+
+  // Hora elegida que ya no está en la agenda actual (cambio de profesional).
+  useSelectedSlotGuard({ serviceId, professionalId, selectedStartIso, clock, onSelectionGone });
 
   // Llegada desde una etiqueta de oferta: deja el hueco ya elegido o,
   // si ya no existe, lo dice una vez sin bloquear nada.
@@ -106,6 +115,14 @@ export function SlotPicker({
 
       {isLoading ? (
         <SlotGridSkeleton label={t('loadingLabel')} />
+      ) : isNotBookable && professionalId && onResetProfessional ? (
+        // El profesional elegido ya no presta el servicio: salida a «cualquiera».
+        <div className={s.empty} data-component="booking-slot-picker-professional-gone">
+          <p className={s.emptyTitle}>{tPicker('unavailable')}</p>
+          <button type="button" onClick={onResetProfessional} className={s.resetButton}>
+            {tPicker('chooseAgain')}
+          </button>
+        </div>
       ) : isNotBookable ? (
         // Respuesta definitiva del servidor, no un fallo: sin botón de reintentar.
         <div className={s.empty} data-component="booking-slot-picker-not-bookable">

@@ -19,6 +19,8 @@ interface CalendarDayColumnProps {
   hours: number[];
   locale: SupportedLocale;
   readOnly: boolean;
+  /** Nombre del profesional en cada bloque (vista «Todos» con equipo). */
+  showProfessional?: boolean;
   variant: 'week' | 'day';
 }
 
@@ -26,9 +28,9 @@ interface CalendarDayColumnProps {
  * Columna de un día: separadores horarios, bloqueos de agenda, bloques
  * de reserva y huecos liberados con descuento.
  *
- * Los bloqueos se pintan primero para quedar debajo: una reserva que
- * coincida (p. ej. una cancelada que sigue en la rejilla) sigue siendo
- * visible y tocable.
+ * Lo que coincide en el tiempo llega con su carril (`lane`) y se pinta
+ * lado a lado. Los bloqueos van primero en el DOM para quedar debajo
+ * si aun así se tocan por el alto mínimo de un bloque.
  *
  * Sin estado ni hooks, así que sirve tanto dentro de la cuadrícula
  * (Server Component) como en la vista de día móvil (Client Component).
@@ -40,6 +42,7 @@ export function CalendarDayColumn({
   hours,
   locale,
   readOnly,
+  showProfessional = false,
   variant,
 }: CalendarDayColumnProps) {
   return (
@@ -58,6 +61,7 @@ export function CalendarDayColumn({
           positioned={item}
           locale={locale}
           readOnly={readOnly}
+          showProfessional={showProfessional}
           variant={variant}
         />
       ))}
@@ -67,6 +71,7 @@ export function CalendarDayColumn({
           positioned={item}
           locale={locale}
           readOnly={readOnly}
+          showProfessional={showProfessional}
           variant={variant}
         />
       ))}
@@ -76,6 +81,7 @@ export function CalendarDayColumn({
           positioned={item}
           locale={locale}
           readOnly={readOnly}
+          showProfessional={showProfessional}
           variant={variant}
         />
       ))}

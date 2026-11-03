@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 
 import { bookingActionDialogStyles as d } from '../BookingActionsList/BookingActionsList.styles';
 import { ScheduleBlockConflicts } from './ScheduleBlockConflicts';
+import { ScheduleBlockProfessionalField } from './ScheduleBlockProfessionalField';
 import {
   SCHEDULE_BLOCK_REASON_MAX,
   TIME_INPUT_STEP_SECONDS,
@@ -22,12 +23,20 @@ import type { ScheduleBlockFormProps } from './ScheduleBlockDialog.types';
  * motivo privado con contador, validación en vivo y envío. Si el
  * servidor encuentra citas en el rango, las lista: hay que cancelarlas
  * antes desde el propio calendario. Tras crear, confirma en el sitio.
+ *
+ * Con equipo, primero se elige a quién se bloquea (o a todo el equipo).
  */
-export function ScheduleBlockForm({ locale, now, onClose }: ScheduleBlockFormProps) {
+export function ScheduleBlockForm({
+  locale,
+  now,
+  team,
+  defaultProfessionalId,
+  onClose,
+}: ScheduleBlockFormProps) {
   const t = useTranslations('providerPanel.calendar.scheduleBlocks');
   const id = useId();
-  const { values, setField, issue, errorKey, conflicts, done, isPending, submit } =
-    useScheduleBlockForm(locale, now);
+  const form = useScheduleBlockForm(locale, now, team, defaultProfessionalId);
+  const { values, setField, issue, errorKey, conflicts, done, isPending, submit } = form;
   const issueId = `${id}-issue`;
 
   if (done) {
@@ -61,6 +70,17 @@ export function ScheduleBlockForm({ locale, now, onClose }: ScheduleBlockFormPro
         <Dialog.Title className={d.title}>{t('dialog.title')}</Dialog.Title>
         <Dialog.Description className={d.description}>{t('dialog.description')}</Dialog.Description>
       </div>
+
+      {form.hasTeam && (
+        <ScheduleBlockProfessionalField
+          id={`${id}-professional`}
+          team={team}
+          value={form.target}
+          invalid={issue === 'professional'}
+          describedBy={issue === 'professional' ? issueId : undefined}
+          onChange={form.setTarget}
+        />
+      )}
 
       {(['start', 'end'] as const).map((edge) => {
         const dateField = edge === 'start' ? 'startDateKey' : 'endDateKey';
@@ -142,7 +162,9 @@ export function ScheduleBlockForm({ locale, now, onClose }: ScheduleBlockFormPro
       {errorKey && (
         <div role="alert" className={d.errorBanner} data-component="schedule-block-error">
           {t(`errors.${errorKey}`)}
-          {errorKey === 'conflict' && <ScheduleBlockConflicts conflicts={conflicts} />}
+          {errorKey === 'conflict' && (
+            <ScheduleBlockConflicts conflicts={conflicts} showProfessional={form.hasTeam} />
+          )}
         </div>
       )}
 

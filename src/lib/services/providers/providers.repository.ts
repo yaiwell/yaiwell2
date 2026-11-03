@@ -2,9 +2,9 @@ import 'server-only';
 
 import { prisma } from '@/lib/db/prisma';
 import type { SitemapProviderRef } from '@/lib/seo';
-import type { Provider, Service, ServiceWithRootCategory } from '@/types/domain';
+import type { Provider, ServiceWithRootCategory } from '@/types/domain';
 
-import { resolveRootCategory } from './providers.categories';
+import { CATEGORY_CHAIN_SELECT, resolveRootCategory } from './providers.categories';
 import {
   mapPrismaService,
   mapProviderRow,
@@ -13,7 +13,12 @@ import {
   type SearchableProviderRow,
 } from './providers.mapper';
 import { PROVIDER_COLUMNS_FRAGMENT, SEARCH_TEXT_FRAGMENT } from './providers.sql';
-import type { SearchableProvider } from './providers.types';
+import {
+  findBookableProfessionalIdSet,
+  mapServiceProfessionalLinks,
+  SERVICE_PROFESSIONALS_SELECT,
+} from './providers.team';
+import type { ProviderServiceWithTeam, SearchableProvider } from './providers.types';
 
 /**
  * Repositorio de proveedores: única frontera entre la lógica de
@@ -95,26 +100,37 @@ export const providersRepository = {
    *  - El servicio no existe.
    *  - El servicio pertenece a otro `providerId` (URL manipulada).
    *  - El servicio está soft-deleted o pausado (`isActive=false`).
+   * Trae también quién lo presta (solo campos públicos y solo quien
+   * entra en el cupo del plan, cruzado en memoria).
    */
-  async findServiceByProvider(providerId: string, serviceId: string): Promise<Service | null> {
-    const row = await prisma.service.findFirst({
-      where: {
-        id: serviceId,
-        providerId,
-        deletedAt: null,
-        isActive: true,
-      },
-      select: {
-        id: true,
-        providerId: true,
-        categoryId: true,
-        name: true,
-        description: true,
-        durationMinutes: true,
-        priceCents: true,
-      },
-    });
-    return row ? mapPrismaService(row) : null;
+  async findServiceByProvider(
+    providerId: string,
+    serviceId: string,
+  ): Promise<ProviderServiceWithTeam | null> {
+    const [row, bookable] = await Promise.all([
+      prisma.service.findFirst({
+        where: {
+          id: serviceId,
+          providerId,
+          deletedAt: null,
+          isActive: true,
+        },
+        select: {
+          id: true,
+          providerId: true,
+          categoryId: true,
+          name: true,
+          description: true,
+          durationMinutes: true,
+          priceCents: true,
+          professionals: SERVICE_PROFESSIONALS_SELECT,
+        },
+      }),
+      findBookableProfessionalIdSet(providerId),
+    ]);
+    if (!row) return null;
+    const professionals = mapServiceProfessionalLinks(row.professionals, bookable);
+    return { service: mapPrismaService(row), professionals };
   },
 
   /**
@@ -127,10 +143,13 @@ export const providersRepository = {
    * La cadena de ancestros de la categoría viaja en el **mismo** SELECT
    * (join anidado hasta los 3 niveles que admite la jerarquía). Así la
    * ficha agrupa por categoría raíz sin una consulta por servicio y sin
-   * cargar el catálogo de categorías en el bundle del cliente.
+   * cargar el catálogo de categorías en el bundle del cliente. Quién
+   * presta cada servicio viaja igual, anidado (una consulta por nivel),
+   * y se filtra en memoria por el cupo del plan (una lectura más, no
+   * una por servicio).
    */
   async findServicesByProvider(providerId: string): Promise<ServiceWithRootCategory[]> {
-    const rows = await prisma.service.findMany({
+    const servicesQuery = prisma.service.findMany({
       where: {
         providerId,
         deletedAt: null,
@@ -144,29 +163,19 @@ export const providersRepository = {
         description: true,
         durationMinutes: true,
         priceCents: true,
-        category: {
-          select: {
-            id: true,
-            slug: true,
-            name: true,
-            parentId: true,
-            parent: {
-              select: {
-                id: true,
-                slug: true,
-                name: true,
-                parentId: true,
-                parent: { select: { id: true, slug: true, name: true, parentId: true } },
-              },
-            },
-          },
-        },
+        professionals: SERVICE_PROFESSIONALS_SELECT,
+        category: CATEGORY_CHAIN_SELECT,
       },
       orderBy: { createdAt: 'asc' },
     });
+    const [rows, bookable] = await Promise.all([
+      servicesQuery,
+      findBookableProfessionalIdSet(providerId),
+    ]);
     return rows.map((row) => ({
       ...mapPrismaService(row),
       rootCategory: resolveRootCategory(row.category),
+      professionals: mapServiceProfessionalLinks(row.professionals, bookable),
     }));
   },
 

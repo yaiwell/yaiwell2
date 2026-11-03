@@ -1,4 +1,4 @@
-import type { Provider, Service } from '@/types/domain';
+import type { Provider, PublicProfessional, Service } from '@/types/domain';
 
 import type { PaymentOptionsState } from '../BookingFlow/BookingFlow.paymentOptions';
 import type { BookingPaymentMethod } from '../BookingFlow/BookingFlow.types';
@@ -43,4 +43,9 @@ export interface BookingSummaryProps {
   /** Método efectivo: online si el local no está disponible. */
   paymentMethod?: BookingPaymentMethod;
   onPaymentMethodChange?: (method: BookingPaymentMethod) => void;
+  /**
+   * Profesional elegido; `null`/ausente = «cualquiera disponible» (el
+   * servidor asigna al reservar).
+   */
+  professional?: PublicProfessional | null;
 }

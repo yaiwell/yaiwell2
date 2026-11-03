@@ -18,7 +18,9 @@ import type {
 import { PANEL_TIMEZONE, addDaysToDateKey, getMadridDateKey } from '@/lib/utils/madrid-week';
 
 import type { SupportedLocale } from '../BookingActionsList/BookingActionsList.types';
+import { ALL_TEAM, getInitialTarget } from './ScheduleBlockDialog.team';
 import type {
+  PanelTeamMember,
   ScheduleBlockErrorKey,
   ScheduleBlockFormValues,
   ScheduleBlockIssue,
@@ -46,10 +48,9 @@ const ERROR_KEYS: Record<ScheduleBlockErrorCode, ScheduleBlockErrorKey> = {
   CONFLICT: 'conflict',
   NOT_FOUND: 'notFound',
   FORBIDDEN: 'forbidden',
-  // TODO(equipo, fase B): texto propio cuando el diálogo deje elegir
-  // profesional. Hoy no puede salir: el diálogo solo existe con un único
-  // profesional, que el servidor elige solo.
-  PROFESSIONAL_REQUIRED: 'internal',
+  // El formulario ya lo pide antes de enviar; llega si el equipo cambió
+  // con el diálogo abierto (alguien dio de alta a otro profesional).
+  PROFESSIONAL_REQUIRED: 'professionalRequired',
   INTERNAL: 'internal',
 };
 
@@ -111,7 +112,10 @@ function isOnStep(time: string): boolean {
  * Comparar `fecha + T + hora` como texto es seguro: ambos lados tienen
  * el mismo formato de ancho fijo.
  */
-export function getFormIssue(values: ScheduleBlockFormValues): ScheduleBlockIssue | null {
+export function getFormIssue(
+  values: ScheduleBlockFormValues,
+  needsProfessional = false,
+): ScheduleBlockIssue | null {
   const { startDateKey, startTime, endDateKey, endTime } = values;
   const dates = [startDateKey, endDateKey];
   const times = [startTime, endTime];
@@ -120,11 +124,19 @@ export function getFormIssue(values: ScheduleBlockFormValues): ScheduleBlockIssu
   }
   if (!times.every(isOnStep)) return 'step';
   if (`${endDateKey}T${endTime}` <= `${startDateKey}T${startTime}`) return 'endBeforeStart';
+  if (needsProfessional) return 'professional';
   return null;
 }
 
-/** Entrada de la action: el motivo vacío no viaja. */
-export function toCreateInput(values: ScheduleBlockFormValues): CreateScheduleBlockInput {
+/**
+ * Entrada de la action: el motivo vacío no viaja; `target` es el id del
+ * profesional, `ALL_TEAM` o vacío (sin equipo cargado: decide el
+ * servidor, que solo lo acepta con un único profesional).
+ */
+export function toCreateInput(
+  values: ScheduleBlockFormValues,
+  target = '',
+): CreateScheduleBlockInput {
   const reason = values.reason.trim();
   return {
     startDateKey: values.startDateKey,
@@ -132,6 +144,7 @@ export function toCreateInput(values: ScheduleBlockFormValues): CreateScheduleBl
     endDateKey: values.endDateKey,
     endTime: values.endTime,
     ...(reason ? { reason } : {}),
+    ...(target === ALL_TEAM ? { allTeam: true } : target ? { professionalId: target } : {}),
   };
 }
 
@@ -139,18 +152,31 @@ export function toCreateInput(values: ScheduleBlockFormValues): CreateScheduleBl
  * Estado del formulario «Bloquear horas»: valores, validación en vivo,
  * envío y respuesta del servidor (incluida la lista de citas que chocan).
  */
-export function useScheduleBlockForm(locale: SupportedLocale, now: Date) {
+export function useScheduleBlockForm(
+  locale: SupportedLocale,
+  now: Date,
+  team: readonly PanelTeamMember[] = [],
+  defaultProfessionalId: string | null = null,
+) {
   const router = useRouter();
   const [values, setValues] = useState<ScheduleBlockFormValues>(() => getDefaultValues(now));
+  const [target, setTargetState] = useState(() => getInitialTarget(team, defaultProfessionalId));
   const [errorKey, setErrorKey] = useState<ScheduleBlockErrorKey | null>(null);
   const [conflicts, setConflicts] = useState<ScheduleBlockConflictView[]>([]);
   const [done, setDone] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const issue = getFormIssue(values);
+  const hasTeam = team.length > 1;
+  const issue = getFormIssue(values, hasTeam && target === '');
 
   function setField<K extends keyof ScheduleBlockFormValues>(field: K, value: string) {
     setValues((prev) => ({ ...prev, [field]: value }));
     // Al tocar el rango, el error del servidor ya no describe lo que hay.
+    setErrorKey(null);
+    setConflicts([]);
+  }
+
+  function setTarget(value: string) {
+    setTargetState(value);
     setErrorKey(null);
     setConflicts([]);
   }
@@ -160,7 +186,7 @@ export function useScheduleBlockForm(locale: SupportedLocale, now: Date) {
     setErrorKey(null);
     setConflicts([]);
     startTransition(async () => {
-      const result = await createScheduleBlockAction(locale, toCreateInput(values));
+      const result = await createScheduleBlockAction(locale, toCreateInput(values, target));
       if (result.ok) {
         setDone(true);
         router.refresh();
@@ -171,7 +197,19 @@ export function useScheduleBlockForm(locale: SupportedLocale, now: Date) {
     });
   }
 
-  return { values, setField, issue, errorKey, conflicts, done, isPending, submit };
+  return {
+    values,
+    setField,
+    hasTeam,
+    target,
+    setTarget,
+    issue,
+    errorKey,
+    conflicts,
+    done,
+    isPending,
+    submit,
+  };
 }
 
 /**

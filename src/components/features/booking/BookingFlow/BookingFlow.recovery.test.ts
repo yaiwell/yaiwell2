@@ -46,6 +46,7 @@ const OK_CHECKOUT = {
   slotStartIso: FUTURE_START,
   slotEndIso: FUTURE_END,
   isLastMinute: false,
+  professionalId: null,
 };
 
 function renderFlow() {

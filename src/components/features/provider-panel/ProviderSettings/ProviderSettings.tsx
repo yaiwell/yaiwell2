@@ -12,7 +12,7 @@ import { ProviderPhotosCard } from './ProviderPhotosCard';
 import { useProviderSettingsForm } from './ProviderSettings.logic';
 import { providerSettingsStyles as s } from './ProviderSettings.styles';
 import type { ProviderSettingsProps, SaveErrorCode } from './ProviderSettings.types';
-import { ScheduleEditor } from './ScheduleEditor';
+import { ProviderScheduleCard } from './ProviderScheduleCard';
 
 /**
  * Mapea el `code` de error de la action a la clave i18n completa dentro
@@ -28,6 +28,10 @@ const ERROR_MESSAGE_KEY = {
   LOCATION_REQUIRED: 'save.errors.locationRequired',
   VALIDATION: 'save.errors.validation',
   NO_PROFESSIONAL: 'save.errors.noProfessional',
+  // Carrera rara (alguien dio de alta un profesional con la página
+  // abierta): el mensaje genérico de validación basta; al recargar sale
+  // el enlace a los horarios del equipo.
+  HAS_TEAM: 'save.errors.validation',
   INTERNAL: 'save.errors.internal',
 } as const satisfies Record<SaveErrorCode, string>;
 
@@ -210,14 +214,7 @@ export function ProviderSettings({
         </div>
       </article>
 
-      <article className={s.card} data-component="provider-settings-schedule">
-        <header>
-          <h2 className={s.cardTitle}>{t('schedule.title')}</h2>
-          <p className={s.cardSubtitle}>{t('schedule.subtitle')}</p>
-        </header>
-
-        <ScheduleEditor value={schedule} onChange={setSchedule} disabled={isPending} />
-      </article>
+      <ProviderScheduleCard schedule={schedule} onChange={setSchedule} disabled={isPending} />
 
       <ProviderPhotosCard
         locale={locale}

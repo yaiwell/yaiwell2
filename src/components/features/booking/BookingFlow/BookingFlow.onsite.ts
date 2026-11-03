@@ -33,6 +33,8 @@ export interface OnsiteBookingRequest {
   serviceId: string;
   slotStartIso: string;
   notes: string;
+  /** Profesional elegido; `null` = «cualquiera disponible». */
+  professionalId: string | null;
   /** `pending` propia abierta antes por el pago online, si la hay. */
   replacesPendingBookingId: string | null;
 }
@@ -76,6 +78,7 @@ export function useOnsiteBooking(callbacks: {
         result = await createOnsiteBookingAction({
           serviceId: request.serviceId,
           slotStartIso: request.slotStartIso,
+          ...(request.professionalId && { professionalId: request.professionalId }),
           notes: request.notes.trim() || undefined,
           replacesPendingBookingId: request.replacesPendingBookingId,
         });

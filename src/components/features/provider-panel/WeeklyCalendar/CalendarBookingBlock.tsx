@@ -12,6 +12,7 @@ import {
 } from '../BookingActionsList';
 import { bookingActionDialogStyles as d } from '../BookingActionsList/BookingActionsList.styles';
 import type { SupportedLocale } from '../BookingActionsList/BookingActionsList.types';
+import { getLaneStyle } from './WeeklyCalendar.lanes';
 import { WEEKDAY_KEYS, toBlockStatus } from './WeeklyCalendar.logic';
 import {
   bookingBlockByStatus,
@@ -24,6 +25,8 @@ interface CalendarBookingBlockProps {
   positioned: PositionedRow;
   locale: SupportedLocale;
   readOnly: boolean;
+  /** Pinta quién atiende la cita (vista «Todos» con equipo). */
+  showProfessional?: boolean;
   /** Distingue el bloque de escritorio del de móvil en `data-component`. */
   variant: 'week' | 'day';
 }
@@ -41,11 +44,18 @@ export function CalendarBookingBlock({
   positioned,
   locale,
   readOnly,
+  showProfessional = false,
   variant,
 }: CalendarBookingBlockProps) {
   const t = useTranslations('providerPanel.calendar');
-  const { row, topPx, heightPx, priceLabel } = positioned;
+  const { row, topPx, heightPx, priceLabel, lane } = positioned;
   const { booking, canComplete, showCancel, cancellable } = row;
+  const professional = showProfessional ? booking.professionalName : null;
+  const ariaLabel = t('bookingAriaLabel', {
+    service: booking.serviceName,
+    client: booking.clientName,
+    time: booking.startTime,
+  });
   const suffix = variant === 'day' ? '-day' : '';
   const hasActions = canComplete || showCancel || row.canMarkNoShow || row.canUndoNoShow;
 
@@ -55,12 +65,10 @@ export function CalendarBookingBlock({
         <button
           type="button"
           className={`${s.bookingBlock} ${bookingBlockByStatus[toBlockStatus(booking.status)]}`}
-          style={{ top: `${topPx}px`, height: `${heightPx}px` }}
-          aria-label={t('bookingAriaLabel', {
-            service: booking.serviceName,
-            client: booking.clientName,
-            time: booking.startTime,
-          })}
+          style={{ top: `${topPx}px`, height: `${heightPx}px`, ...getLaneStyle(lane) }}
+          aria-label={
+            professional ? t('withProfessional', { label: ariaLabel, professional }) : ariaLabel
+          }
           data-component={`weekly-calendar-booking-${booking.id}${suffix}`}
           data-status={booking.status}
         >
@@ -68,6 +76,7 @@ export function CalendarBookingBlock({
           <span className={s.bookingMeta}>
             {booking.startTime} · {booking.clientName}
           </span>
+          {professional && <span className={s.bookingPro}>{professional}</span>}
         </button>
       </Dialog.Trigger>
 

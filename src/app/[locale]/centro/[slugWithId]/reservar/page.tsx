@@ -85,6 +85,9 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
       locale={locale as 'es' | 'ca' | 'en' | 'de'}
       providerSlugWithId={slugWithId}
       initialSlotIso={parseSlotParam(slotRaw)}
+      // Quién presta el servicio (§4.bis «Equipo»): con varios, el cliente
+      // elige o deja «cualquiera disponible».
+      professionals={loaded.service.professionals}
     />
   );
 }
