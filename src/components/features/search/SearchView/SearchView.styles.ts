@@ -36,7 +36,12 @@ export const searchViewStyles = {
   // sobreescribirla sin pelearse con la cascada.
   mapColumn: 'lg:sticky lg:top-[124px] lg:h-[calc(100dvh-160px)]',
   mobileListPanel: 'lg:hidden',
-  mobileMapPanel: 'block h-[calc(100dvh-180px)] lg:hidden',
+  // Alto = pantalla menos cabecera, barra de búsqueda/pestañas y barra
+  // inferior (~23rem): el mapa cabe entero sin quedar debajo de la barra
+  // inferior. Antes medía `100dvh-180px` y se metía bajo ella. Sin
+  // `lg:hidden`: con la pestaña «Mapa» elegida y la ventana ensanchada, el
+  // mapa desaparecía del split de escritorio.
+  mobileMapPanel: 'block h-[calc(100dvh-23rem)] lg:h-[calc(100dvh-160px)]',
   // Empty state propio del filtro "Cerca de ti": misma estética que el
   // empty genérico de ProviderList pero con CTA explícito para apagar
   // el filtro. Mantenemos `animate-in fade-in` para suavizar la

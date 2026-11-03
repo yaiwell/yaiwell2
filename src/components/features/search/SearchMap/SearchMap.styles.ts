@@ -8,8 +8,12 @@
  * Aquí solo quedan los estilos del chrome exterior del mapa.
  */
 export const searchMapStyles = {
+  // `isolate`: Leaflet pone sus capas con z-index 400-1000 (popups,
+  // controles +/−). Sin un contexto de apilamiento propio se pintaban por
+  // encima de la cabecera fija (z-30) y de la barra inferior móvil (z-40),
+  // y un popup podía tapar la pestaña «Lista» y robarle el toque.
   wrapper:
-    'relative h-full min-h-[60dvh] w-full overflow-hidden rounded-3xl border border-border bg-muted',
+    'relative isolate h-full min-h-72 w-full overflow-hidden rounded-3xl border border-border bg-muted lg:min-h-[60dvh]',
   attribution:
     'pointer-events-none absolute bottom-2 right-3 rounded-full bg-card/80 px-2 py-0.5 text-[0.65rem] text-muted-foreground backdrop-blur',
 } as const;

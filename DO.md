@@ -10,6 +10,12 @@
 
 ## 2026-11-02
 
+### 2026-11-03 — Mapa de la búsqueda en móvil
+
+- Las capas de Leaflet (popups z 700, controles z 1000) se pintaban por encima de la cabecera fija y de la barra inferior móvil: una ventanita de centro podía tapar la pestaña «Lista» y robarle el toque. El contenedor del mapa crea ahora su propio contexto (`isolate`).
+- El mapa móvil medía `100dvh-180px` y se metía bajo la barra inferior; ahora cabe entre las pestañas y la barra.
+- Con la pestaña «Mapa» elegida y la ventana ensanchada, el mapa desaparecía en escritorio.
+
 ### 2026-11-02 — Alta de negocio: retomar en el paso correcto y borrador por cuenta
 
 P1 (reportado por el dev con dos cuentas reales).
