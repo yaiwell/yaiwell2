@@ -13,4 +13,6 @@ Advisors security (línea base aceptada): 2 WARN function_search_path_mutable (s
 
 2026-10-28: 9b_slot_offers pendiente de aplicar (11 aplicadas en remoto, bookings 12 filas). Al generar SQL con `prisma migrate diff > file`, dotenv inyecta la línea basura `◇ injected env (25) from .env.local // tip...` en el .sql; revisar siempre que no quede (rompe la migración). `list_migrations` del MCP devuelve [] (no usa \_prisma_migrations): consultar la tabla.
 
+2026-11-03: remoto en 9f (16 filas = 0..9f, todas finalizadas); 9g_schedule_blocks_contact pendiente. `providers` tiene GRANT SELECT completo a anon/authenticated + policy `providers_public_read_approved`: cualquier columna nueva de providers (y ya `vatNumber`) es legible por PostgREST para negocios aprobados. Los datos privados deben ir en tabla aparte (como provider_billing), no en providers.
+
 El MCP ejecuta SELECT como `supabase_read_only_user`, no como postgres. Las tablas pertenecen a `postgres`. `list_migrations` y consultas a `_prisma_migrations` con `order by started_at` dieron timeout alguna vez; reintentar con `order by migration_name`.
