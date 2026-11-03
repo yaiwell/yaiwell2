@@ -34,6 +34,7 @@ import {
   SlugAlreadyTakenError,
 } from './provider-onboarding.errors';
 import { providerOnboardingRepository } from './provider-onboarding.repository';
+import { resolveServiceProfessionalIds } from './provider-onboarding.team';
 import type { OnboardingState } from './provider-onboarding.types';
 import {
   createFirstServiceSchema,
@@ -196,6 +197,8 @@ export async function updateProviderPhotos(
  * @throws ProviderForOnboardingNotFoundError
  * @throws CategoryNotFoundError
  * @throws PlanServiceLimitReachedError si el plan ya no admite más servicios.
+ * @throws ServiceProfessionalsInvalidError si `professionalIds` no vale
+ *   (o el negocio no tiene profesionales activos).
  */
 export async function createFirstServiceForProvider(
   providerId: string,
@@ -210,19 +213,21 @@ export async function createFirstServiceForProvider(
     throw new CategoryNotFoundError();
   }
 
-  // Heredamos el `professionalId` del profesional inicial. El `?? null`
-  // cubre providers heredados creados antes de que los centros tuvieran
-  // profesional por defecto: en esos el servicio queda sin atar y el
-  // motor de availability resuelve por provider.
-  const initialProfessional = await providerOnboardingRepository.findFirstProfessional(providerId);
-
   const created = await providerOnboardingRepository.runInTransaction(async (tx) => {
     await assertCanPublishService(tx, providerId);
+    // Quién lo presta (§4.bis «Equipo»): los elegidos o, si no llegan,
+    // todo el equipo activo (en el alta, el profesional inicial). Dentro
+    // de la transacción para no asignar a alguien dado de baja a la vez.
+    const professionalIds = await resolveServiceProfessionalIds(
+      providerId,
+      data.professionalIds,
+      tx,
+    );
     return providerOnboardingRepository.createService(
       {
         providerId,
         categoryId: data.categoryId,
-        professionalId: initialProfessional?.id ?? null,
+        professionalIds,
         name: data.name,
         // Para evitar columnas Json vacías en BD (NOT NULL en el schema),
         // si la UI no manda descripción persistimos un objeto vacío con la

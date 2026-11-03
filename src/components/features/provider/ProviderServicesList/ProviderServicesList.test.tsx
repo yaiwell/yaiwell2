@@ -48,7 +48,6 @@ const BEAUTY_ROOT = {
 const haircut: ServiceWithRootCategory = {
   id: 'c9d8e7f6-a5b4-4332-9110-ffeeddccbbaa',
   providerId: 'a0b1c2d3-e4f5-4061-8273-8495a6b7c8d9',
-  professionalId: null,
   categoryId: 'd1c2b3a4-e5f6-4708-9a1b-2c3d4e5f6071',
   name: { es: 'Corte de pelo', ca: 'Tall de cabell' },
   description: { es: 'Corte y peinado.', ca: 'Tall i pentinat.' },

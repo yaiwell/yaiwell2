@@ -34,7 +34,7 @@ const { prismaMock, store } = vi.hoisted(() => {
   const prismaMock = {
     $transaction: vi.fn(),
     $executeRaw: vi.fn(),
-    professional: { findFirst: vi.fn() },
+    professional: { findMany: vi.fn() },
     booking: {
       findMany: vi.fn(async (args: { where: BookingWhere }) => {
         const w = args.where;
@@ -64,6 +64,7 @@ import {
   ScheduleBlockInvalidInputError,
   ScheduleBlockNoProfessionalError,
   ScheduleBlockNotFoundError,
+  ScheduleBlockProfessionalRequiredError,
   ScheduleBlockTooFarError,
   ScheduleBlockTooLongError,
 } from './schedule-blocks.errors';
@@ -101,7 +102,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   store.bookings = [];
   prismaMock.$transaction.mockImplementation((fn: (tx: unknown) => unknown) => fn(prismaMock));
-  prismaMock.professional.findFirst.mockResolvedValue({ id: 'pro-1' });
+  prismaMock.professional.findMany.mockResolvedValue([{ id: 'pro-1', name: 'Ana' }]);
   prismaMock.slotOffer.updateMany.mockResolvedValue({ count: 0 });
   prismaMock.scheduleBlock.create.mockResolvedValue({ id: 'blk-1' });
   prismaMock.scheduleBlock.updateMany.mockResolvedValue({ count: 1 });
@@ -111,7 +112,7 @@ describe('createScheduleBlock', () => {
   it('crea el bloqueo en UTC, ligado al profesional y con autor', async () => {
     const result = await createScheduleBlock({ ...INPUT, reason: 'Médico' }, CTX);
 
-    expect(result).toEqual({ id: 'blk-1' });
+    expect(result).toEqual({ id: 'blk-1', ids: ['blk-1'] });
     expect(prismaMock.scheduleBlock.create).toHaveBeenCalledWith({
       data: {
         providerId: 'prov-1',
@@ -162,6 +163,8 @@ describe('createScheduleBlock', () => {
         startAt: booking().startAt,
         clientName: 'Marta R.',
         serviceName: { es: 'Corte', en: 'Haircut' },
+        professionalId: 'pro-1',
+        professionalName: 'Ana',
       },
     ]);
     expect(prismaMock.scheduleBlock.create).not.toHaveBeenCalled();
@@ -184,13 +187,13 @@ describe('createScheduleBlock', () => {
       booking({ id: 'bk-2', status: 'cancelled' }),
     ];
 
-    await expect(createScheduleBlock(INPUT, CTX)).resolves.toEqual({ id: 'blk-1' });
+    await expect(createScheduleBlock(INPUT, CTX)).resolves.toEqual({ id: 'blk-1', ids: ['blk-1'] });
   });
 
   it('una reserva pegada al bloqueo no es conflicto', async () => {
     store.bookings = [booking({ startAt: END, endAt: new Date(END.getTime() + 60 * MIN) })];
 
-    await expect(createScheduleBlock(INPUT, CTX)).resolves.toEqual({ id: 'blk-1' });
+    await expect(createScheduleBlock(INPUT, CTX)).resolves.toEqual({ id: 'blk-1', ids: ['blk-1'] });
   });
 
   it('admite «desde ya» redondeado a 5 minutos, pero no antes', async () => {
@@ -198,6 +201,7 @@ describe('createScheduleBlock', () => {
 
     await expect(createScheduleBlock({ ...today, startTime: '11:00' }, CTX)).resolves.toEqual({
       id: 'blk-1',
+      ids: ['blk-1'],
     });
     await expect(createScheduleBlock({ ...today, startTime: '10:55' }, CTX)).rejects.toBeInstanceOf(
       ScheduleBlockInPastError,
@@ -213,7 +217,10 @@ describe('createScheduleBlock', () => {
   it('acepta 60 días justos y rechaza uno más largo', async () => {
     const sixtyDays = { ...INPUT, endDateKey: '2027-01-09', endTime: '10:00' };
 
-    await expect(createScheduleBlock(sixtyDays, CTX)).resolves.toEqual({ id: 'blk-1' });
+    await expect(createScheduleBlock(sixtyDays, CTX)).resolves.toEqual({
+      id: 'blk-1',
+      ids: ['blk-1'],
+    });
     await expect(
       createScheduleBlock({ ...sixtyDays, endTime: '10:05' }, CTX),
     ).rejects.toBeInstanceOf(ScheduleBlockTooLongError);
@@ -235,12 +242,82 @@ describe('createScheduleBlock', () => {
   });
 
   it('sin profesional activo no crea nada', async () => {
-    prismaMock.professional.findFirst.mockResolvedValue(null);
+    prismaMock.professional.findMany.mockResolvedValue([]);
 
     await expect(createScheduleBlock(INPUT, CTX)).rejects.toBeInstanceOf(
       ScheduleBlockNoProfessionalError,
     );
     expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+});
+
+describe('createScheduleBlock · equipo', () => {
+  const TEAM = [
+    { id: 'pro-2', name: 'Bea' },
+    { id: 'pro-1', name: 'Ana' },
+  ];
+
+  beforeEach(() => {
+    prismaMock.professional.findMany.mockResolvedValue(TEAM);
+    // `mockReset`: las respuestas «Once» no consumidas no pasan al test siguiente.
+    prismaMock.scheduleBlock.create
+      .mockReset()
+      .mockResolvedValueOnce({ id: 'blk-1' })
+      .mockResolvedValueOnce({ id: 'blk-2' });
+  });
+
+  it('con varios profesionales y sin elegir, exige elegir', async () => {
+    await expect(createScheduleBlock(INPUT, CTX)).rejects.toBeInstanceOf(
+      ScheduleBlockProfessionalRequiredError,
+    );
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('bloquea solo al profesional elegido', async () => {
+    await expect(createScheduleBlock({ ...INPUT, professionalId: 'pro-2' }, CTX)).resolves.toEqual({
+      id: 'blk-1',
+      ids: ['blk-1'],
+    });
+    expect(prismaMock.scheduleBlock.create).toHaveBeenCalledOnce();
+    expect(prismaMock.scheduleBlock.create.mock.calls[0][0].data.professionalId).toBe('pro-2');
+  });
+
+  it('un profesional de otro negocio o de baja es INVALID_INPUT', async () => {
+    await expect(
+      createScheduleBlock({ ...INPUT, professionalId: 'pro-ajeno' }, CTX),
+    ).rejects.toBeInstanceOf(ScheduleBlockInvalidInputError);
+    expect(prismaMock.$transaction).not.toHaveBeenCalled();
+  });
+
+  it('todo el equipo: un bloqueo por profesional, con los locks en orden de id', async () => {
+    const result = await createScheduleBlock({ ...INPUT, allTeam: true }, CTX);
+
+    expect(result).toEqual({ id: 'blk-1', ids: ['blk-1', 'blk-2'] });
+    expect(prismaMock.$transaction).toHaveBeenCalledOnce();
+    const locked = prismaMock.$executeRaw.mock.calls.map((call) => call[1]);
+    expect(locked).toEqual(['pro-1', 'pro-2']);
+    const created = prismaMock.scheduleBlock.create.mock.calls.map(
+      (call) => call[0].data.professionalId,
+    );
+    expect(created).toEqual(['pro-1', 'pro-2']);
+  });
+
+  it('todo el equipo: una cita de cualquiera bloquea todo y sale en la lista', async () => {
+    store.bookings = [booking({ id: 'bk-2', professionalId: 'pro-2' })];
+
+    const err = await createScheduleBlock({ ...INPUT, allTeam: true }, CTX).catch(
+      (e: unknown) => e,
+    );
+
+    expect(err).toBeInstanceOf(ScheduleBlockConflictError);
+    expect((err as ScheduleBlockConflictError).conflicts).toEqual([
+      expect.objectContaining({
+        bookingId: 'bk-2',
+        professionalId: 'pro-2',
+        professionalName: 'Bea',
+      }),
+    ]);
+    expect(prismaMock.scheduleBlock.create).not.toHaveBeenCalled();
   });
 });
 

@@ -14,7 +14,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-01',
     providerId: 'prov-01',
-    professionalId: null,
     categoryId: 'cat-hair-cut',
     name: { es: 'Corte mujer', ca: 'Tall dona' },
     description: {
@@ -27,7 +26,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-02',
     providerId: 'prov-01',
-    professionalId: null,
     categoryId: 'cat-hair-cut',
     name: { es: 'Corte hombre', ca: 'Tall home' },
     description: {
@@ -40,7 +38,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-03',
     providerId: 'prov-01',
-    professionalId: null,
     categoryId: 'cat-hair-color',
     name: { es: 'Color completo', ca: 'Color complet' },
     description: {
@@ -53,7 +50,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-04',
     providerId: 'prov-01',
-    professionalId: null,
     categoryId: 'cat-hair-styling',
     name: { es: 'Peinado evento', ca: 'Pentinat esdeveniment' },
     description: {
@@ -68,7 +64,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-05',
     providerId: 'prov-02',
-    professionalId: null,
     categoryId: 'cat-massage-relax',
     name: { es: 'Masaje relajante 60 min', ca: 'Massatge relaxant 60 min' },
     description: {
@@ -81,7 +76,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-06',
     providerId: 'prov-02',
-    professionalId: null,
     categoryId: 'cat-massage-relax',
     name: { es: 'Masaje relajante 90 min', ca: 'Massatge relaxant 90 min' },
     description: {
@@ -94,7 +88,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-07',
     providerId: 'prov-02',
-    professionalId: null,
     categoryId: 'cat-massage-sport',
     name: { es: 'Masaje deportivo', ca: 'Massatge esportiu' },
     description: {
@@ -109,7 +102,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-08',
     providerId: 'prov-03',
-    professionalId: null,
     categoryId: 'cat-nails',
     name: { es: 'Manicura semipermanente', ca: 'Manicura semipermanent' },
     description: {
@@ -122,7 +114,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-09',
     providerId: 'prov-03',
-    professionalId: null,
     categoryId: 'cat-nails',
     name: { es: 'Manicura con nail art', ca: 'Manicura amb nail art' },
     description: {
@@ -135,7 +126,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-10',
     providerId: 'prov-03',
-    professionalId: null,
     categoryId: 'cat-nails',
     name: { es: 'Pedicura spa', ca: 'Pedicura spa' },
     description: {
@@ -150,7 +140,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-11',
     providerId: 'prov-04',
-    professionalId: null,
     categoryId: 'cat-padel',
     name: { es: 'Hora de pista cubierta', ca: 'Hora de pista coberta' },
     description: {
@@ -163,7 +152,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-12',
     providerId: 'prov-04',
-    professionalId: null,
     categoryId: 'cat-padel',
     name: { es: 'Clase de pádel individual', ca: 'Classe de pàdel individual' },
     description: {
@@ -178,7 +166,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-13',
     providerId: 'prov-05',
-    professionalId: null,
     categoryId: 'cat-spa',
     name: { es: 'Circuito de aguas 90 min', ca: 'Circuit d’aigües 90 min' },
     description: {
@@ -191,7 +178,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-14',
     providerId: 'prov-05',
-    professionalId: null,
     categoryId: 'cat-facial',
     name: { es: 'Ritual facial hidratante', ca: 'Ritual facial hidratant' },
     description: {
@@ -204,7 +190,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-15',
     providerId: 'prov-05',
-    professionalId: null,
     categoryId: 'cat-spa',
     name: { es: 'Pack spa + masaje 60 min', ca: 'Pack spa + massatge 60 min' },
     description: {
@@ -219,7 +204,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-16',
     providerId: 'prov-06',
-    professionalId: null,
     categoryId: 'cat-gym',
     name: { es: 'Sesión personal training', ca: 'Sessió personal training' },
     description: {
@@ -232,7 +216,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-17',
     providerId: 'prov-06',
-    professionalId: null,
     categoryId: 'cat-gym',
     name: { es: 'Clase de fuerza grupal', ca: 'Classe de força grupal' },
     description: {
@@ -247,7 +230,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-18',
     providerId: 'prov-07',
-    professionalId: null,
     categoryId: 'cat-facial',
     name: { es: 'Limpieza facial profunda', ca: 'Neteja facial profunda' },
     description: {
@@ -260,7 +242,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-19',
     providerId: 'prov-07',
-    professionalId: null,
     categoryId: 'cat-hair-removal',
     name: { es: 'Láser axilas', ca: 'Làser aixelles' },
     description: {
@@ -273,7 +254,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-20',
     providerId: 'prov-07',
-    professionalId: null,
     categoryId: 'cat-hair-removal',
     name: { es: 'Láser piernas completas', ca: 'Làser cames senceres' },
     description: {
@@ -286,7 +266,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-21',
     providerId: 'prov-07',
-    professionalId: null,
     categoryId: 'cat-body',
     name: { es: 'Drenaje linfático', ca: 'Drenatge limfàtic' },
     description: {
@@ -301,7 +280,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-22',
     providerId: 'prov-08',
-    professionalId: null,
     categoryId: 'cat-makeup',
     name: { es: 'Maquillaje día', ca: 'Maquillatge dia' },
     description: {
@@ -314,7 +292,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-23',
     providerId: 'prov-08',
-    professionalId: null,
     categoryId: 'cat-makeup',
     name: { es: 'Maquillaje noche', ca: 'Maquillatge nit' },
     description: {
@@ -327,7 +304,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-24',
     providerId: 'prov-08',
-    professionalId: null,
     categoryId: 'cat-makeup',
     name: { es: 'Maquillaje novia', ca: 'Maquillatge núvia' },
     description: {
@@ -342,7 +318,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-25',
     providerId: 'prov-09',
-    professionalId: null,
     categoryId: 'cat-yoga',
     name: { es: 'Clase abierta de yoga', ca: 'Classe oberta de ioga' },
     description: {
@@ -355,7 +330,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-26',
     providerId: 'prov-09',
-    professionalId: null,
     categoryId: 'cat-yoga',
     name: { es: 'Yoga particular', ca: 'Ioga particular' },
     description: {
@@ -370,7 +344,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-27',
     providerId: 'prov-10',
-    professionalId: null,
     categoryId: 'cat-tennis',
     name: { es: 'Hora de pista de tierra', ca: 'Hora de pista de terra' },
     description: {
@@ -383,7 +356,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-28',
     providerId: 'prov-10',
-    professionalId: null,
     categoryId: 'cat-tennis',
     name: { es: 'Clase de tenis 60 min', ca: 'Classe de tennis 60 min' },
     description: {
@@ -396,7 +368,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-29',
     providerId: 'prov-10',
-    professionalId: null,
     categoryId: 'cat-tennis',
     name: { es: 'Sparring 60 min', ca: 'Sparring 60 min' },
     description: {
@@ -409,7 +380,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-30',
     providerId: 'prov-04',
-    professionalId: null,
     categoryId: 'cat-padel',
     name: { es: 'Bono 5 horas pista', ca: 'Bo 5 hores pista' },
     description: {
@@ -424,7 +394,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-31',
     providerId: 'prov-11',
-    professionalId: null,
     categoryId: 'cat-hair-cut',
     name: { es: 'Corte y peinado', ca: 'Tall i pentinat' },
     description: {
@@ -437,7 +406,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-32',
     providerId: 'prov-11',
-    professionalId: null,
     categoryId: 'cat-hair-color',
     name: { es: 'Mechas balayage', ca: 'Metxes balayage' },
     description: {
@@ -450,7 +418,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-33',
     providerId: 'prov-11',
-    professionalId: null,
     categoryId: 'cat-facial',
     name: { es: 'Higiene facial profunda', ca: 'Higiene facial profunda' },
     description: {
@@ -465,7 +432,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-34',
     providerId: 'prov-12',
-    professionalId: null,
     categoryId: 'cat-gym',
     name: { es: 'Clase WOD suelta', ca: 'Classe WOD solta' },
     description: {
@@ -478,7 +444,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-35',
     providerId: 'prov-12',
-    professionalId: null,
     categoryId: 'cat-gym',
     name: { es: 'Sesión introductoria', ca: 'Sessió introductòria' },
     description: {
@@ -491,7 +456,6 @@ export const fakeServices: Service[] = [
   {
     id: 'svc-36',
     providerId: 'prov-12',
-    professionalId: null,
     categoryId: 'cat-gym',
     name: { es: 'Personal training 1:1', ca: 'Personal training 1:1' },
     description: {

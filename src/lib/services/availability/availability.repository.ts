@@ -75,41 +75,56 @@ export const availabilityRepository = {
 
   /**
    * Resuelve los datos mínimos de un Service necesarios para calcular
-   * disponibilidad: providerId, professionalId (puede ser null en el
-   * catálogo histórico) y duración. Filtra `isActive` y `deletedAt`
-   * para que servicios pausados o borrados no ofrezcan slots.
+   * disponibilidad: providerId, duración y los profesionales que lo
+   * prestan (tabla `service_professionals`, migración 9h). Filtra
+   * `isActive` y `deletedAt` para que servicios pausados o borrados no
+   * ofrezcan slots, y deja fuera a los profesionales dados de baja.
+   *
+   * `professionalIds` sale ordenado por antigüedad del profesional
+   * (`createdAt asc`): es el desempate final de «cualquiera disponible»
+   * y el orden estable en que se recorren los candidatos.
    */
   async findServiceForAvailability(serviceId: string): Promise<{
     id: string;
     providerId: string;
-    professionalId: string | null;
     durationMinutes: number;
+    professionalIds: string[];
   } | null> {
-    return prisma.service.findFirst({
+    const row = await prisma.service.findFirst({
       where: { id: serviceId, deletedAt: null, isActive: true },
       select: {
         id: true,
         providerId: true,
-        professionalId: true,
         durationMinutes: true,
+        professionals: {
+          where: { professional: { deletedAt: null } },
+          orderBy: [{ professional: { createdAt: 'asc' } }, { professionalId: 'asc' }],
+          select: { professionalId: true },
+        },
       },
     });
+    if (!row) return null;
+    return {
+      id: row.id,
+      providerId: row.providerId,
+      durationMinutes: row.durationMinutes,
+      professionalIds: row.professionals.map((link) => link.professionalId),
+    };
   },
 
   /**
-   * Devuelve el `id` del primer Professional activo del provider,
-   * ordenado por `createdAt asc`. Usado como fallback cuando el
-   * `Service.professionalId` viene null (catálogo Fase 0 — todos los
-   * services del wizard se crean con `null` y la disponibilidad se
-   * deriva del único professional del autónomo).
+   * Horarios en crudo de varios profesionales en una sola consulta, para
+   * calcular la rejilla de un servicio con varios profesionales sin N+1.
+   * Los dados de baja no aparecen.
    */
-  async findFirstProfessionalIdForProvider(providerId: string): Promise<string | null> {
-    const row = await prisma.professional.findFirst({
-      where: { providerId, deletedAt: null },
-      orderBy: { createdAt: 'asc' },
-      select: { id: true },
+  async findProfessionalSchedules(
+    professionalIds: readonly string[],
+  ): Promise<{ id: string; schedule: unknown; bufferMinutes: number }[]> {
+    if (professionalIds.length === 0) return [];
+    return prisma.professional.findMany({
+      where: { id: { in: professionalIds as string[] }, deletedAt: null },
+      select: { id: true, schedule: true, bufferMinutes: true },
     });
-    return row?.id ?? null;
   },
 
   /**
@@ -122,10 +137,10 @@ export const availabilityRepository = {
    * que hacía inviable conectarlo. Una sola consulta cubre toda la
    * página de resultados.
    *
-   * La subquery de duración incluye los servicios con `professionalId`
-   * NULL porque el catálogo histórico (Fase 0 y el wizard de onboarding)
-   * los crea así: pertenecen de facto al profesional del proveedor.
-   * Cuando el wizard asigne profesional siempre, se podrá endurecer.
+   * La subquery de duración solo cuenta los servicios que ese
+   * profesional presta según `service_professionals` (migración 9h):
+   * con varios profesionales, uno que no presta ningún servicio activo
+   * no puede dar «disponible ahora» al centro.
    *
    * Filtra servicios pausados (`isActive = false`) y borrados: un
    * proveedor sin catálogo activo devuelve `NULL` y acabará como `busy`.
@@ -154,10 +169,11 @@ export const availabilityRepository = {
         (
           SELECT MIN(s."durationMinutes")
           FROM services s
-          WHERE s."providerId" = pr."providerId"
+          JOIN service_professionals sp ON sp."serviceId" = s.id
+          WHERE sp."professionalId" = pr.id
+            AND s."providerId" = pr."providerId"
             AND s."isActive" = true
             AND s."deletedAt" IS NULL
-            AND (s."professionalId" = pr.id OR s."professionalId" IS NULL)
         )::int AS "minServiceDurationMinutes"
       FROM professionals pr
       WHERE pr."providerId" = ANY(${providerIds as string[]}::text[])

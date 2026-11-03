@@ -89,7 +89,7 @@ export async function getPaymentOptions(
   now: Date = new Date(),
 ): Promise<PaymentOptions> {
   const data = getPaymentOptionsSchema.parse(input);
-  const { providerId } = await resolveBookingTarget(data.serviceId);
+  const { providerId } = await resolveBookingTarget(data.serviceId, data.professionalId);
   const { options } = await computeOptions(providerId, new Date(data.slotStartIso), clientId, now);
   return options;
 }
@@ -102,7 +102,7 @@ export async function getPaymentOptions(
  * El mismo `now` llega a `createBooking`, que repite la regla de las 2 h
  * como red de seguridad: con un solo reloj no pueden discrepar.
  *
- * @param input — `{ serviceId, slotStartIso, notes? }` crudo.
+ * @param input — `{ serviceId, slotStartIso, professionalId?, notes? }` crudo.
  * @param clientId — `User.id` del cliente autenticado.
  * @param now — instante de referencia; inyectable para tests.
  * @param hooks — `releasePending` para soltar antes la `pending` propia.
@@ -119,7 +119,10 @@ export async function createOnsiteBooking(
 ): Promise<OnsiteBookingResult> {
   const data = createOnsiteBookingSchema.parse(input);
   const slotStart = new Date(data.slotStartIso);
-  const { providerId, professionalId } = await resolveBookingTarget(data.serviceId);
+  const { providerId, professionalId } = await resolveBookingTarget(
+    data.serviceId,
+    data.professionalId,
+  );
 
   const { options, restrictedUntil } = await computeOptions(providerId, slotStart, clientId, now);
   if (options.onsite !== 'available') {
@@ -136,7 +139,13 @@ export async function createOnsiteBooking(
   let booking: Awaited<ReturnType<typeof createBooking>>;
   try {
     booking = await createBooking(
-      { serviceId: data.serviceId, professionalId, slotStart, notes: data.notes },
+      {
+        serviceId: data.serviceId,
+        // `undefined` = «cualquiera disponible»: lo asigna `createBooking`.
+        professionalId: professionalId ?? undefined,
+        slotStart,
+        notes: data.notes,
+      },
       clientId,
       {
         paymentMode: 'onsite',

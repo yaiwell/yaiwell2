@@ -58,7 +58,6 @@ function makeServiceResult(overrides: Partial<ServiceSearchResult> = {}): Servic
     id: 'svc-1',
     providerId: 'prov-1',
     categoryId: 'cat-1',
-    professionalId: null,
     name: { es: 'Masaje relajante', ca: 'Massatge relaxant' },
     description: { es: '', ca: '' },
     priceCents: 4000,

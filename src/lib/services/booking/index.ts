@@ -7,6 +7,7 @@
  */
 
 export { cancelBookingByProvider, createBooking } from './booking.service';
+export { pickCandidates, rankCandidates, type BookingCandidate } from './booking.candidates';
 export { cancelBookingByClient } from './booking.client-cancel.service';
 export {
   AUTO_COMPLETE_DEFAULT_LIMIT,

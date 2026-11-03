@@ -21,6 +21,15 @@ function activeOverlapWhere(from: Date, to: Date) {
 }
 
 export const scheduleBlocksRepository = {
+  /** Profesionales activos del negocio, con su nombre (destino del bloqueo). */
+  async findActiveProfessionals(providerId: string): Promise<{ id: string; name: string }[]> {
+    return prisma.professional.findMany({
+      where: { providerId, deletedAt: null },
+      select: { id: true, name: true },
+      orderBy: { id: 'asc' },
+    });
+  },
+
   /** Bloqueos activos de un negocio que solapan `[from, to)` (calendario del panel). */
   async findForProviderRange(
     providerId: string,

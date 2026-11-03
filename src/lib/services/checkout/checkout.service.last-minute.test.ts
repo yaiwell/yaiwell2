@@ -18,7 +18,6 @@ vi.mock('@/lib/integrations/stripe', () => ({
 
 const availabilityRepoMock = vi.hoisted(() => ({
   findServiceForAvailability: vi.fn(),
-  findFirstProfessionalIdForProvider: vi.fn(),
 }));
 
 vi.mock('@/lib/services/availability', () => ({
@@ -83,7 +82,7 @@ beforeEach(() => {
   availabilityRepoMock.findServiceForAvailability.mockResolvedValue({
     id: SERVICE_ID,
     providerId: PROVIDER_ID,
-    professionalId: PROFESSIONAL_ID,
+    professionalIds: [PROFESSIONAL_ID],
     durationMinutes: 60,
   });
   repoMock.findPayoutAccount.mockResolvedValue({ stripeAccountId: 'acct_1' });

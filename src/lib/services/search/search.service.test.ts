@@ -57,7 +57,6 @@ describe('searchServices', () => {
         id: 'svc_1',
         providerId: 'prov_1',
         categoryId: 'cat_1',
-        professionalId: null,
         name: { es: 'Masaje', ca: 'Massatge' },
         description: { es: 'Relax', ca: 'Relax' },
         priceCents: 4000,

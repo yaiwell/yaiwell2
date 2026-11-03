@@ -17,7 +17,13 @@ export {
   getOpenOffersForProviderRange,
   listReleasableFreeSlots,
 } from './slot-offers.queries';
-export { getPricedSlotsForService, isBookableStart, type PricedSlot } from './slot-offers.slots';
+export {
+  getBookableCandidates,
+  getPricedSlotsForService,
+  isBookableStart,
+  type BookableCandidate,
+  type PricedSlot,
+} from './slot-offers.slots';
 export {
   SlotOfferAlreadyExistsError,
   SlotOfferForbiddenError,

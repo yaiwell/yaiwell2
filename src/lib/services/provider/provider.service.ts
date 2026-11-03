@@ -131,6 +131,8 @@ function mergeDescription(
  * @throws ProviderHasNoProfessionalError si no hay Professional.
  */
 export async function getProviderSchedule(providerId: string): Promise<WeeklySchedule> {
+  // TODO(equipo, fase B): el horario pasa a editarse por profesional. Hasta
+  // entonces /panel/centro sigue mostrando el del primero (el titular).
   const professional = await providerRepository.findFirstProfessional(providerId);
   if (!professional) {
     throw new ProviderHasNoProfessionalError();

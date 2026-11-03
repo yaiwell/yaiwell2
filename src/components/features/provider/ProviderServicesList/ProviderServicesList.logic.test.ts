@@ -35,7 +35,6 @@ function makeService(
   return {
     id,
     providerId: 'a0b1c2d3-e4f5-4061-8273-8495a6b7c8d9',
-    professionalId: null,
     categoryId,
     name: { es: `Servicio ${id}`, ca: `Servei ${id}` },
     description: { es: 'Descripción', ca: 'Descripció' },

@@ -84,7 +84,6 @@ const provider: Provider = {
 const service: Service = {
   id: 'svc-01',
   providerId: 'prov-01',
-  professionalId: null,
   categoryId: 'cat-hair-cut',
   name: { es: 'Corte mujer', ca: 'Tall dona' },
   description: {

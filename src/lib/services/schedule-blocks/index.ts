@@ -18,6 +18,7 @@ export {
   ScheduleBlockInvalidInputError,
   ScheduleBlockNoProfessionalError,
   ScheduleBlockNotFoundError,
+  ScheduleBlockProfessionalRequiredError,
   ScheduleBlockTooFarError,
   ScheduleBlockTooLongError,
 } from './schedule-blocks.errors';

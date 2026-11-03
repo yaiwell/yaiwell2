@@ -77,12 +77,24 @@ export type UpdatePhotosParsed = z.infer<typeof updatePhotosSchema>;
  * `priceCents`: 0 (gratis, p. ej. consulta inicial) hasta 1.000.000
  * (10.000 €), cota técnica para no permitir overflows o typos.
  */
+/**
+ * Profesionales que prestan un servicio (al menos 1; el servicio
+ * comprueba que son del negocio y están activos). Omitido = todos los
+ * activos. Compartido por el alta y la edición.
+ */
+export const serviceProfessionalIdsSchema = z
+  .array(z.string().min(1).max(64))
+  .min(1)
+  .max(100)
+  .optional();
+
 export const createFirstServiceSchema = z.object({
   categoryId: z.string().uuid(),
   name: storableLocalizedTextSchema,
   description: storableLocalizedTextSchema.optional(),
   durationMinutes: z.number().int().min(5).max(480),
   priceCents: z.number().int().min(0).max(1_000_000),
+  professionalIds: serviceProfessionalIdsSchema,
 });
 
 export type CreateFirstServiceParsed = z.infer<typeof createFirstServiceSchema>;

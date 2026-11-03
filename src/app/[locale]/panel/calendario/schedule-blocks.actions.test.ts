@@ -47,6 +47,7 @@ import {
   ScheduleBlockInvalidInputError,
   ScheduleBlockNoProfessionalError,
   ScheduleBlockNotFoundError,
+  ScheduleBlockProfessionalRequiredError,
   ScheduleBlockTooFarError,
   ScheduleBlockTooLongError,
 } from '@/lib/services/schedule-blocks/schedule-blocks.errors';
@@ -140,6 +141,8 @@ describe('schedule-blocks actions', () => {
           startAt: new Date('2026-11-10T09:30:00.000Z'),
           clientName: 'Marta R.',
           serviceName: { es: 'Corte', en: 'Haircut' },
+          professionalId: 'pro-1',
+          professionalName: 'Ana',
         },
       ]),
     );
@@ -150,7 +153,13 @@ describe('schedule-blocks actions', () => {
       ok: false,
       code: 'CONFLICT',
       conflicts: [
-        { bookingId: 'bk-1', timeLabel: '10:30', clientName: 'Marta R.', serviceName: 'Haircut' },
+        {
+          bookingId: 'bk-1',
+          timeLabel: '10:30',
+          clientName: 'Marta R.',
+          serviceName: 'Haircut',
+          professionalName: 'Ana',
+        },
       ],
     });
     const [conflict] = (result as { conflicts: { dateLabel: string }[] }).conflicts;
@@ -165,6 +174,7 @@ describe('schedule-blocks actions', () => {
     [new ScheduleBlockTooLongError(), 'TOO_LONG'],
     [new ScheduleBlockTooFarError(), 'TOO_FAR'],
     [new ScheduleBlockNotFoundError(), 'NOT_FOUND'],
+    [new ScheduleBlockProfessionalRequiredError(), 'PROFESSIONAL_REQUIRED'],
   ])('traduce %s al código opaco %s sin revalidar', async (error, code) => {
     createScheduleBlockMock.mockRejectedValueOnce(error);
 

@@ -2,9 +2,10 @@
  * Schemas Zod del dominio `checkout`.
  *
  * El cliente sólo manda lo que puede conocer honestamente: qué servicio
- * quiere, a qué hora y una nota. Todo lo demás (profesional, precio,
- * comisión, proveedor) se resuelve en servidor desde BD — un cliente
- * que mande `priceCents` es un cliente que puede pagar 1 céntimo.
+ * quiere, a qué hora, con quién (opcional) y una nota. Todo lo demás
+ * (precio, comisión, proveedor y, si no elige, el profesional) se
+ * resuelve en servidor desde BD — un cliente que mande `priceCents` es
+ * un cliente que puede pagar 1 céntimo.
  */
 
 import { z } from 'zod';
@@ -23,6 +24,8 @@ export const createBookingCheckoutSchema = z.object({
    * sólo garantizamos que es una fecha parseable.
    */
   slotStartIso: z.string().datetime(),
+  /** Profesional elegido; omitido = «cualquiera disponible». */
+  professionalId: z.string().uuid().optional(),
   notes: z.string().max(500).optional(),
 });
 
@@ -85,6 +88,8 @@ export type DismissBookingRefundParsed = z.infer<typeof dismissBookingRefundSche
 export const createOnsiteBookingSchema = z.object({
   serviceId: z.string().uuid(),
   slotStartIso: z.string().datetime(),
+  /** Profesional elegido; omitido = «cualquiera disponible». */
+  professionalId: z.string().uuid().optional(),
   notes: z.string().max(500).optional(),
 });
 
@@ -94,6 +99,8 @@ export type CreateOnsiteBookingParsed = z.infer<typeof createOnsiteBookingSchema
 export const getPaymentOptionsSchema = z.object({
   serviceId: z.string().uuid(),
   slotStartIso: z.string().datetime(),
+  /** Profesional elegido; solo se valida que preste el servicio. */
+  professionalId: z.string().uuid().optional(),
 });
 
 export type GetPaymentOptionsParsed = z.infer<typeof getPaymentOptionsSchema>;

@@ -127,7 +127,8 @@ export async function getOpenOffersForProviderRange(
 /**
  * Huecos libres de las próximas 2 h que el profesional puede liberar
  * con descuento: los que el motor ofrecería ahora para cada servicio
- * activo, menos los que ya tienen oferta.
+ * activo y cada profesional que lo presta, menos los que ya tienen
+ * oferta de ese profesional.
  */
 export async function listReleasableFreeSlots(
   providerId: string,
@@ -135,12 +136,12 @@ export async function listReleasableFreeSlots(
 ): Promise<ReleasableFreeSlot[]> {
   const windowEnd = new Date(now.getTime() + SLOT_OFFER_TIER_2H_MS);
   const earliest = getEarliestBookableStart(now);
-  const serviceIds = await slotOffersRepository.findActiveServiceIds(providerId);
-  const existing = await slotOffersRepository.findActiveForProviderRange(
-    providerId,
-    earliest,
-    windowEnd,
-  );
+  const [serviceIds, existing, professionals] = await Promise.all([
+    slotOffersRepository.findActiveServiceIds(providerId),
+    slotOffersRepository.findActiveForProviderRange(providerId, earliest, windowEnd),
+    slotOffersRepository.findActiveProfessionals(providerId),
+  ]);
+  const nameById = new Map(professionals.map((p) => [p.id, p.name]));
   // Un hueco que pisa una oferta activa no se puede liberar otra vez.
   const overlapsOffer = (professionalId: string, start: Date, end: Date) =>
     existing.some((o) => o.professionalId === professionalId && o.startAt < end && o.endAt > start);
@@ -150,18 +151,20 @@ export async function listReleasableFreeSlots(
   const result: ReleasableFreeSlot[] = [];
   for (const serviceId of serviceIds) {
     for (const day of days) {
-      const { professionalId, slots } = await getServiceDaySlots(serviceId, day, now).catch(() => ({
-        professionalId: '',
-        slots: [],
-      }));
-      for (const slot of slots) {
-        if (slot.startAt >= windowEnd) continue;
-        if (overlapsOffer(professionalId, slot.startAt, slot.endAt)) continue;
-        result.push({
-          serviceId,
-          startAtIso: slot.startAt.toISOString(),
-          endAtIso: slot.endAt.toISOString(),
-        });
+      const engine = await getServiceDaySlots(serviceId, day, now).catch(() => null);
+      if (!engine) continue;
+      for (const [professionalId, slots] of engine.slotsByProfessional) {
+        for (const slot of slots) {
+          if (slot.startAt >= windowEnd) continue;
+          if (overlapsOffer(professionalId, slot.startAt, slot.endAt)) continue;
+          result.push({
+            serviceId,
+            startAtIso: slot.startAt.toISOString(),
+            endAtIso: slot.endAt.toISOString(),
+            professionalId,
+            professionalName: nameById.get(professionalId) ?? '',
+          });
+        }
       }
     }
   }

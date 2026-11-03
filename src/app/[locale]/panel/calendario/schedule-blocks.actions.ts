@@ -11,6 +11,7 @@ import {
   ScheduleBlockInPastError,
   ScheduleBlockInvalidInputError,
   ScheduleBlockNotFoundError,
+  ScheduleBlockProfessionalRequiredError,
   ScheduleBlockTooFarError,
   ScheduleBlockTooLongError,
   createScheduleBlock,
@@ -35,6 +36,8 @@ export type ScheduleBlockConflictView = {
   clientName: string | null;
   /** Nombre del servicio ya localizado. */
   serviceName: string;
+  /** Profesional que tiene la cita (con «todo el equipo» pueden ser varios). */
+  professionalName: string;
 };
 
 /** Resultado serializable de las actions de bloqueos de agenda. */
@@ -51,6 +54,7 @@ const ERROR_CODES: ReadonlyArray<[new (...args: never[]) => Error, ScheduleBlock
   [ScheduleBlockTooFarError, 'TOO_FAR'],
   [ScheduleBlockConflictError, 'CONFLICT'],
   [ScheduleBlockNotFoundError, 'NOT_FOUND'],
+  [ScheduleBlockProfessionalRequiredError, 'PROFESSIONAL_REQUIRED'],
 ];
 
 /** Formatea las citas en conflicto en hora de Madrid y en el idioma del panel. */
@@ -77,6 +81,7 @@ function toConflictViews(
     timeLabel: timeFormat.format(conflict.startAt),
     clientName: conflict.clientName,
     serviceName: pickLocalized(conflict.serviceName, locale),
+    professionalName: conflict.professionalName,
   }));
 }
 
@@ -122,6 +127,10 @@ async function runScheduleBlockAction(
  * El `providerId` y el autor salen de la sesión, nunca del cliente. Si
  * el rango pisa citas activas, devuelve `CONFLICT` con la lista para que
  * el dueño las mueva o cancele antes.
+ *
+ * `input.professionalId` / `input.allTeam` eligen a quién se bloquea; sin
+ * ninguno, solo vale si el negocio tiene un único profesional (si no,
+ * `PROFESSIONAL_REQUIRED`).
  */
 export async function createScheduleBlockAction(
   locale: AppLocale,

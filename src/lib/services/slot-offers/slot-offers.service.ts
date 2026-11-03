@@ -8,7 +8,7 @@ import { Prisma } from '@prisma/client';
 
 import {
   BUSINESS_TIMEZONE,
-  availabilityRepository,
+  ProfessionalNotForServiceError,
   getCivilDayUtc,
   getServiceDaySlots,
 } from '@/lib/services/availability';
@@ -111,13 +111,10 @@ export async function releaseCancelledSlot(
     providerUserId,
     booking.providerId,
   );
-  // El checkout reserva siempre con el profesional que el motor asigna
-  // al servicio (el suyo o, si no tiene, el primero del centro): una
-  // oferta en otro profesional se anunciaría sin poder comprarse.
-  const effectiveProfessionalId =
-    service.professionalId ??
-    (await availabilityRepository.findFirstProfessionalIdForProvider(booking.providerId));
-  if (effectiveProfessionalId !== booking.professionalId) {
+  // La oferta queda en el profesional de la reserva cancelada: si no
+  // presta el servicio elegido (tabla `service_professionals`), se
+  // anunciaría una hora que nadie puede comprar.
+  if (!service.professionals.some((link) => link.professionalId === booking.professionalId)) {
     throw new SlotOfferServiceInvalidError();
   }
   const endAt = new Date(booking.startAt.getTime() + service.durationMinutes * 60_000);
@@ -158,8 +155,14 @@ export async function releaseCancelledSlot(
  * Libera con descuento un hueco libre que empieza en menos de 2 h.
  *
  * Solo vale una hora que el motor de disponibilidad ofrecería ahora
- * mismo para ese servicio: así respeta horario, buffer, reservas y la
- * antelación de 30 min sin repetir esas reglas aquí.
+ * mismo para ese servicio y profesional: así respeta horario, buffer,
+ * reservas y la antelación de 30 min sin repetir esas reglas aquí.
+ *
+ * @param input — `{ serviceId, professionalId?, startAt, discounts }`.
+ *   Sin `professionalId` (compatibilidad con el panel de un solo
+ *   profesional) se usa el primero, por antigüedad, libre a esa hora y
+ *   sin otra oferta que la pise.
+ * @throws SlotOfferServiceInvalidError si el profesional no presta el servicio.
  */
 export async function releaseFreeSlot(
   input: unknown,
@@ -175,15 +178,25 @@ export async function releaseFreeSlot(
   }
 
   const day = getCivilDayUtc(data.startAt, BUSINESS_TIMEZONE);
-  const { professionalId, durationMinutes, slots } = await getServiceDaySlots(
-    data.serviceId,
-    day,
-    now,
+  const engine = await getServiceDaySlots(data.serviceId, day, now, data.professionalId).catch(
+    (err: unknown) => {
+      if (err instanceof ProfessionalNotForServiceError) throw new SlotOfferServiceInvalidError();
+      throw err;
+    },
   );
-  const slot = slots.find((s) => s.startAt.getTime() === data.startAt.getTime());
+  const slot = engine.slots.find((s) => s.startAt.getTime() === data.startAt.getTime());
   if (!slot) throw new SlotOfferSlotTakenError();
-  const endAt = new Date(slot.startAt.getTime() + durationMinutes * 60_000);
-  await assertNoOverlappingOffer(professionalId, slot.startAt, endAt, now);
+  const endAt = new Date(slot.startAt.getTime() + engine.durationMinutes * 60_000);
+
+  const candidates = engine.candidatesByStart.get(slot.startAt.getTime()) ?? [];
+  let professionalId: string | null = null;
+  for (const id of candidates) {
+    if (!(await slotOffersRepository.hasActiveOfferOverlap(id, slot.startAt, endAt, now))) {
+      professionalId = id;
+      break;
+    }
+  }
+  if (!professionalId) throw new SlotOfferAlreadyExistsError();
 
   return insertOffer({
     providerId,

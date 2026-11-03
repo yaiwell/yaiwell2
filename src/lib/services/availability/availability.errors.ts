@@ -29,6 +29,20 @@ export class ServiceForAvailabilityNotFoundError extends Error {
   }
 }
 
+/**
+ * El profesional pedido no presta el servicio (no está en
+ * `service_professionals`, está de baja o es de otro negocio). La API
+ * pública lo mapea a 404, igual que un servicio inexistente.
+ */
+export class ProfessionalNotForServiceError extends Error {
+  readonly code = 'PROFESSIONAL_NOT_FOR_SERVICE';
+
+  constructor(message = 'Ese profesional no presta este servicio.') {
+    super(message);
+    this.name = 'ProfessionalNotForServiceError';
+  }
+}
+
 export class InvalidScheduleError extends Error {
   readonly code = 'INVALID_SCHEDULE';
 

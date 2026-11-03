@@ -12,16 +12,13 @@
  * dependencias de servidor. Aquí solo reexportamos su TIPO (los tipos se
  * borran en compilación, así que no arrastran nada).
  */
-export {
-  getAvailableSlots,
-  getServiceDaySlots,
-  getSlotsForService,
-  isSlotAvailable,
-} from './availability.service';
+export { getAvailableSlots, isSlotAvailable } from './availability.service';
+export { getServiceDaySlots, getSlotsForService } from './availability.service-day';
 export { getProvidersAvailability } from './availability.status.service';
 export { availabilityRepository } from './availability.repository';
 export {
   AVAILABILITY_BUCKET_MINUTES,
+  BUSY_MARGIN_MS,
   AVAILABLE_NOW_WINDOW_MINUTES,
   AVAILABLE_SOON_WINDOW_MINUTES,
   BUSINESS_TIMEZONE,
@@ -39,6 +36,7 @@ export {
 } from './availability.calc';
 export {
   InvalidScheduleError,
+  ProfessionalNotForServiceError,
   ProfessionalNotFoundError,
   ServiceForAvailabilityNotFoundError,
 } from './availability.errors';
@@ -51,6 +49,7 @@ export type { BookingSlot } from './availability.client';
 export type {
   GetAvailableSlotsInput,
   ProfessionalScheduleBundle,
+  ServiceDaySlots,
   Slot,
   Weekday,
   WeekdayBlock,

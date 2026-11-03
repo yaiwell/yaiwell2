@@ -22,17 +22,20 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // El mock se declara con `vi.hoisted` para garantizar que la factory de
 // `vi.mock` lo encuentra antes de que el service importe el repo.
+// Cliente de transacción falso: el reparto del servicio entre el equipo
+// (`provider-onboarding.team`) lee los profesionales activos con él.
+const txMock = vi.hoisted(() => ({ professional: { findMany: vi.fn() } }));
+
 const repoMock = vi.hoisted(() => ({
   insertProviderWithLocation: vi.fn(),
   findProviderByOwner: vi.fn(),
   slugExists: vi.fn(),
   updatePhotos: vi.fn(),
   createProfessional: vi.fn(),
-  findFirstProfessional: vi.fn(),
   createService: vi.fn(),
   // La transacción ejecuta el callback con un cliente falso: el límite del
   // plan va mockeado aparte y aquí solo importa que el alta pase por él.
-  runInTransaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>) => fn({ tx: true })),
+  runInTransaction: vi.fn(async (fn: (tx: unknown) => Promise<unknown>) => fn(txMock)),
   updatePlan: vi.fn(),
   findPlanByTier: vi.fn(),
   findCategoryById: vi.fn(),
@@ -59,6 +62,7 @@ import {
   OnboardingAlreadyCompleteError,
   PlanTierNotFoundError,
   ProviderForOnboardingNotFoundError,
+  ServiceProfessionalsInvalidError,
   SlugAlreadyTakenError,
 } from './provider-onboarding.errors';
 import {
@@ -245,10 +249,10 @@ describe('createFirstServiceForProvider', () => {
     priceCents: 2500,
   };
 
-  it('crea el servicio heredando el profesional inicial en autónomos', async () => {
+  it('crea el servicio asignado al profesional inicial (fila en service_professionals)', async () => {
     repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
     repoMock.findCategoryById.mockResolvedValue({ id: CATEGORY_ID });
-    repoMock.findFirstProfessional.mockResolvedValue({ id: PROFESSIONAL_ID });
+    txMock.professional.findMany.mockResolvedValue([{ id: PROFESSIONAL_ID }]);
     repoMock.createService.mockResolvedValue({ id: 'service-1' });
 
     const result = await createFirstServiceForProvider(PROVIDER_ID, baseInput, OWNER_ID);
@@ -256,27 +260,85 @@ describe('createFirstServiceForProvider', () => {
     expect(result).toEqual({ serviceId: 'service-1' });
     expect(repoMock.createService).toHaveBeenCalledOnce();
     const args = repoMock.createService.mock.calls[0][0];
-    expect(args.professionalId).toBe(PROFESSIONAL_ID);
+    expect(args.professionalIds).toEqual([PROFESSIONAL_ID]);
     expect(args.providerId).toBe(PROVIDER_ID);
+  });
+
+  it('sin professionalIds asigna a todo el equipo activo, por antigüedad', async () => {
+    repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
+    repoMock.findCategoryById.mockResolvedValue({ id: CATEGORY_ID });
+    txMock.professional.findMany.mockResolvedValue([{ id: 'pro-a' }, { id: 'pro-b' }]);
+    repoMock.createService.mockResolvedValue({ id: 'service-1' });
+
+    await createFirstServiceForProvider(PROVIDER_ID, baseInput, OWNER_ID);
+
+    expect(repoMock.createService.mock.calls[0][0].professionalIds).toEqual(['pro-a', 'pro-b']);
+    expect(txMock.professional.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { providerId: PROVIDER_ID, deletedAt: null } }),
+    );
+  });
+
+  it('con professionalIds asigna solo esos si son del negocio y están activos', async () => {
+    repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
+    repoMock.findCategoryById.mockResolvedValue({ id: CATEGORY_ID });
+    txMock.professional.findMany.mockResolvedValue([{ id: 'pro-a' }, { id: 'pro-b' }]);
+    repoMock.createService.mockResolvedValue({ id: 'service-1' });
+
+    await createFirstServiceForProvider(
+      PROVIDER_ID,
+      { ...baseInput, professionalIds: ['pro-b'] },
+      OWNER_ID,
+    );
+
+    expect(repoMock.createService.mock.calls[0][0].professionalIds).toEqual(['pro-b']);
+  });
+
+  it('rechaza profesionales ajenos o de baja, y una lista vacía', async () => {
+    repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
+    repoMock.findCategoryById.mockResolvedValue({ id: CATEGORY_ID });
+    txMock.professional.findMany.mockResolvedValue([{ id: 'pro-a' }]);
+
+    await expect(
+      createFirstServiceForProvider(
+        PROVIDER_ID,
+        { ...baseInput, professionalIds: ['pro-ajeno'] },
+        OWNER_ID,
+      ),
+    ).rejects.toBeInstanceOf(ServiceProfessionalsInvalidError);
+    await expect(
+      createFirstServiceForProvider(PROVIDER_ID, { ...baseInput, professionalIds: [] }, OWNER_ID),
+    ).rejects.toBeInstanceOf(ZodError);
+    expect(repoMock.createService).not.toHaveBeenCalled();
+  });
+
+  it('sin ningún profesional activo no crea el servicio', async () => {
+    repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
+    repoMock.findCategoryById.mockResolvedValue({ id: CATEGORY_ID });
+    txMock.professional.findMany.mockResolvedValue([]);
+
+    await expect(
+      createFirstServiceForProvider(PROVIDER_ID, baseInput, OWNER_ID),
+    ).rejects.toBeInstanceOf(ServiceProfessionalsInvalidError);
+    expect(repoMock.createService).not.toHaveBeenCalled();
   });
 
   it('comprueba el límite del plan dentro de la misma transacción que el alta', async () => {
     repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
     repoMock.findCategoryById.mockResolvedValue({ id: CATEGORY_ID });
-    repoMock.findFirstProfessional.mockResolvedValue({ id: PROFESSIONAL_ID });
+    txMock.professional.findMany.mockResolvedValue([{ id: PROFESSIONAL_ID }]);
     repoMock.createService.mockResolvedValue({ id: 'service-1' });
     assertCanPublishServiceMock.mockResolvedValueOnce({ activeCount: 0, maxServices: 1 });
 
     await createFirstServiceForProvider(PROVIDER_ID, baseInput, OWNER_ID);
 
-    expect(assertCanPublishServiceMock).toHaveBeenCalledWith({ tx: true }, PROVIDER_ID);
-    expect(repoMock.createService.mock.calls[0][1]).toEqual({ tx: true });
+    expect(assertCanPublishServiceMock).toHaveBeenCalledWith(txMock, PROVIDER_ID);
+    expect(repoMock.createService.mock.calls[0][1]).toBe(txMock);
   });
 
   it('no crea el servicio si el plan ya está en el límite', async () => {
     repoMock.findProviderByOwner.mockResolvedValue({ id: PROVIDER_ID, planId: PLAN_ID });
     repoMock.findCategoryById.mockResolvedValue({ id: CATEGORY_ID });
-    repoMock.findFirstProfessional.mockResolvedValue({ id: PROFESSIONAL_ID });
+    txMock.professional.findMany.mockResolvedValue([{ id: PROFESSIONAL_ID }]);
     assertCanPublishServiceMock.mockRejectedValueOnce(new LimitError());
 
     await expect(

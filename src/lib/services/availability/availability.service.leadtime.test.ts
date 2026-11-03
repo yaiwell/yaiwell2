@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { getAvailableSlots, getSlotsForService } from './availability.service';
+import { getAvailableSlots } from './availability.service';
+import { getSlotsForService } from './availability.service-day';
 import type { WeeklySchedule } from './availability.types';
 
 /**
@@ -18,7 +19,9 @@ vi.mock('./availability.repository', () => ({
     findBookingsForDay: vi.fn(),
     findScheduleBlocksForRange: vi.fn(),
     findServiceForAvailability: vi.fn(),
-    findFirstProfessionalIdForProvider: vi.fn(),
+    findProfessionalSchedules: vi.fn(),
+    findBookingsForProviders: vi.fn(),
+    findScheduleBlocksForProviders: vi.fn(),
   },
 }));
 
@@ -85,9 +88,14 @@ describe('getSlotsForService — antelación mínima', () => {
     repo.findServiceForAvailability.mockResolvedValue({
       id: SERVICE_ID,
       providerId: 'provider-1',
-      professionalId: PROFESSIONAL_ID,
+      professionalIds: [PROFESSIONAL_ID],
       durationMinutes: 60,
     });
+    repo.findProfessionalSchedules.mockResolvedValue([
+      { id: PROFESSIONAL_ID, schedule: OPEN_MONDAY, bufferMinutes: 0 },
+    ]);
+    repo.findBookingsForProviders.mockResolvedValue([]);
+    repo.findScheduleBlocksForProviders.mockResolvedValue([]);
 
     const slots = await getSlotsForService(
       SERVICE_ID,

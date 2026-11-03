@@ -5,35 +5,45 @@ import { ServiceNotFoundError } from '@/lib/services/booking';
 
 import { ProfessionalNotResolvedError } from './checkout.errors';
 
-/** Servicio y profesional concretos sobre los que se reserva. */
+/** Servicio, negocio y profesional (o «cualquiera») sobre los que se reserva. */
 export interface BookingTarget {
   serviceId: string;
   providerId: string;
-  professionalId: string;
+  /**
+   * Profesional elegido por el cliente, o `null` para «cualquiera
+   * disponible»: entonces lo asigna `createBooking` dentro de la
+   * transacción (CLAUDE.md §4.bis «Equipo»).
+   */
+  professionalId: string | null;
 }
 
 /**
- * Resuelve el servicio (activo, no borrado) y el profesional que lo
- * presta, igual para el pago online y en el local.
+ * Resuelve el servicio (activo, no borrado) y valida el profesional
+ * pedido, igual para el pago online y en el local.
  *
- * Mismo fallback que el motor de availability: si el servicio no tiene
- * profesional asignado (caso del autónomo), cae al primero activo del
- * proveedor. Así el slot que se mostró y el que se reserva salen del
- * mismo profesional.
+ * Los profesionales salen de `service_professionals` (migración 9h),
+ * igual que en el motor de disponibilidad: el slot que se mostró y el
+ * que se reserva se calculan sobre el mismo equipo.
  *
+ * @param serviceId — servicio a reservar.
+ * @param professionalId — profesional elegido; omitido = «cualquiera».
  * @throws ServiceNotFoundError — servicio inexistente, pausado o borrado.
- * @throws ProfessionalNotResolvedError — proveedor sin profesionales activos.
+ * @throws ProfessionalNotResolvedError — nadie activo presta el servicio,
+ *   o el profesional pedido no lo presta.
  */
-export async function resolveBookingTarget(serviceId: string): Promise<BookingTarget> {
+export async function resolveBookingTarget(
+  serviceId: string,
+  professionalId?: string,
+): Promise<BookingTarget> {
   const service = await availabilityRepository.findServiceForAvailability(serviceId);
   if (!service) {
     throw new ServiceNotFoundError();
   }
-  const professionalId =
-    service.professionalId ??
-    (await availabilityRepository.findFirstProfessionalIdForProvider(service.providerId));
-  if (!professionalId) {
+  if (service.professionalIds.length === 0) {
     throw new ProfessionalNotResolvedError();
   }
-  return { serviceId, providerId: service.providerId, professionalId };
+  if (professionalId && !service.professionalIds.includes(professionalId)) {
+    throw new ProfessionalNotResolvedError();
+  }
+  return { serviceId, providerId: service.providerId, professionalId: professionalId ?? null };
 }

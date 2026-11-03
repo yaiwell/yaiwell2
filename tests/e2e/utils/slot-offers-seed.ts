@@ -163,6 +163,12 @@ export async function seedCenter(db: Client, userId: string): Promise<SeededCent
       ],
     )
   ).rows[0].id as string;
+  // Quién presta el servicio (migración 9h): sin esta fila el motor no
+  // ofrece huecos. Se borra en cascada con el servicio.
+  await db.query(
+    'INSERT INTO service_professionals ("serviceId", "professionalId") VALUES ($1, $2)',
+    [serviceId, professionalId],
+  );
 
   return {
     userId,

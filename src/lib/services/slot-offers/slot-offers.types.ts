@@ -32,4 +32,7 @@ export interface ReleasableFreeSlot {
   serviceId: string;
   startAtIso: string;
   endAtIso: string;
+  /** Profesional cuyo hueco es (con varios, el mismo hueco sale por cada uno). */
+  professionalId: string;
+  professionalName: string;
 }

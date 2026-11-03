@@ -19,7 +19,7 @@ import {
 } from '@/lib/utils/madrid-week';
 import type { LocalizedText } from '@/types/domain';
 
-import { computeOccupancyPct, type Interval } from './dashboard-occupancy';
+import { computeTeamOccupancyPct, type TeamMemberOccupancyInput } from './dashboard-occupancy';
 
 /**
  * Estados de Booking que cuentan como "reserva real" para métricas.
@@ -95,7 +95,7 @@ export async function getWeeklyMetrics(providerId: string): Promise<PanelWeeklyM
   const thisWeek = getMadridWeekRange(thisWeekKey);
   const lastWeek = getMadridWeekRange(addDaysToDateKey(thisWeekKey, -7));
 
-  const [bookings, professional, blocks] = await Promise.all([
+  const [bookings, professionals, blocks] = await Promise.all([
     prisma.booking.findMany({
       where: {
         providerId,
@@ -107,14 +107,14 @@ export async function getWeeklyMetrics(providerId: string): Promise<PanelWeeklyM
         endAt: true,
         priceCents: true,
         serviceId: true,
+        professionalId: true,
         service: { select: { name: true } },
       },
     }),
-    // Hoy hay un profesional por negocio: su horario es el del negocio.
-    prisma.professional.findFirst({
+    // La capacidad del negocio es la suma de la de cada profesional activo.
+    prisma.professional.findMany({
       where: { providerId, deletedAt: null },
-      orderBy: { createdAt: 'asc' },
-      select: { schedule: true },
+      select: { id: true, schedule: true },
     }),
     scheduleBlocksRepository.findForProviderRange(providerId, lastWeek.start, thisWeek.end),
   ]);
@@ -132,11 +132,22 @@ export async function getWeeklyMetrics(providerId: string): Promise<PanelWeeklyM
   const thisAvgTicket = thisCount > 0 ? Math.round(thisRevenue / thisCount) : 0;
   const lastAvgTicket = lastCount > 0 ? Math.round(lastRevenue / lastCount) : 0;
 
-  // Ocupación: horas reservadas entre horas abiertas (menos bloqueos). Sin
-  // horario válido no se puede calcular y se queda en 0.
-  const schedule = weeklyScheduleSchema.safeParse(professional?.schedule);
-  const occupancyFor = (weekStartKey: string, weekBookings: Interval[]) =>
-    schedule.success ? computeOccupancyPct(schedule.data, weekStartKey, weekBookings, blocks) : 0;
+  // Ocupación del equipo: horas reservadas entre horas abiertas (menos
+  // bloqueos), sumando por profesional. Uno sin horario válido no aporta
+  // capacidad (ni sus reservas): no se puede saber cuánto tenía abierto.
+  const occupancyFor = (weekStartKey: string, weekBookings: typeof bookings) => {
+    const members: TeamMemberOccupancyInput[] = [];
+    for (const professional of professionals) {
+      const schedule = weeklyScheduleSchema.safeParse(professional.schedule);
+      if (!schedule.success) continue;
+      members.push({
+        schedule: schedule.data,
+        bookings: weekBookings.filter((b) => b.professionalId === professional.id),
+        blocks: blocks.filter((b) => b.professionalId === professional.id),
+      });
+    }
+    return computeTeamOccupancyPct(members, weekStartKey);
+  };
   const thisOccupancy = occupancyFor(thisWeekKey, thisWeekBookings);
   const lastOccupancy = occupancyFor(addDaysToDateKey(thisWeekKey, -7), lastWeekBookings);
 

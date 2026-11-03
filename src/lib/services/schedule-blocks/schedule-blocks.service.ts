@@ -13,7 +13,6 @@
  *  - Pueden solaparse entre sí; quitar es un borrado suave; no se editan.
  */
 import { prisma } from '@/lib/db/prisma';
-import { availabilityRepository } from '@/lib/services/availability/availability.repository';
 // Ruta directa: el barrel de `booking` arrastra `slot-offers`, que a su
 // vez usa el repositorio de este dominio.
 import { bookingRepository } from '@/lib/services/booking/booking.repository';
@@ -32,11 +31,16 @@ import {
   ScheduleBlockInvalidInputError,
   ScheduleBlockNoProfessionalError,
   ScheduleBlockNotFoundError,
+  ScheduleBlockProfessionalRequiredError,
   ScheduleBlockTooFarError,
   ScheduleBlockTooLongError,
 } from './schedule-blocks.errors';
 import { scheduleBlocksRepository } from './schedule-blocks.repository';
-import type { CreateScheduleBlockInput, ScheduleBlockContext } from './schedule-blocks.types';
+import type {
+  CreateScheduleBlockInput,
+  ScheduleBlockConflict,
+  ScheduleBlockContext,
+} from './schedule-blocks.types';
 import { createScheduleBlockSchema, scheduleBlockIdSchema } from './schedule-blocks.validation';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -65,75 +69,121 @@ function resolveRange(input: CreateScheduleBlockInput, now: Date) {
   if (endAt.getTime() - startAt.getTime() > SCHEDULE_BLOCK_MAX_DAYS * DAY_MS) {
     throw new ScheduleBlockTooLongError();
   }
-  return { startAt, endAt, reason: data.reason ?? null };
+  return {
+    startAt,
+    endAt,
+    reason: data.reason ?? null,
+    professionalId: data.professionalId,
+    allTeam: data.allTeam ?? false,
+  };
 }
 
 /**
- * Crea un bloqueo de agenda para el profesional del negocio.
+ * Decide a qué profesionales afecta el bloqueo (CLAUDE.md §4.bis «Equipo»).
  *
- * Todo ocurre en una transacción bajo el MISMO bloqueo por profesional
- * que toma `createBooking`: sin él, una reserva podía colarse entre la
- * comprobación de conflictos y la escritura del bloqueo.
+ *  - `allTeam`: todos los activos del negocio.
+ *  - `professionalId`: ese, si es del negocio y está activo.
+ *  - Ninguno (compatibilidad con el panel de un solo profesional): el
+ *    único que haya; con varios hay que elegir.
  *
- * Hoy hay un profesional por negocio; el bloqueo se liga a él para que
- * el multi-profesional no exija migrar datos.
+ * @returns profesionales ordenados por id: es el orden en que se toman
+ *   los bloqueos, igual en cualquier llamada, para no cruzarse en un
+ *   interbloqueo con otra que pida los mismos.
+ */
+async function resolveTargets(
+  providerId: string,
+  professionalId: string | undefined,
+  allTeam: boolean,
+): Promise<{ id: string; name: string }[]> {
+  const team = await scheduleBlocksRepository.findActiveProfessionals(providerId);
+  if (team.length === 0) throw new ScheduleBlockNoProfessionalError();
+  let targets: { id: string; name: string }[];
+  if (allTeam) {
+    targets = team;
+  } else if (professionalId) {
+    const target = team.find((p) => p.id === professionalId);
+    // Un profesional de otro negocio o dado de baja: entrada inválida.
+    if (!target) throw new ScheduleBlockInvalidInputError();
+    targets = [target];
+  } else if (team.length === 1) {
+    targets = team;
+  } else {
+    throw new ScheduleBlockProfessionalRequiredError();
+  }
+  return [...targets].sort((a, b) => a.id.localeCompare(b.id));
+}
+
+/**
+ * Crea un bloqueo de agenda para un profesional del negocio o para todo
+ * el equipo (uno por profesional).
  *
- * @param input — fecha y hora de inicio y fin en hora de Madrid.
+ * Todo ocurre en UNA transacción bajo el MISMO bloqueo por profesional
+ * que toma `createBooking` (uno por profesional afectado, en orden de
+ * id): sin él, una reserva podía colarse entre la comprobación de
+ * conflictos y la escritura del bloqueo. Si algún profesional tiene
+ * reservas en el rango no se crea ninguno, y el error las lista todas.
+ *
+ * @param input — fecha y hora de inicio y fin en hora de Madrid, más
+ *   `professionalId?` o `allTeam?` (ver `resolveTargets`).
  * @param ctx — negocio y usuario de la sesión.
- * @returns el id del bloqueo creado.
+ * @returns `id` del primer bloqueo creado e `ids` de todos.
  * @throws ScheduleBlockInvalidInputError, ScheduleBlockEndBeforeStartError,
  *   ScheduleBlockInPastError, ScheduleBlockTooFarError,
  *   ScheduleBlockTooLongError, ScheduleBlockConflictError,
- *   ScheduleBlockNoProfessionalError.
+ *   ScheduleBlockNoProfessionalError, ScheduleBlockProfessionalRequiredError.
  */
 export async function createScheduleBlock(
   input: CreateScheduleBlockInput,
   ctx: ScheduleBlockContext,
-): Promise<{ id: string }> {
+): Promise<{ id: string; ids: string[] }> {
   const now = ctx.now ?? new Date();
-  const { startAt, endAt, reason } = resolveRange(input, now);
-
-  const professionalId = await availabilityRepository.findFirstProfessionalIdForProvider(
-    ctx.providerId,
-  );
-  if (!professionalId) throw new ScheduleBlockNoProfessionalError();
+  const { startAt, endAt, reason, professionalId, allTeam } = resolveRange(input, now);
+  const targets = await resolveTargets(ctx.providerId, professionalId, allTeam);
 
   return prisma.$transaction(async (tx) => {
-    await bookingRepository.lockProfessional(tx, professionalId);
+    for (const target of targets) {
+      await bookingRepository.lockProfessional(tx, target.id);
+    }
 
-    const conflicts = await scheduleBlocksRepository.findConflictingBookings(
-      tx,
-      professionalId,
-      startAt,
-      endAt,
-      now,
-    );
-    if (conflicts.length > 0) {
-      throw new ScheduleBlockConflictError(
-        conflicts.map((booking) => ({
+    const conflicts: ScheduleBlockConflict[] = [];
+    for (const target of targets) {
+      const bookings = await scheduleBlocksRepository.findConflictingBookings(
+        tx,
+        target.id,
+        startAt,
+        endAt,
+        now,
+      );
+      for (const booking of bookings) {
+        conflicts.push({
           bookingId: booking.id,
           startAt: booking.startAt,
           clientName: booking.client.fullName ?? null,
           serviceName: booking.service.name as unknown as LocalizedText,
-        })),
-      );
+          professionalId: target.id,
+          professionalName: target.name,
+        });
+      }
+    }
+    if (conflicts.length > 0) {
+      conflicts.sort((a, b) => a.startAt.getTime() - b.startAt.getTime());
+      throw new ScheduleBlockConflictError(conflicts);
     }
 
-    await scheduleBlocksRepository.withdrawOverlappingOffers(
-      tx,
-      professionalId,
-      startAt,
-      endAt,
-      now,
-    );
-    return scheduleBlocksRepository.create(tx, {
-      providerId: ctx.providerId,
-      professionalId,
-      startAt,
-      endAt,
-      reason,
-      createdBy: ctx.userId,
-    });
+    const ids: string[] = [];
+    for (const target of targets) {
+      await scheduleBlocksRepository.withdrawOverlappingOffers(tx, target.id, startAt, endAt, now);
+      const created = await scheduleBlocksRepository.create(tx, {
+        providerId: ctx.providerId,
+        professionalId: target.id,
+        startAt,
+        endAt,
+        reason,
+        createdBy: ctx.userId,
+      });
+      ids.push(created.id);
+    }
+    return { id: ids[0], ids };
   });
 }
 

@@ -7,25 +7,39 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { findLiveForProviders, findActiveBookingSpans, findSpansForProviders } = vi.hoisted(() => ({
-  findLiveForProviders: vi.fn(),
-  findActiveBookingSpans: vi.fn(),
-  findSpansForProviders: vi.fn(),
-}));
+const { findLiveForProviders, findActiveBookingSpans, findSpansForProviders, releasable } =
+  vi.hoisted(() => ({
+    findLiveForProviders: vi.fn(),
+    findActiveBookingSpans: vi.fn(),
+    findSpansForProviders: vi.fn(),
+    releasable: {
+      getCivilDaysInWindow: vi.fn(),
+      getServiceDaySlots: vi.fn(),
+      findActiveServiceIds: vi.fn(),
+      findActiveForProviderRange: vi.fn(),
+      findActiveProfessionals: vi.fn(),
+    },
+  }));
 
 vi.mock('@/lib/services/availability', () => ({
   BUSINESS_TIMEZONE: 'Europe/Madrid',
-  getCivilDaysInWindow: vi.fn(),
-  getServiceDaySlots: vi.fn(),
+  getCivilDaysInWindow: releasable.getCivilDaysInWindow,
+  getServiceDaySlots: releasable.getServiceDaySlots,
 }));
 vi.mock('./slot-offers.repository', () => ({
-  slotOffersRepository: { findLiveForProviders, findActiveBookingSpans },
+  slotOffersRepository: {
+    findLiveForProviders,
+    findActiveBookingSpans,
+    findActiveServiceIds: releasable.findActiveServiceIds,
+    findActiveForProviderRange: releasable.findActiveForProviderRange,
+    findActiveProfessionals: releasable.findActiveProfessionals,
+  },
 }));
 vi.mock('@/lib/services/schedule-blocks/schedule-blocks.repository', () => ({
   scheduleBlocksRepository: { findSpansForProviders },
 }));
 
-import { getBestOfferByProvider } from './slot-offers.queries';
+import { getBestOfferByProvider, listReleasableFreeSlots } from './slot-offers.queries';
 
 const NOW = new Date('2026-06-01T08:00:00.000Z');
 
@@ -73,5 +87,49 @@ describe('getBestOfferByProvider', () => {
       new Date('2026-06-01T12:00:00.000Z'),
       new Date('2026-06-01T13:00:00.000Z'),
     );
+  });
+});
+
+describe('listReleasableFreeSlots', () => {
+  const at = (iso: string) => new Date(iso);
+  const slot = (iso: string) => ({
+    startAt: at(iso),
+    endAt: new Date(at(iso).getTime() + 3_600_000),
+  });
+
+  it('devuelve los huecos de cada profesional con su nombre, sin los que ya tienen oferta', async () => {
+    releasable.getCivilDaysInWindow.mockReturnValue([at('2026-06-01T00:00:00.000Z')]);
+    releasable.findActiveServiceIds.mockResolvedValue(['svc-1']);
+    releasable.findActiveProfessionals.mockResolvedValue([
+      { id: 'pro-1', name: 'Ana' },
+      { id: 'pro-2', name: 'Bea' },
+    ]);
+    // Ana ya liberó las 09:00Z: solo queda el hueco de Bea a esa hora.
+    releasable.findActiveForProviderRange.mockResolvedValue([
+      {
+        professionalId: 'pro-1',
+        startAt: at('2026-06-01T09:00:00.000Z'),
+        endAt: at('2026-06-01T10:00:00.000Z'),
+      },
+    ]);
+    releasable.getServiceDaySlots.mockResolvedValue({
+      slotsByProfessional: new Map([
+        ['pro-1', [slot('2026-06-01T09:00:00.000Z')]],
+        ['pro-2', [slot('2026-06-01T09:00:00.000Z'), slot('2026-06-01T12:00:00.000Z')]],
+      ]),
+    });
+
+    const result = await listReleasableFreeSlots('prov-1', NOW);
+
+    // 12:00Z queda fuera de la ventana de 2 h.
+    expect(result).toEqual([
+      {
+        serviceId: 'svc-1',
+        startAtIso: '2026-06-01T09:00:00.000Z',
+        endAtIso: '2026-06-01T10:00:00.000Z',
+        professionalId: 'pro-2',
+        professionalName: 'Bea',
+      },
+    ]);
   });
 });

@@ -107,7 +107,6 @@ export const providersRepository = {
       select: {
         id: true,
         providerId: true,
-        professionalId: true,
         categoryId: true,
         name: true,
         description: true,
@@ -140,7 +139,6 @@ export const providersRepository = {
       select: {
         id: true,
         providerId: true,
-        professionalId: true,
         categoryId: true,
         name: true,
         description: true,

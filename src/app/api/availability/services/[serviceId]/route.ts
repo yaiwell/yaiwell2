@@ -4,6 +4,7 @@ import { z } from 'zod';
 
 import {
   InvalidScheduleError,
+  ProfessionalNotForServiceError,
   ProfessionalNotFoundError,
   ServiceForAvailabilityNotFoundError,
 } from '@/lib/services/availability';
@@ -13,7 +14,11 @@ import { getPricedSlotsForService, type PricedSlot } from '@/lib/services/slot-o
 /**
  * Endpoint público de slots disponibles para un servicio en un día.
  *
- * `GET /api/availability/services/{serviceId}?date=YYYY-MM-DD`
+ * `GET /api/availability/services/{serviceId}?date=YYYY-MM-DD[&professionalId=uuid]`
+ *
+ * Sin `professionalId` devuelve la unión de huecos de todo el equipo que
+ * presta el servicio («cualquiera disponible»); con él, solo los de ese
+ * profesional (404 si no presta el servicio).
  *
  * Diseño:
  *  - Público (lo consume el `SlotPicker` desde la ficha del servicio sin
@@ -52,6 +57,7 @@ const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/u, {
 
 const querySchema = z.object({
   date: dateSchema,
+  professionalId: z.string().uuid().optional(),
 });
 
 export async function GET(
@@ -91,7 +97,12 @@ export async function GET(
   // 3. Delegamos al servicio.
   try {
     // Incluye las horas liberadas con descuento, con su precio vigente.
-    const slots = await getPricedSlotsForService(serviceId, date);
+    const slots = await getPricedSlotsForService(
+      serviceId,
+      date,
+      new Date(),
+      parsed.data.professionalId,
+    );
     const dto: SlotDto[] = slots.map((slot: PricedSlot) => ({
       startAtIso: slot.startAt.toISOString(),
       endAtIso: slot.endAt.toISOString(),
@@ -113,7 +124,7 @@ export async function GET(
         { status: 404 },
       );
     }
-    if (err instanceof ProfessionalNotFoundError) {
+    if (err instanceof ProfessionalNotFoundError || err instanceof ProfessionalNotForServiceError) {
       return NextResponse.json(
         { error: { code: err.code, message: err.message } },
         { status: 404 },

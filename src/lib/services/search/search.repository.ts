@@ -56,7 +56,6 @@ export const searchRepository = {
         id: string;
         providerId: string;
         categoryId: string;
-        professionalId: string | null;
         name: ServiceSearchResult['name'];
         description: ServiceSearchResult['description'];
         priceCents: number;
@@ -68,7 +67,6 @@ export const searchRepository = {
         id,
         "providerId",
         "categoryId",
-        "professionalId",
         name,
         description,
         "priceCents",

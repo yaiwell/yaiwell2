@@ -16,6 +16,11 @@ export {
 } from './provider-onboarding.service';
 
 export { providerOnboardingRepository } from './provider-onboarding.repository';
+export {
+  resolveServiceProfessionalIds,
+  serviceTeamRepository,
+  syncServiceProfessionals,
+} from './provider-onboarding.team';
 
 export {
   CategoryNotFoundError,
@@ -23,6 +28,7 @@ export {
   OnboardingAlreadyCompleteError,
   PlanTierNotFoundError,
   ProviderForOnboardingNotFoundError,
+  ServiceProfessionalsInvalidError,
   SlugAlreadyTakenError,
 } from './provider-onboarding.errors';
 
@@ -30,6 +36,7 @@ export {
   createFirstServiceSchema,
   createProviderSchema,
   selectPlanSchema,
+  serviceProfessionalIdsSchema,
   updatePhotosSchema,
 } from './provider-onboarding.validation';
 

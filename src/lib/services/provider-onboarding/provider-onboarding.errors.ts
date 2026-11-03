@@ -93,3 +93,17 @@ export class PlanTierNotFoundError extends Error {
     this.name = 'PlanTierNotFoundError';
   }
 }
+
+/**
+ * Los profesionales elegidos para un servicio no valen: lista vacía,
+ * alguno de otro negocio o dado de baja, o el negocio no tiene ninguno
+ * activo. Un servicio sin nadie que lo preste no se podría reservar.
+ */
+export class ServiceProfessionalsInvalidError extends Error {
+  readonly code = 'SERVICE_PROFESSIONALS_INVALID';
+
+  constructor(message = 'Invalid professionals for this service.') {
+    super(message);
+    this.name = 'ServiceProfessionalsInvalidError';
+  }
+}

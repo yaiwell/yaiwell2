@@ -29,7 +29,8 @@ export const BOOKING_TOO_SOON_ISSUE_CODE = 'BOOKING_TOO_SOON';
 
 export const createBookingSchema = z.object({
   serviceId: z.string().uuid(),
-  professionalId: z.string().uuid(),
+  /** Omitido = «cualquiera disponible»: lo asigna el servidor. */
+  professionalId: z.string().uuid().optional(),
   slotStart: z.coerce.date().refine((d) => meetsMinBookingLeadTime(d.getTime(), new Date()), {
     message: 'Booking must start at least 30 minutes from now.',
     params: { code: BOOKING_TOO_SOON_ISSUE_CODE },

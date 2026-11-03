@@ -26,6 +26,8 @@ export const releaseCancelledSlotSchema = z.object({
 /** Liberar un hueco libre que empieza en menos de 2 h. */
 export const releaseFreeSlotSchema = z.object({
   serviceId: z.string().min(1),
+  /** Profesional cuyo hueco se libera; opcional mientras el panel no lo envíe. */
+  professionalId: z.string().min(1).optional(),
   startAt: z.coerce.date(),
   discounts: slotOfferDiscountsSchema,
 });

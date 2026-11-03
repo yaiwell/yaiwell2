@@ -59,7 +59,10 @@ export async function createBookingCheckout(
 ): Promise<BookingCheckoutSession> {
   const data = createBookingCheckoutSchema.parse(input);
 
-  const { providerId, professionalId } = await resolveBookingTarget(data.serviceId);
+  const { providerId, professionalId } = await resolveBookingTarget(
+    data.serviceId,
+    data.professionalId,
+  );
 
   const destinationAccountId = await resolveChargeableAccount(providerId);
 
@@ -69,7 +72,8 @@ export async function createBookingCheckout(
   const booking = await createBooking(
     {
       serviceId: data.serviceId,
-      professionalId,
+      // `undefined` = «cualquiera disponible»: lo asigna `createBooking`.
+      professionalId: professionalId ?? undefined,
       slotStart: data.slotStartIso,
       notes: data.notes,
     },

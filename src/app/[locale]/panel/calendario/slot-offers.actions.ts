@@ -48,6 +48,8 @@ export interface ReleaseCancelledSlotActionInput {
 /** Entrada de «liberar un hueco libre de las próximas 2 h». */
 export interface ReleaseFreeSlotActionInput {
   serviceId: string;
+  /** Profesional cuyo hueco se libera; sin él, el primero libre a esa hora. */
+  professionalId?: string;
   startAtIso: string;
   discounts: SlotOfferDiscounts;
 }
@@ -132,7 +134,12 @@ export async function releaseFreeSlotAction(
 ): Promise<SlotOfferActionState> {
   return runSlotOfferAction(locale, 'releaseFreeSlotAction', (owner) =>
     releaseFreeSlot(
-      { serviceId: input.serviceId, startAt: input.startAtIso, discounts: input.discounts },
+      {
+        serviceId: input.serviceId,
+        professionalId: input.professionalId,
+        startAt: input.startAtIso,
+        discounts: input.discounts,
+      },
       owner.userId,
       owner.providerId,
     ),

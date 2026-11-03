@@ -58,6 +58,12 @@ export async function seedServices(
         // el motor de availability tendría que adivinar el profesional y
         // el listado quedaría sin horario que consultar.
         professionalId: professionalIdMap.get(fs.providerId) ?? null,
+        // Desde la 9h la que manda es `service_professionals`.
+        ...(professionalIdMap.get(fs.providerId) && {
+          professionals: {
+            create: [{ professionalId: professionalIdMap.get(fs.providerId) as string }],
+          },
+        }),
         // LocalizedText es { es, ca } pero el tipo no declara index
         // signature; Prisma quiere JsonObject. Cast literal porque la
         // forma es serializable.

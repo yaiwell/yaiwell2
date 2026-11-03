@@ -1,21 +1,11 @@
 import { getEarliestBookableStart } from '@/lib/utils/booking-lead-time';
 
 import { computeAvailableSlots, getUtcDayBounds, isSlotFree } from './availability.calc';
-import { BUSINESS_TIMEZONE } from './availability.constants';
-import {
-  InvalidScheduleError,
-  ProfessionalNotFoundError,
-  ServiceForAvailabilityNotFoundError,
-} from './availability.errors';
+import { BUSINESS_TIMEZONE, BUSY_MARGIN_MS } from './availability.constants';
+import { InvalidScheduleError, ProfessionalNotFoundError } from './availability.errors';
 import { availabilityRepository } from './availability.repository';
 import { getAvailableSlotsSchema, weeklyScheduleSchema } from './availability.validation';
 import type { Slot, WeeklySchedule } from './availability.types';
-
-/**
- * Margen al pedir reservas y bloqueos alrededor del día UTC: cubre el
- * desfase de Madrid (hasta 2 h) con holgura.
- */
-const BUSY_MARGIN_MS = 12 * 60 * 60 * 1000;
 
 /**
  * Servicio de disponibilidad: orquesta el repositorio Prisma y el motor
@@ -147,71 +137,4 @@ export async function isSlotAvailable(
   ]);
 
   return isSlotFree(slotStart, durationMinutes, [...bookings, ...blocks]);
-}
-
-/**
- * Devuelve los slots disponibles para un Service concreto en un día.
- *
- * Atajo público que la UI/API consumen para no tener que conocer el
- * grafo Service → Professional → Schedule:
- *  1. Resuelve el `Service` (excluyendo pausados/soft-deleted).
- *  2. Determina el `professionalId` efectivo: si el service lo tiene
- *     asignado, ese; si no (catálogo Fase 0 — todos los services del
- *     wizard se crean con `professionalId=null`), fallback al primer
- *     Professional del provider.
- *  3. Llama `getAvailableSlots` con la duración real del servicio.
- *
- * @throws ServiceForAvailabilityNotFoundError — si el service no existe,
- *   está pausado o el provider no tiene Professional al que ofrecer
- *   slots todavía.
- * @param now — instante de referencia para la antelación mínima;
- *   inyectable para tests.
- * @throws InvalidScheduleError, ProfessionalNotFoundError — propagados
- *   desde `getAvailableSlots`.
- */
-export async function getSlotsForService(
-  serviceId: string,
-  date: Date,
-  now: Date = new Date(),
-): Promise<Slot[]> {
-  return (await getServiceDaySlots(serviceId, date, now)).slots;
-}
-
-/**
- * Igual que `getSlotsForService`, pero devuelve también el profesional
- * efectivo y la duración. Lo usan los huecos con descuento: la oferta
- * se guarda con el mismo profesional al que el motor asigna el hueco.
- *
- * @throws las mismas excepciones que `getSlotsForService`.
- */
-export async function getServiceDaySlots(
-  serviceId: string,
-  date: Date,
-  now: Date = new Date(),
-): Promise<{ professionalId: string; durationMinutes: number; slots: Slot[] }> {
-  const service = await availabilityRepository.findServiceForAvailability(serviceId);
-  if (!service) {
-    throw new ServiceForAvailabilityNotFoundError();
-  }
-
-  const professionalId =
-    service.professionalId ??
-    (await availabilityRepository.findFirstProfessionalIdForProvider(service.providerId));
-  if (!professionalId) {
-    // Provider sin Professional asociado (caso patológico que el wizard
-    // no debería permitir). La UI lo tratará como "sin disponibilidad".
-    throw new ServiceForAvailabilityNotFoundError(
-      'El proveedor no tiene profesionales activos para este servicio.',
-    );
-  }
-
-  const slots = await getAvailableSlots(
-    {
-      professionalId,
-      date,
-      serviceDurationMinutes: service.durationMinutes,
-    },
-    now,
-  );
-  return { professionalId, durationMinutes: service.durationMinutes, slots };
 }

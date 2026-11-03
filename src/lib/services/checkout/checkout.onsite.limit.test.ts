@@ -9,7 +9,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   availabilityRepo: {
     findServiceForAvailability: vi.fn(),
-    findFirstProfessionalIdForProvider: vi.fn(),
   },
   createBooking: vi.fn(),
   eligibility: vi.fn(),
@@ -48,7 +47,7 @@ beforeEach(() => {
   mocks.availabilityRepo.findServiceForAvailability.mockResolvedValue({
     id: SERVICE_ID,
     providerId: 'prov-1',
-    professionalId: 'pro-1',
+    professionalIds: ['pro-1'],
     durationMinutes: 60,
   });
   mocks.findStatus.mockResolvedValue({

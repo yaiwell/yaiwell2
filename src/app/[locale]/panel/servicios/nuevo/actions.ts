@@ -8,7 +8,11 @@ import type { AppLocale } from '@/i18n/routing';
 import { requireCurrentProvider } from '@/lib/auth/server';
 import { prisma } from '@/lib/db/prisma';
 import { buildLocalizedText, ensureSpanishIfAny, mergeLocalizedText } from '@/lib/i18n';
-import { createFirstServiceForProvider } from '@/lib/services/provider-onboarding';
+import {
+  createFirstServiceForProvider,
+  serviceProfessionalIdsSchema,
+  syncServiceProfessionals,
+} from '@/lib/services/provider-onboarding';
 import { ensureUserFromClerk } from '@/lib/services/user';
 import type { LocalizedText } from '@/types/domain';
 
@@ -30,6 +34,11 @@ interface RawInput {
   description: string;
   durationMinutes: string;
   priceEuros: string;
+  /**
+   * Profesionales que prestan el servicio. Omitido: en el alta, todo el
+   * equipo activo; en la edición, se conserva la asignación actual.
+   */
+  professionalIds?: string[];
 }
 
 /**
@@ -109,6 +118,7 @@ export async function createServiceAction(
         description,
         durationMinutes,
         priceCents,
+        professionalIds: raw.professionalIds,
       },
       internal.id,
     );
@@ -227,15 +237,21 @@ export async function updateServiceAction(
   }
 
   try {
-    await prisma.service.update({
-      where: { id: serviceId },
-      data: {
-        categoryId,
-        name: nextName as unknown as object,
-        description: nextDescription as unknown as object,
-        durationMinutes,
-        priceCents,
-      },
+    // Zod en el borde: una server action recibe un payload arbitrario.
+    const professionalIds = serviceProfessionalIdsSchema.parse(raw.professionalIds);
+    // Datos y equipo en la misma transacción: o se guarda todo o nada.
+    await prisma.$transaction(async (tx) => {
+      await tx.service.update({
+        where: { id: serviceId },
+        data: {
+          categoryId,
+          name: nextName as unknown as object,
+          description: nextDescription as unknown as object,
+          durationMinutes,
+          priceCents,
+        },
+      });
+      await syncServiceProfessionals(serviceId, providerId, professionalIds, tx);
     });
   } catch (err) {
     return updateServiceFailure(err);

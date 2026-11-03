@@ -24,7 +24,8 @@ export { BookingStatus };
 export interface CreateBookingInput {
   clientId: string;
   serviceId: string;
-  professionalId: string;
+  /** Omitido = «cualquiera disponible». */
+  professionalId?: string;
   slotStart: Date;
   notes?: string;
 }

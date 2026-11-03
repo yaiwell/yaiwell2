@@ -10,7 +10,6 @@ const { availabilityRepoMock, createBookingMock, eligibilityMock, findStatusMock
   () => ({
     availabilityRepoMock: {
       findServiceForAvailability: vi.fn(),
-      findFirstProfessionalIdForProvider: vi.fn(),
     },
     createBookingMock: vi.fn(),
     eligibilityMock: vi.fn(),
@@ -56,7 +55,7 @@ beforeEach(() => {
   availabilityRepoMock.findServiceForAvailability.mockResolvedValue({
     id: SERVICE_ID,
     providerId: 'prov-1',
-    professionalId: 'pro-1',
+    professionalIds: ['pro-1'],
     durationMinutes: 60,
   });
   findStatusMock.mockResolvedValue(readyProvider);
@@ -145,7 +144,7 @@ describe('createOnsiteBooking', () => {
     expect(createBookingMock).toHaveBeenCalledWith(
       {
         serviceId: SERVICE_ID,
-        professionalId: 'pro-1',
+        professionalId: undefined,
         slotStart: new Date(isoIn(180)),
         notes: 'hola',
       },

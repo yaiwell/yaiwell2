@@ -17,18 +17,16 @@
 
 import { prisma } from '@/lib/db/prisma';
 import { isExclusionViolation } from '@/lib/db/prisma-errors';
-// Ruta directa: el barrel de `schedule-blocks` arrastra su servicio,
-// que importa este dominio.
-import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks/schedule-blocks.repository';
-import { findLiveOfferForSlot, isBookableStart } from '@/lib/services/slot-offers';
+import { getBookableCandidates, isBookableStart } from '@/lib/services/slot-offers';
 import { isOnsiteAllowedByLeadTime } from '@/lib/utils/booking-payment-mode';
-import { computeCommissionCents, priceSlot } from '@/lib/utils/slot-offer-pricing';
 
 import {
   assertCancellableStatus,
   assertCancellationWindow,
   commitCancellation,
 } from './booking.cancel';
+import { rankCandidates } from './booking.candidates';
+import { bookForProfessional, type BookForProfessionalContext } from './booking.create';
 import {
   BookingNotFoundError,
   OnsiteBookingTooLateError,
@@ -50,12 +48,12 @@ const OVERLAP_CONSTRAINT = 'bookings_no_overlap_confirmed';
  * Pasos:
  *  1. Valida la entrada con Zod (incluye la regla de antelación mínima).
  *  2. Carga el servicio para conocer duración y precio.
- *  3. Calcula `endAt = slotStart + durationMinutes`.
- *  4. Bajo un bloqueo por profesional, verifica que no haya solapamiento
- *     con otras reservas activas ni con bloqueos de agenda.
- *  5. Aplica el descuento de un hueco liberado, si lo hay, y calcula la
- *     comisión sobre el precio cobrado.
- *  6. Persiste la reserva en la misma transacción.
+ *  3. Decide qué profesionales probar: el pedido, o los candidatos
+ *     libres a esa hora ordenados («cualquiera disponible», §4.bis).
+ *  4. Para cada uno, en su propia transacción y bajo su bloqueo
+ *     (`bookForProfessional`): sin solape con reservas activas ni
+ *     bloqueos de agenda, descuento del hueco liberado si lo hay,
+ *     comisión sobre lo cobrado y alta. Si está ocupado, el siguiente.
  *
  * Según `options.paymentMode`:
  *  - `online` (por defecto): nace `pending`; el webhook de Stripe la
@@ -76,8 +74,8 @@ const OVERLAP_CONSTRAINT = 'bookings_no_overlap_confirmed';
  * @throws ServiceNotFoundError — si el servicio no existe o está soft-deleted.
  * @throws ServicePausedError — si el servicio está pausado por el dueño.
  * @throws OnsiteBookingTooLateError — en el local a menos de 2 h del inicio.
- * @throws SlotUnavailableError — si el slot solapa con otra reserva activa
- *   o con un bloqueo de agenda.
+ * @throws SlotUnavailableError — si la hora no se ofrece o todos los
+ *   candidatos tienen solape con otra reserva activa o un bloqueo de agenda.
  */
 export async function createBooking(
   input: unknown,
@@ -109,88 +107,70 @@ export async function createBooking(
     throw new ServicePausedError();
   }
 
-  // Calculamos el cierre del slot a partir de la duración del servicio.
-  const endAt = new Date(data.slotStart.getTime() + service.durationMinutes * 60_000);
-
   // Solo aceptamos horas que ofrecemos: de la rejilla del motor o
   // liberadas con descuento. Sin esto una llamada directa podría
   // reservar fuera de horario o una hora que la UI nunca enseñó.
-  if (!(await isBookableStart(data.serviceId, data.professionalId, data.slotStart, now))) {
+  const order = await resolveProfessionalOrder(
+    data.serviceId,
+    data.professionalId,
+    data.slotStart,
+    now,
+  );
+  if (order.length === 0) {
     throw new SlotUnavailableError();
   }
 
-  try {
-    return await prisma.$transaction(async (tx) => {
-      // Bloqueo por profesional hasta el fin de la transacción: dos
-      // clientes que reservan el mismo hueco a la vez (más probable en un
-      // hueco liberado con descuento) se serializan, y el segundo ya ve
-      // la reserva del primero en la comprobación de solape.
-      await bookingRepository.lockProfessional(tx, data.professionalId);
-      if (options.precondition) await options.precondition(tx);
+  const ctx: BookForProfessionalContext = {
+    clientId,
+    serviceId: data.serviceId,
+    providerId: service.providerId,
+    servicePriceCents: service.priceCents,
+    commissionRateBps: service.provider.plan.commissionRateBps,
+    slotStart: data.slotStart,
+    // Calculamos el cierre del slot a partir de la duración del servicio.
+    endAt: new Date(data.slotStart.getTime() + service.durationMinutes * 60_000),
+    notes: data.notes,
+    now,
+    paymentMode,
+    precondition: options.precondition,
+  };
 
-      const overlapping = await bookingRepository.findOverlapping(
-        data.professionalId,
-        data.slotStart,
-        endAt,
-        now,
-        tx,
-      );
-      if (overlapping.length > 0) {
-        throw new SlotUnavailableError();
+  // Cada candidato en su propia transacción y con su propio bloqueo: si
+  // el primero se ocupó entre la consulta y aquí (o la restricción de
+  // exclusión de la BD salta), se prueba el siguiente sin retener a los
+  // demás profesionales del equipo.
+  for (const professionalId of order) {
+    try {
+      return await prisma.$transaction((tx) => bookForProfessional(tx, professionalId, ctx));
+    } catch (err) {
+      if (err instanceof SlotUnavailableError || isExclusionViolation(err, OVERLAP_CONSTRAINT)) {
+        continue;
       }
-      // Bajo el mismo bloqueo que toma `createScheduleBlock`: un bloqueo
-      // de agenda creado mientras el cliente elegía hora gana.
-      if (
-        await scheduleBlocksRepository.hasActiveOverlap(
-          data.professionalId,
-          data.slotStart,
-          endAt,
-          tx,
-        )
-      ) {
-        throw new SlotUnavailableError();
-      }
-
-      // Hueco liberado con descuento: el % vigente se resuelve aquí, en
-      // servidor, y se congela en la reserva (CLAUDE.md §4.bis).
-      const offer = await findLiveOfferForSlot(
-        data.professionalId,
-        data.serviceId,
-        data.slotStart,
-        now,
-        tx,
-      );
-      const price = priceSlot(service.priceCents, offer?.discounts ?? null, data.slotStart, now);
-
-      return bookingRepository.create(
-        {
-          clientId,
-          serviceId: data.serviceId,
-          professionalId: data.professionalId,
-          providerId: service.providerId,
-          startAt: data.slotStart,
-          endAt,
-          priceCents: price.priceCents,
-          // La comisión se calcula sobre lo que se cobra, con descuento o sin él.
-          commissionCents: computeCommissionCents(
-            price.priceCents,
-            service.provider.plan.commissionRateBps,
-          ),
-          notes: data.notes,
-          slotOfferId: price.discountPct !== null ? offer?.id : null,
-          originalPriceCents: price.originalPriceCents,
-          discountPct: price.discountPct,
-          createdAt: now,
-          status: paymentMode === 'onsite' ? 'confirmed' : 'pending',
-          paymentMode,
-        },
-        tx,
-      );
-    });
-  } catch (err) {
-    if (isExclusionViolation(err, OVERLAP_CONSTRAINT)) throw new SlotUnavailableError();
-    throw err;
+      throw err;
+    }
   }
+  throw new SlotUnavailableError();
+}
+
+/**
+ * Profesionales a probar, en orden. Con `professionalId`, solo ese y
+ * solo si puede atender la hora. Sin él («cualquiera disponible»), los
+ * candidatos libres ordenados con `rankCandidates` (oferta, carga del
+ * día, antigüedad). Lista vacía = la hora no se ofrece.
+ */
+async function resolveProfessionalOrder(
+  serviceId: string,
+  professionalId: string | undefined,
+  slotStart: Date,
+  now: Date,
+): Promise<string[]> {
+  if (professionalId) {
+    return (await isBookableStart(serviceId, professionalId, slotStart, now))
+      ? [professionalId]
+      : [];
+  }
+  const candidates = await getBookableCandidates(serviceId, slotStart, now);
+  return rankCandidates(candidates, slotStart, now);
 }
 
 /**

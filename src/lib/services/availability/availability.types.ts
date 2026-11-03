@@ -93,3 +93,23 @@ export interface ProfessionalScheduleBundle {
   bufferMinutes: number;
   minServiceDurationMinutes: number | null;
 }
+
+/**
+ * Rejilla de un servicio en un día con varios profesionales (ver
+ * `getServiceDaySlots`).
+ */
+export interface ServiceDaySlots {
+  providerId: string;
+  durationMinutes: number;
+  /** Profesionales evaluados (todos los asignados, o solo el pedido), por antigüedad. */
+  professionalIds: string[];
+  /** Unión por hora de inicio, ordenada ascendentemente. */
+  slots: Slot[];
+  /** Huecos libres de cada profesional evaluado. */
+  slotsByProfessional: Map<string, Slot[]>;
+  /**
+   * Profesionales libres en cada hora, por `startAt.getTime()`, en el
+   * orden de `professionalIds`. Es lo que usa la reserva «cualquiera».
+   */
+  candidatesByStart: Map<number, string[]>;
+}

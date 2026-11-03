@@ -93,7 +93,6 @@ describe('GET /api/search', () => {
         id: 'svc-1',
         providerId: 'prov-1',
         categoryId: 'cat-1',
-        professionalId: null,
         name: { es: 'Masaje', ca: 'Massatge' },
         description: { es: '', ca: '' },
         priceCents: 4500,

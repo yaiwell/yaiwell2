@@ -123,7 +123,8 @@ export interface CreateProfessionalArgs {
 export interface CreateServiceArgs {
   providerId: string;
   categoryId: string;
-  professionalId: string | null;
+  /** Profesionales que lo prestan (fila en `service_professionals`), al menos 1. */
+  professionalIds: string[];
   name: StorableLocalizedText;
   description: StorableLocalizedText;
   durationMinutes: number;
@@ -234,20 +235,6 @@ export const providerOnboardingRepository = {
   },
 
   /**
-   * Localiza el Professional inicial de un Provider (autónomo o centro).
-   * El service lo usa para heredar `professionalId` al primer servicio.
-   * Si por cualquier motivo hay varios (no debería en onboarding),
-   * devolvemos el más antiguo para coger al titular.
-   */
-  async findFirstProfessional(providerId: string): Promise<{ id: string } | null> {
-    return prisma.professional.findFirst({
-      where: { providerId, deletedAt: null },
-      orderBy: { createdAt: 'asc' },
-      select: { id: true },
-    });
-  },
-
-  /**
    * Ejecuta `fn` en una transacción. Lo usa el alta de servicio para
    * comprobar el límite del plan y crear bajo el mismo bloqueo.
    */
@@ -256,7 +243,8 @@ export const providerOnboardingRepository = {
   },
 
   /**
-   * Crea un Service del catálogo del proveedor.
+   * Crea un Service del catálogo del proveedor junto a sus filas de
+   * `service_professionals`, en la misma escritura.
    *
    * @param db — cliente de la transacción en curso; por defecto el global.
    */
@@ -268,7 +256,14 @@ export const providerOnboardingRepository = {
       data: {
         providerId: args.providerId,
         categoryId: args.categoryId,
-        professionalId: args.professionalId,
+        // Columna obsoleta desde la 9h: se rellena con el primero mientras
+        // conviva con `service_professionals`, que es la que se lee.
+        professionalId: args.professionalIds[0] ?? null,
+        professionals: {
+          createMany: {
+            data: args.professionalIds.map((professionalId) => ({ professionalId })),
+          },
+        },
         name: args.name as unknown as Prisma.InputJsonValue,
         description: args.description as unknown as Prisma.InputJsonValue,
         durationMinutes: args.durationMinutes,

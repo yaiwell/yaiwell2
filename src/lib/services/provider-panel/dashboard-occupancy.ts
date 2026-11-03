@@ -60,18 +60,52 @@ function coveredMinutes(open: Interval[], busy: Interval[]): number {
   );
 }
 
+/** Minutos disponibles y reservados de un profesional en una semana. */
+export interface OccupancyMinutes {
+  availableMinutes: number;
+  bookedMinutes: number;
+}
+
 /**
- * Ocupación de una semana: minutos reservados entre minutos disponibles,
- * en porcentaje entero (0-100).
+ * Minutos de una semana de un profesional.
  *
  * Disponible = horario abierto menos bloqueos de agenda (las vacaciones no
  * deben hundir la ocupación). Reservado = la parte de cada reserva que cae
- * dentro del horario abierto. Sin horas disponibles devuelve 0.
+ * dentro del horario abierto.
  *
  * @param schedule — horario semanal del profesional.
  * @param weekStartKey — lunes de la semana (`YYYY-MM-DD`, hora Madrid).
- * @param bookings — reservas que cuentan como ocupación.
- * @param blocks — bloqueos de agenda activos de esa semana.
+ * @param bookings — reservas suyas que cuentan como ocupación.
+ * @param blocks — sus bloqueos de agenda activos de esa semana.
+ */
+export function computeOccupancyMinutes(
+  schedule: WeeklySchedule,
+  weekStartKey: string,
+  bookings: Interval[],
+  blocks: Interval[],
+): OccupancyMinutes {
+  const open = openIntervalsForWeek(schedule, weekStartKey);
+  const openMinutes = open.reduce((sum, slot) => sum + overlapMinutes(slot, slot), 0);
+  return {
+    availableMinutes: Math.max(0, openMinutes - coveredMinutes(open, blocks)),
+    bookedMinutes: coveredMinutes(open, bookings),
+  };
+}
+
+/**
+ * Porcentaje entero (0-100) de una suma de minutos. Sin horas
+ * disponibles devuelve 0.
+ */
+function toPct(minutes: OccupancyMinutes[]): number {
+  const available = minutes.reduce((sum, m) => sum + m.availableMinutes, 0);
+  if (available <= 0) return 0;
+  const booked = minutes.reduce((sum, m) => sum + m.bookedMinutes, 0);
+  return Math.min(100, Math.round((booked / available) * 100));
+}
+
+/**
+ * Ocupación de una semana de UN profesional: minutos reservados entre
+ * minutos disponibles, en porcentaje entero (0-100).
  */
 export function computeOccupancyPct(
   schedule: WeeklySchedule,
@@ -79,10 +113,28 @@ export function computeOccupancyPct(
   bookings: Interval[],
   blocks: Interval[],
 ): number {
-  const open = openIntervalsForWeek(schedule, weekStartKey);
-  const openMinutes = open.reduce((sum, slot) => sum + overlapMinutes(slot, slot), 0);
-  const available = openMinutes - coveredMinutes(open, blocks);
-  if (available <= 0) return 0;
-  const booked = coveredMinutes(open, bookings);
-  return Math.min(100, Math.round((booked / available) * 100));
+  return toPct([computeOccupancyMinutes(schedule, weekStartKey, bookings, blocks)]);
+}
+
+/** Datos de un profesional para la ocupación del equipo. */
+export interface TeamMemberOccupancyInput {
+  schedule: WeeklySchedule;
+  bookings: Interval[];
+  blocks: Interval[];
+}
+
+/**
+ * Ocupación del equipo en una semana (CLAUDE.md §4.bis «Equipo»):
+ * capacidad = suma de las horas abiertas de cada profesional menos sus
+ * bloqueos; reservado = suma de lo reservado a cada uno. Así dos
+ * profesionales con 4 h cada uno y una reserva de 2 h dan un 25 %, no
+ * un 50 %.
+ */
+export function computeTeamOccupancyPct(
+  members: TeamMemberOccupancyInput[],
+  weekStartKey: string,
+): number {
+  return toPct(
+    members.map((m) => computeOccupancyMinutes(m.schedule, weekStartKey, m.bookings, m.blocks)),
+  );
 }

@@ -5,6 +5,7 @@ import { PlanServiceLimitReachedError } from '@/lib/services/billing/billing.pla
 import {
   CategoryNotFoundError,
   ProviderForOnboardingNotFoundError,
+  ServiceProfessionalsInvalidError,
 } from '@/lib/services/provider-onboarding';
 
 /**
@@ -68,6 +69,8 @@ export function createServiceFailure(err: unknown): ServiceActionFailure {
   if (err instanceof PlanServiceLimitReachedError) {
     return { ok: false, code: 'PLAN_LIMIT_REACHED' };
   }
+  // Profesionales que no son del negocio o de baja: entrada inválida.
+  if (err instanceof ServiceProfessionalsInvalidError) return validationFailure();
   console.error('[panel/servicios/nuevo] createServiceAction error:', err);
   return { ok: false, code: 'INTERNAL' };
 }
@@ -75,6 +78,7 @@ export function createServiceFailure(err: unknown): ServiceActionFailure {
 /** Traduce los errores al guardar la edición de un servicio. */
 export function updateServiceFailure(err: unknown): ServiceActionFailure {
   if (err instanceof ZodError) return validationFailure(err.issues[0]?.message);
+  if (err instanceof ServiceProfessionalsInvalidError) return validationFailure();
   console.error('[panel/servicios/[id]/editar] updateServiceAction error:', err);
   return { ok: false, code: 'INTERNAL' };
 }

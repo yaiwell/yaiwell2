@@ -141,6 +141,12 @@ test.beforeAll(async () => {
       ],
     )
   ).rows[0].id;
+  // Quién presta el servicio (migración 9h): sin esta fila el motor no
+  // ofrece huecos. Se borra en cascada con el servicio.
+  await db.query(
+    'INSERT INTO service_professionals ("serviceId", "professionalId") VALUES ($1, $2)',
+    [serviceId, professionalId],
+  );
 
   const now = Date.now();
   ids.monday = await insertBooking(MONDAY_BOOKING_START, 'confirmed', 5000);

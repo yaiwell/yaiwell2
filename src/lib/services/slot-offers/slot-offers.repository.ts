@@ -79,13 +79,26 @@ export const slotOffersRepository = {
       select: {
         id: true,
         providerId: true,
-        professionalId: true,
         durationMinutes: true,
         priceCents: true,
+        // Quién presta el servicio (migración 9h); los de baja no cuentan.
+        professionals: {
+          where: { professional: { deletedAt: null } },
+          select: { professionalId: true },
+        },
         isActive: true,
         deletedAt: true,
         provider: { select: { userId: true } },
       },
+    });
+  },
+
+  /** Profesionales activos de un centro con su nombre, por antigüedad. */
+  async findActiveProfessionals(providerId: string) {
+    return prisma.professional.findMany({
+      where: { providerId, deletedAt: null },
+      select: { id: true, name: true },
+      orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
     });
   },
 
@@ -177,6 +190,17 @@ export const slotOffersRepository = {
   ) {
     return db.slotOffer.findFirst({
       where: { professionalId, serviceId, startAt, ...liveWhere(now) },
+      select: offerSelect,
+    });
+  },
+
+  /**
+   * Ofertas reservables de un servicio que empiezan justo en `startAt`,
+   * de cualquier profesional («cualquiera disponible»).
+   */
+  async findLiveForServiceStart(serviceId: string, startAt: Date, now: Date) {
+    return prisma.slotOffer.findMany({
+      where: { serviceId, startAt, ...liveWhere(now) },
       select: offerSelect,
     });
   },

@@ -72,10 +72,9 @@ export interface ProviderDetail {
 
 /**
  * Datos mínimos para renderizar la ficha pública de un servicio
- * concreto: el servicio y el proveedor al que pertenece. El
- * profesional asignado lo deriva la capa de UI a partir del
- * `service.professionalId` cuando exista; mientras siga `null`
- * (catálogo fase 0) la UI mostrará "cualquier profesional disponible".
+ * concreto: el servicio y el proveedor al que pertenece. Quién lo
+ * presta vive en `service_professionals` (migración 9h); la ficha aún
+ * reserva con «cualquier profesional disponible».
  */
 export interface ProviderServiceDetail {
   provider: Provider;

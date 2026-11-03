@@ -18,6 +18,7 @@ const {
   ensureUserMock,
   requireCurrentProviderMock,
   createFirstServiceMock,
+  syncProfessionalsMock,
   prismaMock,
   redirectMock,
   LimitError,
@@ -27,9 +28,11 @@ const {
   ensureUserMock: vi.fn(),
   requireCurrentProviderMock: vi.fn(),
   createFirstServiceMock: vi.fn(),
+  syncProfessionalsMock: vi.fn(),
   prismaMock: {
     service: { findUnique: vi.fn(), update: vi.fn() },
     category: { findUnique: vi.fn() },
+    $transaction: vi.fn(),
   },
   redirectMock: vi.fn(),
 }));
@@ -43,11 +46,18 @@ vi.mock('@/lib/services/user', () => ({ ensureUserFromClerk: ensureUserMock }));
 vi.mock('@/lib/services/billing/billing.plan-limits', () => ({
   PlanServiceLimitReachedError: LimitError,
 }));
-vi.mock('@/lib/services/provider-onboarding', () => ({
-  createFirstServiceForProvider: createFirstServiceMock,
-  CategoryNotFoundError: class CategoryNotFoundError extends Error {},
-  ProviderForOnboardingNotFoundError: class ProviderForOnboardingNotFoundError extends Error {},
-}));
+vi.mock('@/lib/services/provider-onboarding', async () => {
+  const validation =
+    await import('@/lib/services/provider-onboarding/provider-onboarding.validation');
+  return {
+    createFirstServiceForProvider: createFirstServiceMock,
+    syncServiceProfessionals: syncProfessionalsMock,
+    serviceProfessionalIdsSchema: validation.serviceProfessionalIdsSchema,
+    CategoryNotFoundError: class CategoryNotFoundError extends Error {},
+    ProviderForOnboardingNotFoundError: class ProviderForOnboardingNotFoundError extends Error {},
+    ServiceProfessionalsInvalidError: class ServiceProfessionalsInvalidError extends Error {},
+  };
+});
 
 import { createServiceAction, updateServiceAction } from './actions';
 
@@ -106,6 +116,14 @@ describe('createServiceAction', () => {
     expect(redirectMock).not.toHaveBeenCalled();
   });
 
+  it('pasa los profesionales elegidos al servicio; sin ellos, no manda ninguno', async () => {
+    await createServiceAction('es', { ...RAW, professionalIds: ['pro-1', 'pro-2'] });
+    await createServiceAction('es', RAW);
+
+    expect(createFirstServiceMock.mock.calls[0][1].professionalIds).toEqual(['pro-1', 'pro-2']);
+    expect(createFirstServiceMock.mock.calls[1][1].professionalIds).toBeUndefined();
+  });
+
   it('rechaza un nombre vacío sin llegar al service', async () => {
     const result = await createServiceAction('de', { ...RAW, name: '   ' });
 
@@ -121,6 +139,35 @@ describe('updateServiceAction', () => {
     requireCurrentProviderMock.mockResolvedValue({ id: 'provider-1' });
     prismaMock.category.findUnique.mockResolvedValue({ id: 'cat-root' });
     prismaMock.service.update.mockResolvedValue({ id: 'service-1' });
+    prismaMock.$transaction.mockImplementation((fn: (tx: unknown) => unknown) => fn(prismaMock));
+    syncProfessionalsMock.mockResolvedValue(undefined);
+  });
+
+  it('guarda el equipo del servicio en la misma transacción que los datos', async () => {
+    prismaMock.service.findUnique.mockResolvedValue({
+      id: 'service-1',
+      providerId: 'provider-1',
+      deletedAt: null,
+      name: { es: 'Corte' },
+      description: {},
+    });
+
+    await updateServiceAction('service-1', 'es', { ...RAW, professionalIds: ['pro-2'] });
+    expect(syncProfessionalsMock).toHaveBeenCalledWith(
+      'service-1',
+      'provider-1',
+      ['pro-2'],
+      prismaMock,
+    );
+
+    // Sin `professionalIds` se conserva la asignación actual.
+    await updateServiceAction('service-1', 'es', RAW);
+    expect(syncProfessionalsMock).toHaveBeenLastCalledWith(
+      'service-1',
+      'provider-1',
+      undefined,
+      prismaMock,
+    );
   });
 
   /** Devuelve el `data` con el que se llamó a `prisma.service.update`. */

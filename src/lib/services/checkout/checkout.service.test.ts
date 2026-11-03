@@ -22,7 +22,6 @@ vi.mock('@/lib/integrations/stripe', () => ({
 
 const availabilityRepoMock = vi.hoisted(() => ({
   findServiceForAvailability: vi.fn(),
-  findFirstProfessionalIdForProvider: vi.fn(),
 }));
 
 vi.mock('@/lib/services/availability', () => ({
@@ -93,7 +92,7 @@ beforeEach(() => {
   availabilityRepoMock.findServiceForAvailability.mockResolvedValue({
     id: SERVICE_ID,
     providerId: PROVIDER_ID,
-    professionalId: PROFESSIONAL_ID,
+    professionalIds: [PROFESSIONAL_ID],
     durationMinutes: 60,
   });
   repoMock.findPayoutAccount.mockResolvedValue({ stripeAccountId: STRIPE_ACCOUNT_ID });
@@ -109,10 +108,11 @@ describe('createBookingCheckout', () => {
   it('crea la reserva y devuelve el clientSecret del PaymentIntent', async () => {
     const session = await createBookingCheckout(validInput({ notes: 'Primera vez' }), CLIENT_ID);
 
+    // Sin profesional elegido viaja `undefined`: «cualquiera disponible».
     expect(bookingMock.createBooking).toHaveBeenCalledWith(
       {
         serviceId: SERVICE_ID,
-        professionalId: PROFESSIONAL_ID,
+        professionalId: undefined,
         slotStart: SLOT_START,
         notes: 'Primera vez',
       },
@@ -176,16 +176,8 @@ describe('createBookingCheckout', () => {
     expect(payload.application_fee_amount).toBe(4499);
   });
 
-  it('resuelve el profesional del proveedor cuando el servicio no lo tiene asignado', async () => {
-    availabilityRepoMock.findServiceForAvailability.mockResolvedValue({
-      id: SERVICE_ID,
-      providerId: PROVIDER_ID,
-      professionalId: null,
-      durationMinutes: 60,
-    });
-    availabilityRepoMock.findFirstProfessionalIdForProvider.mockResolvedValue(PROFESSIONAL_ID);
-
-    await createBookingCheckout(validInput(), CLIENT_ID);
+  it('pasa el profesional elegido si presta el servicio', async () => {
+    await createBookingCheckout(validInput({ professionalId: PROFESSIONAL_ID }), CLIENT_ID);
 
     expect(bookingMock.createBooking).toHaveBeenCalledWith(
       expect.objectContaining({ professionalId: PROFESSIONAL_ID }),
@@ -193,14 +185,23 @@ describe('createBookingCheckout', () => {
     );
   });
 
-  it('lanza ProfessionalNotResolvedError si el proveedor no tiene profesionales', async () => {
+  it('rechaza un profesional que no presta el servicio, sin crear nada', async () => {
+    await expect(
+      createBookingCheckout(
+        validInput({ professionalId: 'ffffffff-ffff-4fff-8fff-ffffffffffff' }),
+        CLIENT_ID,
+      ),
+    ).rejects.toBeInstanceOf(ProfessionalNotResolvedError);
+    expect(bookingMock.createBooking).not.toHaveBeenCalled();
+  });
+
+  it('lanza ProfessionalNotResolvedError si nadie activo presta el servicio', async () => {
     availabilityRepoMock.findServiceForAvailability.mockResolvedValue({
       id: SERVICE_ID,
       providerId: PROVIDER_ID,
-      professionalId: null,
       durationMinutes: 60,
+      professionalIds: [],
     });
-    availabilityRepoMock.findFirstProfessionalIdForProvider.mockResolvedValue(null);
 
     await expect(createBookingCheckout(validInput(), CLIENT_ID)).rejects.toBeInstanceOf(
       ProfessionalNotResolvedError,

@@ -89,6 +89,8 @@ export type CheckoutActionState =
 export interface CreateBookingCheckoutActionInput {
   serviceId: string;
   slotStartIso: string;
+  /** Profesional elegido; omitido = «cualquiera disponible». */
+  professionalId?: string;
   notes?: string;
 }
 

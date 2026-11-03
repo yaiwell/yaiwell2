@@ -1,33 +1,33 @@
 import { Prisma } from '@prisma/client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { repo, getServiceDaySlotsMock, firstProfessionalMock, blockOverlapMock } = vi.hoisted(
-  () => ({
-    repo: {
-      findBookingForRelease: vi.fn(),
-      findServiceWithOwner: vi.fn(),
-      hasActiveBookingOverlap: vi.fn(),
-      hasActiveOfferOverlap: vi.fn(),
-      create: vi.fn(),
-      findWithOwner: vi.fn(),
-      withdraw: vi.fn(),
-    },
-    getServiceDaySlotsMock: vi.fn(),
-    firstProfessionalMock: vi.fn(),
-    blockOverlapMock: vi.fn(),
-  }),
-);
+const { repo, getServiceDaySlotsMock, blockOverlapMock } = vi.hoisted(() => ({
+  repo: {
+    findBookingForRelease: vi.fn(),
+    findServiceWithOwner: vi.fn(),
+    hasActiveBookingOverlap: vi.fn(),
+    hasActiveOfferOverlap: vi.fn(),
+    create: vi.fn(),
+    findWithOwner: vi.fn(),
+    withdraw: vi.fn(),
+  },
+  getServiceDaySlotsMock: vi.fn(),
+  blockOverlapMock: vi.fn(),
+}));
 
 vi.mock('./slot-offers.repository', () => ({ slotOffersRepository: repo }));
 vi.mock('@/lib/services/schedule-blocks/schedule-blocks.repository', () => ({
   scheduleBlocksRepository: { hasActiveOverlap: blockOverlapMock },
 }));
-vi.mock('@/lib/services/availability', () => ({
-  BUSINESS_TIMEZONE: 'Europe/Madrid',
-  getCivilDayUtc: (d: Date) => d,
-  getServiceDaySlots: getServiceDaySlotsMock,
-  availabilityRepository: { findFirstProfessionalIdForProvider: firstProfessionalMock },
-}));
+vi.mock('@/lib/services/availability', async () => {
+  const errors = await import('@/lib/services/availability/availability.errors');
+  return {
+    BUSINESS_TIMEZONE: 'Europe/Madrid',
+    getCivilDayUtc: (d: Date) => d,
+    getServiceDaySlots: getServiceDaySlotsMock,
+    ProfessionalNotForServiceError: errors.ProfessionalNotForServiceError,
+  };
+});
 
 import {
   SlotOfferAlreadyExistsError,
@@ -62,12 +62,42 @@ function service(overrides: Record<string, unknown> = {}) {
   return {
     id: 'svc-1',
     providerId: 'prov-1',
-    professionalId: null,
     durationMinutes: 60,
     isActive: true,
     deletedAt: null,
     provider: { userId: OWNER },
+    // Quién presta el servicio (`service_professionals`).
+    professionals: [{ professionalId: 'pro-1' }],
     ...overrides,
+  };
+}
+
+/** Rejilla del motor con los candidatos libres de cada hora. */
+function engine(byProfessional: Record<string, Date[]>, durationMinutes = 60) {
+  const slotsByProfessional = new Map<string, { startAt: Date; endAt: Date }[]>();
+  const candidatesByStart = new Map<number, string[]>();
+  const union = new Map<number, { startAt: Date; endAt: Date }>();
+  for (const [id, starts] of Object.entries(byProfessional)) {
+    const slots = starts.map((startAt) => ({
+      startAt,
+      endAt: new Date(startAt.getTime() + durationMinutes * 60_000),
+    }));
+    slotsByProfessional.set(id, slots);
+    for (const slot of slots) {
+      union.set(slot.startAt.getTime(), slot);
+      candidatesByStart.set(slot.startAt.getTime(), [
+        ...(candidatesByStart.get(slot.startAt.getTime()) ?? []),
+        id,
+      ]);
+    }
+  }
+  return {
+    providerId: 'prov-1',
+    durationMinutes,
+    professionalIds: Object.keys(byProfessional),
+    slots: [...union.values()],
+    slotsByProfessional,
+    candidatesByStart,
   };
 }
 
@@ -89,8 +119,6 @@ beforeEach(() => {
   repo.hasActiveBookingOverlap.mockResolvedValue(false);
   repo.hasActiveOfferOverlap.mockResolvedValue(false);
   blockOverlapMock.mockResolvedValue(false);
-  // El checkout asigna el primer profesional del centro: el de la reserva.
-  firstProfessionalMock.mockResolvedValue('pro-1');
   repo.create.mockImplementation(async (data: Record<string, unknown>) => createdRow(data));
 });
 
@@ -137,15 +165,29 @@ describe('releaseCancelledSlot', () => {
     await expect(releaseCancelledSlot(input, OWNER, NOW)).resolves.toBeTruthy();
   });
 
-  it('rechaza un servicio que no cabe en la franja o es de otro profesional', async () => {
+  it('rechaza un servicio que no cabe en la franja', async () => {
     repo.findServiceWithOwner.mockResolvedValue(service({ durationMinutes: 90 }));
     await expect(releaseCancelledSlot(input, OWNER, NOW)).rejects.toBeInstanceOf(
       SlotOfferServiceInvalidError,
     );
-    repo.findServiceWithOwner.mockResolvedValue(service({ professionalId: 'pro-2' }));
+  });
+
+  it('rechaza un servicio que el profesional de la reserva no presta', async () => {
+    repo.findServiceWithOwner.mockResolvedValue(
+      service({ professionals: [{ professionalId: 'pro-2' }] }),
+    );
     await expect(releaseCancelledSlot(input, OWNER, NOW)).rejects.toBeInstanceOf(
       SlotOfferServiceInvalidError,
     );
+    expect(repo.create).not.toHaveBeenCalled();
+  });
+
+  it('con varios profesionales vale si el de la reserva es uno de ellos', async () => {
+    repo.findServiceWithOwner.mockResolvedValue(
+      service({ professionals: [{ professionalId: 'pro-2' }, { professionalId: 'pro-1' }] }),
+    );
+    await releaseCancelledSlot(input, OWNER, NOW);
+    expect(repo.create.mock.calls[0][0]).toMatchObject({ professionalId: 'pro-1' });
   });
 
   it('rechaza si ya no da tiempo a reservarlo o el hueco se ocupó', async () => {
@@ -159,12 +201,7 @@ describe('releaseCancelledSlot', () => {
     );
   });
 
-  it('rechaza si el checkout asignaría otro profesional o pisa otra oferta activa', async () => {
-    firstProfessionalMock.mockResolvedValue('pro-2');
-    await expect(releaseCancelledSlot(input, OWNER, NOW)).rejects.toBeInstanceOf(
-      SlotOfferServiceInvalidError,
-    );
-    firstProfessionalMock.mockResolvedValue('pro-1');
+  it('rechaza si pisa otra oferta activa', async () => {
     repo.hasActiveOfferOverlap.mockResolvedValue(true);
     await expect(releaseCancelledSlot(input, OWNER, NOW)).rejects.toBeInstanceOf(
       SlotOfferAlreadyExistsError,
@@ -196,11 +233,7 @@ describe('releaseFreeSlot', () => {
   const soon = new Date(NOW.getTime() + 60 * 60_000); // a 1 h
 
   it('libera una hora que el motor ofrece ahora, con su profesional', async () => {
-    getServiceDaySlotsMock.mockResolvedValue({
-      professionalId: 'pro-9',
-      durationMinutes: 60,
-      slots: [{ startAt: soon, endAt: new Date(soon.getTime() + 3_600_000) }],
-    });
+    getServiceDaySlotsMock.mockResolvedValue(engine({ 'pro-9': [soon] }));
 
     await releaseFreeSlot(
       { serviceId: 'svc-1', startAt: soon.toISOString(), discounts: DISCOUNTS },
@@ -227,11 +260,7 @@ describe('releaseFreeSlot', () => {
       ),
     ).rejects.toBeInstanceOf(SlotOfferOutsideWindowError);
 
-    getServiceDaySlotsMock.mockResolvedValue({
-      professionalId: 'pro-9',
-      durationMinutes: 60,
-      slots: [],
-    });
+    getServiceDaySlotsMock.mockResolvedValue(engine({ 'pro-9': [] }));
     await expect(
       releaseFreeSlot(
         { serviceId: 'svc-1', startAt: soon.toISOString(), discounts: DISCOUNTS },
@@ -240,6 +269,49 @@ describe('releaseFreeSlot', () => {
         NOW,
       ),
     ).rejects.toBeInstanceOf(SlotOfferSlotTakenError);
+  });
+
+  it('con profesional elegido, pide la rejilla de ese profesional', async () => {
+    getServiceDaySlotsMock.mockResolvedValue(engine({ 'pro-2': [soon] }));
+
+    await releaseFreeSlot(
+      { serviceId: 'svc-1', professionalId: 'pro-2', startAt: soon, discounts: DISCOUNTS },
+      OWNER,
+      'prov-1',
+      NOW,
+    );
+
+    expect(getServiceDaySlotsMock).toHaveBeenCalledWith('svc-1', expect.any(Date), NOW, 'pro-2');
+    expect(repo.create.mock.calls[0][0]).toMatchObject({ professionalId: 'pro-2' });
+  });
+
+  it('sin profesional elegido salta al siguiente libre si el primero ya tiene oferta', async () => {
+    getServiceDaySlotsMock.mockResolvedValue(engine({ 'pro-1': [soon], 'pro-2': [soon] }));
+    repo.hasActiveOfferOverlap.mockImplementation(async (id: string) => id === 'pro-1');
+
+    await releaseFreeSlot(
+      { serviceId: 'svc-1', startAt: soon, discounts: DISCOUNTS },
+      OWNER,
+      'prov-1',
+      NOW,
+    );
+
+    expect(repo.create.mock.calls[0][0]).toMatchObject({ professionalId: 'pro-2' });
+  });
+
+  it('un profesional que no presta el servicio es SlotOfferServiceInvalidError', async () => {
+    const { ProfessionalNotForServiceError } =
+      await import('@/lib/services/availability/availability.errors');
+    getServiceDaySlotsMock.mockRejectedValue(new ProfessionalNotForServiceError());
+
+    await expect(
+      releaseFreeSlot(
+        { serviceId: 'svc-1', professionalId: 'pro-x', startAt: soon, discounts: DISCOUNTS },
+        OWNER,
+        'prov-1',
+        NOW,
+      ),
+    ).rejects.toBeInstanceOf(SlotOfferServiceInvalidError);
   });
 
   it('no deja liberar servicios de otro negocio', async () => {

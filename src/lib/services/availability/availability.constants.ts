@@ -69,3 +69,9 @@ export const AVAILABLE_SOON_WINDOW_MINUTES = 60;
  * ficha y en la validación de `createBooking`, que no se relajan.
  */
 export const AVAILABILITY_BUCKET_MINUTES = 5;
+
+/**
+ * Margen al pedir reservas y bloqueos alrededor del día UTC: cubre el
+ * desfase de Madrid (hasta 2 h) con holgura.
+ */
+export const BUSY_MARGIN_MS = 12 * 60 * 60 * 1000;

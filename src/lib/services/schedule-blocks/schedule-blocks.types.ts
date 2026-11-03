@@ -21,6 +21,13 @@ export interface CreateScheduleBlockInput {
   endTime: string;
   /** Motivo privado del negocio, máx. 200 caracteres. */
   reason?: string;
+  /**
+   * Profesional al que se bloquea. Sin él ni `allTeam`, vale solo si el
+   * negocio tiene un único profesional (si no, `PROFESSIONAL_REQUIRED`).
+   */
+  professionalId?: string;
+  /** Un bloqueo por cada profesional activo del negocio. */
+  allTeam?: boolean;
 }
 
 /**
@@ -40,6 +47,9 @@ export interface ScheduleBlockConflict {
   startAt: Date;
   clientName: string | null;
   serviceName: LocalizedText;
+  /** Profesional que tiene la reserva (con «todo el equipo» pueden ser varios). */
+  professionalId: string;
+  professionalName: string;
 }
 
 /** Bloqueo activo tal como lo consume el calendario del panel. */
@@ -68,4 +78,5 @@ export type ScheduleBlockErrorCode =
   | 'CONFLICT'
   | 'NOT_FOUND'
   | 'FORBIDDEN'
+  | 'PROFESSIONAL_REQUIRED'
   | 'INTERNAL';

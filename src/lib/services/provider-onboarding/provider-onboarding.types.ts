@@ -67,6 +67,8 @@ export interface CreateFirstServiceInput {
   description?: LocalizedText;
   durationMinutes: number;
   priceCents: number;
+  /** Profesionales que lo prestan; omitido = todos los activos del negocio. */
+  professionalIds?: string[];
 }
 
 /** Input del paso 5: elección de plan de suscripción. */

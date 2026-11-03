@@ -56,6 +56,10 @@ export const createScheduleBlockSchema = z.strictObject({
   endDateKey: dateKeySchema,
   endTime: endTimeSchema,
   reason: reasonSchema,
+  /** Profesional del negocio al que se bloquea (lo comprueba el servicio). */
+  professionalId: z.string().trim().min(1).max(64).optional(),
+  /** Bloquear a todo el equipo: un bloqueo por profesional activo. */
+  allTeam: z.boolean().optional(),
 });
 
 export type CreateScheduleBlockParsed = z.infer<typeof createScheduleBlockSchema>;

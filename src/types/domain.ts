@@ -169,7 +169,6 @@ export interface ProviderSlotOffer {
 export interface Service {
   id: string;
   providerId: string;
-  professionalId: string | null;
   categoryId: string;
   name: LocalizedText;
   description: LocalizedText;

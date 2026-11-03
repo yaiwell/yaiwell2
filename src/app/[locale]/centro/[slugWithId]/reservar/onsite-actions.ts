@@ -75,6 +75,8 @@ export type OnsiteBookingActionState =
 export interface CreateOnsiteBookingActionInput {
   serviceId: string;
   slotStartIso: string;
+  /** Profesional elegido; omitido = «cualquiera disponible». */
+  professionalId?: string;
   notes?: string;
   /**
    * Reserva `pending` propia que el flujo abrió al ir al pago online
@@ -112,7 +114,12 @@ export async function createOnsiteBookingAction(
     // La `pending` se suelta dentro del servicio, solo cuando ya consta que
     // el local está permitido: si no, el cliente conserva su reserva online.
     const booking = await createOnsiteBooking(
-      { serviceId: input.serviceId, slotStartIso: input.slotStartIso, notes: input.notes },
+      {
+        serviceId: input.serviceId,
+        slotStartIso: input.slotStartIso,
+        professionalId: input.professionalId,
+        notes: input.notes,
+      },
       user.id,
       new Date(),
       pendingId ? { releasePending: () => releaseOwnPending(pendingId, user.id) } : {},

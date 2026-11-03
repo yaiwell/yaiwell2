@@ -85,7 +85,6 @@ export function mapSearchableProviderRow(row: SearchableProviderRow): Searchable
 export function mapPrismaService(row: {
   id: string;
   providerId: string;
-  professionalId: string | null;
   categoryId: string;
   name: unknown;
   description: unknown;
@@ -97,7 +96,6 @@ export function mapPrismaService(row: {
   return {
     id: row.id,
     providerId: row.providerId,
-    professionalId: row.professionalId,
     categoryId: row.categoryId,
     name: { es: name.es ?? '', ca: name.ca ?? '', en: name.en, de: name.de },
     description: {

@@ -25,7 +25,6 @@ export interface ServiceSearchResult {
   id: string;
   providerId: string;
   categoryId: string;
-  professionalId: string | null;
   name: LocalizedText;
   description: LocalizedText;
   priceCents: number;

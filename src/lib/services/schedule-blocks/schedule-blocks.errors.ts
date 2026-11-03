@@ -88,3 +88,16 @@ export class ScheduleBlockNoProfessionalError extends Error {
     this.name = 'ScheduleBlockNoProfessionalError';
   }
 }
+
+/**
+ * El negocio tiene varios profesionales y no se dijo a cuál bloquear
+ * (ni «todo el equipo»). El panel debe pedir que se elija.
+ */
+export class ScheduleBlockProfessionalRequiredError extends Error {
+  readonly code = 'PROFESSIONAL_REQUIRED';
+
+  constructor(message = 'A professional (or the whole team) must be chosen.') {
+    super(message);
+    this.name = 'ScheduleBlockProfessionalRequiredError';
+  }
+}

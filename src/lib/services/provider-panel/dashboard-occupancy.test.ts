@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import type { WeeklySchedule } from '@/lib/services/availability/availability.types';
 
-import { computeOccupancyPct } from './dashboard-occupancy';
+import { computeOccupancyPct, computeTeamOccupancyPct } from './dashboard-occupancy';
 
 // Semana del lunes 1 de junio de 2026 (CEST, UTC+2).
 const WEEK = '2026-06-01';
@@ -79,5 +79,59 @@ describe('computeOccupancyPct', () => {
         [{ startAt: at('2026-06-01T00:00:00Z'), endAt: at('2026-06-02T00:00:00Z') }],
       ),
     ).toBe(0);
+  });
+});
+
+describe('computeTeamOccupancyPct', () => {
+  it('suma la capacidad de cada profesional y lo reservado a cada uno', () => {
+    // Ana y Bea, 4 h cada una (480 min). Una reserva de 2 h de Ana → 25 %.
+    const pct = computeTeamOccupancyPct(
+      [
+        {
+          schedule: onlyMonday('10:00', '14:00'),
+          bookings: [{ startAt: at('2026-06-01T08:00:00Z'), endAt: at('2026-06-01T10:00:00Z') }],
+          blocks: [],
+        },
+        { schedule: onlyMonday('10:00', '14:00'), bookings: [], blocks: [] },
+      ],
+      WEEK,
+    );
+    expect(pct).toBe(25);
+  });
+
+  it('los bloqueos de uno solo restan su capacidad', () => {
+    // Bea bloqueada entera: queda la capacidad de Ana (240 min), 2 h reservadas → 50 %.
+    const pct = computeTeamOccupancyPct(
+      [
+        {
+          schedule: onlyMonday('10:00', '14:00'),
+          bookings: [{ startAt: at('2026-06-01T08:00:00Z'), endAt: at('2026-06-01T10:00:00Z') }],
+          blocks: [],
+        },
+        {
+          schedule: onlyMonday('10:00', '14:00'),
+          bookings: [],
+          blocks: [{ startAt: at('2026-06-01T08:00:00Z'), endAt: at('2026-06-01T12:00:00Z') }],
+        },
+      ],
+      WEEK,
+    );
+    expect(pct).toBe(50);
+  });
+
+  it('dos reservas a la misma hora con profesionales distintos cuentan las dos', () => {
+    const sameHour = [{ startAt: at('2026-06-01T08:00:00Z'), endAt: at('2026-06-01T09:00:00Z') }];
+    const pct = computeTeamOccupancyPct(
+      [
+        { schedule: onlyMonday('10:00', '14:00'), bookings: sameHour, blocks: [] },
+        { schedule: onlyMonday('10:00', '14:00'), bookings: sameHour, blocks: [] },
+      ],
+      WEEK,
+    );
+    expect(pct).toBe(25);
+  });
+
+  it('sin equipo devuelve 0', () => {
+    expect(computeTeamOccupancyPct([], WEEK)).toBe(0);
   });
 });

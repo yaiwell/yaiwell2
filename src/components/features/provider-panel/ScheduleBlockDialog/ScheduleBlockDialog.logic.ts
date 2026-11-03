@@ -46,6 +46,10 @@ const ERROR_KEYS: Record<ScheduleBlockErrorCode, ScheduleBlockErrorKey> = {
   CONFLICT: 'conflict',
   NOT_FOUND: 'notFound',
   FORBIDDEN: 'forbidden',
+  // TODO(equipo, fase B): texto propio cuando el diálogo deje elegir
+  // profesional. Hoy no puede salir: el diálogo solo existe con un único
+  // profesional, que el servidor elige solo.
+  PROFESSIONAL_REQUIRED: 'internal',
   INTERNAL: 'internal',
 };
 
