@@ -166,6 +166,13 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
 - Un profesional que entra por primera vez con Google puede crear su perfil profesional igual que con email. Cualquier cliente con sesión puede convertir su cuenta en profesional desde `/hazte-profesional` (autoservicio; admin nunca). Si un día hay que impedírselo a alguien concreto, hará falta una marca de bloqueo en Clerk (ver TODO).
 - Los negocios que ya tenían más servicios publicados que su límite antes de aplicarlo (2026-10-29) se respetan como están: el límite solo impide publicar o reactivar por encima a partir de ahora. Al cambiar de plan sí se aplica.
 
+### Equipo: varios profesionales por negocio (decidido 2026-11-03)
+- Cada negocio gestiona su equipo en el panel: alta, edición y baja de profesionales, cada uno con **su horario y sus bloqueos**. Cada servicio lo prestan uno o varios profesionales.
+- **Límite por plan**: Gratis 3, Básico 10, Pro 15, Premium ilimitado. Al bajar de plan, los que sobren dejan de aceptar reservas nuevas (igual que los servicios).
+- **Baja con citas futuras**: no se permite hasta que el negocio las cancele (regla de 2 h y devolución). Reasignar citas a otro profesional es una mejora posterior.
+- **«Cualquiera disponible»**: el cliente puede elegir profesional o dejarlo abierto. Se asigna primero a quien tenga esa hora con descuento; si no, a quien tenga menos citas ese día; a igualdad, al más antiguo. La asignación se decide en servidor dentro de la transacción de la reserva.
+- El cliente **ve quién le atenderá** (confirmación y correo) y la ficha muestra el equipo con foto y bio opcionales.
+
 ### Antelación mínima y reservas de última hora (decidido 2026-10-27)
 - Se puede reservar **hasta 30 minutos antes** del inicio, si hay hueco. El motor de disponibilidad no ofrece huecos por debajo de ese margen: todo lo que se muestra debe poder reservarse.
 - **Reserva de última hora** = la que empieza en menos de 2 h desde que se reserva: **pago online obligatorio en el momento y sin devolución**. La UI lo avisa antes de pagar.

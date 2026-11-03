@@ -331,11 +331,13 @@ model Professional {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  provider       Provider        @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  provider       Provider              @relation(fields: [providerId], references: [id], onDelete: Cascade)
   services       Service[]
   bookings       Booking[]
   slotOffers     SlotOffer[]
   scheduleBlocks ScheduleBlock[]
+  /// Servicios que presta (migración 9h).
+  serviceLinks   ServiceProfessional[]
 
   @@index([providerId])
   @@index([userId])
@@ -356,6 +358,8 @@ model Professional {
 model Service {
   id              String    @id @default(uuid())
   providerId      String
+  /// OBSOLETA desde 9h: quién presta el servicio vive en
+  /// `ServiceProfessional`. Se mantiene durante la transición y la borra 9i.
   professionalId  String?
   categoryId      String
   /// `LocalizedText`: `es` obligatorio, `ca`/`en`/`de` opcionales.
@@ -382,11 +386,13 @@ model Service {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  provider     Provider      @relation(fields: [providerId], references: [id], onDelete: Cascade)
-  professional Professional? @relation(fields: [professionalId], references: [id], onDelete: SetNull)
-  category     Category      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  bookings     Booking[]
-  slotOffers   SlotOffer[]
+  provider      Provider              @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  professional  Professional?         @relation(fields: [professionalId], references: [id], onDelete: SetNull)
+  category      Category              @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  bookings      Booking[]
+  slotOffers    SlotOffer[]
+  /// Profesionales que lo prestan (migración 9h); al menos uno para reservar.
+  professionals ServiceProfessional[]
 
   @@index([providerId])
   @@index([professionalId])
@@ -607,6 +613,8 @@ model Plan {
   tier              PlanTier @unique
   name              String
   maxServices       Int
+  /// Profesionales activos permitidos (migración 9h); `null` = sin límite.
+  maxProfessionals  Int?
   monthlyPriceCents Int
   /// Tasa de comisión en centésimas (e.g. 800 = 8.00%).
   commissionRateBps Int
@@ -800,4 +808,19 @@ model ProviderContact {
   provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
   @@map("provider_contacts")
+}
+
+/// Qué profesionales prestan cada servicio (migración 9h). Sustituye a
+/// `Service.professionalId`. Sin RLS pública: se lee desde el servidor.
+model ServiceProfessional {
+  serviceId      String
+  professionalId String
+  createdAt      DateTime @default(now())
+
+  service      Service      @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@id([serviceId, professionalId])
+  @@index([professionalId])
+  @@map("service_professionals")
 }
