@@ -10,6 +10,8 @@ import {
   getCivilDaysInWindow,
   getServiceDaySlots,
 } from '@/lib/services/availability';
+// Ruta directa: el barrel de schedule-blocks importa el servicio entero.
+import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks/schedule-blocks.repository';
 import { getEarliestBookableStart } from '@/lib/utils/booking-lead-time';
 import { SLOT_OFFER_TIER_2H_MS, getCurrentDiscountPct } from '@/lib/utils/slot-offer-pricing';
 
@@ -41,18 +43,31 @@ export async function findLiveOfferForSlot(
   return row ? toLiveSlotOffer(row) : null;
 }
 
-/** Quita las ofertas ya ocupadas con una sola lectura de reservas. */
+/**
+ * Quita las ofertas ya ocupadas por una reserva o tapadas por un bloqueo
+ * de agenda. Es el punto común de todos los listados (tarjetas, mapa,
+ * ficha, filtro «Con descuento», calendario del panel): sin los bloqueos,
+ * una oferta liberada a la vez que se creaba un bloqueo seguía anunciada
+ * aunque el servidor no la deja comprar.
+ */
 async function keepFree(offers: LiveSlotOffer[], now: Date): Promise<LiveSlotOffer[]> {
   if (offers.length === 0) return offers;
   const from = new Date(Math.min(...offers.map((o) => o.startAt.getTime())));
   const to = new Date(Math.max(...offers.map((o) => o.endAt.getTime())));
-  const bookings = await slotOffersRepository.findActiveBookingSpans(
-    [...new Set(offers.map((o) => o.professionalId))],
-    from,
-    to,
-    now,
-  );
-  return withoutOccupied(offers, bookings);
+  const [bookings, blocks] = await Promise.all([
+    slotOffersRepository.findActiveBookingSpans(
+      [...new Set(offers.map((o) => o.professionalId))],
+      from,
+      to,
+      now,
+    ),
+    scheduleBlocksRepository.findSpansForProviders(
+      [...new Set(offers.map((o) => o.providerId))],
+      from,
+      to,
+    ),
+  ]);
+  return withoutOccupied(offers, [...bookings, ...blocks]);
 }
 
 /**

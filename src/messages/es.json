@@ -581,6 +581,75 @@
         "payment": "Pago",
         "paymentOnline": "Online",
         "paymentOnsite": "En el local"
+      },
+      "scheduleBlocks": {
+        "openButton": "Bloquear horas",
+        "legend": "Bloqueado",
+        "fullDay": "Todo el día",
+        "privateHint": "El motivo solo lo ves tú; los clientes solo ven que no hay hueco.",
+        "close": "Cerrar",
+        "cancel": "Cancelar",
+        "submit": "Bloquear",
+        "submitting": "Bloqueando…",
+        "dialog": {
+          "title": "Bloquear horas",
+          "description": "Marca un rango como no disponible: en ese tiempo nadie podrá reservar. Como mucho 60 días seguidos y hasta un año vista."
+        },
+        "fields": {
+          "start": "Desde",
+          "end": "Hasta",
+          "date": "Fecha",
+          "time": "Hora",
+          "reason": "Motivo (opcional)",
+          "reasonPlaceholder": "Vacaciones, formación, médico…",
+          "reasonHint": "Solo lo ves tú.",
+          "reasonCounter": "{count}/{max}"
+        },
+        "issues": {
+          "required": "Indica la fecha y la hora de inicio y de fin.",
+          "step": "Las horas van en pasos de 5 minutos (10:00, 10:05, 10:10…).",
+          "endBeforeStart": "El final tiene que ser posterior al inicio."
+        },
+        "created": {
+          "title": "Horas bloqueadas",
+          "description": "Ya aparecen en tu calendario y nadie podrá reservar en ese rango."
+        },
+        "block": {
+          "label": "Bloqueado",
+          "ariaLabel": "Horas bloqueadas: {time}"
+        },
+        "detail": {
+          "title": "Horas bloqueadas",
+          "description": "Rango no disponible para reservas y opción de quitarlo.",
+          "reason": "Motivo"
+        },
+        "remove": {
+          "button": "Quitar bloqueo",
+          "confirmText": "¿Quitar este bloqueo? Esas horas volverán a estar disponibles para reservar.",
+          "confirm": "Sí, quitar",
+          "keep": "Mantener",
+          "pending": "Quitando…",
+          "done": "Bloqueo quitado. Esas horas vuelven a estar disponibles.",
+          "errors": {
+            "notFound": "Este bloqueo ya no existe. Recarga el calendario.",
+            "forbidden": "No puedes quitar este bloqueo.",
+            "internal": "No hemos podido quitar el bloqueo. Inténtalo de nuevo."
+          }
+        },
+        "errors": {
+          "invalidInput": "Revisa las fechas y las horas: hay algún dato que no es válido.",
+          "endBeforeStart": "El final tiene que ser posterior al inicio.",
+          "inPast": "No puedes bloquear horas que ya han pasado.",
+          "tooLong": "Un bloqueo puede durar como mucho 60 días. Divídelo en varios.",
+          "tooFar": "Solo puedes bloquear hasta un año vista.",
+          "conflict": "Hay citas en ese rango:",
+          "conflictItem": "{date} · {time} — {client} ({service})",
+          "conflictItemNoClient": "{date} · {time} — {service}",
+          "conflictHint": "Cancélalas antes desde el calendario o elige otro rango.",
+          "notFound": "No encontramos tu negocio. Recarga la página.",
+          "forbidden": "No tienes permiso para bloquear horas en este negocio.",
+          "internal": "No hemos podido bloquear las horas. Inténtalo de nuevo."
+        }
       }
     },
     "services": {
@@ -671,13 +740,12 @@
         "vatLabel": "NIF / CIF",
         "phoneLabel": "Teléfono de contacto",
         "emailLabel": "Email de contacto",
+        "contactHelp": "Solo lo verá el equipo de Yaiwell, para contactar contigo si hace falta. No sale en tu ficha pública.",
         "descriptionLabel": "Descripción pública"
       },
       "address": {
         "title": "Dirección",
         "streetLabel": "Calle y número",
-        "cityLabel": "Ciudad",
-        "postalLabel": "Código postal",
         "streetHelp": "Escribe la dirección y elige una de las sugerencias: así actualizamos también tu ubicación en el mapa y en las búsquedas por cercanía."
       },
       "schedule": {

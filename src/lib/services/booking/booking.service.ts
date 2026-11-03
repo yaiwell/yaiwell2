@@ -17,6 +17,9 @@
 
 import { prisma } from '@/lib/db/prisma';
 import { isExclusionViolation } from '@/lib/db/prisma-errors';
+// Ruta directa: el barrel de `schedule-blocks` arrastra su servicio,
+// que importa este dominio.
+import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks/schedule-blocks.repository';
 import { findLiveOfferForSlot, isBookableStart } from '@/lib/services/slot-offers';
 import { isOnsiteAllowedByLeadTime } from '@/lib/utils/booking-payment-mode';
 import { computeCommissionCents, priceSlot } from '@/lib/utils/slot-offer-pricing';
@@ -49,7 +52,7 @@ const OVERLAP_CONSTRAINT = 'bookings_no_overlap_confirmed';
  *  2. Carga el servicio para conocer duración y precio.
  *  3. Calcula `endAt = slotStart + durationMinutes`.
  *  4. Bajo un bloqueo por profesional, verifica que no haya solapamiento
- *     con otras reservas activas.
+ *     con otras reservas activas ni con bloqueos de agenda.
  *  5. Aplica el descuento de un hueco liberado, si lo hay, y calcula la
  *     comisión sobre el precio cobrado.
  *  6. Persiste la reserva en la misma transacción.
@@ -73,7 +76,8 @@ const OVERLAP_CONSTRAINT = 'bookings_no_overlap_confirmed';
  * @throws ServiceNotFoundError — si el servicio no existe o está soft-deleted.
  * @throws ServicePausedError — si el servicio está pausado por el dueño.
  * @throws OnsiteBookingTooLateError — en el local a menos de 2 h del inicio.
- * @throws SlotUnavailableError — si el slot solapa con otra reserva activa.
+ * @throws SlotUnavailableError — si el slot solapa con otra reserva activa
+ *   o con un bloqueo de agenda.
  */
 export async function createBooking(
   input: unknown,
@@ -132,6 +136,18 @@ export async function createBooking(
         tx,
       );
       if (overlapping.length > 0) {
+        throw new SlotUnavailableError();
+      }
+      // Bajo el mismo bloqueo que toma `createScheduleBlock`: un bloqueo
+      // de agenda creado mientras el cliente elegía hora gana.
+      if (
+        await scheduleBlocksRepository.hasActiveOverlap(
+          data.professionalId,
+          data.slotStart,
+          endAt,
+          tx,
+        )
+      ) {
         throw new SlotUnavailableError();
       }
 

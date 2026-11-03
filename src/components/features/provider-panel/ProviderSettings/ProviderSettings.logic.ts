@@ -17,8 +17,8 @@ import type { ProviderSettingsDraft, SaveErrorCode, SaveNotice } from './Provide
  * Hook que orquesta el estado del formulario de `ProviderSettings`.
  *
  * Centraliza:
- *  - el `draft` controlado de los cuatro campos editables (businessName,
- *    vatNumber, description y la dirección geolocalizada);
+ *  - el `draft` controlado de los campos editables (businessName,
+ *    vatNumber, description, dirección geolocalizada y contacto privado);
  *  - el `schedule` semanal editable por `ScheduleEditor`;
  *  - el envío en paralelo de `updateProviderSettingsAction` y
  *    `updateProviderScheduleAction` dentro de `useTransition`. Si una
@@ -68,6 +68,8 @@ export function useProviderSettingsForm(
           address: draft.address.text,
           lat: draft.address.lat,
           lng: draft.address.lng,
+          contactPhone: draft.contactPhone,
+          contactEmail: draft.contactEmail,
         }),
         updateProviderScheduleAction(locale, schedule),
       ]);

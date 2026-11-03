@@ -20,6 +20,9 @@ vi.mock('@/lib/db/prisma', () => {
       booking: {
         findMany: vi.fn(),
       },
+      scheduleBlock: {
+        findMany: vi.fn(),
+      },
     },
   };
 });
@@ -29,6 +32,7 @@ import { prisma } from '@/lib/db/prisma';
 
 const mockedProfessionalFindFirst = vi.mocked(prisma.professional.findFirst);
 const mockedBookingFindMany = vi.mocked(prisma.booking.findMany);
+const mockedBlockFindMany = vi.mocked(prisma.scheduleBlock.findMany);
 
 /**
  * Horario base lunes-viernes 10:00-20:00, fin de semana cerrado.
@@ -100,6 +104,8 @@ function madridUtcJune(year: number, month: number, day: number, hh: number, mm:
  */
 beforeEach(() => {
   vi.resetAllMocks();
+  // Sin bloqueos de agenda por defecto; los tests que los usan lo pisan.
+  mockedBlockFindMany.mockResolvedValue([]);
 });
 
 describe('getAvailableSlots', () => {

@@ -86,6 +86,16 @@ export async function updateProviderSettings(providerId: string, input: unknown)
   if (updatedRows === 0) {
     throw new ProviderNotFoundError();
   }
+
+  // Contacto privado en su propia tabla, cerrada a la clave pública. Solo
+  // se escribe si la llamada lo trae: una llamada sin esos campos no debe
+  // borrar el contacto guardado.
+  if (data.contactPhone !== undefined || data.contactEmail !== undefined) {
+    await providerRepository.upsertContact(providerId, {
+      phone: data.contactPhone,
+      email: data.contactEmail,
+    });
+  }
 }
 
 /**

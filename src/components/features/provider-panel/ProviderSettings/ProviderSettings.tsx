@@ -68,6 +68,8 @@ export function ProviderSettings({
         vatNumber: provider.vatNumber ?? '',
         description: initialDescription,
         address: provider.address,
+        contactPhone: provider.contactPhone ?? '',
+        contactEmail: provider.contactEmail ?? '',
       },
       initialSchedule,
     );
@@ -119,9 +121,8 @@ export function ProviderSettings({
               data-component="settings-input-vat"
             />
           </div>
-          {/* Teléfono y email de contacto del negocio no se piden en el
-              wizard de alta — quedan en blanco con placeholder hasta que
-              el flujo Fase 1 los recoja. */}
+          {/* Contacto privado para soporte: no sale en la ficha pública
+              (animaría a reservar y pagar fuera de la app). */}
           <div className={s.field}>
             <label className={s.label} htmlFor="settings-phone">
               {t('general.phoneLabel')}
@@ -129,10 +130,14 @@ export function ProviderSettings({
             <input
               id="settings-phone"
               type="tel"
+              autoComplete="tel"
               className={s.input}
-              defaultValue=""
+              value={draft.contactPhone}
               placeholder="+34 600 000 000"
-              disabled
+              onChange={(e) => updateField('contactPhone', e.target.value)}
+              disabled={isPending}
+              aria-describedby="settings-contact-help"
+              data-component="settings-input-phone"
             />
           </div>
           <div className={s.field}>
@@ -142,13 +147,20 @@ export function ProviderSettings({
             <input
               id="settings-email"
               type="email"
+              autoComplete="email"
               className={s.input}
-              defaultValue=""
+              value={draft.contactEmail}
               placeholder="contacto@ejemplo.com"
-              disabled
+              onChange={(e) => updateField('contactEmail', e.target.value)}
+              disabled={isPending}
+              aria-describedby="settings-contact-help"
+              data-component="settings-input-email"
             />
           </div>
         </div>
+        <p id="settings-contact-help" className={s.fieldHelp}>
+          {t('general.contactHelp')}
+        </p>
 
         <div className={s.field}>
           <label className={s.label} htmlFor="settings-description">
@@ -195,40 +207,6 @@ export function ProviderSettings({
           <p id="settings-street-help" className={s.fieldHelp}>
             {t('address.streetHelp')}
           </p>
-        </div>
-
-        {/* Ciudad y código postal no se guardan por separado en BD
-            (la dirección viene de Mapbox como string completo, y su
-            punto geográfico en la columna PostGIS `location`). Dejamos
-            los inputs deshabilitados con placeholder hasta que el flujo
-            Fase 1 decida si descomponer o no la dirección. */}
-        <div className={s.fieldGrid}>
-          <div className={s.field}>
-            <label className={s.label} htmlFor="settings-city">
-              {t('address.cityLabel')}
-            </label>
-            <input
-              id="settings-city"
-              type="text"
-              className={s.input}
-              defaultValue=""
-              placeholder="Barcelona"
-              disabled
-            />
-          </div>
-          <div className={s.field}>
-            <label className={s.label} htmlFor="settings-postal">
-              {t('address.postalLabel')}
-            </label>
-            <input
-              id="settings-postal"
-              type="text"
-              className={s.input}
-              defaultValue=""
-              placeholder="08008"
-              disabled
-            />
-          </div>
         </div>
       </article>
 

@@ -21,8 +21,9 @@ import { getProvidersAvailabilitySchema } from './availability.validation';
  * proveedor. Sustituye al placeholder optimista que marcaba a todo el
  * catálogo como `available_now`.
  *
- * Coste: exactamente DOS consultas, independientemente de cuántos
- * proveedores y profesionales haya. El troceado de slots es CPU pura en
+ * Coste: exactamente TRES consultas (horarios, reservas y bloqueos de
+ * agenda), independientemente de cuántos proveedores y profesionales
+ * haya. El troceado de slots es CPU pura en
  * Node reutilizando el motor de `availability.calc`.
  */
 
@@ -76,15 +77,17 @@ export async function getProvidersAvailability(
   const lastDay = civilDays[civilDays.length - 1];
   const bookingsTo = new Date(lastDay.getTime() + BOOKINGS_LOOKAHEAD_MS);
 
-  // Las dos lecturas son independientes entre sí (la de reservas filtra
-  // por providerId, no por professionalId) y van en paralelo.
-  const [bundles, bookings] = await Promise.all([
+  // Las tres lecturas son independientes entre sí (reservas y bloqueos
+  // filtran por providerId, no por professionalId) y van en paralelo.
+  const [bundles, bookings, blocks] = await Promise.all([
     availabilityRepository.findScheduleBundlesForProviders(ids),
     availabilityRepository.findBookingsForProviders(ids, bucketedNow, bookingsTo),
+    availabilityRepository.findScheduleBlocksForProviders(ids, bucketedNow, bookingsTo),
   ]);
 
+  // Un bloqueo de agenda ocupa igual que una reserva: van al mismo mapa.
   const bookingsByProfessional = new Map<string, Slot[]>();
-  for (const booking of bookings) {
+  for (const booking of [...bookings, ...blocks]) {
     const list = bookingsByProfessional.get(booking.professionalId);
     if (list) {
       list.push({ startAt: booking.startAt, endAt: booking.endAt });

@@ -6,7 +6,8 @@
  *  - Retención vencida y franja libre → se confirma (condicional) bajo
  *    el bloqueo por profesional: lock → solape → confirmación, todo en
  *    la misma transacción, para no competir con `createBooking`.
- *  - Retención vencida y franja ocupada → se cancela y se reembolsa.
+ *  - Retención vencida y franja ocupada (por otra reserva o por un
+ *    bloqueo de agenda) → se cancela y se reembolsa.
  *  - Franja ya empezada → se cancela y se reembolsa aunque esté libre.
  *  - Pagó dentro de la retención pero el webhook llegó tarde y la franja
  *    ya es de otro → reembolso + aviso `error` a Sentry.
@@ -47,6 +48,12 @@ const repoMock = vi.hoisted(() => ({
 
 vi.mock('./checkout.repository', () => ({ checkoutRepository: repoMock }));
 
+const blocksMock = vi.hoisted(() => ({ hasActiveOverlap: vi.fn() }));
+
+vi.mock('@/lib/services/schedule-blocks/schedule-blocks.repository', () => ({
+  scheduleBlocksRepository: blocksMock,
+}));
+
 const issueMock = vi.hoisted(() => ({ issueBookingRefund: vi.fn() }));
 
 vi.mock('./checkout.refund.issue', () => issueMock);
@@ -84,6 +91,7 @@ beforeEach(() => {
   vi.spyOn(console, 'warn').mockImplementation(() => undefined);
   prismaMock.$transaction.mockImplementation((fn: (tx: unknown) => unknown) => fn(txMock));
   bookingMock.bookingRepository.findOverlapping.mockResolvedValue([]);
+  blocksMock.hasActiveOverlap.mockResolvedValue(false);
   repoMock.confirmIfPending.mockResolvedValue(true);
   repoMock.cancelIfPending.mockResolvedValue(true);
   issueMock.issueBookingRefund.mockResolvedValue({ outcome: 'issued', stripeRefundId: 're_1' });
@@ -144,6 +152,23 @@ describe('settlePaymentOnPendingBooking', () => {
       status: 'cancelled',
       lateRefund: 'issued',
     });
+  });
+
+  it('con la retención vencida, un bloqueo de agenda sobre la franja cuenta como ocupada', async () => {
+    blocksMock.hasActiveOverlap.mockResolvedValue(true);
+
+    const result = await settlePaymentOnPendingBooking(row(), 'pi_123', LATE_CLOCK);
+
+    expect(blocksMock.hasActiveOverlap).toHaveBeenCalledWith(
+      'pro-1',
+      row().startAt,
+      row().endAt,
+      txMock,
+    );
+    expect(repoMock.confirmIfPending).not.toHaveBeenCalled();
+    expect(repoMock.cancelIfPending).toHaveBeenCalledWith('bk-1', NOW);
+    expect(issueMock.issueBookingRefund).toHaveBeenCalledOnce();
+    expect(result).toMatchObject({ status: 'cancelled', lateRefund: 'issued' });
   });
 
   it('con la retención vencida, si la confirmación bajo bloqueo no aplica sigue el estado real', async () => {

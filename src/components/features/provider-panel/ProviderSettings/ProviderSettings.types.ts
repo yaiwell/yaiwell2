@@ -34,6 +34,9 @@ export interface SettingsProvider {
   businessName: string;
   /** NIF/CIF — opcional, los autónomos pueden no tener uno asignado al alta. */
   vatNumber: string | null;
+  /** Contacto privado para soporte; no sale en la ficha pública. */
+  contactPhone: string | null;
+  contactEmail: string | null;
   /** `{ es, ca, en?, de? }`. */
   description: LocalizedText;
   /** Dirección postal + punto PostGIS actual del Provider. */
@@ -60,6 +63,8 @@ export interface ProviderSettingsDraft {
   vatNumber: string;
   description: string;
   address: SettingsAddress;
+  contactPhone: string;
+  contactEmail: string;
 }
 
 /**

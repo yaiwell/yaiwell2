@@ -51,14 +51,13 @@ const messages = {
         vatLabel: 'NIF/CIF',
         phoneLabel: 'Teléfono',
         emailLabel: 'Email de contacto',
+        contactHelp: 'Solo lo verá el equipo de Yaiwell.',
         descriptionLabel: 'Descripción',
       },
       address: {
         title: 'Dirección',
         streetLabel: 'Calle y número',
         streetHelp: 'Escribe y elige una sugerencia: guardamos también tu ubicación en el mapa.',
-        cityLabel: 'Ciudad',
-        postalLabel: 'Código postal',
       },
       schedule: {
         title: 'Horario',
@@ -140,6 +139,8 @@ function renderSettings() {
             id: 'prov-1',
             businessName: 'Atelier',
             vatNumber: 'B12345678',
+            contactPhone: null,
+            contactEmail: null,
             description: { es: 'Descripción' },
             address: CURRENT_ADDRESS,
             photos: [],
@@ -156,6 +157,24 @@ beforeEach(() => {
   vi.clearAllMocks();
   updateSettingsMock.mockResolvedValue({ ok: true });
   updateScheduleMock.mockResolvedValue({ ok: true });
+});
+
+describe('ProviderSettings — contacto privado', () => {
+  it('envía el teléfono y el email escritos para que soporte pueda contactar', async () => {
+    const user = userEvent.setup();
+    vi.stubGlobal('fetch', vi.fn());
+    renderSettings();
+
+    await user.type(screen.getByLabelText('Teléfono'), '+34 600 111 222');
+    await user.type(screen.getByLabelText('Email de contacto'), 'hola@atelier.es');
+    await user.click(screen.getByRole('button', { name: 'Guardar cambios' }));
+
+    await waitFor(() => expect(updateSettingsMock).toHaveBeenCalledOnce());
+    expect(updateSettingsMock.mock.calls[0][1]).toMatchObject({
+      contactPhone: '+34 600 111 222',
+      contactEmail: 'hola@atelier.es',
+    });
+  });
 });
 
 describe('ProviderSettings — dirección geolocalizada', () => {

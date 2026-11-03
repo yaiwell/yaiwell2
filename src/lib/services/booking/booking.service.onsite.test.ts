@@ -10,6 +10,8 @@ vi.mock('@/lib/db/prisma', () => {
   const prisma = {
     service: { findUnique: vi.fn() },
     booking: { findMany: vi.fn(), create: vi.fn() },
+    // Sin bloqueos de agenda: `count` sin respuesta da `undefined` (no > 0).
+    scheduleBlock: { count: vi.fn() },
     $executeRaw: vi.fn(),
     $transaction: vi.fn(),
   };

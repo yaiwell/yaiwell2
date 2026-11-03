@@ -100,6 +100,39 @@ export interface PositionedOffer {
   currentPriceLabel: string;
 }
 
+/**
+ * Tramo de un bloqueo puntual de agenda dentro de un día civil de
+ * Madrid. Un bloqueo que cruza medianoche llega troceado en varios
+ * tramos (uno por día) con el mismo `id` y distinto `segmentKey`.
+ *
+ * El motivo es privado: solo lo ve el negocio en su panel.
+ */
+export interface PanelScheduleBlock {
+  /** Id del bloqueo completo (el que se envía al quitarlo). */
+  id: string;
+  /** Clave única del tramo (`<id>:<YYYY-MM-DD>`), para las `key` de React. */
+  segmentKey: string;
+  weekday: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  /** Inicio del tramo en el día (`HH:mm`, `00:00` si viene del día anterior). */
+  startTime: string;
+  /** Fin del tramo en el día (`HH:mm`, `24:00` si sigue al día siguiente). */
+  endTime: string;
+  reason: string | null;
+  /** Inicio del bloqueo completo en ISO-8601 UTC; `null` en el modo preview. */
+  startAtIso: string | null;
+  /** Fin del bloqueo completo en ISO-8601 UTC; `null` en el modo preview. */
+  endAtIso: string | null;
+  /** El tramo cubre el día civil entero (de 00:00 a 24:00). */
+  isFullDay: boolean;
+}
+
+/** Tramo de bloqueo listo para pintarse, ya recortado a las horas visibles. */
+export interface PositionedScheduleBlock {
+  block: PanelScheduleBlock;
+  topPx: number;
+  heightPx: number;
+}
+
 /** Cabecera de un día de la semana mostrada. */
 export interface CalendarDay {
   key: WeekdayKey;
@@ -133,6 +166,8 @@ export interface WeeklyCalendarProps {
   bookings: PanelBookingAction[];
   /** Huecos liberados sin vender de la semana visible. */
   slotOffers?: PanelSlotOffer[];
+  /** Tramos de bloqueos puntuales de agenda de la semana visible. */
+  scheduleBlocks?: PanelScheduleBlock[];
   week: CalendarWeek;
   locale: SupportedLocale;
   /** Modo preview: acciones deshabilitadas y sin navegación. */
@@ -146,6 +181,7 @@ export interface CalendarColumnsProps {
   days: CalendarDay[];
   grouped: Record<WeekdayKey, PositionedRow[]>;
   groupedOffers: Record<WeekdayKey, PositionedOffer[]>;
+  groupedBlocks: Record<WeekdayKey, PositionedScheduleBlock[]>;
   hours: number[];
   locale: SupportedLocale;
   readOnly: boolean;

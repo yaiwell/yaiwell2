@@ -12,6 +12,12 @@ import { getAvailableSlotsSchema, weeklyScheduleSchema } from './availability.va
 import type { Slot, WeeklySchedule } from './availability.types';
 
 /**
+ * Margen al pedir reservas y bloqueos alrededor del día UTC: cubre el
+ * desfase de Madrid (hasta 2 h) con holgura.
+ */
+const BUSY_MARGIN_MS = 12 * 60 * 60 * 1000;
+
+/**
  * Servicio de disponibilidad: orquesta el repositorio Prisma y el motor
  * de cálculo puro. Es el único punto de entrada para el resto de la app.
  */
@@ -48,6 +54,7 @@ async function loadValidatedSchedule(
  * Devuelve los slots disponibles de un profesional para un día concreto.
  *
  * Combina horario semanal, reservas activas (`pending`/`confirmed`),
+ * bloqueos de agenda activos,
  * `bufferMinutes` del profesional y duración del servicio para devolver
  * la lista final de slots libres, ordenados ascendentemente.
  *
@@ -73,13 +80,18 @@ export async function getAvailableSlots(input: unknown, now: Date = new Date()):
   // 2. Cargamos y validamos el horario del profesional.
   const { schedule, bufferMinutes } = await loadValidatedSchedule(data.professionalId);
 
-  // 3. Acotamos la búsqueda de reservas al día UTC objetivo.
+  // 3. Reservas y bloqueos se piden con margen alrededor del día UTC: la
+  //    madrugada de Madrid (00:00-02:00) cae en UTC el día anterior, y
+  //    cortando en el día UTC una reserva a la 01:00 no se veía y su hora
+  //    se ofrecía como libre. Un tramo de más no ocupa ningún hueco del
+  //    día, así que el margen es inocuo.
   const { dayStart, dayEnd } = getUtcDayBounds(data.date);
-  const bookings = await availabilityRepository.findBookingsForDay(
-    data.professionalId,
-    dayStart,
-    dayEnd,
-  );
+  const from = new Date(dayStart.getTime() - BUSY_MARGIN_MS);
+  const to = new Date(dayEnd.getTime() + BUSY_MARGIN_MS);
+  const [bookings, blocks] = await Promise.all([
+    availabilityRepository.findBookingsForDay(data.professionalId, from, to),
+    availabilityRepository.findScheduleBlocksForRange(data.professionalId, from, to),
+  ]);
 
   // 4. Delegamos el cálculo en la función pura para mantener el service
   //    como simple orquestador. Pasamos la zona horaria del negocio para
@@ -89,7 +101,8 @@ export async function getAvailableSlots(input: unknown, now: Date = new Date()):
     schedule,
     bufferMinutes,
     serviceDurationMinutes: data.serviceDurationMinutes,
-    bookings,
+    // Un bloqueo ocupa igual que una reserva: el motor puro no los distingue.
+    bookings: [...bookings, ...blocks],
     timezone: BUSINESS_TIMEZONE,
   });
 
@@ -106,7 +119,8 @@ export async function getAvailableSlots(input: unknown, now: Date = new Date()):
  * Es la verificación que `booking.service.createBooking` ejecuta justo
  * antes de persistir la reserva. No revalida contra el horario semanal
  * (el caller ya escogió el slot desde la lista que ofrecimos): solo
- * comprueba que ninguna reserva activa lo haya ocupado en el ínterin.
+ * comprueba que ninguna reserva activa ni bloqueo de agenda lo haya
+ * ocupado en el ínterin.
  *
  * @throws ProfessionalNotFoundError si el profesional no existe.
  */
@@ -127,13 +141,12 @@ export async function isSlotAvailable(
   const dayStart = new Date(slotStart.getTime() - 24 * 60 * 60 * 1000);
   const dayEnd = new Date(slotStart.getTime() + durationMinutes * 60_000 + 24 * 60 * 60 * 1000);
 
-  const bookings = await availabilityRepository.findBookingsForDay(
-    professionalId,
-    dayStart,
-    dayEnd,
-  );
+  const [bookings, blocks] = await Promise.all([
+    availabilityRepository.findBookingsForDay(professionalId, dayStart, dayEnd),
+    availabilityRepository.findScheduleBlocksForRange(professionalId, dayStart, dayEnd),
+  ]);
 
-  return isSlotFree(slotStart, durationMinutes, bookings);
+  return isSlotFree(slotStart, durationMinutes, [...bookings, ...blocks]);
 }
 
 /**

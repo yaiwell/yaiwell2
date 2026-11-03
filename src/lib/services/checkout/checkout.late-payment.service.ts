@@ -3,6 +3,8 @@ import 'server-only';
 import { prisma } from '@/lib/db/prisma';
 import { isExclusionViolation } from '@/lib/db/prisma-errors';
 import { bookingRepository, isBookingHoldingSlot } from '@/lib/services/booking';
+// Ruta directa: solo hace falta el repositorio, no el servicio de bloqueos.
+import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks/schedule-blocks.repository';
 
 import { reportCheckoutWarning } from './checkout.payment-intent';
 import { issueBookingRefund } from './checkout.refund.issue';
@@ -68,7 +70,7 @@ export async function refundPaymentOnCancelledBooking(
  *  - Franja ya empezada o pasada: cancelar y reembolsar.
  *  - Retención vigente al pagar y todavía ahora: confirmar.
  *  - En otro caso, confirmar si la franja sigue libre; si otra reserva
- *    activa la ocupa, cancelar y reembolsar. La comprobación y la
+ *    activa o un bloqueo de agenda la ocupa, cancelar y reembolsar. La comprobación y la
  *    confirmación van bajo el bloqueo por profesional que también toma
  *    `createBooking`: sin él, un cliente podía coger el hueco (p. ej.
  *    liberado con descuento) entre nuestra lectura y nuestra escritura y
@@ -164,6 +166,18 @@ async function lockAndConfirm(booking: CheckoutBookingRow, now: Date): Promise<S
     );
     // Excluimos la propia fila por si todavía cuenta como activa.
     if (overlapping.some((other) => other.id !== booking.id)) return 'taken';
+    // Con la retención vencida el dueño pudo bloquear la agenda sobre la
+    // franja: cuenta como ocupada y el pago se devuelve igual.
+    if (
+      await scheduleBlocksRepository.hasActiveOverlap(
+        booking.professionalId,
+        booking.startAt,
+        booking.endAt,
+        tx,
+      )
+    ) {
+      return 'taken';
+    }
     return (await checkoutRepository.confirmIfPending(booking.id, tx))
       ? 'confirmed'
       : 'not-pending';

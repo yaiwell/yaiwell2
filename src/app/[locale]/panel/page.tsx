@@ -35,8 +35,8 @@ interface PanelDashboardPageProps {
  * (cobro fallido, cancelación o bajada programadas) solo si lo hay:
  * `BillingStatusBanner` no renderiza nada en estado normal.
  *
- * La ocupación real queda en 0 hasta cálculo basado en
- * Professional.schedule (Fase 1).
+ * La ocupación sale de horas reservadas entre horas abiertas del
+ * horario, descontando los bloqueos de agenda.
  */
 export default async function PanelDashboardPage({ params }: PanelDashboardPageProps) {
   const { locale } = await params;

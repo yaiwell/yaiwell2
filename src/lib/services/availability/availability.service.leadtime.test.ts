@@ -16,6 +16,7 @@ vi.mock('./availability.repository', () => ({
   availabilityRepository: {
     findProfessionalSchedule: vi.fn(),
     findBookingsForDay: vi.fn(),
+    findScheduleBlocksForRange: vi.fn(),
     findServiceForAvailability: vi.fn(),
     findFirstProfessionalIdForProvider: vi.fn(),
   },
@@ -54,6 +55,7 @@ beforeEach(() => {
   vi.resetAllMocks();
   repo.findProfessionalSchedule.mockResolvedValue({ schedule: OPEN_MONDAY, bufferMinutes: 0 });
   repo.findBookingsForDay.mockResolvedValue([]);
+  repo.findScheduleBlocksForRange.mockResolvedValue([]);
 });
 
 describe('getAvailableSlots — antelación mínima de 30 min', () => {

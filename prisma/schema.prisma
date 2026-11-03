@@ -160,10 +160,12 @@ model User {
   deletedAt DateTime?
 
   // Relaciones
-  providers Provider[]       @relation("ProviderOwner")
-  bookings  Booking[]        @relation("ClientBookings")
-  reviews   Review[]
-  sanctions ClientSanction[]
+  providers      Provider[]       @relation("ProviderOwner")
+  bookings       Booking[]        @relation("ClientBookings")
+  reviews        Review[]
+  sanctions      ClientSanction[]
+  /// Bloqueos de agenda que creó (migración 9g).
+  scheduleBlocks ScheduleBlock[]
 
   @@index([role])
   @@index([deletedAt])
@@ -272,6 +274,8 @@ model Provider {
   services             Service[]
   bookings             Booking[]
   slotOffers           SlotOffer[]
+  scheduleBlocks       ScheduleBlock[]
+  contact              ProviderContact?
   reviews              Review[]
   categories           ProviderCategory[]
   verificationRequests VerificationRequest[]
@@ -327,10 +331,11 @@ model Professional {
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
 
-  provider   Provider    @relation(fields: [providerId], references: [id], onDelete: Cascade)
-  services   Service[]
-  bookings   Booking[]
-  slotOffers SlotOffer[]
+  provider       Provider        @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  services       Service[]
+  bookings       Booking[]
+  slotOffers     SlotOffer[]
+  scheduleBlocks ScheduleBlock[]
 
   @@index([providerId])
   @@index([userId])
@@ -745,4 +750,54 @@ model OnsiteCommissionCharge {
   @@index([providerId, status])
   @@index([stripeInvoiceId])
   @@map("onsite_commission_charges")
+}
+
+/// Bloqueo puntual de agenda (migración 9g): un rango en el que el
+/// profesional no atiende. El motor de disponibilidad lo trata como una
+/// ocupación más. Al crearlo no puede pisar reservas activas (lo comprueba
+/// el servicio bajo el advisory lock del profesional). Quitarlo es un
+/// borrado suave (`deletedAt` + `deletedBy`).
+model ScheduleBlock {
+  id             String   @id @default(uuid())
+  providerId     String
+  professionalId String
+  startAt        DateTime
+  endAt          DateTime
+  /// Motivo privado del negocio, máx. 200 caracteres (CHECK en SQL).
+  reason         String?
+  /// `User.id` interno de quien lo creó.
+  createdBy      String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  /// `User.id` interno de quien lo quitó.
+  deletedBy String?
+
+  provider     Provider     @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  professional Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  creator      User         @relation(fields: [createdBy], references: [id], onDelete: Restrict)
+
+  // Los CHECK (fin > inicio, máx. 62 días, motivo ≤ 200) y los índices
+  // parciales `WHERE deletedAt IS NULL` viven en la migración 9g.
+  @@map("schedule_blocks")
+}
+
+/// Contacto privado del negocio para soporte (migración 9g). Tabla aparte
+/// de `providers` porque esa es legible con la clave pública de Supabase
+/// (policy `providers_public_read_approved`); esta no tiene policies ni
+/// privilegios para `anon`/`authenticated`. No se muestra en la ficha.
+model ProviderContact {
+  providerId String  @id
+  /// Máx. 32 caracteres (CHECK en SQL).
+  phone      String?
+  /// Máx. 254 caracteres (CHECK en SQL); formato validado con Zod.
+  email      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@map("provider_contacts")
 }

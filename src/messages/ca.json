@@ -581,6 +581,75 @@
         "payment": "Pagament",
         "paymentOnline": "En línia",
         "paymentOnsite": "Al local"
+      },
+      "scheduleBlocks": {
+        "openButton": "Bloquejar hores",
+        "legend": "Bloquejat",
+        "fullDay": "Tot el dia",
+        "privateHint": "El motiu només el veus tu; els clients només veuen que no hi ha forat.",
+        "close": "Tancar",
+        "cancel": "Cancel·lar",
+        "submit": "Bloquejar",
+        "submitting": "Bloquejant…",
+        "dialog": {
+          "title": "Bloquejar hores",
+          "description": "Marca un interval com a no disponible: en aquest temps ningú no podrà reservar. Com a molt 60 dies seguits i fins a un any vista."
+        },
+        "fields": {
+          "start": "Des de",
+          "end": "Fins a",
+          "date": "Data",
+          "time": "Hora",
+          "reason": "Motiu (opcional)",
+          "reasonPlaceholder": "Vacances, formació, metge…",
+          "reasonHint": "Només el veus tu.",
+          "reasonCounter": "{count}/{max}"
+        },
+        "issues": {
+          "required": "Indica la data i l'hora d'inici i de final.",
+          "step": "Les hores van en passos de 5 minuts (10:00, 10:05, 10:10…).",
+          "endBeforeStart": "El final ha de ser posterior a l'inici."
+        },
+        "created": {
+          "title": "Hores bloquejades",
+          "description": "Ja apareixen al teu calendari i ningú no podrà reservar en aquest interval."
+        },
+        "block": {
+          "label": "Bloquejat",
+          "ariaLabel": "Hores bloquejades: {time}"
+        },
+        "detail": {
+          "title": "Hores bloquejades",
+          "description": "Interval no disponible per a reserves i opció de treure'l.",
+          "reason": "Motiu"
+        },
+        "remove": {
+          "button": "Treure el bloqueig",
+          "confirmText": "Vols treure aquest bloqueig? Aquestes hores tornaran a estar disponibles per reservar.",
+          "confirm": "Sí, treure",
+          "keep": "Mantenir",
+          "pending": "Traient…",
+          "done": "Bloqueig tret. Aquestes hores tornen a estar disponibles.",
+          "errors": {
+            "notFound": "Aquest bloqueig ja no existeix. Torna a carregar el calendari.",
+            "forbidden": "No pots treure aquest bloqueig.",
+            "internal": "No hem pogut treure el bloqueig. Torna-ho a provar."
+          }
+        },
+        "errors": {
+          "invalidInput": "Revisa les dates i les hores: hi ha alguna dada que no és vàlida.",
+          "endBeforeStart": "El final ha de ser posterior a l'inici.",
+          "inPast": "No pots bloquejar hores que ja han passat.",
+          "tooLong": "Un bloqueig pot durar com a molt 60 dies. Divideix-lo en diversos.",
+          "tooFar": "Només pots bloquejar fins a un any vista.",
+          "conflict": "Hi ha cites en aquest interval:",
+          "conflictItem": "{date} · {time} — {client} ({service})",
+          "conflictItemNoClient": "{date} · {time} — {service}",
+          "conflictHint": "Cancel·la-les abans des del calendari o tria un altre interval.",
+          "notFound": "No trobem el teu negoci. Torna a carregar la pàgina.",
+          "forbidden": "No tens permís per bloquejar hores en aquest negoci.",
+          "internal": "No hem pogut bloquejar les hores. Torna-ho a provar."
+        }
       }
     },
     "services": {
@@ -671,13 +740,12 @@
         "vatLabel": "NIF / CIF",
         "phoneLabel": "Telèfon de contacte",
         "emailLabel": "Email de contacte",
+        "contactHelp": "Només ho veurà l'equip de Yaiwell, per contactar amb tu si cal. No surt a la teva fitxa pública.",
         "descriptionLabel": "Descripció pública"
       },
       "address": {
         "title": "Adreça",
         "streetLabel": "Carrer i número",
-        "cityLabel": "Ciutat",
-        "postalLabel": "Codi postal",
         "streetHelp": "Escriu l’adreça i tria una de les suggerències: així actualitzem també la teva ubicació al mapa i a les cerques per proximitat."
       },
       "schedule": {

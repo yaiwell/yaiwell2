@@ -33,8 +33,9 @@ const descriptionPatchSchema = localizedTextPatchSchema.optional();
  * son las coordenadas, en vez de un `ZodError` genérico que la UI no
  * podría distinguir de "revisa los campos".
  *
- * Teléfono, email de contacto, ciudad/CP separados y horario semanal
- * entrarán cuando el form los recoja de verdad.
+ * `contactPhone` y `contactEmail` son contacto privado para soporte
+ * (migración 9g): vacíos se guardan como `null`. La ciudad y el código
+ * postal no se guardan aparte: ya van en la dirección del geocoder.
  */
 export const updateProviderSettingsSchema = z.object({
   businessName: z.string().trim().min(2).max(120),
@@ -46,6 +47,28 @@ export const updateProviderSettingsSchema = z.object({
     .nullable()
     .transform((value) => (value && value.length > 0 ? value : null)),
   description: descriptionPatchSchema,
+  // Dígitos, espacios, `+`, guiones y paréntesis; entre 6 y 32 caracteres.
+  contactPhone: z
+    .string()
+    .trim()
+    .max(32)
+    .optional()
+    .nullable()
+    // `undefined` = no tocar; vacío = borrar (null).
+    .transform((value) => (value === undefined ? undefined : value || null))
+    .refine((value) => value == null || /^\+?[0-9 ()-]{6,32}$/.test(value), {
+      message: 'Invalid phone',
+    }),
+  contactEmail: z
+    .string()
+    .trim()
+    .max(254)
+    .optional()
+    .nullable()
+    .transform((value) => (value === undefined ? undefined : value?.toLowerCase() || null))
+    .refine((value) => value == null || z.email().safeParse(value).success, {
+      message: 'Invalid email',
+    }),
 });
 
 export type UpdateProviderSettingsParsed = z.infer<typeof updateProviderSettingsSchema>;

@@ -10,6 +10,17 @@
 
 ## 2026-11-02
 
+### 2026-11-03 — Bloqueos de agenda, contacto privado del centro y ocupación real
+
+P4 + P13 (`Plan` → migración con `db-migration-guard` ×2 → dominio y motor + UI del calendario en paralelo (2 general-purpose) → `conventions-reviewer` + `business-rules-auditor`; P1 aplicado, P2 a TODO).
+
+- **Migración 9g** (pendiente de aplicar): tabla `schedule_blocks` (CHECK fin > inicio, ≤ 62 días, motivo ≤ 200; índices parciales; RLS + REVOKE) y tabla `provider_contacts` (contacto privado; aparte de `providers` porque esa es legible con la clave pública).
+- **Bloqueos puntuales** desde el calendario («Bloquear horas»): rango en hora de Madrid, motivo privado, pasos de 5 min, máx. 60 días y 1 año vista. Si pisa reservas activas se rechaza con la lista de citas; las ofertas con descuento que solapan se retiran. Se ven en la rejilla (gris rayado) y se quitan con confirmación (borrado suave). El motor de disponibilidad, «disponible ahora», el selector de hora, los huecos de 2 h, los listados de ofertas, `createBooking` (bajo el lock) y el pago tardío los respetan. Helper `madridLocalToUtc` con cambios de hora.
+- **Reservas de madrugada**: `getAvailableSlots` pedía las reservas solo en el día UTC; una a la 01:00 de Madrid dejaba su hora libre. Ahora con ±12 h, igual que los bloqueos.
+- **Contacto del centro**: teléfono y email editables en «Mi negocio», solo para soporte (no salen en la ficha). Fuera ciudad y CP (van en la dirección).
+- **Ocupación real** en el resumen: minutos reservados entre minutos abiertos del horario menos bloqueos, con delta semanal.
+- ~2390 tests unitarios.
+
 ### 2026-11-03 — Mapa de la búsqueda en móvil
 
 - Las capas de Leaflet (popups z 700, controles z 1000) se pintaban por encima de la cabecera fija y de la barra inferior móvil: una ventanita de centro podía tapar la pestaña «Lista» y robarle el toque. El contenedor del mapa crea ahora su propio contexto (`isolate`).

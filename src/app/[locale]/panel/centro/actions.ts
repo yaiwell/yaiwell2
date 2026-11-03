@@ -85,6 +85,9 @@ export interface ProviderSettingsRawInput {
   address: string;
   lat: number;
   lng: number;
+  /** Contacto privado para soporte; vacío = sin dato. */
+  contactPhone: string;
+  contactEmail: string;
 }
 
 /**
@@ -103,10 +106,9 @@ export type UpdateProviderSettingsActionState =
 /**
  * Persiste los campos editables del centro desde `/panel/centro`.
  *
- * Hoy cubre los cuatro que el formulario expone (businessName,
- * vatNumber, description, address). Teléfono, email de contacto,
- * ciudad/CP por separado y horario semanal entran cuando el formulario
- * los recoja de verdad (TODO).
+ * Cubre los campos que el formulario expone: businessName, vatNumber,
+ * description, address y el contacto privado (teléfono y email, solo
+ * para soporte). El horario va por `updateProviderScheduleAction`.
  *
  * `description` se persiste fusionando con las traducciones existentes
  * para no perder las claves de los demás idiomas (mismo patrón que
@@ -142,6 +144,8 @@ export async function updateProviderSettingsAction(
       address: raw.address,
       lat: raw.lat,
       lng: raw.lng,
+      contactPhone: raw.contactPhone,
+      contactEmail: raw.contactEmail,
     });
   } catch (err) {
     if (err instanceof ZodError) {

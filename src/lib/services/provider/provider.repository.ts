@@ -145,6 +145,22 @@ export const providerRepository = {
   },
 
   /**
+   * Guarda el contacto privado del negocio (tabla `provider_contacts`,
+   * cerrada a la clave pública). `null` borra el dato; `undefined` lo
+   * deja como está.
+   */
+  async upsertContact(
+    providerId: string,
+    contact: { phone?: string | null; email?: string | null },
+  ): Promise<void> {
+    await prisma.providerContact.upsert({
+      where: { providerId },
+      create: { providerId, phone: contact.phone ?? null, email: contact.email ?? null },
+      update: contact,
+    });
+  },
+
+  /**
    * Devuelve el `id` y el `schedule` del **primer** Professional del
    * provider (orden por `createdAt` ascendente).
    *

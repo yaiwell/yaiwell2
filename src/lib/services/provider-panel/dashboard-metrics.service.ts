@@ -8,6 +8,9 @@ import type {
   PanelWeeklyMetrics,
 } from '@/components/features/provider-panel/DashboardMetrics/DashboardMetrics.types';
 import { prisma } from '@/lib/db/prisma';
+import { weeklyScheduleSchema } from '@/lib/services/availability/availability.validation';
+// Ruta directa: el barrel de schedule-blocks arrastra el servicio entero.
+import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks/schedule-blocks.repository';
 import {
   PANEL_TIMEZONE as PANEL_TZ,
   addDaysToDateKey,
@@ -15,6 +18,8 @@ import {
   getMadridWeekStartKey,
 } from '@/lib/utils/madrid-week';
 import type { LocalizedText } from '@/types/domain';
+
+import { computeOccupancyPct, type Interval } from './dashboard-occupancy';
 
 /**
  * Estados de Booking que cuentan como "reserva real" para métricas.
@@ -90,19 +95,29 @@ export async function getWeeklyMetrics(providerId: string): Promise<PanelWeeklyM
   const thisWeek = getMadridWeekRange(thisWeekKey);
   const lastWeek = getMadridWeekRange(addDaysToDateKey(thisWeekKey, -7));
 
-  const bookings = await prisma.booking.findMany({
-    where: {
-      providerId,
-      startAt: { gte: lastWeek.start, lt: thisWeek.end },
-      ...REVENUE_WHERE,
-    },
-    select: {
-      startAt: true,
-      priceCents: true,
-      serviceId: true,
-      service: { select: { name: true } },
-    },
-  });
+  const [bookings, professional, blocks] = await Promise.all([
+    prisma.booking.findMany({
+      where: {
+        providerId,
+        startAt: { gte: lastWeek.start, lt: thisWeek.end },
+        ...REVENUE_WHERE,
+      },
+      select: {
+        startAt: true,
+        endAt: true,
+        priceCents: true,
+        serviceId: true,
+        service: { select: { name: true } },
+      },
+    }),
+    // Hoy hay un profesional por negocio: su horario es el del negocio.
+    prisma.professional.findFirst({
+      where: { providerId, deletedAt: null },
+      orderBy: { createdAt: 'asc' },
+      select: { schedule: true },
+    }),
+    scheduleBlocksRepository.findForProviderRange(providerId, lastWeek.start, thisWeek.end),
+  ]);
 
   // Partición de la única query en las dos ventanas semanales.
   const thisWeekBookings = bookings.filter((b) => b.startAt >= thisWeek.start);
@@ -116,6 +131,14 @@ export async function getWeeklyMetrics(providerId: string): Promise<PanelWeeklyM
 
   const thisAvgTicket = thisCount > 0 ? Math.round(thisRevenue / thisCount) : 0;
   const lastAvgTicket = lastCount > 0 ? Math.round(lastRevenue / lastCount) : 0;
+
+  // Ocupación: horas reservadas entre horas abiertas (menos bloqueos). Sin
+  // horario válido no se puede calcular y se queda en 0.
+  const schedule = weeklyScheduleSchema.safeParse(professional?.schedule);
+  const occupancyFor = (weekStartKey: string, weekBookings: Interval[]) =>
+    schedule.success ? computeOccupancyPct(schedule.data, weekStartKey, weekBookings, blocks) : 0;
+  const thisOccupancy = occupancyFor(thisWeekKey, thisWeekBookings);
+  const lastOccupancy = occupancyFor(addDaysToDateKey(thisWeekKey, -7), lastWeekBookings);
 
   // Agregado diario para la mini-gráfica.
   const dailyAgg = new Map<WeekdayKey, { revenueCents: number; bookingsCount: number }>();
@@ -169,11 +192,8 @@ export async function getWeeklyMetrics(providerId: string): Promise<PanelWeeklyM
     weekBookingsDeltaPct: computeDeltaPct(thisCount, lastCount),
     averageTicketCents: thisAvgTicket,
     averageTicketDeltaPct: computeDeltaPct(thisAvgTicket, lastAvgTicket),
-    // Ocupación queda en 0 hasta que tengamos un cálculo basado en
-    // Professional.schedule (horas trabajables) vs. horas reservadas.
-    // Fase 1: derivar de horario semanal del profesional × días.
-    occupancyPct: 0,
-    occupancyDeltaPct: 0,
+    occupancyPct: thisOccupancy,
+    occupancyDeltaPct: computeDeltaPct(thisOccupancy, lastOccupancy),
     dailyRevenue,
     topServices,
   };

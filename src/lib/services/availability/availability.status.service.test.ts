@@ -17,6 +17,9 @@ vi.mock('@/lib/db/prisma', () => {
       booking: {
         findMany: vi.fn(),
       },
+      scheduleBlock: {
+        findMany: vi.fn(),
+      },
     },
   };
 });
@@ -27,6 +30,7 @@ import { getProvidersAvailability } from './availability.status.service';
 
 const mockedQueryRaw = vi.mocked(prisma.$queryRaw);
 const mockedBookingFindMany = vi.mocked(prisma.booking.findMany);
+const mockedBlockFindMany = vi.mocked(prisma.scheduleBlock.findMany);
 
 const OPEN_EVERY_DAY: WeeklySchedule = {
   monday: [{ open: '10:00', close: '20:00' }],
@@ -46,6 +50,8 @@ const NOW = new Date('2026-07-27T07:30:00.000Z');
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // Sin bloqueos de agenda por defecto; los tests que los usan lo pisan.
+  mockedBlockFindMany.mockResolvedValue([]);
 });
 
 describe('getProvidersAvailability', () => {
@@ -55,9 +61,10 @@ describe('getProvidersAvailability', () => {
     expect(result.size).toBe(0);
     expect(mockedQueryRaw).not.toHaveBeenCalled();
     expect(mockedBookingFindMany).not.toHaveBeenCalled();
+    expect(mockedBlockFindMany).not.toHaveBeenCalled();
   });
 
-  it('usa exactamente 2 consultas para 3 proveedores con 2 profesionales cada uno', async () => {
+  it('usa exactamente 3 consultas para 3 proveedores con 2 profesionales cada uno', async () => {
     const providerIds = ['prov-1', 'prov-2', 'prov-3'];
     const bundles = providerIds.flatMap((providerId) =>
       ['a', 'b'].map((suffix) => ({
@@ -74,10 +81,11 @@ describe('getProvidersAvailability', () => {
 
     const result = await getProvidersAvailability(providerIds, NOW);
 
-    // El corazón de esta tarea: 6 profesionales, 2 consultas. Si alguien
+    // El corazón de esta tarea: 6 profesionales, 3 consultas. Si alguien
     // reintroduce la cascada N×M, este test lo caza.
     expect(mockedQueryRaw).toHaveBeenCalledTimes(1);
     expect(mockedBookingFindMany).toHaveBeenCalledTimes(1);
+    expect(mockedBlockFindMany).toHaveBeenCalledTimes(1);
 
     expect(result.size).toBe(3);
     for (const providerId of providerIds) {
@@ -179,6 +187,32 @@ describe('getProvidersAvailability', () => {
 
     expect(result.get('prov-1')?.status).toBe('busy');
     // Sigue habiendo hueco más tarde: 18:00 Madrid = 16:00Z.
+    expect(result.get('prov-1')?.nextSlot?.startAt.toISOString()).toBe('2026-07-27T16:00:00.000Z');
+  });
+
+  it('un bloqueo de agenda ocupa igual que una reserva', async () => {
+    mockedQueryRaw.mockResolvedValueOnce([
+      {
+        professionalId: 'prof-1',
+        providerId: 'prov-1',
+        schedule: OPEN_EVERY_DAY,
+        bufferMinutes: 0,
+        minServiceDurationMinutes: 60,
+      },
+    ]);
+    mockedBookingFindMany.mockResolvedValueOnce([]);
+    // Bloqueado de 09:00 a 18:00 Madrid (07:00Z-16:00Z).
+    mockedBlockFindMany.mockResolvedValueOnce([
+      {
+        professionalId: 'prof-1',
+        startAt: new Date('2026-07-27T07:00:00.000Z'),
+        endAt: new Date('2026-07-27T16:00:00.000Z'),
+      },
+    ] as unknown as Awaited<ReturnType<typeof prisma.scheduleBlock.findMany>>);
+
+    const result = await getProvidersAvailability(['prov-1'], NOW);
+
+    expect(result.get('prov-1')?.status).toBe('busy');
     expect(result.get('prov-1')?.nextSlot?.startAt.toISOString()).toBe('2026-07-27T16:00:00.000Z');
   });
 });

@@ -21,6 +21,7 @@ export function CalendarDayView({
   days,
   grouped,
   groupedOffers,
+  groupedBlocks,
   hours,
   locale,
   readOnly,
@@ -34,6 +35,7 @@ export function CalendarDayView({
   const day = days[selected];
   const positioned = grouped[day.key];
   const offers = groupedOffers[day.key];
+  const blocks = groupedBlocks[day.key];
 
   return (
     <div className={s.mobile} data-component="weekly-calendar-day-view">
@@ -41,7 +43,8 @@ export function CalendarDayView({
         {days.map((d, index) => {
           const isSelected = index === selected;
           const count = grouped[d.key].length;
-          const hasItems = count > 0 || groupedOffers[d.key].length > 0;
+          const hasItems =
+            count > 0 || groupedOffers[d.key].length > 0 || groupedBlocks[d.key].length > 0;
           return (
             <button
               key={d.dateKey}
@@ -76,7 +79,7 @@ export function CalendarDayView({
         aria-labelledby={`calendar-day-tab-${day.dateKey}`}
         tabIndex={0}
       >
-        {positioned.length === 0 && offers.length === 0 ? (
+        {positioned.length === 0 && offers.length === 0 && blocks.length === 0 ? (
           <p className={s.dayEmpty} data-component="weekly-calendar-day-empty">
             {t('emptyDay')}
           </p>
@@ -93,6 +96,7 @@ export function CalendarDayView({
               <CalendarDayColumn
                 positioned={positioned}
                 offers={offers}
+                blocks={blocks}
                 hours={hours}
                 locale={locale}
                 readOnly={readOnly}

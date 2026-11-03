@@ -16,20 +16,24 @@ import {
   ReleaseSlotPromptProvider,
   type ReleaseSlotRequest,
 } from '@/components/features/provider-panel/ReleaseSlotDialog';
+import { ScheduleBlockDialog } from '@/components/features/provider-panel/ScheduleBlockDialog';
 import {
   WeeklyCalendar,
   buildCalendarWeek,
+  type PanelScheduleBlock,
   type PanelSlotOffer,
 } from '@/components/features/provider-panel/WeeklyCalendar';
 import type { AppLocale } from '@/i18n/routing';
 import { isPanelPreviewActive } from '@/lib/auth/panel-preview';
 import { requireCurrentProvider } from '@/lib/auth/server';
 import { fakePanelBookings } from '@/lib/fake-data/panel-bookings';
+import { fakePanelScheduleBlocks } from '@/lib/fake-data/panel-schedule-blocks';
 import { fakePanelFreeSlots, fakePanelSlotOffers } from '@/lib/fake-data/panel-slot-offers';
 import { toIntlLocale } from '@/lib/i18n';
 import {
   getPanelReleasableFreeSlots,
   getPanelWeekBookings,
+  getPanelWeekScheduleBlocks,
   getPanelWeekSlotOffers,
   toPreviewBookingActions,
 } from '@/lib/services/provider-panel';
@@ -62,6 +66,10 @@ interface PanelCalendarPageProps {
  * esta semana y del centro (sale de su propia query) y sigue siendo
  * liberable. Si no, se ignora: el listado ya cuenta su estado.
  *
+ * «Bloquear horas» (cabecera) marca un rango como no disponible; los
+ * bloqueos de la semana se pintan rayados en la cuadrícula. El botón
+ * no sale en modo preview: no hay negocio real que bloquear.
+ *
  * En modo preview enseñamos datos de ejemplo con las acciones
  * deshabilitadas y sin navegación (los ejemplos no tienen fecha).
  */
@@ -84,17 +92,20 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
   let bookings: PanelBookingAction[];
   let slotOffers: PanelSlotOffer[];
   let freeSlots: PanelFreeSlot[];
+  let scheduleBlocks: PanelScheduleBlock[];
   if (preview) {
     bookings = toPreviewBookingActions(fakePanelBookings);
     slotOffers = fakePanelSlotOffers;
     freeSlots = fakePanelFreeSlots;
+    scheduleBlocks = fakePanelScheduleBlocks;
   } else {
     const { id: providerId } = await requireCurrentProvider(panelLocale);
     const weekStart = getMadridWeekRange(weekKey).start;
-    [bookings, slotOffers, freeSlots] = await Promise.all([
+    [bookings, slotOffers, freeSlots, scheduleBlocks] = await Promise.all([
       getPanelWeekBookings(providerId, weekStart, panelLocale, now),
       getPanelWeekSlotOffers(providerId, weekStart, panelLocale, now),
       getPanelReleasableFreeSlots(providerId, panelLocale, now),
+      getPanelWeekScheduleBlocks(providerId, weekKey),
     ]);
   }
 
@@ -107,13 +118,16 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
           <h1 className="font-display text-foreground text-2xl">{t('title')}</h1>
           <p className="text-muted-foreground text-sm">{t('subtitle')}</p>
         </div>
-        <PanelPreviewToggle
-          locale={panelLocale}
-          active={preview}
-          showLabel={tPreview('show')}
-          hideLabel={tPreview('hide')}
-          pendingLabel={tPreview('pending')}
-        />
+        <div className="flex flex-wrap items-center gap-2">
+          {preview ? null : <ScheduleBlockDialog locale={panelLocale} />}
+          <PanelPreviewToggle
+            locale={panelLocale}
+            active={preview}
+            showLabel={tPreview('show')}
+            hideLabel={tPreview('hide')}
+            pendingLabel={tPreview('pending')}
+          />
+        </div>
       </header>
 
       {preview ? <PreviewBanner /> : null}
@@ -122,6 +136,7 @@ export default async function PanelCalendarPage({ params, searchParams }: PanelC
         <WeeklyCalendar
           bookings={bookings}
           slotOffers={slotOffers}
+          scheduleBlocks={scheduleBlocks}
           week={buildCalendarWeek(weekKey, now, toIntlLocale(panelLocale))}
           locale={panelLocale}
           readOnly={preview}

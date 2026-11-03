@@ -7,6 +7,7 @@ import {
   getMadridWeekRange,
   getMadridWeekStartKey,
   getWeekDateKeys,
+  madridLocalToUtc,
   parseWeekParam,
 } from './madrid-week';
 
@@ -113,5 +114,45 @@ describe('parseWeekParam', () => {
     ]) {
       expect(parseWeekParam(raw, now)).toBe('2026-10-26');
     }
+  });
+});
+
+describe('madridLocalToUtc', () => {
+  it('convierte invierno (+01:00) y verano (+02:00)', () => {
+    expect(madridLocalToUtc('2026-01-12', '10:00').toISOString()).toBe('2026-01-12T09:00:00.000Z');
+    expect(madridLocalToUtc('2026-07-13', '10:00').toISOString()).toBe('2026-07-13T08:00:00.000Z');
+  });
+
+  it('la medianoche cae el día anterior en UTC', () => {
+    expect(madridLocalToUtc('2026-07-13', '00:00').toISOString()).toBe('2026-07-12T22:00:00.000Z');
+  });
+
+  it('24:00 es la medianoche del día siguiente', () => {
+    expect(madridLocalToUtc('2026-01-12', '24:00').toISOString()).toBe('2026-01-12T23:00:00.000Z');
+  });
+
+  it('marzo: antes y después del salto usan su propio desfase', () => {
+    // 29-mar-2026: a las 02:00 (+01:00) el reloj salta a las 03:00 (+02:00).
+    expect(madridLocalToUtc('2026-03-29', '01:30').toISOString()).toBe('2026-03-29T00:30:00.000Z');
+    expect(madridLocalToUtc('2026-03-29', '03:00').toISOString()).toBe('2026-03-29T01:00:00.000Z');
+    expect(madridLocalToUtc('2026-03-29', '10:00').toISOString()).toBe('2026-03-29T08:00:00.000Z');
+  });
+
+  it('marzo: una hora inexistente se adelanta una hora', () => {
+    // 02:30 no existe: equivale a las 03:30 CEST.
+    expect(madridLocalToUtc('2026-03-29', '02:30').toISOString()).toBe('2026-03-29T01:30:00.000Z');
+  });
+
+  it('octubre: una hora repetida se toma en su primera aparición', () => {
+    // 25-oct-2026: a las 03:00 (+02:00) el reloj vuelve a las 02:00 (+01:00).
+    expect(madridLocalToUtc('2026-10-25', '02:30').toISOString()).toBe('2026-10-25T00:30:00.000Z');
+    expect(madridLocalToUtc('2026-10-25', '01:30').toISOString()).toBe('2026-10-24T23:30:00.000Z');
+    expect(madridLocalToUtc('2026-10-25', '03:00').toISOString()).toBe('2026-10-25T02:00:00.000Z');
+  });
+
+  it('rechaza formatos inválidos', () => {
+    expect(() => madridLocalToUtc('2026-02-31', '10:00')).toThrow(RangeError);
+    expect(() => madridLocalToUtc('2026-01-12', '25:00')).toThrow(RangeError);
+    expect(() => madridLocalToUtc('2026-01-12', '9:00')).toThrow(RangeError);
   });
 });

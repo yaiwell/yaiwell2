@@ -581,6 +581,75 @@
         "payment": "Zahlung",
         "paymentOnline": "Online",
         "paymentOnsite": "Vor Ort"
+      },
+      "scheduleBlocks": {
+        "openButton": "Zeit blockieren",
+        "legend": "Blockiert",
+        "fullDay": "Ganztägig",
+        "privateHint": "Den Grund siehst nur du; Kund:innen sehen nur, dass kein Termin frei ist.",
+        "close": "Schließen",
+        "cancel": "Abbrechen",
+        "submit": "Blockieren",
+        "submitting": "Wird blockiert…",
+        "dialog": {
+          "title": "Zeit blockieren",
+          "description": "Markiere einen Zeitraum als nicht verfügbar: In dieser Zeit kann niemand buchen. Höchstens 60 Tage am Stück und bis zu ein Jahr im Voraus."
+        },
+        "fields": {
+          "start": "Von",
+          "end": "Bis",
+          "date": "Datum",
+          "time": "Uhrzeit",
+          "reason": "Grund (optional)",
+          "reasonPlaceholder": "Urlaub, Fortbildung, Arzttermin…",
+          "reasonHint": "Das siehst nur du.",
+          "reasonCounter": "{count}/{max}"
+        },
+        "issues": {
+          "required": "Gib Datum und Uhrzeit für Beginn und Ende an.",
+          "step": "Uhrzeiten gehen in 5-Minuten-Schritten (10:00, 10:05, 10:10…).",
+          "endBeforeStart": "Das Ende muss nach dem Beginn liegen."
+        },
+        "created": {
+          "title": "Zeit blockiert",
+          "description": "Sie erscheint jetzt in deinem Kalender und in diesem Zeitraum kann niemand buchen."
+        },
+        "block": {
+          "label": "Blockiert",
+          "ariaLabel": "Blockierte Zeit: {time}"
+        },
+        "detail": {
+          "title": "Blockierte Zeit",
+          "description": "Zeitraum, der nicht buchbar ist, und die Möglichkeit, ihn freizugeben.",
+          "reason": "Grund"
+        },
+        "remove": {
+          "button": "Blockierung aufheben",
+          "confirmText": "Diese Blockierung aufheben? Die Zeit ist dann wieder buchbar.",
+          "confirm": "Ja, aufheben",
+          "keep": "Behalten",
+          "pending": "Wird aufgehoben…",
+          "done": "Blockierung aufgehoben. Die Zeit ist wieder buchbar.",
+          "errors": {
+            "notFound": "Diese Blockierung gibt es nicht mehr. Lade den Kalender neu.",
+            "forbidden": "Du kannst diese Blockierung nicht aufheben.",
+            "internal": "Wir konnten die Blockierung nicht aufheben. Versuch es noch einmal."
+          }
+        },
+        "errors": {
+          "invalidInput": "Prüfe Datum und Uhrzeit: Etwas ist ungültig.",
+          "endBeforeStart": "Das Ende muss nach dem Beginn liegen.",
+          "inPast": "Du kannst keine Zeit blockieren, die schon vorbei ist.",
+          "tooLong": "Eine Blockierung darf höchstens 60 Tage dauern. Teile sie in mehrere auf.",
+          "tooFar": "Du kannst höchstens ein Jahr im Voraus blockieren.",
+          "conflict": "In diesem Zeitraum gibt es Termine:",
+          "conflictItem": "{date} · {time} — {client} ({service})",
+          "conflictItemNoClient": "{date} · {time} — {service}",
+          "conflictHint": "Storniere sie zuerst im Kalender oder wähle einen anderen Zeitraum.",
+          "notFound": "Wir finden dein Unternehmen nicht. Lade die Seite neu.",
+          "forbidden": "Du darfst für dieses Unternehmen keine Zeit blockieren.",
+          "internal": "Wir konnten die Zeit nicht blockieren. Versuch es noch einmal."
+        }
       }
     },
     "services": {
@@ -671,13 +740,12 @@
         "vatLabel": "USt-IdNr. / Steuernummer",
         "phoneLabel": "Kontakttelefon",
         "emailLabel": "Kontakt-E-Mail",
+        "contactHelp": "Nur das Yaiwell-Team sieht das, um dich bei Bedarf zu kontaktieren. Es erscheint nicht auf deiner öffentlichen Seite.",
         "descriptionLabel": "Öffentliche Beschreibung"
       },
       "address": {
         "title": "Adresse",
         "streetLabel": "Straße und Hausnummer",
-        "cityLabel": "Stadt",
-        "postalLabel": "Postleitzahl",
         "streetHelp": "Gib die Adresse ein und wähle einen der Vorschläge: So aktualisieren wir auch deinen Standort auf der Karte und in der Umkreissuche."
       },
       "schedule": {

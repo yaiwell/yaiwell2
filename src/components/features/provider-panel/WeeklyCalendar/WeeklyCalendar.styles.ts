@@ -69,8 +69,16 @@ export const weeklyCalendarStyles = {
   offerBlockFull: 'inset-x-1',
   offerBlockCompact: 'left-1/2 right-1',
 
+  // Bloqueo puntual de agenda: gris rayado, sin sombra ni color de
+  // marca, para que se lea como «no disponible» y nunca como reserva u
+  // oferta. Va debajo de ambos (sin z-index y antes en el DOM).
+  scheduleBlock:
+    'absolute inset-x-0 overflow-hidden rounded-md border border-border bg-muted/70 [background-image:repeating-linear-gradient(135deg,transparent_0_6px,color-mix(in_oklab,var(--color-muted-foreground)_16%,transparent)_6px_12px)] px-2 py-1 text-left text-[11px] leading-tight text-muted-foreground outline-none hover:border-muted-foreground/50 focus-visible:z-10 focus-visible:ring-2 focus-visible:ring-ring cursor-pointer',
+
   legend: 'flex flex-wrap items-center gap-3 text-xs text-muted-foreground',
   legendDotOffer: 'inline-block size-2 rounded-full border border-dashed border-primary',
+  legendDotBlock:
+    'inline-block size-2.5 rounded-sm border border-border bg-muted [background-image:repeating-linear-gradient(135deg,transparent_0_2px,color-mix(in_oklab,var(--color-muted-foreground)_35%,transparent)_2px_4px)]',
   legendTitle: 'text-xs font-semibold text-foreground',
   legendChip: 'inline-flex items-center gap-1.5 rounded-full px-2 py-0.5',
   legendDot: 'inline-block size-2 rounded-full',
@@ -92,6 +100,15 @@ export const bookingDetailStyles = {
   originalPrice: 'ml-1 text-muted-foreground line-through',
   tierList: 'flex flex-col gap-0.5',
   hint: 'text-xs text-muted-foreground sm:self-center',
+} as const;
+
+/** Detalle de un bloqueo de agenda (diálogo que abre el bloque rayado). */
+export const scheduleBlockStyles = {
+  reason: 'whitespace-pre-line break-words text-foreground',
+  icon: 'size-3.5',
+  confirm: 'flex flex-col gap-2 border-t border-border/60 pt-4',
+  confirmText: 'text-sm text-foreground',
+  removed: 'border-t border-border/60 pt-4 text-sm text-muted-foreground',
 } as const;
 
 /**

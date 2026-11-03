@@ -21,6 +21,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const repoMock = vi.hoisted(() => ({
   findSettings: vi.fn(),
   updateSettings: vi.fn(),
+  upsertContact: vi.fn(),
   findFirstProfessional: vi.fn(),
   updateProfessionalSchedule: vi.fn(),
 }));
@@ -112,6 +113,58 @@ describe('updateProviderSettings', () => {
 
     const args = repoMock.updateSettings.mock.calls[0][1];
     expect(args.vatNumber).toBeNull();
+  });
+
+  it('guarda el contacto privado aparte y normaliza vacíos a null', async () => {
+    repoMock.findSettings.mockResolvedValue({ id: PROVIDER_ID, description: { es: 'x', ca: 'x' } });
+
+    await updateProviderSettings(PROVIDER_ID, {
+      businessName: 'Atelier',
+      address: 'Calle Real 1',
+      ...PALMA,
+      contactPhone: ' +34 600 111 222 ',
+      contactEmail: '',
+    });
+
+    expect(repoMock.upsertContact).toHaveBeenCalledWith(PROVIDER_ID, {
+      phone: '+34 600 111 222',
+      email: null,
+    });
+  });
+
+  it('una llamada sin campos de contacto no borra el contacto guardado', async () => {
+    repoMock.findSettings.mockResolvedValue({ id: PROVIDER_ID, description: { es: 'x', ca: 'x' } });
+
+    await updateProviderSettings(PROVIDER_ID, {
+      businessName: 'Atelier',
+      address: 'Calle Real 1',
+      ...PALMA,
+    });
+
+    expect(repoMock.upsertContact).not.toHaveBeenCalled();
+  });
+
+  it('rechaza un teléfono o un email con formato inválido sin guardar nada', async () => {
+    repoMock.findSettings.mockResolvedValue({ id: PROVIDER_ID, description: { es: 'x', ca: 'x' } });
+
+    await expect(
+      updateProviderSettings(PROVIDER_ID, {
+        businessName: 'Atelier',
+        address: 'Calle Real 1',
+        ...PALMA,
+        contactEmail: 'no-es-un-email',
+      }),
+    ).rejects.toThrow();
+    await expect(
+      updateProviderSettings(PROVIDER_ID, {
+        businessName: 'Atelier',
+        address: 'Calle Real 1',
+        ...PALMA,
+        contactPhone: 'llámame',
+      }),
+    ).rejects.toThrow();
+    expect(repoMock.updateSettings).not.toHaveBeenCalled();
+    expect(repoMock.upsertContact).not.toHaveBeenCalled();
   });
 
   it('conserva la descripción existente si el input no trae description', async () => {

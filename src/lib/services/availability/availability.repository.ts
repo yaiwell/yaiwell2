@@ -2,6 +2,8 @@ import { prisma } from '@/lib/db/prisma';
 // Import directo y no del barrel de `booking`: `booking.service` usa
 // `slot-offers`, que usa este módulo; el barrel cerraría un ciclo.
 import { activeBookingWhere } from '@/lib/services/booking/booking.hold';
+// Ruta directa por lo mismo: el servicio de bloqueos usa este módulo.
+import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks/schedule-blocks.repository';
 
 import type { ProfessionalScheduleBundle } from './availability.types';
 
@@ -196,5 +198,31 @@ export const availabilityRepository = {
       select: { professionalId: true, startAt: true, endAt: true },
       orderBy: { startAt: 'asc' },
     });
+  },
+
+  /**
+   * Tramos bloqueados (bloqueos de agenda activos) de un profesional
+   * que solapan `[from, to)`. Para el motor son una ocupación más, igual
+   * que una reserva: se concatenan con ellas antes de trocear huecos.
+   */
+  async findScheduleBlocksForRange(
+    professionalId: string,
+    from: Date,
+    to: Date,
+  ): Promise<{ startAt: Date; endAt: Date }[]> {
+    return scheduleBlocksRepository.findSpansForProfessional(professionalId, from, to);
+  },
+
+  /**
+   * Lectura BATCH de los bloqueos activos de varios proveedores en un
+   * rango. Filtra por `providerId`, como `findBookingsForProviders`,
+   * para poder lanzarse en paralelo con la de horarios.
+   */
+  async findScheduleBlocksForProviders(
+    providerIds: readonly string[],
+    from: Date,
+    to: Date,
+  ): Promise<{ professionalId: string; startAt: Date; endAt: Date }[]> {
+    return scheduleBlocksRepository.findSpansForProviders(providerIds, from, to);
   },
 };

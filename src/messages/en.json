@@ -581,6 +581,75 @@
         "payment": "Payment",
         "paymentOnline": "Online",
         "paymentOnsite": "At the venue"
+      },
+      "scheduleBlocks": {
+        "openButton": "Block time",
+        "legend": "Blocked",
+        "fullDay": "All day",
+        "privateHint": "Only you can see the reason; clients just see that the time is unavailable.",
+        "close": "Close",
+        "cancel": "Cancel",
+        "submit": "Block",
+        "submitting": "Blocking…",
+        "dialog": {
+          "title": "Block time",
+          "description": "Mark a period as unavailable: nobody will be able to book during it. Up to 60 days in a row and up to one year ahead."
+        },
+        "fields": {
+          "start": "From",
+          "end": "Until",
+          "date": "Date",
+          "time": "Time",
+          "reason": "Reason (optional)",
+          "reasonPlaceholder": "Holidays, training, doctor…",
+          "reasonHint": "Only you can see this.",
+          "reasonCounter": "{count}/{max}"
+        },
+        "issues": {
+          "required": "Enter the start and end date and time.",
+          "step": "Times go in 5-minute steps (10:00, 10:05, 10:10…).",
+          "endBeforeStart": "The end must be after the start."
+        },
+        "created": {
+          "title": "Time blocked",
+          "description": "It now shows in your calendar and nobody can book during that period."
+        },
+        "block": {
+          "label": "Blocked",
+          "ariaLabel": "Blocked time: {time}"
+        },
+        "detail": {
+          "title": "Blocked time",
+          "description": "Period unavailable for bookings and the option to remove it.",
+          "reason": "Reason"
+        },
+        "remove": {
+          "button": "Remove block",
+          "confirmText": "Remove this block? That time will be available for booking again.",
+          "confirm": "Yes, remove",
+          "keep": "Keep",
+          "pending": "Removing…",
+          "done": "Block removed. That time is available again.",
+          "errors": {
+            "notFound": "This block no longer exists. Reload the calendar.",
+            "forbidden": "You can't remove this block.",
+            "internal": "We couldn't remove the block. Please try again."
+          }
+        },
+        "errors": {
+          "invalidInput": "Check the dates and times: something is not valid.",
+          "endBeforeStart": "The end must be after the start.",
+          "inPast": "You can't block time that has already passed.",
+          "tooLong": "A block can last 60 days at most. Split it into several.",
+          "tooFar": "You can only block up to one year ahead.",
+          "conflict": "There are appointments in that period:",
+          "conflictItem": "{date} · {time} — {client} ({service})",
+          "conflictItemNoClient": "{date} · {time} — {service}",
+          "conflictHint": "Cancel them first from the calendar or choose another period.",
+          "notFound": "We couldn't find your business. Reload the page.",
+          "forbidden": "You don't have permission to block time for this business.",
+          "internal": "We couldn't block the time. Please try again."
+        }
       }
     },
     "services": {
@@ -671,13 +740,12 @@
         "vatLabel": "VAT / Company number",
         "phoneLabel": "Contact phone",
         "emailLabel": "Contact email",
+        "contactHelp": "Only the Yaiwell team will see this, to contact you if needed. It isn't shown on your public page.",
         "descriptionLabel": "Public description"
       },
       "address": {
         "title": "Address",
         "streetLabel": "Street and number",
-        "cityLabel": "City",
-        "postalLabel": "Postcode",
         "streetHelp": "Type the address and pick one of the suggestions: that way we also update your location on the map and in nearby searches."
       },
       "schedule": {

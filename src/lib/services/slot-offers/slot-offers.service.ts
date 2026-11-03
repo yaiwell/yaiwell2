@@ -12,6 +12,8 @@ import {
   getCivilDayUtc,
   getServiceDaySlots,
 } from '@/lib/services/availability';
+// Ruta directa: el servicio de bloqueos importa `booking`, que usa este módulo.
+import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks/schedule-blocks.repository';
 import { getEarliestBookableStart } from '@/lib/utils/booking-lead-time';
 import {
   SLOT_OFFER_TIER_2H_MS,
@@ -89,8 +91,8 @@ async function insertOffer(data: CreateSlotOfferData): Promise<LiveSlotOffer> {
  * @param providerUserId — `User.id` del dueño autenticado.
  * @throws SlotOfferNotFoundError, SlotOfferForbiddenError,
  *   SlotOfferSourceNotCancelledError, SlotOfferServiceInvalidError,
- *   SlotOfferOutsideWindowError, SlotOfferSlotTakenError,
- *   SlotOfferAlreadyExistsError.
+ *   SlotOfferOutsideWindowError, SlotOfferSlotTakenError (también si un
+ *   bloqueo de agenda pisa la hora), SlotOfferAlreadyExistsError.
  */
 export async function releaseCancelledSlot(
   input: unknown,
@@ -129,6 +131,12 @@ export async function releaseCancelledSlot(
       endAt,
       now,
     )
+  ) {
+    throw new SlotOfferSlotTakenError();
+  }
+  // Si el dueño bloqueó la agenda sobre la hora cancelada, no se vende.
+  if (
+    await scheduleBlocksRepository.hasActiveOverlap(booking.professionalId, booking.startAt, endAt)
   ) {
     throw new SlotOfferSlotTakenError();
   }

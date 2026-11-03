@@ -75,6 +75,7 @@ export default async function PanelSettingsPage({ params, searchParams }: PanelS
       select: {
         businessName: true,
         vatNumber: true,
+        contact: { select: { phone: true, email: true } },
         description: true,
         photos: true,
       },
@@ -130,6 +131,8 @@ export default async function PanelSettingsPage({ params, searchParams }: PanelS
     id,
     businessName: record.businessName,
     vatNumber: record.vatNumber,
+    contactPhone: record.contact?.phone ?? null,
+    contactEmail: record.contact?.email ?? null,
     description: record.description as unknown as LocalizedText,
     address: {
       text: addressRow.address,

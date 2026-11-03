@@ -165,3 +165,59 @@ export function parseWeekParam(raw: unknown, now: Date): string {
   const parsed = dateKeySchema.safeParse(raw);
   return parsed.success ? getWeekStartKey(parsed.data) : getMadridWeekStartKey(now);
 }
+
+/** Hora de pared `HH:mm`; `24:00` es la medianoche que cierra el día. */
+const HHMM_PATTERN = /^(?:([01]\d|2[0-3]):([0-5]\d)|24:00)$/;
+const DATE_KEY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const HOUR_MS = 60 * 60 * 1000;
+
+/** ¿Se ve `instant` en Madrid exactamente como la hora de pared `wallMs`? */
+function matchesMadridWall(instant: Date, wallMs: number): boolean {
+  const p = getZonedParts(instant, PANEL_TIMEZONE);
+  return Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute) === wallMs;
+}
+
+/**
+ * Convierte una fecha y hora de pared de Madrid al instante UTC real.
+ *
+ * El panel envía lo que el dueño ve en su reloj (`2026-03-29`, `02:30`)
+ * y el servidor decide el instante; así un navegador con otra zona
+ * horaria no desplaza el bloqueo.
+ *
+ * Días de cambio de hora:
+ *  - Marzo (02:00 → 03:00): las horas que no existen se adelantan una
+ *    hora, como hace el propio reloj (02:30 → 03:30 CEST).
+ *  - Octubre (03:00 → 02:00): las horas que existen dos veces se toman
+ *    en su primera aparición (horario de verano), la más prudente para
+ *    el inicio de un bloqueo.
+ *
+ * @param dateKey — día civil `YYYY-MM-DD`.
+ * @param hhmm — hora `HH:mm` (00:00-23:59), o `24:00` para el fin del día.
+ * @returns el instante UTC.
+ * @throws RangeError si la fecha o la hora no tienen formato válido.
+ */
+export function madridLocalToUtc(dateKey: string, hhmm: string): Date {
+  const match = HHMM_PATTERN.exec(hhmm);
+  if (!DATE_KEY_PATTERN.test(dateKey) || !match) {
+    throw new RangeError(`Invalid Madrid local time: ${dateKey} ${hhmm}`);
+  }
+  if (hhmm === '24:00') return getMadridMidnight(addDaysToDateKey(dateKey, 1));
+  const marker = keyToMarker(dateKey);
+  if (Number.isNaN(marker.getTime()) || markerToKey(marker) !== dateKey) {
+    throw new RangeError(`Invalid Madrid date: ${dateKey}`);
+  }
+
+  const wallMs = marker.getTime() + (Number(match[1]) * 60 + Number(match[2])) * 60_000;
+  // Desfases posibles: el de 12 h antes y el de 12 h después cubren los
+  // dos lados de cualquier cambio de hora del día.
+  const offsetBefore = getOffsetMs(new Date(wallMs - 12 * HOUR_MS), PANEL_TIMEZONE);
+  const offsetAfter = getOffsetMs(new Date(wallMs + 12 * HOUR_MS), PANEL_TIMEZONE);
+  // El desfase mayor da el instante más temprano: primera aparición.
+  const candidates = [...new Set([offsetBefore, offsetAfter])]
+    .sort((a, b) => b - a)
+    .map((offset) => new Date(wallMs - offset));
+  const exact = candidates.find((candidate) => matchesMadridWall(candidate, wallMs));
+  // Sin coincidencia es una hora inexistente (marzo): con el desfase de
+  // antes del salto cae justo una hora más tarde en el reloj nuevo.
+  return exact ?? new Date(wallMs - offsetBefore);
+}

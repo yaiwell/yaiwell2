@@ -29,6 +29,8 @@ vi.mock('@/lib/db/prisma', () => {
       update: vi.fn(),
       updateMany: vi.fn(),
     },
+    // Sin bloqueos de agenda: `count` sin respuesta da `undefined` (no > 0).
+    scheduleBlock: { count: vi.fn() },
     $executeRaw: vi.fn(),
     // La transacción ejecuta el callback con el propio mock como `tx`.
     $transaction: vi.fn(),

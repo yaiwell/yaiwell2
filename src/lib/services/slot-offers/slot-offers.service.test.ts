@@ -1,21 +1,27 @@
 import { Prisma } from '@prisma/client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { repo, getServiceDaySlotsMock, firstProfessionalMock } = vi.hoisted(() => ({
-  repo: {
-    findBookingForRelease: vi.fn(),
-    findServiceWithOwner: vi.fn(),
-    hasActiveBookingOverlap: vi.fn(),
-    hasActiveOfferOverlap: vi.fn(),
-    create: vi.fn(),
-    findWithOwner: vi.fn(),
-    withdraw: vi.fn(),
-  },
-  getServiceDaySlotsMock: vi.fn(),
-  firstProfessionalMock: vi.fn(),
-}));
+const { repo, getServiceDaySlotsMock, firstProfessionalMock, blockOverlapMock } = vi.hoisted(
+  () => ({
+    repo: {
+      findBookingForRelease: vi.fn(),
+      findServiceWithOwner: vi.fn(),
+      hasActiveBookingOverlap: vi.fn(),
+      hasActiveOfferOverlap: vi.fn(),
+      create: vi.fn(),
+      findWithOwner: vi.fn(),
+      withdraw: vi.fn(),
+    },
+    getServiceDaySlotsMock: vi.fn(),
+    firstProfessionalMock: vi.fn(),
+    blockOverlapMock: vi.fn(),
+  }),
+);
 
 vi.mock('./slot-offers.repository', () => ({ slotOffersRepository: repo }));
+vi.mock('@/lib/services/schedule-blocks/schedule-blocks.repository', () => ({
+  scheduleBlocksRepository: { hasActiveOverlap: blockOverlapMock },
+}));
 vi.mock('@/lib/services/availability', () => ({
   BUSINESS_TIMEZONE: 'Europe/Madrid',
   getCivilDayUtc: (d: Date) => d,
@@ -82,6 +88,7 @@ beforeEach(() => {
   repo.findServiceWithOwner.mockResolvedValue(service());
   repo.hasActiveBookingOverlap.mockResolvedValue(false);
   repo.hasActiveOfferOverlap.mockResolvedValue(false);
+  blockOverlapMock.mockResolvedValue(false);
   // El checkout asigna el primer profesional del centro: el de la reserva.
   firstProfessionalMock.mockResolvedValue('pro-1');
   repo.create.mockImplementation(async (data: Record<string, unknown>) => createdRow(data));
@@ -102,6 +109,20 @@ describe('releaseCancelledSlot', () => {
       startAt: START,
     });
     expect(data.expiresAt.toISOString()).toBe('2026-10-28T13:30:00.000Z');
+  });
+
+  it('rechaza liberar una hora que pisa un bloqueo de agenda', async () => {
+    blockOverlapMock.mockResolvedValue(true);
+
+    await expect(releaseCancelledSlot(input, OWNER, NOW)).rejects.toBeInstanceOf(
+      SlotOfferSlotTakenError,
+    );
+    expect(blockOverlapMock).toHaveBeenCalledWith(
+      'pro-1',
+      START,
+      new Date(START.getTime() + 60 * 60_000),
+    );
+    expect(repo.create).not.toHaveBeenCalled();
   });
 
   it('solo el dueño, solo reservas canceladas o reembolsadas', async () => {

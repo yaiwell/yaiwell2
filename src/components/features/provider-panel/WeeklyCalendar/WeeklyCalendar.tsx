@@ -10,6 +10,7 @@ import {
   getInitialDayIndex,
   groupRowsByWeekday,
 } from './WeeklyCalendar.logic';
+import { getScheduleBlockRangeSpans, groupScheduleBlocksByWeekday } from './WeeklyCalendar.blocks';
 import { groupOffersByWeekday } from './WeeklyCalendar.offers';
 import { legendDotByStatus, weeklyCalendarStyles as s } from './WeeklyCalendar.styles';
 import { WeekNavigation } from './WeekNavigation';
@@ -33,13 +34,16 @@ const LEGEND_STATUSES: PanelBookingStatus[] = [
  * vista de día móvil (pestañas).
  *
  * Los huecos liberados con descuento sin vender se pintan como bloques
- * discontinuos con el % vigente y su opción de retirarlos.
+ * discontinuos con el % vigente y su opción de retirarlos. Los bloqueos
+ * puntuales de agenda, como franjas rayadas que se pueden quitar; solo
+ * amplían las horas visibles los que no tocan medianoche.
  *
  * Cuadrícula de 7 días desde `md`; por debajo, vista de un día.
  */
 export function WeeklyCalendar({
   bookings,
   slotOffers = [],
+  scheduleBlocks = [],
   week,
   locale,
   readOnly,
@@ -47,10 +51,11 @@ export function WeeklyCalendar({
 }: WeeklyCalendarProps) {
   const t = useTranslations('providerPanel.calendar');
   const rows = buildBookingActionRows(bookings, now);
-  const hours = getHoursRange(rows, slotOffers);
+  const hours = getHoursRange(rows, [...slotOffers, ...getScheduleBlockRangeSpans(scheduleBlocks)]);
   const formatPrice = (cents: number) => formatCurrencyFromCents(cents, locale);
   const grouped = groupRowsByWeekday(rows, hours[0], formatPrice);
   const groupedOffers = groupOffersByWeekday(slotOffers, hours[0], grouped, formatPrice);
+  const groupedBlocks = groupScheduleBlocksByWeekday(scheduleBlocks, hours);
   const { days, nav } = week;
 
   return (
@@ -100,6 +105,7 @@ export function WeeklyCalendar({
                   <CalendarDayColumn
                     positioned={grouped[day.key]}
                     offers={groupedOffers[day.key]}
+                    blocks={groupedBlocks[day.key]}
                     hours={hours}
                     locale={locale}
                     readOnly={readOnly}
@@ -116,6 +122,7 @@ export function WeeklyCalendar({
         days={days}
         grouped={grouped}
         groupedOffers={groupedOffers}
+        groupedBlocks={groupedBlocks}
         hours={hours}
         locale={locale}
         readOnly={readOnly}
@@ -133,6 +140,10 @@ export function WeeklyCalendar({
         <span className={s.legendChip}>
           <span className={s.legendDotOffer} aria-hidden />
           {t('slotOffers.block.legend')}
+        </span>
+        <span className={s.legendChip}>
+          <span className={s.legendDotBlock} aria-hidden />
+          {t('scheduleBlocks.legend')}
         </span>
       </div>
     </div>
