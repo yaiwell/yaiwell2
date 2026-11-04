@@ -120,7 +120,7 @@
     },
     "categories": {
       "title": "Beliebte Kategorien",
-      "subtitle": "Diese Woche besonders gefragt in der Community.",
+      "subtitle": "Finde, worauf du heute Lust hast.",
       "peluqueria": "Friseur",
       "masajes": "Massagen",
       "manicura": "Maniküre",
@@ -857,7 +857,8 @@
           "INTERNAL": "Die Antwort konnte nicht gesendet werden. Bitte versuche es in einigen Sekunden erneut."
         }
       },
-      "empty": "Keine Bewertungen entsprechen den Filtern."
+      "empty": "Keine Bewertungen entsprechen den Filtern.",
+      "emptyNone": "Du hast noch keine Bewertungen. Sie erscheinen hier, sobald deine Kundschaft eine abgeschlossene Leistung bewertet."
     },
     "payments": {
       "title": "Zahlungen",
@@ -1636,7 +1637,7 @@
       "subtitle": "Yaiwell ist der Marktplatz für Beauty, Wellness und Sport, auf dem deine Kunden dich finden, wenn sie bereit zum Buchen sind.",
       "ctaPrimary": "Kostenlos starten",
       "ctaSecondary": "So funktioniert's",
-      "trustNote": "Ohne Bindung · Ohne Anmeldegebühr · Sofortige Auszahlung",
+      "trustNote": "Keine Mindestlaufzeit · Keine Einrichtungsgebühr · Automatische wöchentliche Auszahlung",
       "mockBadge": "Buchungen live",
       "mockBookingService": "Schnitt + Waschen",
       "mockBookingClient": "Marta · 18:30",
@@ -1647,7 +1648,7 @@
     "benefits": {
       "eyebrow": "Vorteile",
       "title": "Damit du nur noch die Türen aufschließen musst.",
-      "subtitle": "Wir kümmern uns um Marketing, Erinnerungen und Zahlungen. Du widmest deine Zeit dem, was du am besten kannst.",
+      "subtitle": "Wir kümmern uns um Erinnerungen und Zahlungen. Du widmest dich dem, was du gut kannst.",
       "items": {
         "liveBookings": {
           "title": "Buchungen in Echtzeit",
@@ -1671,7 +1672,7 @@
       "eyebrow": "Tarife",
       "title": "Starte kostenlos. Wachse, wenn es dir passt.",
       "subtitle": "Du zahlst nur Provision auf das, was gebucht wird. Die Monatsgebühr senkt die Provision und schaltet Premium-Funktionen frei.",
-      "popularBadge": "Am beliebtesten",
+      "popularBadge": "Empfohlen",
       "perMonth": "/Monat",
       "commission": "Provision {rate}",
       "ctaStart": "Loslegen",
@@ -1679,7 +1680,7 @@
         "free": {
           "name": "Kostenlos",
           "tagline": "Um Yaiwell unverbindlich auszuprobieren.",
-          "feature1": "1 veröffentlichte Leistung",
+          "feature1": "1 Leistung und bis zu 3 Profis",
           "feature2": "Unbegrenzte Online-Buchungen",
           "feature3": "Sichere Zahlung mit Stripe",
           "feature4": "Öffentliches Profil im Marktplatz"
@@ -1687,7 +1688,7 @@
         "basic": {
           "name": "Basis",
           "tagline": "Für Profis, die ihren Kalender füllen wollen.",
-          "feature1": "Bis zu 10 veröffentlichte Leistungen",
+          "feature1": "Bis zu 10 Leistungen und 10 Profis",
           "feature2": "Automatische E-Mail-Erinnerungen",
           "feature3": "Wöchentliche Übersicht über Umsatz und Buchungen",
           "feature4": "E-Mail-Support innerhalb von 48 Std."
@@ -1696,14 +1697,14 @@
           "name": "Pro",
           "tagline": "Für Studios mit großem Angebot.",
           "feature1": "Bis zu 50 veröffentlichte Leistungen",
-          "feature2": "Optionale Zahlung vor Ort",
+          "feature2": "Bis zu 15 Profis",
           "feature3": "Last-Minute-Termin-Aktionen",
           "feature4": "Priorisierter Support innerhalb von 24 Std."
         },
         "premium": {
           "name": "Premium",
           "tagline": "Für Betriebe, die keine Grenzen wollen.",
-          "feature1": "Unbegrenzte Leistungen",
+          "feature1": "Unbegrenzte Leistungen und Profis",
           "feature2": "Die niedrigste Provision bei Yaiwell",
           "feature3": "Persönlicher Account Manager",
           "feature4": "Onboarding mit Unterstützung vom Team"
@@ -1716,7 +1717,7 @@
       "items": {
         "start": {
           "question": "Wie lange dauert es, bis ich Buchungen erhalte?",
-          "answer": "Sobald dein Account verifiziert ist (durchschnittlich in 24 Werkstunden), wird dein Profil veröffentlicht und du kannst noch am selben Tag Buchungen erhalten. Du brauchst nur deinen Kalender und deine geladenen Services."
+          "answer": "Sobald dein Account verifiziert ist, wird dein Profil veröffentlicht und du kannst noch am selben Tag Buchungen erhalten. Du brauchst nur deinen Kalender und deine geladenen Services."
         },
         "payouts": {
           "question": "Wie bekomme ich das Geld für die Buchungen?",
@@ -1844,7 +1845,7 @@
     },
     "badge": "Anbieter-Onboarding",
     "title": "Richte dein Geschäft ein",
-    "subtitle": "Fünf schnelle Schritte, um Buchungen zu empfangen.",
+    "subtitle": "Sechs schnelle Schritte, um Buchungen zu erhalten.",
     "stepper": {
       "step1": "Typ",
       "step2": "Daten",

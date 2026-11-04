@@ -120,7 +120,7 @@
     },
     "categories": {
       "title": "Categories populars",
-      "subtitle": "El més reservat per la comunitat aquesta setmana.",
+      "subtitle": "Troba el que et ve de gust avui.",
       "peluqueria": "Perruqueria",
       "masajes": "Massatges",
       "manicura": "Manicura",
@@ -857,7 +857,8 @@
           "INTERNAL": "No s'ha pogut enviar la resposta. Torna-ho a provar en uns segons."
         }
       },
-      "empty": "No hi ha valoracions que coincideixin amb els filtres."
+      "empty": "No hi ha valoracions que coincideixin amb els filtres.",
+      "emptyNone": "Encara no tens valoracions. Apareixeran aquí quan els teus clients valorin un servei finalitzat."
     },
     "payments": {
       "title": "Pagaments",
@@ -1636,7 +1637,7 @@
       "subtitle": "Yaiwell és el marketplace de bellesa, benestar i esport on els teus clients et troben quan estan a punt per reservar.",
       "ctaPrimary": "Comença gratis",
       "ctaSecondary": "Com funciona",
-      "trustNote": "Sense permanència · Sense cost d'alta · Cobra a l'instant",
+      "trustNote": "Sense permanència · Sense cost d’alta · Cobrament setmanal automàtic",
       "mockBadge": "Reserves en directe",
       "mockBookingService": "Tall + rentat",
       "mockBookingClient": "Marta · 18:30",
@@ -1647,7 +1648,7 @@
     "benefits": {
       "eyebrow": "Beneficis",
       "title": "Pensat perquè tu només hagis d'obrir les portes.",
-      "subtitle": "Nosaltres ens encarreguem del màrqueting, dels recordatoris i del cobrament. Tu dediques el temps al que fas bé.",
+      "subtitle": "Ens encarreguem dels recordatoris i el cobrament. Tu dediques el temps al que fas bé.",
       "items": {
         "liveBookings": {
           "title": "Reserves en directe",
@@ -1671,7 +1672,7 @@
       "eyebrow": "Plans",
       "title": "Comença gratis. Creix quan t'interessi.",
       "subtitle": "Només pagues comissió sobre el que reserves. La quota mensual baixa la comissió i desbloqueja funcions premium.",
-      "popularBadge": "Més escollit",
+      "popularBadge": "Recomanat",
       "perMonth": "/mes",
       "commission": "Comissió {rate}",
       "ctaStart": "Començar",
@@ -1679,7 +1680,7 @@
         "free": {
           "name": "Gratis",
           "tagline": "Per provar Yaiwell sense compromís.",
-          "feature1": "1 servei publicat",
+          "feature1": "1 servei i fins a 3 professionals",
           "feature2": "Reserves en línia il·limitades",
           "feature3": "Pagament segur amb Stripe",
           "feature4": "Fitxa pública al marketplace"
@@ -1687,7 +1688,7 @@
         "basic": {
           "name": "Bàsic",
           "tagline": "Per a professionals que comencen a omplir agenda.",
-          "feature1": "Fins a 10 serveis publicats",
+          "feature1": "Fins a 10 serveis i 10 professionals",
           "feature2": "Recordatoris automàtics per email",
           "feature3": "Resum setmanal d’ingressos i reserves",
           "feature4": "Suport per email en 48 h"
@@ -1696,14 +1697,14 @@
           "name": "Pro",
           "tagline": "Per a centres amb una carta àmplia.",
           "feature1": "Fins a 50 serveis publicats",
-          "feature2": "Pagament al local opcional",
+          "feature2": "Fins a 15 professionals",
           "feature3": "Promocions de forats solts",
           "feature4": "Suport prioritari en 24 h"
         },
         "premium": {
           "name": "Premium",
           "tagline": "Per a negocis que no volen límits.",
-          "feature1": "Serveis il·limitats",
+          "feature1": "Serveis i professionals il·limitats",
           "feature2": "La comissió més baixa de Yaiwell",
           "feature3": "Account manager dedicat",
           "feature4": "Onboarding assistit per l'equip"
@@ -1716,7 +1717,7 @@
       "items": {
         "start": {
           "question": "Quant trigo a començar a rebre reserves?",
-          "answer": "Un cop verificat el teu compte (de mitjana en 24 h laborables) la teva fitxa es publica i pots rebre reserves el mateix dia. Només necessites la teva agenda i els teus serveis carregats."
+          "answer": "Un cop verificat el teu compte, la teva fitxa es publica i pots rebre reserves el mateix dia. Només necessites la teva agenda i els teus serveis carregats."
         },
         "payouts": {
           "question": "Com cobro el que em reserven?",
@@ -1844,7 +1845,7 @@
     },
     "badge": "Onboarding del proveïdor",
     "title": "Dona d'alta el teu negoci",
-    "subtitle": "Cinc passos ràpids per començar a rebre reserves.",
+    "subtitle": "Sis passos ràpids per començar a rebre reserves.",
     "stepper": {
       "step1": "Tipus",
       "step2": "Dades",

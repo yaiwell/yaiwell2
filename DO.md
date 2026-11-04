@@ -12,6 +12,14 @@
 
 ## 2026-11-04
 
+### 2026-11-04 — Textos veraces y flecos de idioma
+
+P1/P2 (orquestador, en los 5 idiomas).
+
+- **Textos**: «Seis pasos» en el alta; cobro semanal en lugar de «al instante»; fuera «lo más reservado por la comunidad», «de media en 24 h», «nos encargamos del marketing» y «más elegido» (ahora «recomendado»). Los planes muestran el límite de profesionales y Pro deja de presentar el pago en el local como exclusivo. La privacidad ya menciona las cookies de preferencias.
+- **Panel**: estado vacío propio con 0 valoraciones; los errores de servicios y fotos salen traducidos en vez del texto del servidor en castellano.
+- **Alta**: email y Google guardan el idioma en `unsafeMetadata.locale`, así que `users.locale` y los correos respetan el idioma de registro.
+
 ### 2026-11-04 — Francés como quinto idioma
 
 P5/P11 (cableado por el orquestador, 4 agentes de traducción con glosario y validador común, 1 revisor nativo).

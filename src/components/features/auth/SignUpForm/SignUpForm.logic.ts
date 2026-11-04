@@ -2,6 +2,7 @@
 
 import { useUser } from '@clerk/nextjs';
 import { useSignUp } from '@clerk/nextjs/legacy';
+import { useLocale } from 'next-intl';
 import { useCallback, useMemo, useState, type FormEvent } from 'react';
 import { z } from 'zod';
 
@@ -114,6 +115,7 @@ const providerSchema = withPasswordMatch(
  * intención de quien pulsa un CTA en `/profesionales`.
  */
 export function useSignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpFormProps = {}) {
+  const locale = useLocale();
   const router = useRouter();
   const { signUp, setActive, isLoaded } = useSignUp();
   const { user } = useUser();
@@ -207,6 +209,8 @@ export function useSignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpF
           // `unsafeMetadata` y el webhook server-side la promociona.
           unsafeMetadata: {
             role,
+            // El webhook guarda este idioma en `users.locale` para los correos.
+            locale,
             fullName: draft.fullName.trim(),
             ...(role === 'provider' && { businessName: draft.businessName.trim() }),
             // Guardamos el plan elegido en la landing para no perder la
@@ -226,7 +230,7 @@ export function useSignUpForm({ initialRole, initialPlan, redirectUrl }: SignUpF
         setIsSubmitting(false);
       }
     },
-    [applyClerkError, draft, initialPlan, isLoaded, isSubmitting, role, signUp, validate],
+    [applyClerkError, draft, initialPlan, isLoaded, isSubmitting, locale, role, signUp, validate],
   );
 
   const submitVerification = useCallback(

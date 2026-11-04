@@ -54,7 +54,7 @@
       {
         "heading": "Cookies",
         "paragraphs": [
-          "Solo usamos cookies técnicas imprescindibles: las de tu sesión (Clerk) y las que Stripe utiliza durante el pago para prevenir el fraude. No usamos cookies de analítica ni de publicidad. Los mapas cargan imágenes desde los servidores de OpenStreetMap, que reciben tu dirección IP para poder enviarlas."
+          "Solo usamos cookies técnicas imprescindibles: las de tu sesión (Clerk), las que recuerdan tus preferencias (idioma y tema) y las que Stripe utiliza durante el pago para prevenir el fraude. No usamos cookies de analítica ni de publicidad. Los mapas cargan imágenes desde los servidores de OpenStreetMap, que reciben tu dirección IP para poder enviarlas."
         ]
       },
       {

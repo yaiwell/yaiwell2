@@ -56,7 +56,7 @@
       {
         "heading": "Galetes",
         "paragraphs": [
-          "Només fem servir galetes tècniques imprescindibles: les de la teva sessió (Clerk) i les que Stripe utilitza durant el pagament per prevenir el frau. No fem servir galetes d’analítica ni de publicitat. Els mapes carreguen imatges des dels servidors d’OpenStreetMap, que reben la teva adreça IP per poder enviar-les."
+          "Només fem servir galetes tècniques imprescindibles: les de la teva sessió (Clerk), les que recorden les teves preferències (idioma i tema) i les que Stripe utilitza durant el pagament per prevenir el frau. No fem servir galetes d’analítica ni de publicitat. Els mapes carreguen imatges des dels servidors d’OpenStreetMap, que reben la teva adreça IP per poder enviar-les."
         ]
       },
       {

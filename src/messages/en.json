@@ -120,7 +120,7 @@
     },
     "categories": {
       "title": "Popular categories",
-      "subtitle": "Most booked by the community this week.",
+      "subtitle": "Find what you feel like today.",
       "peluqueria": "Hair",
       "masajes": "Massage",
       "manicura": "Manicure",
@@ -857,7 +857,8 @@
           "INTERNAL": "Could not send the reply. Please try again in a few seconds."
         }
       },
-      "empty": "No reviews match these filters."
+      "empty": "No reviews match these filters.",
+      "emptyNone": "You have no reviews yet. They will appear here once your clients review a completed service."
     },
     "payments": {
       "title": "Payments",
@@ -1636,7 +1637,7 @@
       "subtitle": "Yaiwell is the beauty, wellness and sport marketplace where your clients find you when they're ready to book.",
       "ctaPrimary": "Start free",
       "ctaSecondary": "How it works",
-      "trustNote": "No lock-in · No sign-up fee · Get paid instantly",
+      "trustNote": "No lock-in · No setup fee · Automatic weekly payouts",
       "mockBadge": "Live bookings",
       "mockBookingService": "Cut + wash",
       "mockBookingClient": "Marta · 18:30",
@@ -1647,7 +1648,7 @@
     "benefits": {
       "eyebrow": "Benefits",
       "title": "Designed so all you have to do is open the doors.",
-      "subtitle": "We handle marketing, reminders and payments. You spend your time on what you do best.",
+      "subtitle": "We take care of reminders and payments. You spend your time on what you do best.",
       "items": {
         "liveBookings": {
           "title": "Live bookings",
@@ -1671,7 +1672,7 @@
       "eyebrow": "Plans",
       "title": "Start free. Grow when it suits you.",
       "subtitle": "You only pay commission on what you book. The monthly fee lowers the commission and unlocks premium features.",
-      "popularBadge": "Most popular",
+      "popularBadge": "Recommended",
       "perMonth": "/month",
       "commission": "{rate} commission",
       "ctaStart": "Get started",
@@ -1679,7 +1680,7 @@
         "free": {
           "name": "Free",
           "tagline": "Try Yaiwell with no strings attached.",
-          "feature1": "1 published service",
+          "feature1": "1 service and up to 3 professionals",
           "feature2": "Unlimited online bookings",
           "feature3": "Secure payment with Stripe",
           "feature4": "Public profile on the marketplace"
@@ -1687,7 +1688,7 @@
         "basic": {
           "name": "Basic",
           "tagline": "For professionals starting to fill their diary.",
-          "feature1": "Up to 10 published services",
+          "feature1": "Up to 10 services and 10 professionals",
           "feature2": "Automatic email reminders",
           "feature3": "Weekly summary of revenue and bookings",
           "feature4": "Email support within 48 h"
@@ -1696,14 +1697,14 @@
           "name": "Pro",
           "tagline": "For venues with a wide menu.",
           "feature1": "Up to 50 published services",
-          "feature2": "Optional pay-at-venue",
+          "feature2": "Up to 15 professionals",
           "feature3": "Last-minute slot promotions",
           "feature4": "Priority support within 24 h"
         },
         "premium": {
           "name": "Premium",
           "tagline": "For businesses that want no limits.",
-          "feature1": "Unlimited services",
+          "feature1": "Unlimited services and professionals",
           "feature2": "The lowest commission on Yaiwell",
           "feature3": "Dedicated account manager",
           "feature4": "Onboarding assisted by our team"
@@ -1716,7 +1717,7 @@
       "items": {
         "start": {
           "question": "How long until I start receiving bookings?",
-          "answer": "Once your account is verified (on average within 24 working hours), your profile goes live and you can receive bookings the same day. All you need is your calendar and your services loaded."
+          "answer": "Once your account is verified, your profile goes live and you can receive bookings the same day. All you need is your calendar and your services loaded."
         },
         "payouts": {
           "question": "How do I get paid for bookings?",
@@ -1844,7 +1845,7 @@
     },
     "badge": "Provider onboarding",
     "title": "Set up your business",
-    "subtitle": "Five quick steps to start receiving bookings.",
+    "subtitle": "Six quick steps to start receiving bookings.",
     "stepper": {
       "step1": "Type",
       "step2": "Details",

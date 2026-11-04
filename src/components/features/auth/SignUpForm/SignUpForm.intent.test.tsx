@@ -124,6 +124,7 @@ describe('SignUpForm — intención de alta desde la URL', () => {
             role: 'provider',
             businessName: 'Estudio Beauly',
             selectedPlan: 'pro',
+            locale: 'es',
           }),
         }),
       );

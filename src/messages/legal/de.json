@@ -56,7 +56,7 @@
       {
         "heading": "Cookies",
         "paragraphs": [
-          "Wir verwenden nur technisch notwendige Cookies: die für deine Sitzung (Clerk) und die, die Stripe beim Bezahlen zur Betrugsprävention nutzt. Wir verwenden keine Analyse- oder Werbe-Cookies. Die Karten laden Bilder von den Servern von OpenStreetMap, die dafür deine IP-Adresse erhalten."
+          "Wir verwenden nur technisch notwendige Cookies: die für deine Sitzung (Clerk), die, die deine Einstellungen (Sprache und Design) speichern, und die, die Stripe beim Bezahlen zur Betrugsprävention nutzt. Wir verwenden keine Analyse- oder Werbe-Cookies. Die Karten laden Bilder von den Servern von OpenStreetMap, die dafür deine IP-Adresse erhalten."
         ]
       },
       {

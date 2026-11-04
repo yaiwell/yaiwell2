@@ -120,7 +120,7 @@
     },
     "categories": {
       "title": "Categorías populares",
-      "subtitle": "Lo más reservado por la comunidad esta semana.",
+      "subtitle": "Encuentra lo que te apetece hoy.",
       "peluqueria": "Peluquería",
       "masajes": "Masajes",
       "manicura": "Manicura",
@@ -857,7 +857,8 @@
           "INTERNAL": "No se ha podido enviar la respuesta. Inténtalo en unos segundos."
         }
       },
-      "empty": "No hay valoraciones que coincidan con los filtros."
+      "empty": "No hay valoraciones que coincidan con los filtros.",
+      "emptyNone": "Aún no tienes valoraciones. Aparecerán aquí cuando tus clientes valoren un servicio finalizado."
     },
     "payments": {
       "title": "Pagos",
@@ -1636,7 +1637,7 @@
       "subtitle": "Yaiwell es el marketplace de belleza, bienestar y deporte donde tus clientes te encuentran cuando están listos para reservar.",
       "ctaPrimary": "Empezar gratis",
       "ctaSecondary": "Cómo funciona",
-      "trustNote": "Sin permanencia · Sin coste de alta · Cobra al instante",
+      "trustNote": "Sin permanencia · Sin coste de alta · Cobro semanal automático",
       "mockBadge": "Reservas en directo",
       "mockBookingService": "Corte + lavado",
       "mockBookingClient": "Marta · 18:30",
@@ -1647,7 +1648,7 @@
     "benefits": {
       "eyebrow": "Beneficios",
       "title": "Pensado para que tú solo tengas que abrir las puertas.",
-      "subtitle": "Nos encargamos del marketing, los recordatorios y el cobro. Tú dedicas el tiempo a lo que haces bien.",
+      "subtitle": "Nos encargamos de los recordatorios y el cobro. Tú dedicas el tiempo a lo que haces bien.",
       "items": {
         "liveBookings": {
           "title": "Reservas en directo",
@@ -1671,7 +1672,7 @@
       "eyebrow": "Planes",
       "title": "Empieza gratis. Crece cuando te interese.",
       "subtitle": "Solo pagas comisión sobre lo que reservas. La cuota mensual baja la comisión y desbloquea funciones premium.",
-      "popularBadge": "Más elegido",
+      "popularBadge": "Recomendado",
       "perMonth": "/mes",
       "commission": "Comisión {rate}",
       "ctaStart": "Empezar",
@@ -1679,7 +1680,7 @@
         "free": {
           "name": "Gratis",
           "tagline": "Para probar Yaiwell sin compromiso.",
-          "feature1": "1 servicio publicado",
+          "feature1": "1 servicio y hasta 3 profesionales",
           "feature2": "Reservas online ilimitadas",
           "feature3": "Pago seguro con Stripe",
           "feature4": "Ficha pública en el marketplace"
@@ -1687,7 +1688,7 @@
         "basic": {
           "name": "Básico",
           "tagline": "Para profesionales que empiezan a llenar agenda.",
-          "feature1": "Hasta 10 servicios publicados",
+          "feature1": "Hasta 10 servicios y 10 profesionales",
           "feature2": "Recordatorios automáticos por email",
           "feature3": "Resumen semanal de ingresos y reservas",
           "feature4": "Soporte por email en 48 h"
@@ -1696,14 +1697,14 @@
           "name": "Pro",
           "tagline": "Para centros con una carta amplia.",
           "feature1": "Hasta 50 servicios publicados",
-          "feature2": "Pago en el local opcional",
+          "feature2": "Hasta 15 profesionales",
           "feature3": "Promociones de huecos sueltos",
           "feature4": "Soporte prioritario en 24 h"
         },
         "premium": {
           "name": "Premium",
           "tagline": "Para negocios que no quieren límites.",
-          "feature1": "Servicios ilimitados",
+          "feature1": "Servicios y profesionales ilimitados",
           "feature2": "La comisión más baja de Yaiwell",
           "feature3": "Account manager dedicado",
           "feature4": "Onboarding asistido por el equipo"
@@ -1716,7 +1717,7 @@
       "items": {
         "start": {
           "question": "¿Cuánto tardo en empezar a recibir reservas?",
-          "answer": "Una vez verificada tu cuenta (de media en 24 h laborables) tu ficha se publica y puedes recibir reservas el mismo día. Solo necesitas tu agenda y tus servicios cargados."
+          "answer": "Una vez verificada tu cuenta, tu ficha se publica y puedes recibir reservas el mismo día. Solo necesitas tu agenda y tus servicios cargados."
         },
         "payouts": {
           "question": "¿Cómo cobro lo que me reservan?",
@@ -1844,7 +1845,7 @@
     },
     "badge": "Onboarding del proveedor",
     "title": "Da de alta tu negocio",
-    "subtitle": "Cinco pasos rápidos para empezar a recibir reservas.",
+    "subtitle": "Seis pasos rápidos para empezar a recibir reservas.",
     "stepper": {
       "step1": "Tipo",
       "step2": "Datos",

@@ -75,7 +75,7 @@ describe('GoogleAuthButton', () => {
       expect(signUpRedirect).toHaveBeenCalledWith(
         expect.objectContaining({
           strategy: 'oauth_google',
-          unsafeMetadata: { role: 'provider', businessName: 'Studio Luz' },
+          unsafeMetadata: { role: 'provider', businessName: 'Studio Luz', locale: 'es' },
           legalAccepted: true,
         }),
       ),

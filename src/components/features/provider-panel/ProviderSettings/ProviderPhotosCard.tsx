@@ -51,7 +51,7 @@ export function ProviderPhotosCard({
     startTransition(async () => {
       const result = await updateProviderPhotosAction(locale, urls);
       if (!result.ok) {
-        setSubmitError(result.message ?? errorMessage);
+        setSubmitError(errorMessage);
       }
     });
   }

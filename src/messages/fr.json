@@ -120,7 +120,7 @@
     },
     "categories": {
       "title": "Catégories populaires",
-      "subtitle": "Les plus réservées par la communauté cette semaine.",
+      "subtitle": "Trouvez ce qui vous fait envie aujourd’hui.",
       "peluqueria": "Coiffure",
       "masajes": "Massages",
       "manicura": "Manucure",
@@ -857,7 +857,8 @@
           "INTERNAL": "Impossible d’envoyer la réponse. Réessayez dans quelques secondes."
         }
       },
-      "empty": "Aucun avis ne correspond aux filtres."
+      "empty": "Aucun avis ne correspond aux filtres.",
+      "emptyNone": "Vous n’avez pas encore d’avis. Ils apparaîtront ici lorsque vos clients évalueront une prestation terminée."
     },
     "payments": {
       "title": "Paiements",
@@ -1636,7 +1637,7 @@
       "subtitle": "Yaiwell est la marketplace de beauté, de bien-être et de sport où vos clients vous trouvent quand ils sont prêts à réserver.",
       "ctaPrimary": "Commencer gratuitement",
       "ctaSecondary": "Comment ça marche",
-      "trustNote": "Sans engagement · Sans frais d’inscription · Encaissement immédiat",
+      "trustNote": "Sans engagement · Sans frais d’inscription · Virement hebdomadaire automatique",
       "mockBadge": "Réservations en direct",
       "mockBookingService": "Coupe + shampoing",
       "mockBookingClient": "Marta · 18:30",
@@ -1647,7 +1648,7 @@
     "benefits": {
       "eyebrow": "Avantages",
       "title": "Conçu pour que vous n’ayez plus qu’à ouvrir vos portes.",
-      "subtitle": "Nous nous occupons du marketing, des rappels et de l’encaissement. Vous consacrez votre temps à ce que vous faites bien.",
+      "subtitle": "Nous nous occupons des rappels et de l’encaissement. Vous consacrez votre temps à ce que vous faites le mieux.",
       "items": {
         "liveBookings": {
           "title": "Réservations en direct",
@@ -1671,7 +1672,7 @@
       "eyebrow": "Formules",
       "title": "Commencez gratuitement. Évoluez quand vous le souhaitez.",
       "subtitle": "Vous ne payez de commission que sur vos réservations. L’abonnement mensuel réduit la commission et débloque des fonctions premium.",
-      "popularBadge": "La plus choisie",
+      "popularBadge": "Recommandée",
       "perMonth": "/mois",
       "commission": "Commission {rate}",
       "ctaStart": "Commencer",
@@ -1679,7 +1680,7 @@
         "free": {
           "name": "Gratuite",
           "tagline": "Pour essayer Yaiwell sans engagement.",
-          "feature1": "1 service publié",
+          "feature1": "1 service et jusqu’à 3 professionnels",
           "feature2": "Réservations en ligne illimitées",
           "feature3": "Paiement sécurisé avec Stripe",
           "feature4": "Fiche publique sur la marketplace"
@@ -1687,7 +1688,7 @@
         "basic": {
           "name": "Basique",
           "tagline": "Pour les professionnels qui commencent à remplir leur agenda.",
-          "feature1": "Jusqu’à 10 services publiés",
+          "feature1": "Jusqu’à 10 services et 10 professionnels",
           "feature2": "Rappels automatiques par e-mail",
           "feature3": "Résumé hebdomadaire des revenus et des réservations",
           "feature4": "Assistance par e-mail sous 48 h"
@@ -1696,14 +1697,14 @@
           "name": "Pro",
           "tagline": "Pour les établissements à la carte étendue.",
           "feature1": "Jusqu’à 50 services publiés",
-          "feature2": "Paiement sur place en option",
+          "feature2": "Jusqu’à 15 professionnels",
           "feature3": "Promotions sur les créneaux isolés",
           "feature4": "Assistance prioritaire sous 24 h"
         },
         "premium": {
           "name": "Premium",
           "tagline": "Pour les établissements qui ne veulent pas de limites.",
-          "feature1": "Services illimités",
+          "feature1": "Services et professionnels illimités",
           "feature2": "La commission la plus basse de Yaiwell",
           "feature3": "Responsable de compte dédié",
           "feature4": "Mise en route accompagnée par l’équipe"
@@ -1716,7 +1717,7 @@
       "items": {
         "start": {
           "question": "En combien de temps puis-je recevoir des réservations ?",
-          "answer": "Une fois votre compte vérifié (en moyenne sous 24 h ouvrées), votre fiche est publiée et vous pouvez recevoir des réservations le jour même. Il vous suffit d’avoir renseigné votre agenda et vos services."
+          "answer": "Une fois votre compte vérifié, votre fiche est publiée et vous pouvez recevoir des réservations le jour même. Il vous suffit d’avoir renseigné votre agenda et vos services."
         },
         "payouts": {
           "question": "Comment mes réservations me sont-elles payées ?",
@@ -1844,7 +1845,7 @@
     },
     "badge": "Inscription du prestataire",
     "title": "Inscrivez votre établissement",
-    "subtitle": "Cinq étapes rapides pour commencer à recevoir des réservations.",
+    "subtitle": "Six étapes rapides pour commencer à recevoir des réservations.",
     "stepper": {
       "step1": "Type",
       "step2": "Infos",

@@ -116,7 +116,7 @@ export function ReceivedReviews({ reviews, locale }: ReceivedReviewsProps) {
 
       {filteredReviews.length === 0 ? (
         <div className={s.empty} data-component="received-reviews-empty">
-          {t('empty')}
+          {reviews.length === 0 ? t('emptyNone') : t('empty')}
         </div>
       ) : (
         <ul className={s.list}>

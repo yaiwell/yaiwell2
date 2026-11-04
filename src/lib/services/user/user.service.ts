@@ -169,9 +169,8 @@ function isSelfServiceRole(value: unknown): value is UserRole {
 }
 
 /**
- * Resuelve el locale del usuario. Solo aceptamos `es` y `ca` (los del
- * enum). Cualquier otro valor (ej. `en` que aún no soportamos) cae al
- * default `'es'`.
+ * Resuelve el locale del usuario. Solo aceptamos los valores del enum;
+ * cualquier otro cae al default `'es'`.
  */
 function resolveLocale(payload: UserJSON): Locale {
   const fromUnsafe = payload.unsafe_metadata?.locale;

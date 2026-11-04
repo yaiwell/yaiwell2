@@ -69,7 +69,8 @@ export function useGoogleAuth({ mode, redirectUrl, prepareSignUp }: GoogleAuthBu
         setIsRedirecting(true);
         await signUp.authenticateWithRedirect({
           ...base,
-          unsafeMetadata: params.unsafeMetadata,
+          // El webhook guarda este idioma en `users.locale` para los correos.
+          unsafeMetadata: { ...params.unsafeMetadata, locale },
           legalAccepted: true,
         });
         return;

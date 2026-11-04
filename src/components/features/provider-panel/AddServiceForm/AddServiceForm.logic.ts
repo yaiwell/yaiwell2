@@ -168,7 +168,8 @@ export function useAddServiceSubmit({
         setPlanLimitReached(true);
         return;
       }
-      setSubmitError(result.message ?? translateError(result.code));
+      // Solo el código: `message` llega en castellano y dejaría sin traducir al resto.
+      setSubmitError(translateError(result.code));
     });
   }
 

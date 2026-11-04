@@ -49,5 +49,6 @@ describe('ReceivedReviews', () => {
     expect(document.querySelector('[data-component="received-reviews-summary"]')).toBeNull();
     expect(screen.queryByText(/sobre 5/)).toBeNull();
     expect(document.querySelector('[data-component="received-reviews-empty"]')).not.toBeNull();
+    expect(screen.getByText(es.providerPanel.reviews.emptyNone)).toBeTruthy();
   });
 });
