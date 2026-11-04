@@ -39,14 +39,14 @@ export function tierFromLookupKey(lookupKey: string | null | undefined): string 
 }
 
 /** Idiomas de la web que Stripe sabe pintar en Checkout, portal y facturas. */
-export type StripeUiLocale = 'es' | 'en' | 'de';
+export type StripeUiLocale = 'es' | 'en' | 'de' | 'fr';
 
 /**
  * Idioma para las páginas y facturas de Stripe. Stripe no tiene catalán:
  * quien navega en `ca` ve Stripe en castellano, que es lo que todo
  * usuario catalán lee, en vez de en inglés por defecto.
  */
-export function toStripeLocale(locale: 'es' | 'ca' | 'en' | 'de'): StripeUiLocale {
+export function toStripeLocale(locale: 'es' | 'ca' | 'en' | 'de' | 'fr'): StripeUiLocale {
   return locale === 'ca' ? 'es' : locale;
 }
 

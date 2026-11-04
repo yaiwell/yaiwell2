@@ -46,6 +46,7 @@ function pickDescription(raw: unknown, locale: AppLocale): string {
     ca: desc.ca ?? '',
     en: desc.en,
     de: desc.de,
+    fr: desc.fr,
   };
   return pickLocalized(normalized, locale);
 }
@@ -63,6 +64,7 @@ function pickCategoryName(raw: unknown, locale: AppLocale): string {
     ca: cat.ca ?? '',
     en: cat.en,
     de: cat.de,
+    fr: cat.fr,
   };
   return pickLocalized(normalized, locale);
 }

@@ -111,12 +111,12 @@ describe('normalizeClerkUser', () => {
     // `en` y `de` caían a `es` porque `VALID_LOCALES` seguía listando
     // solo es/ca: quien se registraba desde /en o /de quedaba guardado
     // en castellano y recibía los emails en un idioma que no eligió.
-    for (const locale of ['es', 'ca', 'en', 'de'] as const) {
+    for (const locale of ['es', 'ca', 'en', 'de', 'fr'] as const) {
       expect(normalizeClerkUser(buildClerkUser({ unsafe_metadata: { locale } })).locale).toBe(
         locale,
       );
     }
-    expect(normalizeClerkUser(buildClerkUser({ unsafe_metadata: { locale: 'fr' } })).locale).toBe(
+    expect(normalizeClerkUser(buildClerkUser({ unsafe_metadata: { locale: 'pt' } })).locale).toBe(
       'es',
     );
   });

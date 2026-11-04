@@ -71,7 +71,7 @@ describe('GET /api/geocoding/forward', () => {
   });
 
   it('devuelve 400 si language no es es/ca/en/de', async () => {
-    const res = await GET(buildRequest('/api/geocoding/forward?q=Barcelona&language=fr'));
+    const res = await GET(buildRequest('/api/geocoding/forward?q=Barcelona&language=pt'));
     expect(res.status).toBe(400);
   });
 

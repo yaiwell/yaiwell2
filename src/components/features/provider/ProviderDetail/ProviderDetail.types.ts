@@ -26,5 +26,5 @@ export interface ProviderDetailProps {
   team: PublicProfessional[];
   /** Horario real del provider o `null` si no se pudo cargar. */
   schedule: WeeklySchedule | null;
-  locale: 'es' | 'ca' | 'en' | 'de';
+  locale: 'es' | 'ca' | 'en' | 'de' | 'fr';
 }

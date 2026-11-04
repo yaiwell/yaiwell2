@@ -13,7 +13,7 @@ Eres el auditor de diseño de Yaiwell: marketplace de belleza, bienestar y depor
 
 - Estética: premium, cálida, unisex, tonos tierra; shadcn/ui estilo new-york con base `stone`; tipografía display + sans (ver `src/app/globals.css` y `components.json`).
 - Mobile-first (375–414 px), luego escala a desktop. Futura app nativa (React Native) reutilizará patrones.
-- 4 idiomas (es, ca, en, de): los textos alemanes son largos, el diseño debe aguantarlos.
+- 5 idiomas (es, ca, en, de, fr): los textos alemanes y franceses son largos, el diseño debe aguantarlos.
 - `CLAUDE.md` prohíbe copiar UX/branding de Treatwell, Booksy o Fresha: compara con ellos solo como referencia de mercado.
 
 ## Método

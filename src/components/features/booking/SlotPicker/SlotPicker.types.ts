@@ -9,7 +9,7 @@ import type { BookingSlot } from '@/lib/services/availability/availability.clien
  * union del módulo de i18n) porque el componente solo necesita decidir
  * el formateador de `Intl`, no acoplarse a la configuración de rutas.
  */
-export type SlotPickerLocale = 'es' | 'ca' | 'en' | 'de';
+export type SlotPickerLocale = 'es' | 'ca' | 'en' | 'de' | 'fr';
 
 export interface SlotPickerProps {
   providerId: string;

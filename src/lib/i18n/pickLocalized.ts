@@ -38,5 +38,5 @@ export function pickLocalized(text: LocalizedText, locale: AppLocale): string {
   if (typeof value === 'string' && value.length > 0) {
     return value;
   }
-  return text.es || text.ca || text.en || text.de || '';
+  return text.es || text.ca || text.en || text.de || text.fr || '';
 }

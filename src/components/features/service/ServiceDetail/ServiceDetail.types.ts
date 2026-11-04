@@ -4,7 +4,7 @@ import type { Provider, PublicProfessional, Service } from '@/types/domain';
  * Locales soportados en la ficha de servicio.
  * Coinciden con los locales configurados en `src/i18n/routing.ts`.
  */
-export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de' | 'fr';
 
 /**
  * Props del componente `ServiceDetail`.

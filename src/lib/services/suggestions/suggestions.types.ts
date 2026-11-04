@@ -8,4 +8,4 @@
  */
 
 /** Idiomas soportados por el endpoint de sugerencias. */
-export type SuggestionsLanguage = 'es' | 'ca' | 'en' | 'de';
+export type SuggestionsLanguage = 'es' | 'ca' | 'en' | 'de' | 'fr';

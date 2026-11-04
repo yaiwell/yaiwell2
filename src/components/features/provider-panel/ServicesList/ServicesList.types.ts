@@ -1,7 +1,7 @@
 import type { LocalizedText } from '@/types/domain';
 
 /** Locales soportados en la UI del panel. */
-export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de' | 'fr';
 
 /**
  * Estado visible del servicio en el panel: publicado o pausado.

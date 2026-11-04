@@ -38,7 +38,7 @@ const MIN_QUERY_LENGTH = 2;
  */
 export function useSearchAutocomplete(
   value: string,
-  locale: 'es' | 'ca' | 'en' | 'de',
+  locale: 'es' | 'ca' | 'en' | 'de' | 'fr',
   onValueChange: (next: string) => void,
   onSubmit: (value: string) => void,
   onSelectSuggestion: (suggestion: Suggestion) => void,

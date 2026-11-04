@@ -35,7 +35,7 @@ Codifican las reglas de `CLAUDE.md` en su propio prompt, así que **no hace falt
 | **db-migration-guard** | Solo lectura + MCP Supabase (`SELECT`) · memoria de proyecto | sonnet | Antes de commitear cambios en `prisma/schema.prisma`, `prisma/migrations/`, RLS o raw SQL. Diagnosticar datos reales de Supabase. Comprobar que el historial de migraciones local y remoto cuadran. | Aplicar migraciones o escribir en BD (lo hace el dev). |
 | **stripe-payments** | Escribe código · precarga `stripe-best-practices` · memoria de proyecto | opus | Cualquier cambio en `integrations/stripe`, `services/{checkout,payments,plans}` o `/api/webhooks/stripe`: webhooks, refunds, sweeper de `pending`, Stripe Billing. | Configurar el dashboard de Stripe (lo devuelve como paso manual). |
 | **business-rules-auditor** | Solo lectura | opus | Revisión de §4.bis: cancelación ≥2h, valoraciones solo `completed` y en 30 días, auth y propiedad en endpoints, Zod en los bordes, RLS, tests de casos límite. | Revisión de estilo (eso es `conventions-reviewer`). |
-| **conventions-reviewer** | Solo lectura | sonnet | Revisión de §6.bis sobre lo tocado: separación de ficheros, comentarios en castellano, i18n en los 4 idiomas, ~250 líneas, barrels seguros para el cliente. | Reglas de negocio o seguridad. |
+| **conventions-reviewer** | Solo lectura | sonnet | Revisión de §6.bis sobre lo tocado: separación de ficheros, comentarios en castellano, i18n en los 5 idiomas, ~250 líneas, barrels seguros para el cliente. | Reglas de negocio o seguridad. |
 | **e2e-tester** | Escribe tests (no código de producto) · memoria de proyecto | sonnet | Tests de Playwright de los flujos críticos tras tocarlos, o cuando un bug se escapó y un E2E lo habría cazado. Prioriza la coherencia UI ↔ servidor. | Arreglar el bug que encuentra (lo devuelve como hallazgo). |
 | **release-verifier** | Solo lectura + MCP Supabase | sonnet | Después de cada push a `main`: CI, deploy, endpoints críticos (cron 401, webhook 400), entregas de Stripe, advisors y cola de reembolsos. Semáforo de producción. | Redeploys o cambios de configuración. |
 | **design-auditor** | Solo lectura + web + navegador · memoria de proyecto | opus | Evaluar diseño y UX frente a criterios vigentes (2026→2027) y la marca: sistema de diseño, móvil, modo oscuro, WCAG 2.2, confianza, rendimiento percibido. P7 y antes de enseñar el producto. | Implementar el rediseño (sale como tarea aparte). |
@@ -85,7 +85,7 @@ Si un agente propio cubre la tarea, **se usa en lugar de Explore/general-purpose
 - **Trigger:** "añade un botón que…", "crea endpoint que…".
 - **Agentes:** ninguno por defecto. El orquestador implementa siguiendo §6.bis de `CLAUDE.md` (separación `.tsx` / `.styles.ts` / `.logic.ts` / `.types.ts` / `index.ts`).
 - **Excepción:** si toca 2+ módulos no familiares → **1 Plan** primero.
-- **Éxito:** UI accesible, i18n en los 4 idiomas, tests del happy path, `npm run validate` verde.
+- **Éxito:** UI accesible, i18n en los 5 idiomas, tests del happy path, `npm run validate` verde.
 
 ### P3 · Feature mediana (multivista, multimódulo)
 - **Trigger:** "geolocalización completa", "panel del proveedor con X secciones".
@@ -154,10 +154,10 @@ Si un agente propio cubre la tarea, **se usa en lugar de Explore/general-purpose
 - **Prompt base:** "Revisa `git diff origin/main...HEAD` y el working tree. Devuelve hallazgos en tu formato."
 - **Éxito:** lista de findings con propuesta de fix, aplicada antes del commit. El CI (§7) repite `typecheck` + `lint` + `test` + `build` al hacer push.
 
-### P11 · i18n review (es + ca + en + de)
+### P11 · i18n review (es + ca + en + de + fr)
 - **Trigger:** "faltan textos en catalán", "revisar coherencia de idiomas".
-- **Agentes:** **1 Explore** que compare los 4 ficheros `src/messages/{es,ca,en,de}.json` y detecte claves desbalanceadas, hardcoded strings en JSX, y faltas de neutralidad de género. Si solo hay que revisar lo tocado en un diff, basta con **conventions-reviewer**.
-- **Éxito:** los 4 ficheros con mismas claves, 0 strings hardcoded en componentes tocados.
+- **Agentes:** **1 Explore** que compare los 5 ficheros `src/messages/{es,ca,en,de,fr}.json` y detecte claves desbalanceadas, hardcoded strings en JSX, y faltas de neutralidad de género. Si solo hay que revisar lo tocado en un diff, basta con **conventions-reviewer**.
+- **Éxito:** los 5 ficheros con mismas claves, 0 strings hardcoded en componentes tocados.
 
 ### P12 · Pagos (Stripe Connect / Billing / webhooks / refunds)
 - **Trigger:** "da de alta el webhook", "sweeper de reservas pending", "planes con Stripe Billing", "cola de reembolsos".

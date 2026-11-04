@@ -31,7 +31,7 @@ Para ver qué ha cambiado usa solo comandos de lectura (`git diff`, `git diff --
 **i18n**
 
 - Ningún texto visible al usuario fijo en JSX ni en mensajes de error mostrados al usuario: todo por `t('clave')`.
-- Toda clave nueva existe en los **4** ficheros `src/messages/{es,ca,en,de}.json`.
+- Toda clave nueva existe en los **5** ficheros `src/messages/{es,ca,en,de,fr}.json`.
 
 **Higiene**
 

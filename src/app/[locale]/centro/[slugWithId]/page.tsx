@@ -134,7 +134,7 @@ export default async function ProviderPage({ params }: ProviderPageProps) {
       ratingBreakdown={detail.ratingBreakdown}
       team={detail.team}
       schedule={schedule}
-      locale={locale as 'es' | 'ca' | 'en' | 'de'}
+      locale={locale as 'es' | 'ca' | 'en' | 'de' | 'fr'}
     />
   );
 }

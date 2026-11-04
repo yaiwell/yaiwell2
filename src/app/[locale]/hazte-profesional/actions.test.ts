@@ -51,7 +51,7 @@ describe('becomeProviderAction', () => {
   });
 
   it('rechaza un locale inválido sin tocar Clerk', async () => {
-    await expect(becomeProviderAction('fr', 'pro')).resolves.toEqual({
+    await expect(becomeProviderAction('pt', 'pro')).resolves.toEqual({
       status: 'invalid-input',
     });
     expect(mocks.auth).not.toHaveBeenCalled();

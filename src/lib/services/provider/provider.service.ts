@@ -114,7 +114,7 @@ function mergeDescription(
   patch: Partial<LocalizedText> | undefined,
 ): StorableLocalizedText {
   if (!patch) return ensureSpanishIfAny(existing);
-  const hasAny = Boolean(patch.es || patch.ca || patch.en || patch.de);
+  const hasAny = Boolean(patch.es || patch.ca || patch.en || patch.de || patch.fr);
   if (!hasAny) return ensureSpanishIfAny(existing);
   // `ensureSpanishIfAny` y no un spread a pelo: sin castellano el texto
   // sale EN BLANCO en la ficha pública para todo el mundo, porque es el

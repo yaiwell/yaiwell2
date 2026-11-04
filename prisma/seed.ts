@@ -34,6 +34,33 @@ import { fakeCategories } from '../src/lib/fake-data/categories';
 // que `DATABASE_URL` esté disponible al instanciar el adapter.
 loadEnv({ path: path.resolve(process.cwd(), '.env.local'), override: true });
 
+/** Nombres de categoría en francés por slug (mismos que la migración 9i). */
+const CATEGORY_NAMES_FR = new Map<string, string>([
+  ['belleza', 'Beauté'],
+  ['bienestar', 'Bien-être'],
+  ['deporte', 'Sport'],
+  ['estetica', 'Esthétique'],
+  ['gimnasio', 'Salle de sport'],
+  ['padel', 'Padel'],
+  ['tenis', 'Tennis'],
+  ['yoga', 'Yoga'],
+  ['manicura-pedicura', 'Manucure et pédicure'],
+  ['maquillaje', 'Maquillage'],
+  ['peluqueria', 'Coiffure'],
+  ['masaje-deportivo', 'Sportif'],
+  ['masaje-relajante', 'Relaxant'],
+  ['masaje-tailandes', 'Thaïlandais'],
+  ['peluqueria-color', 'Coloration'],
+  ['peluqueria-corte', 'Coupe'],
+  ['peluqueria-peinado', 'Coiffage'],
+  ['masajes', 'Massages'],
+  ['spa', 'Spa'],
+  ['terapias', 'Thérapies'],
+  ['corporal', 'Corps'],
+  ['depilacion', 'Épilation'],
+  ['facial', 'Visage'],
+]);
+
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL no está definida. Revisa .env.local.');
 }
@@ -146,7 +173,10 @@ async function seedCategories() {
 
     // `LocalizedText` no expone index signature; lo serializamos a Json
     // plano para que case con `InputJsonObject` de Prisma.
-    const nameJson = { es: cat.name.es, ca: cat.name.ca };
+    // El francés (migración 9i) se mantiene aquí también: si no, resembrar
+    // lo borraría, porque el `update` reemplaza el JSON entero.
+    const fr = CATEGORY_NAMES_FR.get(cat.slug);
+    const nameJson = { es: cat.name.es, ca: cat.name.ca, ...(fr ? { fr } : {}) };
 
     const row = await prisma.category.upsert({
       where: { slug: cat.slug },

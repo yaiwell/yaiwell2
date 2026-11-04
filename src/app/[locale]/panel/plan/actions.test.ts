@@ -131,7 +131,7 @@ describe('startPlanCheckoutAction', () => {
   });
 
   it('rechaza un locale desconocido', async () => {
-    expect(await startPlanCheckoutAction('fr' as never, 'pro')).toEqual({
+    expect(await startPlanCheckoutAction('pt' as never, 'pro')).toEqual({
       ok: false,
       code: 'INVALID_INPUT',
     });
@@ -291,7 +291,7 @@ describe('startOnsiteSetupAction', () => {
   });
 
   it('rechaza un idioma inválido sin llamar a Stripe', async () => {
-    expect(await startOnsiteSetupAction('fr' as never)).toEqual({
+    expect(await startOnsiteSetupAction('pt' as never)).toEqual({
       ok: false,
       code: 'INVALID_INPUT',
     });

@@ -43,6 +43,7 @@ export interface LocalizedText {
   ca?: string;
   en?: string;
   de?: string;
+  fr?: string;
 }
 
 /** Rango de precio cualitativo. Tres niveles para no abrumar la UI. */

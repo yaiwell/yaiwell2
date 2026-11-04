@@ -251,8 +251,14 @@
   - [ ] Máx. 60 días medido en ms: 60 días civiles que cruzan el cambio de hora de octubre dan `TOO_LONG`; y un fin en la hora duplicada de octubre toma la primera aparición. Comparar días civiles.
   - [ ] Quitar un bloqueo no restaura las ofertas que retiró: avisarlo en el diálogo.
   - [ ] `ScheduleBlockNoProfessionalError` acaba como `INTERNAL` y en Sentry: darle código propio.
+- [ ] **Francés, flecos** (2026-11-04):
+  - [ ] **Aplicar la migración 9i y después desplegar** (lo hace o autoriza el dev).
+  - [ ] Decidir si en francés se escribe «Barcelone» (hoy «Barcelona» en `location.*` y `search.map.fallbackCenter`).
+  - [ ] Los servicios y descripciones que escriben los negocios no se traducen: en `/fr` salen en el idioma original. `search_vector` no indexa francés.
+  - [ ] Las categorías en BD no tienen `en` ni `de` (solo `es`, `ca` y, con 9i, `fr`): en inglés y alemán salen en castellano.
+- [ ] **Textos que no cuadran** (detectados al traducir, en todos los idiomas): `onboarding.subtitle` dice «Cinco pasos» y son 6; `forProviders.hero.trustNote` dice «Cobra al instante» y la FAQ dice transferencia semanal; `forProviders.pricing.plans.pro.feature2` presenta el pago en el local como ventaja de Pro y está en todos los planes; la privacidad dice que solo hay cookies de sesión y Stripe y la política de cookies añade las de preferencias.
 - [ ] **Equipo, flecos** (auditorías 2026-11-03):
-  - [ ] **Migración 9i**: repetir el relleno de `service_professionals` y borrar la columna obsoleta `services.professionalId` (hoy se sigue escribiendo con el primer profesional asignado).
+  - [ ] **Migración 9j** (la 9i es la del francés): repetir el relleno de `service_professionals` y borrar la columna obsoleta `services.professionalId` (hoy se sigue escribiendo con el primer profesional asignado).
   - [ ] Editar un servicio publicado deja asignarlo solo a profesionales fuera de plan (el servicio queda sin huecos); `updateServiceAction` no toma el lock del negocio que usa el equipo. Exigir al menos uno dentro del cupo.
   - [ ] Test que compare el corte de plan en SQL (`ROW_NUMBER` en `availability.repository.team.ts`) con `selectBookableIds`.
   - [ ] `checkout` debería devolver el `professionalId` asignado (hoy la acción lo lee de la reserva con una consulta extra en «cualquiera»); y un error propio que distinga «el profesional elegido no lo presta» de «nadie lo presta».

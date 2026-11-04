@@ -5,13 +5,14 @@ import ca from '@/messages/ca.json';
 import de from '@/messages/de.json';
 import en from '@/messages/en.json';
 import es from '@/messages/es.json';
+import fr from '@/messages/fr.json';
 
 // Bajo Vitest no existe la condición de exports `react-server`, así que
 // `next-intl/server` resuelve a su variante cliente y `getTranslations`
 // lanza. Lo sustituimos por un lector de los mensajes reales para que la
 // imagen se renderice con la copy de verdad (acentos y diéresis
 // incluidos, que es donde suelen romper las fuentes).
-const MESSAGES = { es, ca, en, de };
+const MESSAGES = { es, ca, en, de, fr };
 
 vi.mock('next-intl/server', () => ({
   getTranslations: async ({ locale, namespace }: { locale: string; namespace: string }) => {

@@ -81,7 +81,7 @@ describe('revokeSanctionAction', () => {
       ok: false,
       code: 'VALIDATION',
     });
-    expect(await revokeSanctionAction('fr' as never, SANCTION_ID, REASON)).toEqual({
+    expect(await revokeSanctionAction('pt' as never, SANCTION_ID, REASON)).toEqual({
       ok: false,
       code: 'VALIDATION',
     });

@@ -9,7 +9,7 @@ import type { WeeklySchedule } from '@/lib/services/availability';
 import type { TeamMemberStatus, TeamServiceOption } from '@/lib/services/team';
 import type { LocalizedText } from '@/types/domain';
 
-export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de' | 'fr';
 
 /** Profesional existente (modo edición). */
 export interface ProfessionalFormInitial {

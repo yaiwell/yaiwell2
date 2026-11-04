@@ -1,0 +1,249 @@
+{
+  "privacy": {
+    "meta": {
+      "title": "Politique de confidentialité",
+      "description": "Quelles données nous traitons chez Yaiwell, à quelles fins, avec qui nous les partageons et comment exercer vos droits."
+    },
+    "title": "Politique de confidentialité",
+    "updated": "Dernière mise à jour : {date}",
+    "intro": "Chez Yaiwell, nous mettons en relation des clients avec des professionnels et des établissements de beauté, de bien-être et de sport. Nous vous expliquons ici, sans petits caractères, quelles données vous concernant nous traitons et pourquoi.",
+    "sections": [
+      {
+        "heading": "Qui est responsable de vos données",
+        "paragraphs": [
+          "Yaiwell gère la plateforme yaiwell.app et est responsable du traitement des données décrites sur cette page. Pour toute question relative à vos données, vous pouvez nous écrire à {email}."
+        ]
+      },
+      {
+        "heading": "Quelles données nous traitons",
+        "items": [
+          "Données de votre compte : nom, e-mail, langue et, si vous la fournissez ou si elle provient de votre compte Google, votre photo.",
+          "Données de vos réservations : service, établissement, date et heure, montant payé et notes que vous rédigez à l’intention du professionnel.",
+          "Données de paiement : elles sont traitées par Stripe. Nous ne voyons ni ne conservons le numéro complet de votre carte.",
+          "Si vous êtes un établissement : nom commercial, NIF, adresse, description, photos, horaires, services et compte d’encaissement que vous configurez sur Stripe.",
+          "Localisation : si vous en donnez l’autorisation au navigateur, nous l’utilisons sur le moment pour vous montrer les établissements à proximité. Nous ne la conservons pas.",
+          "Données techniques : journaux d’erreurs permettant d’assurer le fonctionnement du service, sans données de votre carte."
+        ]
+      },
+      {
+        "heading": "À quelles fins nous les utilisons",
+        "items": [
+          "Vous fournir le service : créer votre compte, gérer vos réservations et paiements et vous envoyer des notifications à leur sujet (confirmation, annulation, rappel, remboursements). Base juridique : l’exécution du contrat que vous acceptez lors de votre inscription.",
+          "Vous permettre de laisser un avis sur un service que vous avez reçu et afficher ces avis. Base juridique : l’exécution du contrat.",
+          "Protéger la plateforme, prévenir la fraude et corriger les erreurs. Base juridique : notre intérêt légitime à ce que le service soit sûr.",
+          "Respecter des obligations légales, par exemple fiscales et comptables. Base juridique : l’obligation légale."
+        ],
+        "paragraphs": [
+          "Nous ne vous envoyons pas de publicité sans votre consentement et nous ne vendons pas vos données."
+        ]
+      },
+      {
+        "heading": "Avec qui nous les partageons",
+        "items": [
+          "L’établissement ou le professionnel auprès duquel vous réservez reçoit votre nom, le service, la date et l’heure ainsi que vos notes. Nous ne lui communiquons pas votre e-mail.",
+          "Les prestataires qui nous aident à fournir le service, toujours pour notre compte : Clerk (comptes et connexion), Google (si vous choisissez de vous connecter avec Google), Stripe (paiements), Supabase (base de données et fichiers), Vercel (hébergement du site), Resend (envoi d’e-mails), Sentry (journal des erreurs), Mapbox (recherche d’adresses) et OpenStreetMap (images des cartes)."
+        ],
+        "paragraphs": [
+          "Certains de ces prestataires sont situés en dehors de l’Espace économique européen, par exemple aux États-Unis. Dans ce cas, le transfert est encadré par les clauses contractuelles types de la Commission européenne ou par le cadre de protection des données UE-États-Unis."
+        ]
+      },
+      {
+        "heading": "Combien de temps nous les conservons",
+        "paragraphs": [
+          "Tant que vous conservez votre compte. Si vous le supprimez, nous effaçons ou anonymisons vos données, à l’exception de celles que la loi nous oblige à conserver, comme les données de paiement et de facturation pendant les délais fiscaux et commerciaux."
+        ]
+      },
+      {
+        "heading": "Cookies",
+        "paragraphs": [
+          "Nous utilisons uniquement les cookies techniques indispensables : ceux de votre session (Clerk) et ceux que Stripe utilise pendant le paiement pour prévenir la fraude. Nous n’utilisons pas de cookies d’analyse ni de publicité. Les cartes chargent des images depuis les serveurs d’OpenStreetMap, qui reçoivent votre adresse IP pour pouvoir les envoyer."
+        ]
+      },
+      {
+        "heading": "Vos droits",
+        "paragraphs": [
+          "Vous pouvez nous demander d’accéder à vos données, de les rectifier, de les effacer, de vous opposer à leur traitement, de le limiter ou de les recevoir dans un format portable. Écrivez-nous à {email} depuis l’adresse e-mail de votre compte. Si vous estimez que nous n’avons pas correctement donné suite à votre demande, vous pouvez introduire une réclamation auprès de l’Agencia Española de Protección de Datos (www.aepd.es)."
+        ]
+      },
+      {
+        "heading": "Modifications de cette politique",
+        "paragraphs": [
+          "Si nous modifions cette politique, nous publierons la nouvelle version sur cette page avec sa date de mise à jour. Si la modification est importante, nous vous en informerons par e-mail."
+        ]
+      }
+    ]
+  },
+  "terms": {
+    "meta": {
+      "title": "Conditions générales",
+      "description": "Les conditions d’utilisation de Yaiwell pour les clients et les établissements : réservations, paiements, annulations, avis et commissions."
+    },
+    "title": "Conditions générales",
+    "updated": "Dernière mise à jour : {date}",
+    "intro": "Les présentes conditions régissent l’utilisation de Yaiwell, que vous réserviez des services ou que vous en proposiez. En créant un compte, vous les acceptez. Nous les avons rédigées pour qu’elles soient compréhensibles ; si un point n’est pas clair, écrivez-nous à {email}.",
+    "sections": [
+      {
+        "heading": "Qu’est-ce que Yaiwell ?",
+        "paragraphs": [
+          "Yaiwell est une plateforme qui met en relation des clients avec des établissements et des professionnels de la beauté, du bien-être et du sport afin de réserver et de payer leurs services. Le service est toujours fourni par l’établissement ou le professionnel ; Yaiwell agit en tant qu’intermédiaire et gère la réservation et l’encaissement."
+        ]
+      },
+      {
+        "heading": "Votre compte",
+        "items": [
+          "Pour réserver ou proposer des services, vous avez besoin d’un compte avec des données réelles et d’une adresse e-mail qui vous appartient.",
+          "Vous êtes responsable de ce qui est fait avec votre compte. Si vous pensez que quelqu’un y a accédé, prévenez-nous.",
+          "Vous pouvez demander sa suppression à tout moment en nous écrivant à {email}."
+        ]
+      },
+      {
+        "heading": "Comment fonctionne une réservation",
+        "items": [
+          "Le prix affiché est le prix final fixé par l’établissement pour ce service.",
+          "Si vous payez en ligne, lorsque vous choisissez une heure, nous vous la réservons pendant 30 minutes pour que vous finalisiez le paiement. Si vous ne payez pas dans ce délai, l’heure redevient libre.",
+          "Si vous payez en ligne, la réservation est confirmée lorsque le paiement est finalisé ; si vous choisissez de payer sur place, elle est confirmée immédiatement. Nous vous envoyons la confirmation par e-mail.",
+          "Nous proposons uniquement des heures commençant au moins 30 minutes après le moment de la réservation.",
+          "Lors de la réservation, le contrat de service est conclu entre vous et l’établissement ou le professionnel.",
+          "Si, 72 heures après le début du rendez-vous, l’établissement ne l’a marqué ni comme terminé ni comme « absence », nous le considérons comme terminé et vous invitons à laisser un avis."
+        ]
+      },
+      {
+        "heading": "Paiements",
+        "paragraphs": [
+          "Vous pouvez payer en ligne lors de la réservation, avec les moyens proposés par Stripe, notre prestataire de paiement. Yaiwell encaisse le montant au nom de l’établissement et le lui reverse, déduction faite de sa commission. Nous ne conservons pas les données complètes de votre carte.",
+          "Si l’établissement le propose et que le rendez-vous commence plus de 2 heures après la réservation, vous pouvez également choisir de payer sur place : vous payez directement l’établissement le jour du rendez-vous. Les réservations de dernière minute se paient toujours en ligne.",
+          "Vous pouvez avoir au maximum 3 réservations futures à payer sur place en même temps. Au-delà, les suivantes se paient en ligne."
+        ]
+      },
+      {
+        "heading": "Annulations et remboursements",
+        "items": [
+          "Vous pouvez annuler votre réservation depuis l’application jusqu’à 2 heures avant le début du service. Si vous avez payé en ligne, nous vous remboursons 100 % automatiquement, commission de Yaiwell incluse. Si vous deviez payer sur place, l’annulation n’entraîne aucun frais.",
+          "Les réservations de dernière minute, c’est-à-dire celles qui commencent moins de 2 heures après avoir été effectuées, se paient en ligne immédiatement et, une fois payées, ne peuvent être ni annulées ni remboursées. Nous vous en informons avant le paiement.",
+          "Si vous n’avez pas encore finalisé le paiement d’une réservation, vous pouvez l’annuler sans frais.",
+          "L’établissement peut annuler une réservation jusqu’à 2 heures avant son début. Dans ce cas, si vous avez payé en ligne, nous vous remboursons 100 % automatiquement. Nous vous en informons par e-mail.",
+          "Si l’établissement ne peut pas vous recevoir pour tout autre motif, nous vous remboursons également 100 % : écrivez-nous.",
+          "Si votre paiement arrive alors que l’heure n’est plus disponible, il n’y a pas de réservation et nous vous remboursons 100 % automatiquement.",
+          "Les remboursements sont effectués sur le même moyen de paiement. Selon votre banque, ils peuvent mettre 5 à 10 jours à apparaître."
+        ]
+      },
+      {
+        "heading": "En cas d’absence",
+        "items": [
+          "Si vous ne vous rendez pas à votre rendez-vous, l’établissement peut le marquer comme « absence » à partir de l’heure de début et jusqu’à 72 heures après.",
+          "Si vous avez payé en ligne, il n’y a pas de remboursement.",
+          "Si vous deviez payer sur place, cela compte comme 1 pénalité. Avec 3 pénalités en 12 mois, pendant les 3 mois suivants, vous ne pourrez réserver qu’avec paiement en ligne. Les pénalités de plus de 12 mois cessent de compter.",
+          "S’il s’agit selon vous d’une erreur, écrivez-nous à {email}. L’établissement peut annuler ce marquage pendant les 24 heures suivantes ; ensuite, seule notre équipe d’assistance peut le vérifier et annuler la pénalité."
+        ]
+      },
+      {
+        "heading": "Créneaux en promotion",
+        "paragraphs": [
+          "Un établissement peut proposer avec une remise un créneau resté libre. Le prix de référence est toujours son prix habituel et la remise s’applique à quiconque réserve ce créneau, d’où qu’il vienne. Ces réservations suivent les mêmes règles de délai et d’annulation que les autres."
+        ]
+      },
+      {
+        "heading": "Avis",
+        "items": [
+          "Vous ne pouvez laisser un avis que sur un service que vous avez réservé et que l’établissement a marqué comme terminé, pendant les 30 jours suivants.",
+          "Votre avis doit être sincère et porter sur votre expérience. Les insultes, les données personnelles de tiers et les contenus illégaux ou publicitaires ne sont pas autorisés.",
+          "Nous pouvons retirer les avis qui ne respectent pas ces règles. L’établissement peut répondre publiquement.",
+          "Un avis publié continue de compter même si la réservation est remboursée par la suite."
+        ]
+      },
+      {
+        "heading": "Si vous proposez des services",
+        "items": [
+          "Nous vérifions manuellement chaque établissement avant de le publier. Les données que vous nous fournissez (nom, NIF, adresse, services, prix, horaires et photos) doivent être véridiques et à jour.",
+          "Vous vous engagez à honorer les réservations confirmées à l’heure et au prix publiés. Vous ne pouvez annuler que jusqu’à 2 heures avant ; si le client a payé en ligne, il reçoit un remboursement intégral.",
+          "Yaiwell perçoit une commission par réservation selon votre formule, calculée sur ce que paie le client (remise déduite, le cas échéant). Pour les réservations payées en ligne, elle est déduite de l’encaissement ; pour les réservations sur place terminées, elle vous est facturée séparément.",
+          "Vous recevez les encaissements en ligne via votre compte Stripe, que vous devez configurer et maintenir actif.",
+          "Marquez chaque réservation comme terminée ou comme « absence ». Si vous ne l’avez pas fait 72 heures après le début, elle est considérée comme terminée.",
+          "Ne signalez une absence que si la personne n’est réellement pas venue. Notre équipe d’assistance peut vérifier ces marquages et annuler les pénalités injustifiées.",
+          "Vous êtes responsable de la prestation du service et de vos obligations fiscales et professionnelles.",
+          "Nous pouvons suspendre ou retirer un établissement qui ne respecte pas les présentes conditions ou qui cumule des annulations, des absences injustifiées ou des plaintes justifiées."
+        ]
+      },
+      {
+        "heading": "Formules pour les établissements",
+        "items": [
+          "Il existe quatre formules : Gratuite, Basique, Pro et Premium. Chacune fixe le nombre de services que vous pouvez publier, son abonnement mensuel (la formule Gratuite n’en a pas) et la commission par réservation. Les tarifs en vigueur figurent sur la page destinée aux professionnels et les abonnements s’entendent TVA incluse.",
+          "Les formules payantes sont un abonnement mensuel géré avec Stripe et renouvelé automatiquement chaque mois.",
+          "Vous pouvez changer de formule quand vous le souhaitez. Si vous passez à une formule supérieure, le changement s’applique immédiatement et le montant au prorata vous est facturé ; si vous passez à une formule inférieure, il s’applique à la fin de la période déjà payée.",
+          "Si vous résiliez l’abonnement, vous conservez votre formule jusqu’à la fin de la période payée, puis vous passez à la formule Gratuite.",
+          "Si nous ne pouvons pas prélever l’abonnement, Stripe effectue plusieurs nouvelles tentatives. S’il reste impayé, votre établissement passe à la formule Gratuite et les services au-delà de sa limite restent masqués jusqu’à ce que vous payiez de nouveau."
+        ]
+      },
+      {
+        "heading": "Paiement sur place pour les établissements",
+        "items": [
+          "Proposer le paiement sur place est facultatif. Pour l’activer, vous devez enregistrer un moyen de paiement et ne pas avoir de commissions en attente.",
+          "Pour ces réservations, vous encaissez directement le client dans votre établissement. La commission des réservations sur place terminées vous est facturée, avec l’abonnement de votre formule ou sur une facture mensuelle.",
+          "Si une réservation sur place est marquée comme « absence », aucune commission n’est perçue.",
+          "Si nous ne pouvons pas prélever vos commissions, nous désactivons le paiement sur place pour les nouvelles réservations jusqu’à ce que vous les payiez. Le paiement en ligne continue de fonctionner."
+        ]
+      },
+      {
+        "heading": "Utilisation acceptable",
+        "paragraphs": [
+          "N’utilisez pas Yaiwell à des fins illégales, pour usurper l’identité d’autres personnes, pour effectuer de fausses réservations ni pour perturber le fonctionnement de la plateforme. Nous pouvons suspendre les comptes qui le font."
+        ]
+      },
+      {
+        "heading": "Responsabilité",
+        "paragraphs": [
+          "Nous mettons tout en œuvre pour que la plateforme fonctionne bien, mais le service est fourni par l’établissement ou le professionnel, qui répond de sa qualité. Si vous rencontrez un problème avec un rendez-vous, écrivez-nous et nous vous aiderons à le résoudre. Rien dans les présentes conditions ne limite les droits que la loi vous reconnaît en tant que consommateur."
+        ]
+      },
+      {
+        "heading": "Modifications des présentes conditions",
+        "paragraphs": [
+          "Si nous les modifions, nous publierons la nouvelle version sur cette page avec sa date. Si la modification est importante, nous vous en informerons par e-mail avant son application. Les réservations déjà effectuées sont régies par les conditions en vigueur au moment où vous les avez effectuées."
+        ]
+      },
+      {
+        "heading": "Loi applicable et réclamations",
+        "paragraphs": [
+          "Les présentes conditions sont régies par la loi espagnole. Si vous avez une réclamation, écrivez-nous d’abord à {email} et nous la traiterons. Si vous êtes consommateur, vous pouvez également vous adresser aux organismes de consommation ou aux tribunaux de votre domicile."
+        ]
+      }
+    ]
+  },
+  "cookies": {
+    "meta": {
+      "title": "Politique en matière de cookies",
+      "description": "Quels cookies Yaiwell utilise : uniquement les cookies techniques indispensables, sans analyse ni publicité."
+    },
+    "title": "Politique en matière de cookies",
+    "updated": "Dernière mise à jour : {date}",
+    "intro": "Les cookies sont de petits fichiers qu’un site web enregistre dans votre navigateur. Chez Yaiwell, nous utilisons uniquement ceux qui sont indispensables au fonctionnement du site : nous ne vous demandons donc pas votre consentement au moyen d’un bandeau.",
+    "sections": [
+      {
+        "heading": "Cookies que nous utilisons",
+        "items": [
+          "Session (Clerk) : ils maintiennent votre session ouverte et protègent votre compte. Sans eux, vous ne pourriez pas vous connecter.",
+          "Paiement (Stripe) : uniquement sur la page de paiement, pour prévenir la fraude à la carte.",
+          "Préférences : ils mémorisent votre langue, votre préférence pour le thème clair ou sombre et, si vous avez un établissement, si vous consultez le site en tant que client ou en tant que professionnel."
+        ]
+      },
+      {
+        "heading": "Cookies que nous n’utilisons pas",
+        "paragraphs": [
+          "Nous n’utilisons pas de cookies d’analyse, de publicité ni de réseaux sociaux, et nous ne partageons pas d’informations sur votre navigation avec des annonceurs."
+        ]
+      },
+      {
+        "heading": "Cartes",
+        "paragraphs": [
+          "Les cartes chargent des images depuis les serveurs d’OpenStreetMap. Elles ne déposent pas de cookies, mais ces serveurs reçoivent votre adresse IP pour pouvoir vous envoyer les images."
+        ]
+      },
+      {
+        "heading": "Comment les gérer",
+        "paragraphs": [
+          "Vous pouvez supprimer ou bloquer les cookies depuis les paramètres de votre navigateur. Si vous bloquez ceux de session ou de paiement, vous ne pourrez ni vous connecter ni réserver. Pour plus de détails sur la manière dont nous traitons vos données, consultez la politique de confidentialité."
+        ]
+      }
+    ]
+  }
+}

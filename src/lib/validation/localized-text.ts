@@ -45,6 +45,7 @@ export const storableLocalizedTextSchema = z
     ca: translation.optional(),
     en: translation.optional(),
     de: translation.optional(),
+    fr: translation.optional(),
   })
   .transform((value) => value as StorableLocalizedText);
 
@@ -62,6 +63,7 @@ export const localizedTextPatchSchema = z.object({
   ca: translation.optional(),
   en: translation.optional(),
   de: translation.optional(),
+  fr: translation.optional(),
 });
 
 export type StorableLocalizedTextParsed = z.infer<typeof storableLocalizedTextSchema>;

@@ -70,7 +70,7 @@ export default async function EditServicePage({ params }: EditServicePageProps) 
   }
   setRequestLocale(locale);
 
-  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
+  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de' | 'fr';
   const { id: providerId } = await requireCurrentProvider(panelLocale);
 
   // Ownership baked into the where: si el id no es del provider, sale null.

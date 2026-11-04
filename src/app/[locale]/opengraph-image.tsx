@@ -28,7 +28,7 @@ export const contentType = 'image/png';
 /**
  * Texto alternativo. La convención de Next exige un valor estático
  * (se evalúa a nivel de módulo, fuera del contexto de la request), así
- * que usamos el nombre de marca, que es neutro en los cuatro idiomas.
+ * que usamos el nombre de marca, que es neutro en todos los idiomas.
  * La copy traducida va dentro de la imagen.
  */
 export const alt = 'Yaiwell';

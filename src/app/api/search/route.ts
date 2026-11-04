@@ -37,7 +37,7 @@ import type {
 const searchParamsSchema = z.object({
   type: z.enum(['services', 'providers']).default('services'),
   q: z.string().min(1, 'Falta el parámetro `q`.'),
-  lang: z.enum(['es', 'ca', 'en', 'de']).optional(),
+  lang: z.enum(['es', 'ca', 'en', 'de', 'fr']).optional(),
   // `coerce` para los numéricos: los searchParams llegan siempre como
   // strings, no como números.
   limit: z.coerce.number().int().min(1).max(50).optional(),

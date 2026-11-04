@@ -1,0 +1,154 @@
+{
+  "common": {
+    "greeting": "Bonjour {name},",
+    "greetingNoName": "Bonjour,",
+    "signature": "L’équipe Yaiwell",
+    "footer": "Vous recevez cet e-mail car vous avez un compte Yaiwell. Ce message est automatique : merci de ne pas y répondre.",
+    "serviceLabel": "Service",
+    "whenLabel": "Quand",
+    "whereLabel": "Où",
+    "professionalLabel": "Professionnel",
+    "clientLabel": "Client",
+    "notesLabel": "Notes du client",
+    "paidLabel": "Total payé",
+    "discountNote": "Remise de {pct} % appliquée (prix habituel {original})",
+    "payAtVenueLabel": "À payer sur place"
+  },
+  "bookingConfirmed": {
+    "subject": "Réservation confirmée chez {provider}",
+    "heading": "Votre réservation est confirmée",
+    "intro": "Nous avons bien reçu votre paiement. {provider} vous attend.",
+    "cta": "Voir mes réservations",
+    "lastMinute": "Il s’agit d’une réservation de dernière minute : elle commence moins de 2 heures après avoir été effectuée, le paiement n’est donc pas remboursable.",
+    "onsiteIntro": "Votre réservation chez {provider} est confirmée. Vous paierez {amount} sur place le jour du rendez-vous.",
+    "onsiteNoShow": "En cas d’empêchement, annulez depuis « Mes réservations » jusqu’à 2 heures avant : c’est sans frais. Si vous ne venez pas sans avoir annulé, 1 absence sera comptabilisée ; à 3 en 12 mois, vous ne pourrez réserver qu’avec paiement en ligne pendant 3 mois."
+  },
+  "providerNewBooking": {
+    "subject": "Nouvelle réservation : {service}, {when}",
+    "heading": "Vous avez une nouvelle réservation",
+    "intro": "{client} a réservé et payé en ligne.",
+    "cta": "Ouvrir le calendrier",
+    "onsiteIntro": "{client} a réservé et paiera dans votre établissement.",
+    "onsiteCommission": "Encaissez {amount} sur place. La commission de Yaiwell ({commission}) figurera sur votre facture mensuelle une fois le rendez-vous terminé.",
+    "onsiteNoShow": "En cas d’absence, signalez-la depuis le calendrier de votre espace pro : vous ne paierez pas de commission pour cette réservation."
+  },
+  "bookingCancelled": {
+    "subject": "{provider} a annulé votre réservation",
+    "heading": "Votre réservation a été annulée",
+    "intro": "{provider} ne peut pas vous recevoir sur ce créneau et a annulé la réservation.",
+    "refundIssued": "Nous vous remboursons 100 % du montant ({amount}). Selon votre banque, le remboursement peut mettre 5 à 10 jours à apparaître.",
+    "refundPending": "Nous vous remboursons 100 % du montant ({amount}). Le remboursement est en cours de traitement et nous vous préviendrons si nous avons besoin de quoi que ce soit.",
+    "refundUncertain": "Si un paiement a été prélevé, nous vous rembourserons 100 % du montant ({amount}). Nous vérifions le paiement et vous préviendrons si nous avons besoin de quoi que ce soit.",
+    "cta": "Trouver un autre créneau"
+  },
+  "clientCancelled": {
+    "subject": "Vous avez annulé votre réservation chez {provider}",
+    "heading": "Réservation annulée",
+    "intro": "Nous avons annulé votre réservation chez {provider}, comme vous nous l’avez demandé.",
+    "noPayment": "Rien ne vous avait été facturé pour cette réservation : il n’y a donc rien à rembourser.",
+    "cta": "Trouver un autre créneau",
+    "onsiteNoCharge": "Vous deviez payer sur place : l’annulation est donc sans frais."
+  },
+  "providerClientCancelled": {
+    "subject": "Annulation : {service}, {when}",
+    "heading": "Un client a annulé sa réservation",
+    "intro": "{client} a annulé sa réservation depuis l’application.",
+    "slotFree": "Le créneau est de nouveau libre dans votre calendrier. En cas de paiement en ligne, nous remboursons l’intégralité du montant.",
+    "releaseHint": "Pour le remplir, vous pouvez le libérer avec une remise : le prix baisse tout seul à l’approche de l’heure et nous le mettons en avant auprès des personnes qui cherchent à proximité.",
+    "offerReopened": "Ce créneau avait été vendu avec une remise : l’offre reste active et il est de nouveau proposé avec la remise applicable à chaque instant.",
+    "releaseCta": "Libérer avec une remise",
+    "calendarCta": "Ouvrir le calendrier"
+  },
+  "latePaymentRefunded": {
+    "subject": "Nous n’avons pas pu confirmer votre réservation chez {provider}",
+    "heading": "Votre réservation n’a pas été confirmée",
+    "intro": "Votre paiement est arrivé alors que ce créneau n’était plus disponible chez {provider} : nous n’avons donc pas pu confirmer la réservation.",
+    "cta": "Trouver un autre créneau"
+  },
+  "refundCompleted": {
+    "subject": "Nous vous avons remboursé votre réservation chez {provider}",
+    "heading": "Remboursement effectué",
+    "intro": "Nous vous avons remboursé 100 % du montant ({amount}) de votre réservation chez {provider}. Selon votre banque, le remboursement peut mettre 5 à 10 jours à apparaître.",
+    "cta": "Trouver un autre créneau"
+  },
+  "refundDelayed": {
+    "subject": "Votre remboursement de {provider} a pris du retard",
+    "heading": "Votre remboursement a pris du retard",
+    "intro": "Votre banque a refusé le remboursement de {amount} pour votre réservation chez {provider} : l’argent ne vous est donc pas encore parvenu.",
+    "next": "Notre équipe d’assistance vous contactera pour effectuer le remboursement par un autre moyen."
+  },
+  "reviewInvite": {
+    "subject": "Comment ça s’est passé chez {provider} ?",
+    "heading": "Comment s’est passé votre rendez-vous ?",
+    "intro": "{provider} a marqué votre rendez-vous {service} comme terminé. Votre avis aide d’autres personnes à choisir.",
+    "window": "Vous pouvez laisser un avis pendant les {days} prochains jours.",
+    "cta": "Laisser un avis"
+  },
+  "bookingReminder": {
+    "subject": "Rendez-vous demain chez {provider}",
+    "heading": "On vous attend demain",
+    "intro": "Nous vous rappelons votre rendez-vous de demain chez {provider}.",
+    "cta": "Voir mes réservations",
+    "onsite": "N’oubliez pas : vous payez {amount} sur place. En cas d’empêchement, annulez depuis « Mes réservations » jusqu’à 2 heures avant : c’est sans frais."
+  },
+  "providerApproved": {
+    "subject": "{provider} est maintenant publié sur Yaiwell",
+    "heading": "Vous êtes sur Yaiwell",
+    "intro": "Nous avons vérifié {provider}, qui apparaît désormais dans les recherches. Vos services peuvent maintenant être réservés.",
+    "cta": "Accéder à mon espace pro"
+  },
+  "providerRejected": {
+    "subject": "Nous devons revoir certaines informations de {provider}",
+    "heading": "Votre demande nécessite des modifications",
+    "intro": "Nous avons vérifié {provider} et ne pouvons pas le publier pour l’instant. Voici le motif :",
+    "next": "Corrigez les informations depuis votre espace pro et nous procéderons à une nouvelle vérification.",
+    "cta": "Accéder à mon espace pro"
+  },
+  "planNames": {
+    "free": "Gratuite",
+    "basic": "Basique",
+    "pro": "Pro",
+    "premium": "Premium"
+  },
+  "planPaymentFailed": {
+    "subject": "Nous n’avons pas pu prélever l’abonnement de {provider}",
+    "heading": "Vérifiez votre moyen de paiement",
+    "intro": "Nous avons tenté de prélever l’abonnement de {provider} et le paiement n’a pas abouti. Nous réessaierons dans les prochains jours.",
+    "next": "Si nous n’y parvenons pas, {provider} passera à la formule Gratuite et les services au-delà de sa limite ne seront plus affichés jusqu’au prochain paiement.",
+    "cta": "Vérifier le paiement"
+  },
+  "planDowngraded": {
+    "subject": "{provider} est passé à la formule Gratuite",
+    "heading": "Votre formule a changé",
+    "intro": "L’abonnement à la formule {plan} de {provider} a pris fin et l’établissement est passé à la formule Gratuite.",
+    "next": "Si vous aviez publié plus de services que la formule Gratuite ne le permet, nous avons masqué ceux en trop. Ils réapparaîtront dès que vous souscrirez de nouveau une formule payante.",
+    "cta": "Voir les formules"
+  },
+  "commissionPaymentFailed": {
+    "subject": "Nous n’avons pas pu prélever les commissions de {provider}",
+    "heading": "Vérifiez votre moyen de paiement",
+    "intro": "Nous avons tenté de prélever la facture de commissions des réservations payées sur place chez {provider} et le paiement n’a pas abouti.",
+    "next": "Tant qu’elle reste impayée, votre clientèle ne pourra pas choisir le paiement sur place pour les nouvelles réservations ; le paiement en ligne continue de fonctionner. Dès que la facture sera réglée, le paiement sur place sera de nouveau disponible.",
+    "cta": "Vérifier le paiement"
+  },
+  "onsiteCommission": {
+    "itemDescription": "Commission Yaiwell · {service} · réservation payée sur place le {date}",
+    "invoiceDescription": "Commissions Yaiwell sur les réservations payées sur place"
+  },
+  "noShow": {
+    "subject": "{provider} signale votre absence à votre rendez-vous",
+    "heading": "Absence à votre rendez-vous",
+    "intro": "{provider} a signalé votre absence à votre rendez-vous.",
+    "online": "Comme vous l’aviez payé en ligne, le montant ({amount}) n’est pas remboursé.",
+    "onsiteSanction": "Vous deviez payer sur place : 1 pénalité s’ajoute donc à votre compte. Vous en êtes à {count} sur 3 au cours des 12 derniers mois.",
+    "onsiteRestricted": "Avec 3 pénalités en 12 mois, vous ne pourrez réserver qu’avec paiement en ligne jusqu’au {date}.",
+    "support": "S’il s’agit selon vous d’une erreur, écrivez-nous à {email} et nous vérifierons.",
+    "cta": "Contacter l’assistance"
+  },
+  "noShowUndone": {
+    "subject": "{provider} a corrigé votre rendez-vous : aucune absence enregistrée",
+    "heading": "Absence retirée",
+    "intro": "{provider} a corrigé le signalement précédent : votre rendez-vous n’est plus enregistré comme « absence ».",
+    "sanctionRevoked": "Nous avons retiré la pénalité de votre compte : elle ne compte plus dans la limite de 3 en 12 mois."
+  }
+}

@@ -21,7 +21,7 @@ import { MIN_CANCELLATION_LEAD_MS } from '@/lib/utils/booking-cancellation';
  * el locale. La fecha larga sirve como ancla visual fuerte en el resumen
  * para que el usuario no dude del día reservado.
  */
-export function formatSlotDateLong(iso: string, locale: 'es' | 'ca' | 'en' | 'de'): string {
+export function formatSlotDateLong(iso: string, locale: 'es' | 'ca' | 'en' | 'de' | 'fr'): string {
   return new Intl.DateTimeFormat(toIntlLocale(locale), {
     weekday: 'long',
     day: 'numeric',
@@ -45,7 +45,7 @@ export function formatSlotDateLong(iso: string, locale: 'es' | 'ca' | 'en' | 'de
  */
 export function formatCancellationDeadline(
   slotStartIso: string,
-  locale: 'es' | 'ca' | 'en' | 'de',
+  locale: 'es' | 'ca' | 'en' | 'de' | 'fr',
 ): string {
   const deadline = new Date(new Date(slotStartIso).getTime() - MIN_CANCELLATION_LEAD_MS);
   return formatSlotDateLong(deadline.toISOString(), locale);
@@ -55,7 +55,7 @@ export function formatCancellationDeadline(
  * Formatea solo la hora `HH:MM` del slot. Útil para mostrar el rango
  * "17:30 → 18:30" en una sola línea.
  */
-export function formatSlotTimeOnly(iso: string, locale: 'es' | 'ca' | 'en' | 'de'): string {
+export function formatSlotTimeOnly(iso: string, locale: 'es' | 'ca' | 'en' | 'de' | 'fr'): string {
   return new Intl.DateTimeFormat(toIntlLocale(locale), {
     hour: '2-digit',
     minute: '2-digit',
@@ -70,7 +70,7 @@ export function formatSlotTimeOnly(iso: string, locale: 'es' | 'ca' | 'en' | 'de
  * ficha de servicio (`ProviderServicesList.logic.ts`) para mantener
  * coherencia visual entre vistas.
  */
-export function formatPriceCents(cents: number, locale: 'es' | 'ca' | 'en' | 'de'): string {
+export function formatPriceCents(cents: number, locale: 'es' | 'ca' | 'en' | 'de' | 'fr'): string {
   const hasDecimals = cents % 100 !== 0;
   const intlLocale = toIntlLocale(locale);
 

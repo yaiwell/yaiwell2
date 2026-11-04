@@ -17,7 +17,7 @@ export interface ProviderInfoPanelProps {
    * cerrados — en ambos casos la UI esconde el bloque.
    */
   schedule: WeeklySchedule | null;
-  locale: 'es' | 'ca' | 'en' | 'de';
+  locale: 'es' | 'ca' | 'en' | 'de' | 'fr';
 }
 
 /**

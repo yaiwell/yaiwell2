@@ -69,6 +69,8 @@ export function toStripeLocale(locale: AppLocale): StripeElementLocale {
       return 'en-GB';
     case 'de':
       return 'de';
+    case 'fr':
+      return 'fr';
   }
 }
 

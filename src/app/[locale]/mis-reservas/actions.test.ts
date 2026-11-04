@@ -72,7 +72,7 @@ describe('submitReviewAction', () => {
   });
 
   it('devuelve VALIDATION con un locale no soportado', async () => {
-    await expect(submitReviewAction('fr', INPUT)).resolves.toEqual({
+    await expect(submitReviewAction('pt', INPUT)).resolves.toEqual({
       ok: false,
       code: 'VALIDATION',
     });

@@ -6,7 +6,7 @@ import type { LocalizedText } from '@/types/domain';
  * Replicamos el subset aquí para no acoplar el componente al tipo más
  * amplio de routing — si añadimos un idioma habrá que extenderlo.
  */
-export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de' | 'fr';
 
 /** Punto de datos para la gráfica simple de ingresos por día. */
 export interface PanelDailyRevenuePoint {

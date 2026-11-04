@@ -20,7 +20,7 @@ export const suggestionsQuerySchema = z.object({
     .trim()
     .min(1, 'Falta el parámetro `q`.')
     .max(120, 'La consulta es demasiado larga.'),
-  lang: z.enum(['es', 'ca', 'en', 'de']).optional().default('es'),
+  lang: z.enum(['es', 'ca', 'en', 'de', 'fr']).optional().default('es'),
 });
 
 export type ParsedSuggestionsQuery = z.infer<typeof suggestionsQuerySchema>;

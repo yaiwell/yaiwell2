@@ -71,6 +71,7 @@ enum Locale {
   ca
   en
   de
+  fr
 }
 
 enum ProviderType {
@@ -359,7 +360,7 @@ model Service {
   id              String    @id @default(uuid())
   providerId      String
   /// OBSOLETA desde 9h: quién presta el servicio vive en
-  /// `ServiceProfessional`. Se mantiene durante la transición y la borra 9i.
+  /// `ServiceProfessional`. Se mantiene durante la transición y la borrará una migración posterior.
   professionalId  String?
   categoryId      String
   /// `LocalizedText`: `es` obligatorio, `ca`/`en`/`de` opcionales.

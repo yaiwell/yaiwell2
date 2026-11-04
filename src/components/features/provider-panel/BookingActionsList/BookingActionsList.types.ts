@@ -6,7 +6,7 @@
  */
 
 /** Locales soportados por el panel (mismo union que el resto de features). */
-export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de' | 'fr';
 
 /**
  * Estado de la reserva SIN colapsar.

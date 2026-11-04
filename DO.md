@@ -10,6 +10,17 @@
 
 ## 2026-11-02
 
+## 2026-11-04
+
+### 2026-11-04 — Francés como quinto idioma
+
+P5/P11 (cableado por el orquestador, 4 agentes de traducción con glosario y validador común, 1 revisor nativo).
+
+- **Web, correos y legales** en `src/messages/fr.json`, `emails/fr.json` y `legal/fr.json` (vouvoiement, apóstrofo `’`). Rutas `/fr/...`, hreflang, sitemap, `og:locale` `fr_FR`, formatos `fr-FR`, Stripe en francés.
+- **Migración 9i** (pendiente de aplicar): valor `fr` en el enum `Locale` y nombres de categoría en francés. Hay que aplicarla antes de desplegar.
+- **Búsqueda**: sin índice en francés, busca con `simple` y trigramas sobre `name->>'fr'`.
+- Test nuevo de paridad de claves de la web en los 5 idiomas; correos y legales incluyen `fr` en los suyos.
+
 ### 2026-11-03 — Equipo: varios profesionales por negocio
 
 P4 + P13 (`Plan` → migración 9h con `db-migration-guard` → fase A (núcleo) → fases B (panel de equipo), C (reserva pública) y D (calendario) en paralelo con ficheros disjuntos → `business-rules-auditor` + `conventions-reviewer` → correcciones → `e2e-tester`). Decisiones en CLAUDE.md §4.bis «Equipo».

@@ -9,7 +9,7 @@ import { pickLocalized } from '@/lib/i18n';
  * idioma: `en_GB` (turismo británico e irlandés) en lugar de `en_US`,
  * y `de_DE` como territorio más numeroso del bloque DE/AT/CH.
  *
- * El objeto tiene las cuatro claves garantizadas, así que resolverlo
+ * El objeto tiene todas las claves garantizadas, así que resolverlo
  * con `pickLocalized` nunca dispara el fallback — lo usamos igualmente
  * porque es el único acceso indexado por locale permitido en el
  * proyecto (regla ESLint `no-restricted-syntax`).
@@ -19,6 +19,7 @@ const OPEN_GRAPH_LOCALES: Record<AppLocale, string> = {
   ca: 'ca_ES',
   en: 'en_GB',
   de: 'de_DE',
+  fr: 'fr_FR',
 };
 
 /**

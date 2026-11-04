@@ -35,7 +35,7 @@ export default async function PanelNewServicePage({ params }: PanelNewServicePag
   }
   setRequestLocale(locale);
 
-  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
+  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de' | 'fr';
   const { id: providerId } = await requireCurrentProvider(locale);
   const [categoriesTree, usage, professionals] = await Promise.all([
     getCategoriesTree(),

@@ -1,5 +1,5 @@
 /** Locales soportados en la UI del panel. */
-export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de' | 'fr';
 
 /** Periodo de filtrado por antigüedad. */
 export type ReviewPeriod = '7d' | '30d' | '90d' | 'all';

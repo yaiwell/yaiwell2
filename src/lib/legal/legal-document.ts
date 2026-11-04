@@ -5,6 +5,7 @@ import ca from '@/messages/legal/ca.json';
 import de from '@/messages/legal/de.json';
 import en from '@/messages/legal/en.json';
 import es from '@/messages/legal/es.json';
+import fr from '@/messages/legal/fr.json';
 
 import type { LegalDocumentContent, LegalDocumentKind } from './legal.types';
 
@@ -35,6 +36,7 @@ const LEGAL_MESSAGES = new Map<AppLocale, typeof es>([
   ['ca', ca],
   ['en', en],
   ['de', de],
+  ['fr', fr],
 ]);
 
 /** Sección tal como está en el JSON: párrafos e ítems son opcionales. */

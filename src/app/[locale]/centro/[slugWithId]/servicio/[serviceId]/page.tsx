@@ -104,7 +104,7 @@ export default async function ServicePage({ params }: ServicePageProps) {
       provider={provider}
       service={service}
       professionals={professionals}
-      locale={locale as 'es' | 'ca' | 'en' | 'de'}
+      locale={locale as 'es' | 'ca' | 'en' | 'de' | 'fr'}
       reserveHref={reserveHref}
       providerSlugWithId={canonicalSlugWithId}
     />

@@ -13,11 +13,12 @@ import type { ReviewReplyFormProps } from './ReviewReplyForm.types';
  * una respuesta ya existente. Reutilizamos el mismo set que el resto del
  * panel para que el formato sea coherente en toda la sección de reseñas.
  */
-const DATE_FORMATTERS: Record<'es' | 'ca' | 'en' | 'de', Intl.DateTimeFormat> = {
+const DATE_FORMATTERS: Record<'es' | 'ca' | 'en' | 'de' | 'fr', Intl.DateTimeFormat> = {
   es: new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
   ca: new Intl.DateTimeFormat('ca-ES', { day: 'numeric', month: 'short', year: 'numeric' }),
   en: new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
   de: new Intl.DateTimeFormat('de-DE', { day: 'numeric', month: 'short', year: 'numeric' }),
+  fr: new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' }),
 };
 
 /**

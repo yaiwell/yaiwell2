@@ -6,6 +6,7 @@ import ca from '@/messages/emails/ca.json';
 import de from '@/messages/emails/de.json';
 import en from '@/messages/emails/en.json';
 import es from '@/messages/emails/es.json';
+import fr from '@/messages/emails/fr.json';
 import { PANEL_TIMEZONE } from '@/lib/utils/madrid-week';
 import type { LocalizedText } from '@/types/domain';
 
@@ -14,12 +15,12 @@ import type { LocalizedText } from '@/types/domain';
  * correos (`messages/emails/*.json`, clave `onsiteCommission`): se usan
  * fuera de una petición (cron, `after()`) y no deben viajar al navegador.
  */
-const MESSAGES = { es, ca, en, de } as const satisfies Record<AppLocale, typeof es>;
+const MESSAGES = { es, ca, en, de, fr } as const satisfies Record<AppLocale, typeof es>;
 
 function translator(locale: AppLocale) {
   return createTranslator({
     locale,
-    // eslint-disable-next-line no-restricted-syntax -- diccionario con los 4 idiomas garantizados por `satisfies` y por el test de paridad de correos.
+    // eslint-disable-next-line no-restricted-syntax -- diccionario con los idiomas garantizados por `satisfies` y por el test de paridad de correos.
     messages: { emails: MESSAGES[locale] },
     namespace: 'emails.onsiteCommission',
   });

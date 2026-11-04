@@ -6,7 +6,7 @@ import type { RootCategoryRef, ServiceWithRootCategory } from '@/types/domain';
  */
 
 /** Locales soportados por la UI (alineado con next-intl). */
-export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de' | 'fr';
 
 /**
  * Grupo de servicios bajo una misma categoría raíz.

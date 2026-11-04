@@ -14,7 +14,7 @@ import type { DisplayedBookingPrice } from '../DiscountedPrice';
 export interface BookingSummaryProps {
   provider: Provider;
   service: Service;
-  locale: 'es' | 'ca' | 'en' | 'de';
+  locale: 'es' | 'ca' | 'en' | 'de' | 'fr';
   slotStartIso: string;
   slotEndIso: string;
   notes: string;

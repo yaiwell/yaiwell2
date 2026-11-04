@@ -90,7 +90,7 @@ interface PanelCalendarPageProps {
 export default async function PanelCalendarPage({ params, searchParams }: PanelCalendarPageProps) {
   const { locale } = await params;
 
-  if (!hasLocale(['es', 'ca', 'en', 'de'], locale)) {
+  if (!hasLocale(['es', 'ca', 'en', 'de', 'fr'], locale)) {
     notFound();
   }
   setRequestLocale(locale);

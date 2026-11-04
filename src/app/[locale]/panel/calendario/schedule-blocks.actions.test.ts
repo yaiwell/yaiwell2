@@ -99,7 +99,7 @@ describe('schedule-blocks actions', () => {
   });
 
   it('rechaza un locale desconocido', async () => {
-    const result = await removeScheduleBlockAction('fr' as AppLocale, 'blk-1');
+    const result = await removeScheduleBlockAction('pt' as AppLocale, 'blk-1');
 
     expect(result).toEqual({ ok: false, code: 'INVALID_INPUT' });
     expect(removeScheduleBlockMock).not.toHaveBeenCalled();

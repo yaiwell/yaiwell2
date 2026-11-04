@@ -1,6 +1,6 @@
 /**
  * Tests de las plantillas de correo: idioma del destinatario, hora de
- * Madrid, descuento, escapado y paridad de claves en los 4 idiomas.
+ * Madrid, descuento, escapado y paridad de claves en los 5 idiomas.
  */
 import { describe, expect, it } from 'vitest';
 
@@ -8,6 +8,7 @@ import ca from '@/messages/emails/ca.json';
 import de from '@/messages/emails/de.json';
 import en from '@/messages/emails/en.json';
 import es from '@/messages/emails/es.json';
+import fr from '@/messages/emails/fr.json';
 
 import {
   buildBookingCancelledEmail,
@@ -173,6 +174,6 @@ describe('plantillas de verificación', () => {
 describe('mensajes de correo', () => {
   it('los 4 idiomas tienen las mismas claves', () => {
     const base = leafKeys(es).sort();
-    for (const messages of [ca, en, de]) expect(leafKeys(messages).sort()).toEqual(base);
+    for (const messages of [ca, en, de, fr]) expect(leafKeys(messages).sort()).toEqual(base);
   });
 });

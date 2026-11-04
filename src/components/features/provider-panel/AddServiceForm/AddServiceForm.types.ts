@@ -2,7 +2,7 @@ import type { CreateServiceActionState } from '@/app/[locale]/panel/servicios/nu
 import type { LocalizedText } from '@/types/domain';
 
 /** Locales soportados en la UI del panel. */
-export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de' | 'fr';
 
 /** Subtipo de servicio (nivel 3 — hoja del árbol). */
 export interface CategorySubtype {

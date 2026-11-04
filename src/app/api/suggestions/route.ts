@@ -30,7 +30,7 @@ import { getSuggestions } from '@/lib/services/suggestions/suggestions.service';
 
 const searchParamsSchema = z.object({
   q: z.string().min(1, 'Falta el parámetro `q`.'),
-  lang: z.enum(['es', 'ca', 'en', 'de']).optional(),
+  lang: z.enum(['es', 'ca', 'en', 'de', 'fr']).optional(),
 });
 
 interface SuggestionsSuccess {

@@ -19,7 +19,7 @@ describe('parseBecomeProviderPlan', () => {
 
 describe('becomeProviderInputSchema', () => {
   it('exige un locale soportado', () => {
-    expect(becomeProviderInputSchema.safeParse({ locale: 'fr' }).success).toBe(false);
+    expect(becomeProviderInputSchema.safeParse({ locale: 'pt' }).success).toBe(false);
   });
 
   it('ignora un plan inválido sin fallar', () => {

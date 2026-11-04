@@ -107,6 +107,8 @@ function readLocale(text: Partial<LocalizedText>, locale: AppLocale): string | u
       return text.en;
     case 'de':
       return text.de;
+    case 'fr':
+      return text.fr;
   }
 }
 
@@ -191,7 +193,7 @@ export function ensureSpanish(
   if (sanitized.es) {
     return sanitized as StorableLocalizedText;
   }
-  const fallback = sanitized.ca ?? sanitized.en ?? sanitized.de;
+  const fallback = sanitized.ca ?? sanitized.en ?? sanitized.de ?? sanitized.fr;
   if (!fallback) {
     throw new EmptyLocalizedTextError();
   }

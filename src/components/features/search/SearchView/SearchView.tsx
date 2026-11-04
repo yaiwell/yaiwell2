@@ -42,7 +42,7 @@ const SearchMapLazy = dynamic(() => import('../SearchMap/SearchMap').then((m) =>
  */
 export function SearchView({ initial, categories }: SearchViewProps) {
   const t = useTranslations('search');
-  const locale = useLocale() as 'es' | 'ca' | 'en' | 'de';
+  const locale = useLocale() as 'es' | 'ca' | 'en' | 'de' | 'fr';
   const {
     advancedValue,
     hasAdvancedFilters,

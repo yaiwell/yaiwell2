@@ -37,6 +37,9 @@ const REGCONFIG_BY_LANG: Record<SearchLanguage, 'spanish' | 'simple' | 'english'
   ca: 'simple',
   en: 'english',
   de: 'german',
+  // Sin índice en francés: `simple` casa palabras literales con las columnas
+  // `simple`, y los trigramas de abajo aportan la tolerancia a erratas.
+  fr: 'simple',
 };
 
 /** Umbral mínimo de similitud trigram para considerar el match. */
@@ -80,7 +83,8 @@ export const searchRepository = {
             similarity(COALESCE(name->>'es', ''), ${query}),
             similarity(COALESCE(name->>'ca', ''), ${query}),
             similarity(COALESCE(name->>'en', ''), ${query}),
-            similarity(COALESCE(name->>'de', ''), ${query})
+            similarity(COALESCE(name->>'de', ''), ${query}),
+            similarity(COALESCE(name->>'fr', ''), ${query})
           )
         )::float8 AS score
       FROM services
@@ -92,6 +96,7 @@ export const searchRepository = {
           OR similarity(COALESCE(name->>'ca', ''), ${query}) > ${TRIGRAM_THRESHOLD}
           OR similarity(COALESCE(name->>'en', ''), ${query}) > ${TRIGRAM_THRESHOLD}
           OR similarity(COALESCE(name->>'de', ''), ${query}) > ${TRIGRAM_THRESHOLD}
+          OR similarity(COALESCE(name->>'fr', ''), ${query}) > ${TRIGRAM_THRESHOLD}
         )
       ORDER BY score DESC, id ASC
       LIMIT ${limit}

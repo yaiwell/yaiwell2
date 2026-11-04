@@ -41,7 +41,7 @@ interface PanelDashboardPageProps {
 export default async function PanelDashboardPage({ params }: PanelDashboardPageProps) {
   const { locale } = await params;
 
-  if (!hasLocale(['es', 'ca', 'en', 'de'], locale)) {
+  if (!hasLocale(['es', 'ca', 'en', 'de', 'fr'], locale)) {
     notFound();
   }
   setRequestLocale(locale);

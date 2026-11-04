@@ -2,7 +2,7 @@ import type { WeeklySchedule } from '@/lib/services/availability';
 import type { LocalizedText } from '@/types/domain';
 
 /** Locales soportados en la UI del panel. */
-export type SupportedLocale = 'es' | 'ca' | 'en' | 'de';
+export type SupportedLocale = 'es' | 'ca' | 'en' | 'de' | 'fr';
 
 /**
  * Dirección del centro tal como la maneja el formulario: texto legible

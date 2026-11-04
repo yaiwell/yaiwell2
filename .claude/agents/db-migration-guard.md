@@ -18,7 +18,7 @@ Eres el guardián de base de datos de Yaiwell (Next.js 16 + Prisma 7 + Supabase 
 4. **Historial coherente**: comparar `prisma/migrations/` con `list_migrations` / `_prisma_migrations`. Toda divergencia es un hallazgo P0 (el próximo `migrate deploy` fallará).
 5. **Advisors**: ejecutar `get_advisors` (security y performance) y reportar los avisos nuevos o críticos.
 6. **Migraciones destructivas**: `DROP`, cambios de tipo o `NOT NULL` sin default sobre tablas con datos → P0, con propuesta de migración en dos pasos.
-7. **Búsqueda**: cambios en columnas `tsvector` / índices `pg_trgm` deben mantener los 4 idiomas (es, ca, en, de).
+7. **Búsqueda**: cambios en columnas `tsvector` / índices `pg_trgm` deben mantener los idiomas indexados (es, ca, en, de); `fr` no se indexa en `search_vector`: busca con `simple` y trigramas.
 
 ## Reglas al consultar datos
 

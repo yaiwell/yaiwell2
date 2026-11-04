@@ -126,7 +126,7 @@ describe('cancelMyBookingAction', () => {
   });
 
   it('VALIDATION con un locale no soportado o un id que no es UUID', async () => {
-    await expect(cancelMyBookingAction('fr', INPUT)).resolves.toEqual({
+    await expect(cancelMyBookingAction('pt', INPUT)).resolves.toEqual({
       ok: false,
       code: 'VALIDATION',
     });

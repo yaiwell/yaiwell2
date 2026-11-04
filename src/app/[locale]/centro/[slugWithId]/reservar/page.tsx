@@ -82,7 +82,7 @@ export default async function BookingPage({ params, searchParams }: BookingPageP
     <BookingFlow
       provider={loaded.provider}
       service={loaded.service}
-      locale={locale as 'es' | 'ca' | 'en' | 'de'}
+      locale={locale as 'es' | 'ca' | 'en' | 'de' | 'fr'}
       providerSlugWithId={slugWithId}
       initialSlotIso={parseSlotParam(slotRaw)}
       // Quién presta el servicio (§4.bis «Equipo»): con varios, el cliente

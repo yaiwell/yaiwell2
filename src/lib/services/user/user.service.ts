@@ -20,7 +20,7 @@ const VALID_ROLES = ['client', 'provider', 'admin'] as const satisfies readonly 
  * `/de` no pasaba el filtro y se persistía `es` en silencio, así que el
  * email transaccional le llegaba en castellano.
  */
-const VALID_LOCALES = ['es', 'ca', 'en', 'de'] as const satisfies readonly Locale[];
+const VALID_LOCALES = ['es', 'ca', 'en', 'de', 'fr'] as const satisfies readonly Locale[];
 
 /**
  * Sincroniza un evento `user.created` o `user.updated` de Clerk con la

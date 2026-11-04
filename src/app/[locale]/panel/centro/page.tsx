@@ -60,7 +60,7 @@ export default async function PanelSettingsPage({ params, searchParams }: PanelS
   const { locale } = await params;
   const sp = await searchParams;
 
-  if (!hasLocale(['es', 'ca', 'en', 'de'], locale)) {
+  if (!hasLocale(['es', 'ca', 'en', 'de', 'fr'], locale)) {
     notFound();
   }
   setRequestLocale(locale);
@@ -143,7 +143,7 @@ export default async function PanelSettingsPage({ params, searchParams }: PanelS
     photos: record.photos,
   };
 
-  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
+  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de' | 'fr';
 
   // Notice de retorno del flujo de onboarding de Stripe — la URL del
   // return page y del refresh page redirigen aquí con un querystring

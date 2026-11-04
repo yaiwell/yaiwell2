@@ -46,7 +46,7 @@ describe('GET /api/suggestions', () => {
   });
 
   it('devuelve 400 si lang no es válido', async () => {
-    const res = await GET(buildRequest('/api/suggestions?q=masaje&lang=fr'));
+    const res = await GET(buildRequest('/api/suggestions?q=masaje&lang=pt'));
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error.code).toBe('BAD_REQUEST');

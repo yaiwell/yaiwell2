@@ -35,7 +35,7 @@ interface PanelServicesPageProps {
 export default async function PanelServicesPage({ params }: PanelServicesPageProps) {
   const { locale } = await params;
 
-  if (!hasLocale(['es', 'ca', 'en', 'de'], locale)) {
+  if (!hasLocale(['es', 'ca', 'en', 'de', 'fr'], locale)) {
     notFound();
   }
   setRequestLocale(locale);
@@ -88,7 +88,7 @@ export default async function PanelServicesPage({ params }: PanelServicesPagePro
     bookingsLast30Days: r._count.bookings,
   }));
 
-  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de';
+  const panelLocale = locale as 'es' | 'ca' | 'en' | 'de' | 'fr';
 
   return <ServicesList services={services} locale={panelLocale} usage={usage} />;
 }

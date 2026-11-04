@@ -1,0 +1,2200 @@
+{
+  "common": {
+    "appName": "Yaiwell",
+    "loading": "Chargement…",
+    "error": "Une erreur s’est produite. Réessayez dans quelques secondes.",
+    "goBack": "Retour",
+    "comingSoon": "Bientôt disponible"
+  },
+  "theme": {
+    "groupLabel": "Thème",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
+  },
+  "seo": {
+    "defaultTitle": "Yaiwell · Beauté, bien-être et sport disponibles maintenant",
+    "defaultDescription": "Réservez immédiatement auprès de professionnels vérifiés de la beauté, du bien-être et du sport près de vous. Disponibilité réelle, sans appel ni attente.",
+    "ogImageAlt": "Yaiwell · Beauté, bien-être et sport disponibles maintenant",
+    "search": {
+      "title": "Chercher des professionnels",
+      "description": "Filtrez par catégorie, zone et disponibilité immédiate. Trouvez des professionnels de la beauté, du bien-être et du sport près de vous."
+    }
+  },
+  "nav": {
+    "home": "Accueil",
+    "search": "Rechercher",
+    "bookings": "Réservations",
+    "profile": "Profil",
+    "venue": "Établissement",
+    "forProviders": "Pour les pros",
+    "signIn": "Se connecter",
+    "signUp": "S’inscrire",
+    "account": "Mon compte",
+    "panel": "Mon espace pro",
+    "openMenu": "Ouvrir le menu",
+    "skipToContent": "Aller au contenu",
+    "primaryNavLabel": "Navigation principale",
+    "bottomNavLabel": "Navigation inférieure"
+  },
+  "langSwitcher": {
+    "groupLabel": "Langue",
+    "names": {
+      "es": "Español",
+      "ca": "Català",
+      "en": "English",
+      "de": "Deutsch",
+      "fr": "Français"
+    }
+  },
+  "providerGallery": {
+    "galleryLabel": "Galerie de photos",
+    "prev": "Photo précédente",
+    "next": "Photo suivante",
+    "goToPhoto": "Aller à la photo {index}",
+    "viewPhoto": "Voir la photo {index}",
+    "noPhotos": "Cet établissement n’a pas encore ajouté de photos"
+  },
+  "photoUploader": {
+    "title": "Ajoutez des photos",
+    "drop": "Glissez vos fichiers ici ou cliquez pour les choisir.",
+    "browse": "Parcourir",
+    "uploading": "Envoi…",
+    "error": "Échec de l’envoi",
+    "remove": "Supprimer la photo",
+    "maxFilesReached": "Vous avez atteint le maximum de {max} photos.",
+    "remaining": "Vous pouvez encore en ajouter {count} (max. {max})."
+  },
+  "addressAutocomplete": {
+    "placeholder": "Rue, numéro, ville…",
+    "loading": "Recherche d’adresses…",
+    "error": "Impossible de charger les suggestions.",
+    "no_results": "Aucun résultat.",
+    "clear": "Effacer l’adresse"
+  },
+  "footer": {
+    "tagline": "Beauté, bien-être et sport avec disponibilité immédiate.",
+    "product": {
+      "title": "Produit",
+      "howItWorks": "Comment ça marche",
+      "categories": "Catégories",
+      "pricing": "Tarifs"
+    },
+    "legal": {
+      "title": "Légal",
+      "terms": "Conditions",
+      "privacy": "Confidentialité",
+      "cookies": "Cookies"
+    },
+    "madeIn": "Fait à {city}",
+    "copyright": "© {year} Yaiwell",
+    "contact": "Contact"
+  },
+  "home": {
+    "hero": {
+      "title": {
+        "line1": "Réservez beauté, bien-être et sport",
+        "line2": "quand vous voulez"
+      },
+      "subtitle": "Découvrez les professionnels disponibles près de vous en ce moment.",
+      "searchBar": {
+        "category": "Que cherchez-vous ?",
+        "location": "Où ?",
+        "when": "Quand ?",
+        "now": "Maintenant",
+        "submit": "Rechercher",
+        "locationOptions": {
+          "any": "Toutes les zones",
+          "nearMe": "Près de vous",
+          "nearMeLocating": "Localisation…",
+          "nearMeDenied": "Près de vous (sans autorisation)",
+          "barcelona": "Barcelona",
+          "castellar": "Castellar del Vallès",
+          "llicaVall": "Lliçà de Vall"
+        },
+        "whenOptions": {
+          "now": "Maintenant",
+          "any": "N’importe quel jour"
+        }
+      }
+    },
+    "categories": {
+      "title": "Catégories populaires",
+      "subtitle": "Les plus réservées par la communauté cette semaine.",
+      "peluqueria": "Coiffure",
+      "masajes": "Massages",
+      "manicura": "Manucure",
+      "gimnasio": "Salle de sport",
+      "estetica": "Esthétique",
+      "yoga": "Yoga"
+    },
+    "howItWorks": {
+      "title": "Comment ça marche",
+      "steps": {
+        "0": {
+          "title": "Cherchez près de vous",
+          "description": "Filtrez par catégorie, distance et disponibilité réelle à cet instant précis."
+        },
+        "1": {
+          "title": "Réservez immédiatement",
+          "description": "Vous confirmez et payez en quelques secondes. Sans appel, sans attente, sans message sur un WhatsApp qui ne répond pas."
+        },
+        "2": {
+          "title": "Profitez et laissez un avis",
+          "description": "Allez-y, profitez du service et laissez un avis sincère pour aider la communauté."
+        }
+      }
+    },
+    "differentiator": {
+      "title": "Pourquoi Yaiwell",
+      "cards": {
+        "0": {
+          "title": "Disponibilité réelle",
+          "body": "Vous voyez qui a un créneau libre en ce moment. Ni agendas fantômes ni créneaux qui n’existent pas vraiment."
+        },
+        "1": {
+          "title": "Sélection premium",
+          "body": "Uniquement des professionnels vérifiés manuellement par notre équipe. La qualité avant la quantité."
+        },
+        "2": {
+          "title": "Des règles claires",
+          "body": "Annulez gratuitement depuis l’appli jusqu’à 2 h avant. En dernière minute, paiement sécurisé immédiat et, si l’établissement ne peut pas vous recevoir, remboursement intégral via l’assistance."
+        }
+      }
+    },
+    "finalCta": {
+      "title": "Prenez soin de vous dès maintenant",
+      "subtitle": "Des professionnels près de vous, avec un créneau dès aujourd’hui.",
+      "button": "Chercher des professionnels"
+    }
+  },
+  "search": {
+    "title": "Chercher une disponibilité",
+    "searchPlaceholder": "Cherchez un service, un établissement ou un soin…",
+    "availableNowToggle": "Disponibles maintenant",
+    "filters": {
+      "button": "Filtres",
+      "title": "Filtres avancés",
+      "description": "Affinez votre recherche par prix et note minimale.",
+      "price": "Prix",
+      "priceLow": "Économique",
+      "priceMid": "Moyen",
+      "priceHigh": "Premium",
+      "minRating": "Note minimale",
+      "anyRating": "Indifférent",
+      "apply": "Appliquer les filtres",
+      "clear": "Effacer",
+      "close": "Fermer"
+    },
+    "tabs": {
+      "list": "Liste",
+      "map": "Carte"
+    },
+    "categories": {
+      "all": "Toutes"
+    },
+    "empty": {
+      "title": "Aucun résultat pour l’instant",
+      "subtitle": "Essayez de retirer un filtre ou d’élargir la zone de la carte.",
+      "nearMeTitle": "Rien dans un rayon de {radius} km",
+      "nearMeSubtitle": "Aucun professionnel dans le rayon que nous avons appliqué. Élargissez la recherche et réessayez.",
+      "disableNearMeCta": "Retirer le filtre « Près de vous »"
+    },
+    "card": {
+      "from": "dès",
+      "distance": "à {km} km",
+      "distanceShort": "à {distance}",
+      "distanceFromFallback": "à {distance} *",
+      "distanceFromFallbackHint": "Distance estimée depuis le centre de Barcelona (sans votre position réelle).",
+      "viewDetail": "Voir le détail",
+      "typeAutonomous": "Indépendant",
+      "typeCenter": "Établissement",
+      "noPhoto": "Sans photo"
+    },
+    "availability": {
+      "now": "Disponible maintenant",
+      "soon": "Dans {minutes} min",
+      "busy": "Complet aujourd’hui",
+      "busyWithLater": "Libre à {time}"
+    },
+    "map": {
+      "attribution": "© OpenStreetMap",
+      "locating": "Localisation…",
+      "popupCta": "Voir dans la liste",
+      "youAreHere": "Vous êtes ici",
+      "fallbackCenter": "Centre de Barcelona (estimation)"
+    },
+    "slotOffer": {
+      "tag": "Créneau libéré · −{pct} % · {when}",
+      "tagAria": "Créneau libéré avec {pct} % de remise, {when}. Réserver cet horaire",
+      "filterToggle": "En promotion",
+      "sheetSectionLabel": "Créneaux libérés"
+    },
+    "nearMeChip": "Près de vous",
+    "nearMeLocating": "Localisation…",
+    "nearMeLocationFailed": "Nous n’avons pas pu déterminer votre position. Vérifiez que le navigateur a l’autorisation de localisation et réessayez.",
+    "nearMeChipAria": "Filtrer les professionnels dans un rayon de {radius} km",
+    "resultsCount": "{count, plural, one {# résultat} other {# résultats}}"
+  },
+  "searchAutocomplete": {
+    "placeholder": "Cherchez un service, un établissement ou un soin…",
+    "inputLabel": "Rechercher",
+    "clear": "Effacer la recherche",
+    "suggestionsLabel": "Suggestions de recherche",
+    "type": {
+      "category": "Catégorie",
+      "service": "Service",
+      "provider": "Établissement"
+    }
+  },
+  "searchFilters": {
+    "chips": {
+      "groupLabel": "Filtres actifs",
+      "queryLabel": "Texte : {value}",
+      "availabilityLabel": "Disponibles maintenant",
+      "discountLabel": "En promotion",
+      "priceLabel": "Prix {value}",
+      "ratingLabel": "{value}+ étoiles",
+      "clearAll": "Tout effacer",
+      "removeAria": "Retirer le filtre {label}"
+    }
+  },
+  "providerDetail": {
+    "breadcrumb": {
+      "home": "Accueil",
+      "search": "Rechercher"
+    },
+    "header": {
+      "typeAutonomous": "Indépendant",
+      "typeCenter": "Établissement"
+    },
+    "tabs": {
+      "services": "Services",
+      "reviews": "Avis",
+      "info": "Le lieu",
+      "navLabel": "Sections de la fiche"
+    },
+    "services": {
+      "title": "Carte des services",
+      "subtitle": "Choisissez le service qui correspond le mieux à ce que vous cherchez.",
+      "duration": "{minutes} min",
+      "empty": "Cet établissement n’a pas encore publié de services.",
+      "groupHeader": "{category}",
+      "cardHint": "Appuyez pour voir les détails",
+      "sheet": {
+        "title": "Réserver ce service",
+        "subtitle": "Vérifiez les détails avant de continuer.",
+        "close": "Fermer",
+        "durationLabel": "Durée",
+        "priceLabel": "Prix",
+        "professionalLabel": "Professionnel",
+        "anyProfessional": "Peu importe, le premier disponible",
+        "descriptionLabel": "Description",
+        "reserveCta": "Réserver"
+      },
+      "groupHeaderFallback": "Autres services"
+    },
+    "reviews": {
+      "title": "Avis",
+      "summary": "{rating} sur 5 · {count, plural, one {# avis} other {# avis}}",
+      "breakdownLabel": "{stars} étoiles",
+      "empty": "Aucun avis pour l’instant. Laissez le premier avis sur cet établissement.",
+      "loadMore": "Lire plus d’avis",
+      "collapse": "Voir moins"
+    },
+    "info": {
+      "title": "Le lieu",
+      "addressLabel": "Où nous trouver",
+      "scheduleLabel": "Quand venir nous voir",
+      "scheduleClosed": "Fermé",
+      "days": {
+        "monday": "Lundi",
+        "tuesday": "Mardi",
+        "wednesday": "Mercredi",
+        "thursday": "Jeudi",
+        "friday": "Vendredi",
+        "saturday": "Samedi",
+        "sunday": "Dimanche"
+      },
+      "descriptionLabel": "La maison"
+    },
+    "notFound": {
+      "title": "Établissement introuvable",
+      "subtitle": "Il n’est peut-être plus disponible ou le lien est incorrect.",
+      "backToSearch": "Retour à la recherche"
+    },
+    "team": {
+      "title": "L’équipe",
+      "subtitle": "Les personnes qui s’occuperont de vous."
+    }
+  },
+  "ratingSummary": {
+    "new": "Nouveau sur Yaiwell",
+    "groupLabel": "Avis",
+    "reviews": "{count, plural, one {# avis} other {# avis}}"
+  },
+  "providerPanel": {
+    "nav": {
+      "title": "Espace pro",
+      "dashboard": "Résumé",
+      "calendar": "Calendrier",
+      "services": "Services",
+      "settings": "Réglages",
+      "reviews": "Avis",
+      "addService": "Ajouter un service",
+      "providerLabel": "Établissement actif",
+      "sidebarNavLabel": "Navigation de l’espace pro",
+      "bottomNavLabel": "Accès rapides de l’espace pro",
+      "team": "Équipe"
+    },
+    "preview": {
+      "show": "Voir avec des données d’exemple",
+      "hide": "Revenir à mes données réelles",
+      "pending": "Changement…",
+      "bannerTitle": "Aperçu",
+      "bannerDescription": "Ceci est une simulation pour vous montrer à quoi ressemblera votre espace pro avec des données réelles. Vous pouvez revenir à votre vue normale à tout moment."
+    },
+    "dashboard": {
+      "title": "Résumé hebdomadaire",
+      "subtitle": "Votre semaine en un coup d’œil.",
+      "metrics": {
+        "weekRevenue": "Revenus de la semaine",
+        "weekBookings": "Réservations de la semaine",
+        "averageTicket": "Panier moyen",
+        "occupancy": "Taux d’occupation",
+        "vsLastWeek": "vs semaine précédente"
+      },
+      "chart": {
+        "title": "Revenus par jour",
+        "subtitle": "Comparatif des 7 derniers jours.",
+        "dayShort": {
+          "mon": "Lun",
+          "tue": "Mar",
+          "wed": "Mer",
+          "thu": "Jeu",
+          "fri": "Ven",
+          "sat": "Sam",
+          "sun": "Dim"
+        },
+        "barAriaLabel": "{day} : {revenue}, {count, plural, one {# réservation} other {# réservations}}"
+      },
+      "topServices": {
+        "title": "Services les plus réservés",
+        "subtitle": "Top 4 par nombre de réservations cette semaine.",
+        "bookings": "{count, plural, one {# réservation} other {# réservations}}"
+      }
+    },
+    "calendar": {
+      "title": "Calendrier hebdomadaire",
+      "subtitle": "Vos réservations semaine par semaine. Touchez un rendez-vous pour voir ses informations et le gérer.",
+      "weekdays": {
+        "mon": "Lundi",
+        "tue": "Mardi",
+        "wed": "Mercredi",
+        "thu": "Jeudi",
+        "fri": "Vendredi",
+        "sat": "Samedi",
+        "sun": "Dimanche"
+      },
+      "weekdayShort": {
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mer",
+        "thu": "Jeu",
+        "fri": "Ven",
+        "sat": "Sam",
+        "sun": "Dim"
+      },
+      "status": {
+        "confirmed": "Confirmée",
+        "pending": "En attente",
+        "completed": "Terminée",
+        "cancelled": "Annulée",
+        "refunded": "Remboursée",
+        "no_show": "Absence"
+      },
+      "legend": "Légende",
+      "emptyDay": "Aucune réservation",
+      "bookingAriaLabel": "{service} avec {client} à {time}",
+      "summary": "{count, plural, =0 {Aucune réservation cette semaine} one {# réservation} other {# réservations}}",
+      "actions": {
+        "title": "Réservations de la semaine",
+        "subtitle": "Marquez comme terminé chaque rendez-vous honoré : c’est ce qui permet à la clientèle de laisser un avis.",
+        "empty": "Aucune réservation cette semaine.",
+        "readOnlyHint": "Vous consultez des données d’exemple : les actions sont désactivées.",
+        "clientWithProfessional": "{client} · avec {professional}",
+        "complete": {
+          "button": "Marquer terminée",
+          "confirmTitle": "Marquer la réservation comme terminée ?",
+          "confirmDescription": "Confirmez uniquement si le service a été réalisé. La personne qui a réservé pourra alors laisser un avis public. Cette action est irréversible.",
+          "confirmAction": "Oui, marquer comme terminée",
+          "cancel": "Retour",
+          "pending": "Enregistrement…",
+          "errors": {
+            "notFound": "Cette réservation n’existe plus.",
+            "forbidden": "Vous n’avez pas les droits sur cette réservation.",
+            "notConfirmed": "Seules les réservations confirmées et payées peuvent être marquées comme terminées.",
+            "internal": "Impossible de marquer la réservation comme terminée. Réessayez dans quelques minutes.",
+            "notStarted": "L’heure du rendez-vous n’est pas encore arrivée : vous pourrez le marquer comme terminé dès qu’il commencera."
+          }
+        },
+        "cancel": {
+          "button": "Annuler la réservation",
+          "confirmTitle": "Annuler cette réservation ?",
+          "confirmDescription": "La personne qui a réservé est intégralement remboursée, notre commission comprise, et le créneau redevient libre. Cette action est irréversible.",
+          "confirmAction": "Oui, annuler et rembourser",
+          "keep": "Conserver la réservation",
+          "pending": "Annulation…",
+          "blockedHint": "Le rendez-vous a lieu dans moins de 2 heures : il ne peut plus être annulé d’ici. En cas de force majeure, écrivez à l’assistance.",
+          "errors": {
+            "notFound": "Cette réservation n’existe plus.",
+            "forbidden": "Vous n’avez pas les droits sur cette réservation.",
+            "tooLate": "Le rendez-vous a lieu dans moins de 2 heures. En cas de force majeure, écrivez à l’assistance.",
+            "notCancellable": "Cette réservation ne peut plus être annulée dans son état actuel.",
+            "refundFailed": "La réservation a été annulée, mais le remboursement n’a pas pu être émis. L’assistance va s’en occuper ; inutile de réessayer.",
+            "internal": "Annulation impossible. Réessayez dans quelques minutes."
+          },
+          "confirmDescriptionOnsite": "Le paiement était prévu sur place : il n’y a donc rien à rembourser. Le créneau redevient libre. Cette action est irréversible.",
+          "confirmActionOnsite": "Oui, annuler"
+        },
+        "paymentOnsite": "Paiement sur place",
+        "noShow": {
+          "button": "Absence",
+          "confirmTitle": "Signaler une absence ?",
+          "descriptionOnsite": "Le paiement était prévu sur place : 1 pénalité sera ajoutée au compte de la personne et aucune commission ne vous sera facturée pour cette réservation. Vous pourrez revenir en arrière pendant 24 h.",
+          "descriptionOnline": "Paiement en ligne : ni remboursement ni pénalité. Vous pourrez revenir en arrière pendant 24 h.",
+          "confirmAction": "Oui, signaler l’absence",
+          "cancel": "Retour",
+          "pending": "Enregistrement…",
+          "errors": {
+            "notFound": "Cette réservation n’existe plus.",
+            "forbidden": "Vous n’avez pas les droits sur cette réservation.",
+            "notConfirmed": "Seules les réservations confirmées peuvent être marquées ainsi. Rechargez la page.",
+            "notStarted": "L’heure du rendez-vous n’est pas encore arrivée.",
+            "windowClosed": "Plus de 72 h se sont écoulées depuis le rendez-vous : il n’est plus possible de signaler l’absence.",
+            "internal": "Enregistrement impossible. Réessayez dans quelques minutes."
+          }
+        },
+        "undoNoShow": {
+          "button": "Annuler l’absence",
+          "hint": "Vous pouvez revenir en arrière pendant 24 h.",
+          "confirmTitle": "Annuler le signalement « Absence » ?",
+          "confirmDescription": "La réservation redevient confirmée et la pénalité éventuelle est retirée. Si 72 h se sont déjà écoulées depuis le rendez-vous, elle est marquée comme terminée.",
+          "confirmAction": "Oui, annuler",
+          "cancel": "Retour",
+          "pending": "Annulation…",
+          "errors": {
+            "notFound": "Cette réservation n’existe plus.",
+            "forbidden": "Vous n’avez pas les droits sur cette réservation.",
+            "notNoShow": "Cette réservation n’est plus marquée « Absence ». Rechargez la page.",
+            "windowClosed": "Plus de 24 h se sont écoulées : pour revenir en arrière, écrivez à l’assistance.",
+            "slotTaken": "Ce créneau est déjà pris par une autre réservation. Écrivez à l’assistance.",
+            "internal": "Impossible de revenir en arrière. Réessayez dans quelques minutes."
+          }
+        }
+      },
+      "slotOffers": {
+        "releaseTitle": "Créneau libre. Le proposer avec une remise ?",
+        "releaseFreeTitle": "Libérer un créneau avec remise",
+        "releaseFreeSubtitle": "{service} · {time}",
+        "description": "Choisissez la remise selon le temps restant avant le rendez-vous. Le prix baisse tout seul à l’approche de l’heure et le créneau est mis en avant sur Yaiwell auprès des personnes qui cherchent à proximité.",
+        "rules": "Par paliers de 5 %, jusqu’à {max} %. Une tranche plus proche de l’heure ne peut jamais avoir une remise inférieure à la précédente.",
+        "tiersLabel": "Remise par tranche",
+        "tiers": {
+          "over2h": "Plus de 2 h avant",
+          "oneToTwoHours": "Entre 1 et 2 h avant",
+          "underOneHour": "Dans la dernière heure"
+        },
+        "tierNow": "Maintenant",
+        "decrease": "Baisser la remise : {tier}",
+        "increase": "Augmenter la remise : {tier}",
+        "pct": "{pct} %",
+        "issues": {
+          "underOneHourMin": "La dernière heure nécessite une remise d’au moins 5 %.",
+          "decreasing": "La remise ne peut pas baisser à l’approche de l’heure : chaque tranche doit égaler ou dépasser la précédente.",
+          "outOfRange": "Utilisez des pourcentages par paliers de 5 %, de 0 à 50 %."
+        },
+        "refundFailedNotice": "La réservation est annulée, mais le remboursement n’a pas pu être émis. L’assistance va s’en occuper ; vous n’avez rien d’autre à faire.",
+        "submit": "Proposer avec remise",
+        "pending": "Publication…",
+        "skip": "Ignorer",
+        "successTitle": "Créneau libéré",
+        "successDescription": "Il apparaît déjà en promotion sur Yaiwell. Vous pouvez le retirer depuis le calendrier à tout moment.",
+        "close": "Fermer",
+        "errors": {
+          "invalidInput": "Vérifiez les remises : une tranche n’est pas valide.",
+          "notFound": "Cette réservation ou cette offre n’existe plus.",
+          "forbidden": "Vous n’avez pas les droits sur ce créneau.",
+          "notCancelled": "Seul le créneau d’une réservation annulée peut être libéré.",
+          "slotTaken": "Ce créneau n’est plus libre.",
+          "outsideWindow": "Ce créneau ne peut plus être libéré : il commence trop tôt ou hors de la période autorisée.",
+          "alreadyExists": "Ce créneau est déjà libéré.",
+          "serviceInvalid": "Ce service ne peut pas être proposé sur ce créneau.",
+          "internal": "Impossible de libérer le créneau. Réessayez dans quelques minutes."
+        },
+        "free": {
+          "title": "Créneaux libres dans les 2 prochaines heures",
+          "subtitle": "Pour les remplir, vous pouvez les proposer avec une remise. Personne d’autre ne voit cette liste.",
+          "empty": "Vous n’avez aucun créneau libre réservable dans les 2 prochaines heures.",
+          "release": "Libérer avec remise",
+          "releaseAriaLabel": "Libérer avec remise {service} à {time}",
+          "more": "{count, plural, one {et # autre créneau} other {et # autres créneaux}}"
+        },
+        "block": {
+          "label": "Créneau libéré · −{pct} %",
+          "labelNoDiscount": "Créneau libéré",
+          "ariaLabel": "{label} : {service} à {time}",
+          "legend": "Créneau libéré"
+        },
+        "detail": {
+          "title": "Créneau libéré",
+          "description": "Informations sur le créneau libéré avec remise et possibilité de le retirer.",
+          "service": "Service",
+          "priceNow": "Prix actuel",
+          "tiers": "Remise par tranche"
+        },
+        "withdraw": {
+          "button": "Retirer l’offre",
+          "pending": "Retrait…",
+          "hint": "Une fois l’offre retirée, le créneau revient à son prix normal.",
+          "errors": {
+            "notFound": "Cette offre n’existe plus.",
+            "forbidden": "Vous n’avez pas les droits sur cette offre.",
+            "internal": "Retrait impossible. Réessayez dans quelques minutes."
+          }
+        }
+      },
+      "nav": {
+        "region": "Changer de semaine",
+        "previous": "Semaine précédente",
+        "next": "Semaine suivante",
+        "today": "Aujourd’hui",
+        "label": "{start} – {end}"
+      },
+      "dayView": {
+        "tabsLabel": "Jours de la semaine",
+        "tabCount": "{count, plural, =0 {aucune réservation} one {# réservation} other {# réservations}}"
+      },
+      "details": {
+        "close": "Fermer",
+        "description": "Informations sur la réservation et actions disponibles.",
+        "when": "Quand",
+        "client": "Réservé par",
+        "professional": "Professionnel",
+        "price": "Montant",
+        "status": "État",
+        "noActions": "Cette réservation est déjà clôturée : aucune action en attente.",
+        "payment": "Paiement",
+        "paymentOnline": "En ligne",
+        "paymentOnsite": "Sur place"
+      },
+      "scheduleBlocks": {
+        "openButton": "Bloquer des heures",
+        "legend": "Bloqué",
+        "fullDay": "Toute la journée",
+        "privateHint": "Le motif n’est visible que par vous ; la clientèle voit seulement qu’il n’y a pas de créneau.",
+        "close": "Fermer",
+        "cancel": "Annuler",
+        "submit": "Bloquer",
+        "submitting": "Blocage…",
+        "dialog": {
+          "title": "Bloquer des heures",
+          "description": "Marquez une période comme indisponible : personne ne pourra réserver pendant ce temps. 60 jours consécutifs au maximum et jusqu’à un an à l’avance."
+        },
+        "fields": {
+          "start": "Du",
+          "end": "Au",
+          "date": "Date",
+          "time": "Heure",
+          "reason": "Motif (facultatif)",
+          "reasonPlaceholder": "Vacances, formation, médecin…",
+          "reasonHint": "Visible par vous uniquement.",
+          "reasonCounter": "{count}/{max}",
+          "professional": "Professionnel",
+          "professionalPlaceholder": "Choisissez qui bloquer",
+          "professionalHint": "« Toute l’équipe » bloque ces heures pour chaque membre de l’équipe.",
+          "allTeam": "Toute l’équipe"
+        },
+        "issues": {
+          "required": "Indiquez la date et l’heure de début et de fin.",
+          "step": "Les heures vont par paliers de 5 minutes (10:00, 10:05, 10:10…).",
+          "endBeforeStart": "La fin doit être postérieure au début.",
+          "professional": "Choisissez une personne ou « Toute l’équipe »."
+        },
+        "created": {
+          "title": "Heures bloquées",
+          "description": "Elles apparaissent déjà dans votre calendrier et personne ne pourra réserver sur cette période."
+        },
+        "block": {
+          "label": "Bloqué",
+          "ariaLabel": "Heures bloquées : {time}"
+        },
+        "detail": {
+          "title": "Heures bloquées",
+          "description": "Période indisponible à la réservation et possibilité de la retirer.",
+          "reason": "Motif"
+        },
+        "remove": {
+          "button": "Retirer le blocage",
+          "confirmText": "Retirer ce blocage ? Ces heures seront de nouveau disponibles à la réservation.",
+          "confirm": "Oui, retirer",
+          "keep": "Conserver",
+          "pending": "Retrait…",
+          "done": "Blocage retiré. Ces heures sont de nouveau disponibles.",
+          "errors": {
+            "notFound": "Ce blocage n’existe plus. Rechargez le calendrier.",
+            "forbidden": "Vous ne pouvez pas retirer ce blocage.",
+            "internal": "Nous n’avons pas pu retirer le blocage. Réessayez."
+          }
+        },
+        "errors": {
+          "invalidInput": "Vérifiez les dates et les heures : une donnée n’est pas valide.",
+          "endBeforeStart": "La fin doit être postérieure au début.",
+          "inPast": "Vous ne pouvez pas bloquer des heures déjà passées.",
+          "tooLong": "Un blocage peut durer 60 jours au maximum. Divisez-le en plusieurs.",
+          "tooFar": "Vous pouvez bloquer des heures jusqu’à un an à l’avance seulement.",
+          "conflict": "Des rendez-vous sont prévus sur cette période :",
+          "conflictItem": "{date} · {time} — {client} ({service})",
+          "conflictItemNoClient": "{date} · {time} — {service}",
+          "conflictHint": "Annulez-les d’abord depuis le calendrier ou choisissez une autre période.",
+          "notFound": "Nous ne trouvons pas votre établissement. Rechargez la page.",
+          "forbidden": "Vous n’avez pas le droit de bloquer des heures dans cet établissement.",
+          "internal": "Nous n’avons pas pu bloquer les heures. Réessayez.",
+          "professionalRequired": "Choisissez la personne à bloquer ou cochez « Toute l’équipe »."
+        }
+      },
+      "filter": {
+        "region": "Filtrer par professionnel",
+        "all": "Tous"
+      },
+      "withProfessional": "{label} · {professional}"
+    },
+    "services": {
+      "title": "Services proposés",
+      "subtitle": "Gérez la carte visible par la clientèle.",
+      "addCta": "Ajouter un service",
+      "status": {
+        "active": "Actif",
+        "paused": "En pause"
+      },
+      "duration": "{minutes} min",
+      "bookings30d": "{count} réservations / 30 j",
+      "edit": "Modifier",
+      "pause": "Mettre en pause",
+      "resume": "Réactiver",
+      "updating": "Mise à jour…",
+      "empty": "Vous n’avez encore publié aucun service.",
+      "delete": {
+        "button": "Supprimer",
+        "confirmTitle": "Supprimer le service ?",
+        "confirmDescription": "Cette action est irréversible. Le service n’apparaîtra plus dans votre espace pro et aucune nouvelle réservation ne pourra être créée. Les réservations passées et leurs statistiques historiques sont conservées.",
+        "confirmAction": "Supprimer",
+        "cancel": "Annuler",
+        "deleting": "Suppression…",
+        "errors": {
+          "notFound": "Ce service n’existe plus.",
+          "forbidden": "Vous n’avez pas le droit de supprimer ce service.",
+          "internal": "Suppression impossible. Réessayez dans quelques secondes."
+        }
+      },
+      "planLimit": {
+        "counter": "{active}/{max} services publiés",
+        "counterUnlimited": "{active} services publiés · Illimités",
+        "hiddenBadge": "Masqué par votre formule",
+        "reached": "Vous avez atteint le maximum de services publiés de votre formule. Passez à une formule supérieure pour en publier davantage.",
+        "upgradeCta": "Changer de formule"
+      },
+      "form": {
+        "professionalsLabel": "Assuré par",
+        "professionalsHelp": "Cochez les membres de votre équipe auprès desquels ce service peut être réservé.",
+        "professionalsRequired": "Choisissez au moins une personne.",
+        "professionalsInvalid": "L’une des personnes choisies ne fait plus partie de votre équipe. Rechargez la page et refaites votre choix.",
+        "professionalsOutOfPlan": "Hors formule"
+      }
+    },
+    "addService": {
+      "title": "Ajouter un service",
+      "subtitle": "Définissez un nouveau service pour votre carte.",
+      "back": "Retour à la liste",
+      "categoryStep": {
+        "title": "Classification",
+        "subtitle": "Choisissez la catégorie du service.",
+        "rootLabel": "Catégorie",
+        "rootPlaceholder": "Sélectionnez une catégorie",
+        "typeLabel": "Type",
+        "typePlaceholder": "Sélectionnez un type",
+        "subtypeLabel": "Sous-type",
+        "subtypePlaceholder": "Sélectionnez un sous-type",
+        "hintAfterRoot": "Choisissez d’abord la catégorie pour voir les types disponibles.",
+        "hintAfterType": "Choisissez un type pour voir les sous-types disponibles."
+      },
+      "detailsStep": {
+        "title": "Informations sur le service",
+        "subtitle": "Ce que la clientèle verra au moment de réserver.",
+        "nameLabel": "Nom du service",
+        "namePlaceholder": "Ex. : coupe femme avec shampoing",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Indiquez ce qui est inclus, le matériel, les professionnels assignés, etc.",
+        "durationLabel": "Durée (minutes)",
+        "priceLabel": "Prix (€)"
+      },
+      "submit": "Publier le service",
+      "submitting": "Publication…",
+      "editTitle": "Modifier le service",
+      "editSubtitle": "Mettez à jour les informations du service. Les modifications s’appliquent immédiatement.",
+      "editSubmit": "Enregistrer",
+      "updating": "Enregistrement…",
+      "cancel": "Annuler",
+      "errors": {
+        "VALIDATION": "Vérifiez les champs du formulaire.",
+        "CATEGORY_NOT_FOUND": "La catégorie sélectionnée n’existe plus. Choisissez-en une autre.",
+        "PROVIDER_NOT_FOUND": "Nous n’avons pas pu trouver votre établissement. Rechargez la page.",
+        "SERVICE_NOT_FOUND": "Ce service n’existe plus.",
+        "FORBIDDEN": "Vous n’avez pas le droit de modifier ce service.",
+        "INTERNAL": "Enregistrement impossible. Réessayez dans quelques secondes.",
+        "PLAN_LIMIT_REACHED": "Votre formule n’autorise pas davantage de services publiés. Passez à une formule supérieure pour en publier plus."
+      }
+    },
+    "settings": {
+      "title": "Paramètres de l’établissement",
+      "subtitle": "Informations publiques et pratiques de votre établissement.",
+      "general": {
+        "title": "Informations générales",
+        "businessNameLabel": "Nom commercial",
+        "vatLabel": "NIF / CIF",
+        "phoneLabel": "Téléphone de contact",
+        "emailLabel": "E-mail de contact",
+        "contactHelp": "Visible uniquement par l’équipe Yaiwell, pour vous contacter si besoin. N’apparaît pas sur votre fiche publique.",
+        "descriptionLabel": "Description publique"
+      },
+      "address": {
+        "title": "Adresse",
+        "streetLabel": "Rue et numéro",
+        "streetHelp": "Saisissez l’adresse et choisissez l’une des suggestions : nous mettrons ainsi à jour votre position sur la carte et dans les recherches de proximité."
+      },
+      "schedule": {
+        "title": "Horaires",
+        "subtitle": "Définissez quand vous acceptez des réservations. Vous pouvez ajouter plusieurs plages horaires par jour pour les journées coupées.",
+        "weekdaysLabel": "Du lundi au vendredi",
+        "saturdayLabel": "Samedis",
+        "sundayLabel": "Dimanches",
+        "closed": "Fermé",
+        "openFrom": "Ouverture",
+        "openTo": "Fermeture",
+        "openLabel": "Ouvert",
+        "closedLabel": "Fermé",
+        "closedHint": "Pas d’accueil ce jour-là.",
+        "addBlock": "Ajouter une plage",
+        "toggleAria": "Modifier la disponibilité ({day})",
+        "removeBlockAria": "Retirer une plage horaire ({day})",
+        "days": {
+          "monday": "Lundi",
+          "tuesday": "Mardi",
+          "wednesday": "Mercredi",
+          "thursday": "Jeudi",
+          "friday": "Vendredi",
+          "saturday": "Samedi",
+          "sunday": "Dimanche"
+        }
+      },
+      "photos": {
+        "title": "Photos",
+        "subtitle": "Les photos apparaissent sur votre fiche publique. Nous en recommandons 3 au minimum.",
+        "addCta": "Ajouter une photo",
+        "altLabel": "Photo de l’établissement {index}",
+        "error": "Impossible d’enregistrer les photos. Réessayez."
+      },
+      "multiBusiness": {
+        "title": "Ajouter un autre établissement",
+        "description": "Vous pourrez bientôt gérer plusieurs lieux ou comptes professionnels depuis le même espace pro.",
+        "cta": "Ajouter un établissement"
+      },
+      "save": {
+        "button": "Enregistrer",
+        "saving": "Enregistrement…",
+        "success": "Enregistré.",
+        "errors": {
+          "notFound": "Nous n’avons pas trouvé votre établissement. Rechargez la page et réessayez.",
+          "validation": "Vérifiez les champs : une donnée ne respecte pas les minimums requis.",
+          "noProfessional": "Aucun professionnel n’est associé à votre compte. Contactez l’assistance.",
+          "internal": "Nous n’avons pas pu enregistrer les modifications. Réessayez dans quelques secondes.",
+          "locationRequired": "Nous n’avons pas pu situer cette adresse sur la carte. Choisissez l’une des suggestions de la liste et enregistrez de nouveau."
+        }
+      }
+    },
+    "reviews": {
+      "title": "Avis reçus",
+      "subtitle": "Répondre aux avis renforce la confiance de votre future clientèle.",
+      "summary": "{rating} sur 5 · {count, plural, one {# avis} other {# avis}}",
+      "filters": {
+        "starsLabel": "Étoiles",
+        "allStars": "Toutes",
+        "periodLabel": "Période",
+        "period7d": "7 derniers jours",
+        "period30d": "30 derniers jours",
+        "period90d": "90 derniers jours",
+        "periodAll": "Toutes",
+        "withoutResponse": "Sans réponse uniquement"
+      },
+      "card": {
+        "serviceLabel": "Service",
+        "respond": "Répondre",
+        "responseTitle": "Réponse de l’établissement",
+        "alreadyResponded": "Répondu",
+        "pending": "En attente de réponse"
+      },
+      "reply": {
+        "button": "Répondre",
+        "placeholder": "Écrivez votre réponse à cet avis…",
+        "submit": "Envoyer la réponse",
+        "submitting": "Envoi…",
+        "cancel": "Annuler",
+        "alreadyReplied": "Votre réponse",
+        "errors": {
+          "VALIDATION": "La réponse doit contenir entre 5 et 1000 caractères.",
+          "REVIEW_NOT_FOUND": "Cet avis n’existe plus. Rechargez la page.",
+          "FORBIDDEN": "Vous n’avez pas le droit de répondre à cet avis.",
+          "INTERNAL": "Impossible d’envoyer la réponse. Réessayez dans quelques secondes."
+        }
+      },
+      "empty": "Aucun avis ne correspond aux filtres."
+    },
+    "payments": {
+      "title": "Paiements",
+      "subtitle": "Connectez votre compte Stripe pour commencer à encaisser les réservations. L’encaissement se fait en votre nom et nous retenons la commission de votre formule active.",
+      "status": {
+        "active": "Paiements actifs",
+        "payoutsPending": "Encaissements actifs",
+        "inReview": "En cours d’examen",
+        "requirementsDue": "Informations manquantes",
+        "onboardingIncomplete": "Inscription inachevée",
+        "disconnected": "Non connecté",
+        "disabled": "Compte désactivé"
+      },
+      "description": {
+        "active": "Votre compte Stripe est actif : vous pouvez encaisser les réservations et l’argent arrive automatiquement sur votre compte bancaire.",
+        "payoutsPending": "Vous pouvez déjà encaisser les réservations. Les virements vers votre banque seront activés une fois que Stripe aura vérifié votre compte bancaire ; d’ici là, l’argent reste sur votre solde Stripe.",
+        "inReview": "Vous avez envoyé vos informations et Stripe les examine. Cela prend généralement quelques minutes ; actualisez l’état un peu plus tard.",
+        "requirementsDue": "Stripe a besoin d’informations supplémentaires pour maintenir vos encaissements et virements actifs. Complétez-les au plus vite pour continuer à encaisser.",
+        "onboardingIncomplete": "Vous avez commencé l’inscription sur Stripe sans la terminer. Reprenez là où vous en étiez ; vous n’aurez pas à ressaisir ce qui est déjà rempli.",
+        "disconnected": "Vous devez connecter un compte Stripe pour accepter des réservations avec paiement. L’inscription prend quelques minutes.",
+        "unavailable": "Nous ne pouvons pas afficher l’état de vos paiements pour le moment.",
+        "disabled": "Stripe a désactivé votre compte et vous ne pouvez plus encaisser de réservations pour le moment. Cela ne se règle pas d’ici : écrivez-nous à hola@yaiwell.com et nous examinerons la situation avec vous."
+      },
+      "businessType": {
+        "legend": "Comment allez-vous encaisser ?",
+        "current": "Type de compte : {type}",
+        "other": "Autre",
+        "individual": {
+          "label": "Indépendant",
+          "hint": "Stripe vous demandera votre DNI ou NIE et l’IBAN de votre compte personnel."
+        },
+        "company": {
+          "label": "Entreprise / société",
+          "hint": "Stripe vous demandera le CIF, les administrateurs, les bénéficiaires effectifs et l’IBAN de la société."
+        }
+      },
+      "cta": {
+        "connect": "Connecter Stripe",
+        "continue": "Continuer l’inscription",
+        "completeData": "Compléter les informations",
+        "dashboard": "Voir mon tableau de bord Stripe",
+        "refresh": "Actualiser l’état"
+      },
+      "notices": {
+        "returnEnabled": "C’est fait ! Stripe nous a confirmé que votre compte est actif.",
+        "returnPending": "Vous êtes de retour de Stripe. La vérification de vos informations se termine : revenez dans quelques minutes pour actualiser l’état.",
+        "returnIncomplete": "L’inscription sur Stripe n’est pas terminée. Vous pouvez la reprendre à tout moment avec le bouton ci-dessous.",
+        "refreshFailed": "Nous n’avons pas pu générer un nouveau lien Stripe. Réessayez avec le bouton ci-dessous.",
+        "fetchFailed": "Nous n’avons pas pu consulter l’état de votre compte Stripe. Réessayez dans quelques secondes.",
+        "managedBySupport": "Ce compte Stripe est géré par l’équipe Yaiwell. Pour toute modification, écrivez-nous à hola@yaiwell.com.",
+        "changeType": "Erreur de choix entre indépendant et entreprise ? Écrivez-nous à hola@yaiwell.com avant de terminer l’inscription et nous vous aiderons à changer."
+      },
+      "errors": {
+        "INVALID_INPUT": "Choisissez si vous encaissez comme indépendant ou comme entreprise.",
+        "PROVIDER_NOT_FOUND": "Nous ne trouvons pas votre établissement. Reconnectez-vous.",
+        "NOT_CONNECTED": "Vous n’avez pas encore de compte Stripe. Connectez-le d’abord.",
+        "NOT_EXPRESS": "Ce compte Stripe est géré par l’équipe Yaiwell. Écrivez-nous pour toute modification.",
+        "DASHBOARD_UNAVAILABLE": "Votre tableau de bord Stripe sera disponible une fois l’inscription terminée.",
+        "STRIPE_FAILED": "Stripe n’a pas répondu. Réessayez dans quelques secondes.",
+        "INTERNAL": "Une erreur est survenue. Réessayez.",
+        "ALREADY_CONNECTED": "Un compte Stripe existe déjà sous le type « {type} ». Pour le changer, écrivez-nous à hola@yaiwell.com."
+      }
+    },
+    "plan": {
+      "title": "Votre formule",
+      "subtitle": "Choisissez combien de services vous publiez et quelle commission vous payez par réservation.",
+      "tierNames": {
+        "free": "Gratuite",
+        "basic": "Basique",
+        "pro": "Pro",
+        "premium": "Premium"
+      },
+      "card": {
+        "free": "Gratuit",
+        "perMonth": "/mois",
+        "vatIncluded": "TVA incluse",
+        "services": "{count, plural, one {# service publié} other {# services publiés}}",
+        "unlimitedServices": "Services illimités",
+        "commission": "{rate} de commission par réservation",
+        "currentBadge": "Votre formule",
+        "selectedBadge": "Choisie"
+      },
+      "cta": {
+        "current": "Votre formule actuelle",
+        "subscribe": "Souscrire à {plan}",
+        "change": "Passer à {plan}",
+        "downgrade_free": "Passer à la formule Gratuite",
+        "scheduled": "Changement programmé",
+        "locked": "Indisponible pour l’instant",
+        "fix_payment": "Mettre à jour la carte",
+        "unavailable": "Contacter l’assistance",
+        "loading": "Ouverture de Stripe…"
+      },
+      "picker": {
+        "title": "Formules",
+        "subtitle": "Prix mensuels, TVA incluse. Vous pouvez changer de formule ou résilier à tout moment.",
+        "stripeHint": "Le paiement et les changements de formule sont confirmés sur la page sécurisée de Stripe. En cas de passage à une formule inférieure, le changement s’applique à la fin de la période déjà payée.",
+        "lockedHint": "Vous avez déjà un changement de formule programmé. Vous pourrez en choisir une autre une fois celui-ci appliqué, ou l’annuler depuis « Factures et carte »."
+      },
+      "summary": {
+        "title": "Votre formule",
+        "priceLabel": "Abonnement",
+        "priceValue": "{price}/mois, TVA incluse",
+        "commissionLabel": "Commission par réservation",
+        "servicesLabel": "Services publiés",
+        "servicesUsage": "{used} sur {max}",
+        "servicesUnlimited": "{used} · Illimités",
+        "renewsOn": "Renouvellement le {date}.",
+        "endsOn": "Se termine le {date}. Vous passerez ensuite à la formule Gratuite.",
+        "pausedByPlan": "{count, plural, one {# service est masqué} other {# services sont masqués}} en raison de la limite de votre formule.",
+        "changePlan": "Changer de formule",
+        "invoices": "Factures et carte"
+      },
+      "banner": {
+        "viewPlan": "Voir ma formule",
+        "activating": {
+          "title": "Activation de votre formule…",
+          "body": "Stripe confirme le paiement. Cela prend quelques secondes.",
+          "slowBody": "Cela prend plus de temps que d’habitude. Votre formule sera activée dès que Stripe aura confirmé le paiement ; vous pouvez continuer à utiliser l’espace pro."
+        },
+        "activated": {
+          "title": "Votre formule {plan} est active",
+          "body": "Vous pouvez désormais publier davantage de services. Vous recevrez la facture par e-mail."
+        },
+        "past_due": {
+          "title": "Le paiement de votre formule {plan} a échoué",
+          "body": "Mettez à jour votre carte pour ne pas la perdre. Si les nouvelles tentatives échouent, vous passerez à la formule Gratuite et les services au-delà de la limite seront masqués.",
+          "cta": "Mettre à jour la carte"
+        },
+        "action_required": {
+          "title": "Le paiement de votre formule {plan} reste à confirmer",
+          "body": "Votre banque demande une confirmation. Effectuez-la pour activer la formule.",
+          "cta": "Finaliser le paiement"
+        },
+        "cancel_scheduled": {
+          "title": "Votre formule {plan} se termine le {date}",
+          "body": "Vous passerez ensuite à la formule Gratuite. Si vous changez d’avis, vous pouvez la conserver.",
+          "cta": "Conserver ma formule"
+        },
+        "downgrade_scheduled": {
+          "title": "Vous passerez à {plan} le {date}",
+          "body": "D’ici là, vous conservez votre formule actuelle."
+        }
+      },
+      "notices": {
+        "checkoutCancelled": "Vous avez quitté le paiement. Rien ne vous a été facturé.",
+        "checkoutFailed": "Nous n’avons pas pu ouvrir le paiement de la formule {plan}. Votre établissement est déjà publié en formule Gratuite ; vous pouvez souscrire à {plan} depuis cette page.",
+        "confirmFailed": "Nous n’avons pas pu confirmer ce paiement. Si un débit a eu lieu, la formule sera activée dans quelques minutes."
+      },
+      "errors": {
+        "INVALID_INPUT": "Un élément de la demande est incorrect. Rechargez la page et réessayez.",
+        "FORBIDDEN": "Votre session n’a pas accès à la facturation de cet établissement. Reconnectez-vous.",
+        "PLAN_NOT_PURCHASABLE": "Cette formule ne peut pas être souscrite de cette façon.",
+        "SUBSCRIPTION_NOT_FOUND": "Nous ne trouvons aucun abonnement actif. Si vous venez de payer, patientez quelques secondes et rechargez la page.",
+        "PLAN_UNAVAILABLE": "Cette formule n’est pas disponible pour le moment. Réessayez plus tard ou contactez l’assistance.",
+        "STRIPE_FAILED": "Nous n’avons pas pu nous connecter à Stripe. Réessayez dans quelques minutes.",
+        "INTERNAL": "Une erreur est survenue. Réessayez dans quelques minutes."
+      },
+      "onsite": {
+        "title": "Paiement sur place",
+        "description": "Permettez à votre clientèle de réserver et de payer dans votre établissement. La commission de chaque réservation terminée vous est facturée chaque mois, au taux de votre formule.",
+        "toggleLabel": "Accepter le paiement sur place",
+        "statusOn": "Activé : votre clientèle peut choisir de payer sur place.",
+        "statusOff": "Désactivé : réservation uniquement avec paiement en ligne.",
+        "statusSuspended": "Suspendu : des commissions sont impayées.",
+        "methodReady": "Moyen de paiement des commissions enregistré.",
+        "methodMissing": "Pour l’activer, ajoutez un moyen de paiement pour le prélèvement des commissions.",
+        "addMethod": "Ajouter un moyen de paiement",
+        "changeMethod": "Changer de moyen de paiement",
+        "debt": "Nous n’avons pas pu prélever les commissions du paiement sur place depuis le {date}. Tant qu’elles ne sont pas réglées, votre clientèle ne peut payer qu’en ligne.",
+        "outstanding": "Commissions à prélever : {amount}",
+        "overdue": "Commissions impayées : {amount}",
+        "saving": "Enregistrement…",
+        "redirecting": "Ouverture de Stripe…",
+        "errors": {
+          "paymentMethodMissing": "Ajoutez d’abord un moyen de paiement pour les commissions.",
+          "commissionDebt": "Des commissions sont impayées : mettez à jour le moyen de paiement pour pouvoir l’activer.",
+          "generic": "Enregistrement impossible. Réessayez dans quelques minutes."
+        }
+      }
+    },
+    "team": {
+      "title": "Équipe",
+      "subtitle": "Qui reçoit la clientèle dans votre établissement, avec ses horaires et ses services.",
+      "addCta": "Ajouter un professionnel",
+      "counter": "{active} professionnels sur {max} de votre formule",
+      "counterUnlimited": "{active} professionnels · Sans limite",
+      "upgradeCta": "Changer de formule",
+      "limitReached": "Vous avez atteint le maximum de professionnels de votre formule.",
+      "outOfPlanNotice": "Certains membres de l’équipe sont hors formule : ils n’acceptent pas de nouvelles réservations tant que vous ne passez pas à une formule supérieure.",
+      "unstaffedTitle": "Services impossibles à réserver",
+      "unstaffedDescription": "Aucun membre de votre équipe ouvert aux réservations n’assure ces services. Attribuez-les à quelqu’un ou passez à une formule supérieure.",
+      "empty": "Votre équipe ne compte encore personne.",
+      "serviceCount": "{count, plural, =0 {Aucun service} one {# service} other {# services}}",
+      "status": {
+        "active": "En activité",
+        "outOfPlan": "Hors formule",
+        "inactive": "Hors équipe"
+      },
+      "edit": "Modifier",
+      "form": {
+        "newTitle": "Nouveau membre de l’équipe",
+        "newSubtitle": "Son profil, ses horaires et les services assurés.",
+        "editTitle": "Modifier le profil",
+        "back": "Retour à l’équipe",
+        "profileTitle": "Profil",
+        "nameLabel": "Nom",
+        "namePlaceholder": "Ex. : Laura",
+        "bioLabel": "Présentation (facultatif)",
+        "bioPlaceholder": "Spécialités, expérience…",
+        "bioCounter": "{count}/{max}",
+        "photoLabel": "Photo (facultatif)",
+        "photoHelp": "Elle apparaît sur votre fiche à côté du nom.",
+        "scheduleTitle": "Horaires",
+        "scheduleSubtitle": "Quand les réservations sont acceptées. Vous pouvez ajouter plusieurs plages horaires par jour.",
+        "servicesTitle": "Services assurés",
+        "servicesSubtitle": "Seuls les services cochés pourront être réservés auprès de cette personne.",
+        "servicesEmpty": "Vous n’avez pas encore de services. Vous pourrez les attribuer en les créant.",
+        "submitCreate": "Ajouter à l’équipe",
+        "submitSave": "Enregistrer",
+        "saving": "Enregistrement…",
+        "saved": "Modifications enregistrées.",
+        "inactiveNotice": "Cette personne ne fait plus partie de l’équipe. Réactivez son profil pour le modifier et accepter de nouveau des réservations.",
+        "outOfPlanNotice": "Hors formule : aucune nouvelle réservation n’est acceptée tant que vous ne passez pas à une formule supérieure."
+      },
+      "errors": {
+        "VALIDATION": "Vérifiez les champs : le nom est obligatoire et la présentation accepte jusqu’à 300 caractères.",
+        "NOT_FOUND": "Cette personne ne fait plus partie de votre équipe. Rechargez la page.",
+        "INACTIVE": "Cette personne ne fait plus partie de l’équipe. Réactivez son profil avant de le modifier.",
+        "PHOTO_INVALID": "Nous n’avons pas pu utiliser cette photo. Importez-la de nouveau.",
+        "SERVICES_INVALID": "L’un des services n’existe plus. Rechargez la page et refaites votre choix.",
+        "PLAN_LIMIT": "Vous avez atteint le maximum de professionnels de votre formule. Passez à une formule supérieure pour en ajouter.",
+        "HAS_FUTURE_BOOKINGS": "Des rendez-vous sont encore prévus. Annulez-les avant de retirer cette personne de l’équipe.",
+        "LAST_ACTIVE": "Votre établissement a besoin d’au moins un membre en activité.",
+        "UNSTAFFED_SERVICES": "Certains services ne seraient plus assurés par personne. Attribuez-les à quelqu’un d’autre ou mettez-les en pause.",
+        "INTERNAL": "Nous n’avons pas pu enregistrer les modifications. Réessayez dans quelques secondes."
+      },
+      "deactivate": {
+        "button": "Retirer de l’équipe",
+        "title": "Retirer {name} de l’équipe ?",
+        "description": "Ce profil n’apparaîtra plus sur votre fiche et ne recevra plus de nouvelles réservations. Son historique est conservé et vous pouvez le réactiver à tout moment.",
+        "bookingsTitle": "Vous devez d’abord annuler ses rendez-vous à venir :",
+        "bookingsHelp": "Annulez-les depuis le calendrier (la personne qui a réservé est remboursée). Quand il n’en restera aucun, vous pourrez retirer ce profil de l’équipe.",
+        "calendarLink": "Aller au calendrier",
+        "unstaffedTitle": "Ces services ne seraient plus assurés par personne :",
+        "confirm": "Retirer de l’équipe",
+        "cancel": "Annuler",
+        "pending": "Retrait…"
+      },
+      "reactivate": {
+        "button": "Réactiver",
+        "pending": "Réactivation…"
+      },
+      "settingsLink": {
+        "description": "Chaque membre de votre équipe a ses propres horaires.",
+        "cta": "Horaires de l’équipe"
+      }
+    }
+  },
+  "booking": {
+    "meta": {
+      "title": "Réserver · Yaiwell",
+      "confirmationTitle": "Réservation confirmée · Yaiwell"
+    },
+    "flow": {
+      "eyebrow": "Étape {current} sur {total}",
+      "steps": {
+        "slot": "Choisissez votre créneau",
+        "summary": "Confirmez les informations",
+        "payment": "Paiement sécurisé",
+        "confirmation": "Réservation confirmée",
+        "onsite": "Confirmez votre réservation"
+      },
+      "back": "Retour",
+      "cancel": "Annuler la réservation",
+      "continue": "Continuer",
+      "goToPayment": "Passer au paiement",
+      "slotExpiredNotice": "Le créneau choisi n’est plus disponible. Choisissez-en un autre pour continuer.",
+      "onsiteExpiredNotice": "Ce créneau commence dans moins de 2 h : la réservation n’est possible qu’avec paiement en ligne. Vérifiez les conditions avant de continuer."
+    },
+    "slotPicker": {
+      "dayStripLabel": "Jours disponibles",
+      "morning": "Matin",
+      "afternoon": "Après-midi",
+      "noMorningSlots": "Plus aucun créneau le matin.",
+      "noAfternoonSlots": "Plus aucun créneau l’après-midi.",
+      "emptyTitle": "Aucun créneau ce jour-là",
+      "emptySubtitle": "Essayez un autre jour du calendrier ou revenez demain.",
+      "loadingLabel": "Recherche des créneaux disponibles…",
+      "errorTitle": "Impossible de charger les créneaux",
+      "errorSubtitle": "La connexion à l’agenda de l’établissement a échoué. Cela ne veut pas dire qu’il n’y a pas de créneau : réessayez.",
+      "notBookableTitle": "Ce service n’est pas encore réservable en ligne",
+      "notBookableSubtitle": "L’établissement n’a pas encore configuré son agenda. Vous pouvez choisir un autre service ou revenir plus tard.",
+      "retry": "Réessayer",
+      "lastMinuteGroup": "Dans les 2 prochaines heures · paiement à la réservation, sans annulation"
+    },
+    "slotOffer": {
+      "discountBadge": "−{pct} %",
+      "slotAria": "{time}, créneau libéré avec une remise de {pct} % : {price}",
+      "priceAria": "Prix habituel {original} ; avec une remise de {pct} %, {amount}",
+      "estimatedPriceLabel": "Prix prévu",
+      "estimatedPriceHint": "Le montant final est confirmé au moment du paiement.",
+      "discountLost": "La remise sur ce créneau n’est plus disponible. Le montant à payer est de {amount}.",
+      "discountChanged": "La remise sur ce créneau a changé : elle est maintenant de {pct} %. Le montant à payer est de {amount}.",
+      "slotGone": "Ce créneau n’est plus disponible. Choisissez une autre heure."
+    },
+    "summary": {
+      "serviceLabel": "Service",
+      "dateLabel": "Date",
+      "rangeLabel": "Horaire",
+      "durationValue": "{minutes} min",
+      "professionalLabel": "Professionnel",
+      "anyProfessional": "Peu importe, le premier disponible",
+      "totalLabel": "Total",
+      "notesLabel": "Notes pour l’établissement (facultatif)",
+      "notesHelper": "Indiquez-nous tout détail utile : allergies, première visite, préférences…",
+      "notesPlaceholder": "Écrivez ici si vous souhaitez ajouter quelque chose.",
+      "onsiteTotalLabel": "À payer sur place"
+    },
+    "policy": {
+      "title": "Conditions en bref",
+      "cancelUntil": "Annulation gratuite jusqu’au {deadline}, depuis « Mes réservations », avec remboursement intégral.",
+      "cancelWindowPassed": "Le délai d’annulation gratuite est dépassé.",
+      "providerCancel": "L’établissement peut aussi annuler jusqu’à 2 h avant ; vous recevrez alors automatiquement un remboursement intégral.",
+      "compactNote": "Annulation gratuite depuis « Mes réservations » jusqu’à 2 h avant le service, avec remboursement intégral. Si vous réservez moins de 2 h avant, le paiement est immédiat et l’annulation impossible.",
+      "onsiteCancelUntil": "Annulation gratuite et sans frais jusqu’au {deadline}, depuis « Mes réservations ».",
+      "onsiteProviderCancel": "L’établissement peut aussi annuler jusqu’à 2 h avant ; dans ce cas, nous vous préviendrons par e-mail."
+    },
+    "lastMinute": {
+      "policy": "Cette réservation commence dans moins de 2 h : le paiement est immédiat, sans annulation ni remboursement. Si l’établissement ne peut pas vous recevoir, écrivez-nous et nous vous rembourserons à 100 %.",
+      "nonRefundable": "Non remboursable"
+    },
+    "payment": {
+      "totalLabel": "Total à payer",
+      "payCta": "Payer {amount}",
+      "processing": "Traitement en cours…",
+      "genericError": "Le paiement n’a pas abouti. Vérifiez les données de votre carte ou essayez-en une autre.",
+      "secureNote": "Paiement sécurisé traité par Stripe. Yaiwell ne conserve pas les données de votre carte.",
+      "conditionsChanged": "Nous avons vérifié l’heure de votre réservation et ses conditions ont changé. Relisez-les avant de payer.",
+      "unavailableTitle": "Paiements indisponibles",
+      "unavailableBody": "La passerelle de paiement n’est pas configurée dans cet environnement. Réessayez plus tard."
+    },
+    "confirmation": {
+      "title": "Réservation confirmée !",
+      "subtitle": "Retrouvez le détail dans « Mes réservations ». Nous vous attendons.",
+      "bookingIdLabel": "N° de réservation",
+      "providerLabel": "Établissement",
+      "serviceLabel": "Service",
+      "whenLabel": "Quand",
+      "totalLabel": "Total",
+      "backToProvider": "Retour à l’établissement",
+      "pendingTitle": "Paiement en cours",
+      "pendingSubtitle": "Nous confirmons le paiement auprès de votre banque. Dès que ce sera fait, la réservation apparaîtra dans « Mes réservations ».",
+      "viewMyBookings": "Voir mes réservations",
+      "onsiteSubtitle": "Vous paierez {amount} sur place. Retrouvez le détail dans « Mes réservations ».",
+      "onsiteTotalLabel": "À payer sur place"
+    },
+    "checkout": {
+      "loadingTitle": "Préparation du paiement",
+      "loadingBody": "Nous réservons votre créneau. Cela ne prendra qu’un instant.",
+      "errorTitle": "Impossible d’ouvrir le paiement",
+      "errorUnauthenticated": "Vous devez vous connecter pour finaliser la réservation.",
+      "errorServiceUnavailable": "Ce service n’est plus disponible à la réservation.",
+      "errorSlotUnavailable": "Quelqu’un vient de réserver ce créneau. Choisissez une autre heure.",
+      "errorSlotTooSoon": "Ce créneau n’est plus réservable : il commence dans moins de 30 minutes. Choisissez une autre heure.",
+      "errorProviderNotChargeable": "Cet établissement n’accepte pas encore les paiements en ligne. Contactez-le directement.",
+      "errorPaymentFailed": "Connexion à la passerelle de paiement impossible. Réessayez dans quelques secondes.",
+      "errorHoldExpired": "Votre réservation a expiré : nous gardons le créneau 30 minutes pendant le paiement et ce délai est écoulé. Rien ne vous a été facturé. Choisissez de nouveau l’heure pour réserver.",
+      "errorGeneric": "Une erreur s’est produite. Réessayez dans quelques secondes.",
+      "retry": "Réessayer",
+      "signIn": "Se connecter",
+      "signUp": "Créer un compte",
+      "draftKeptHint": "Nous gardons votre créneau et vos notes : à votre retour, vous reprendrez là où vous en étiez.",
+      "chooseAnotherSlot": "Choisir un autre créneau"
+    },
+    "paymentMethod": {
+      "legend": "Comment souhaitez-vous payer ?",
+      "online": {
+        "title": "Payer maintenant en ligne",
+        "hint": "Par carte, en toute sécurité. Annulation gratuite jusqu’à 2 h avant, avec remboursement intégral."
+      },
+      "onsite": {
+        "title": "Payer sur place",
+        "hint": "Vous payez à l’établissement le jour du rendez-vous. Annulation gratuite et sans frais jusqu’à 2 h avant.",
+        "lastMinute": "Indisponible : les réservations qui commencent dans moins de 2 h se paient en ligne à la réservation.",
+        "restricted": "Indisponible pour le moment : après 3 absences sans annulation en 12 mois, seule la réservation avec paiement en ligne est possible pendant 3 mois.",
+        "restrictedUntil": "Indisponible jusqu’au {date} : après 3 absences sans annulation en 12 mois, seule la réservation avec paiement en ligne est possible pendant 3 mois.",
+        "limitReached": "Indisponible : vous avez déjà {max} réservations à payer sur place. Payez celle-ci en ligne."
+      }
+    },
+    "onsite": {
+      "amountLabel": "À payer sur place",
+      "noShowNotice": "Si vous ne pouvez pas venir, annulez depuis « Mes réservations » jusqu’à 2 h avant. Si vous ne venez pas sans avoir annulé, 1 absence sera comptabilisée ; à 3 en 12 mois, vous ne pourrez réserver qu’en payant en ligne pendant 3 mois.",
+      "confirm": "Confirmer la réservation",
+      "confirming": "Confirmation…",
+      "payAtVenueNote": "Rien à payer maintenant : vous réglez directement à l’établissement.",
+      "errors": {
+        "title": "Impossible de confirmer la réservation",
+        "unauthenticated": "Pour réserver, il vous faut un compte. Connectez-vous ou inscrivez-vous pour continuer.",
+        "slotUnavailable": "Cette heure vient d’être prise. Choisissez-en une autre.",
+        "slotTooSoon": "Cette heure est désormais trop proche pour être réservée. Choisissez-en une autre.",
+        "serviceUnavailable": "Ce service n’est plus réservable. Choisissez une autre heure ou un autre service.",
+        "pendingAlreadyPaid": "Vous aviez déjà payé cette réservation en ligne. Elle se trouve dans « Mes réservations ».",
+        "lastMinute": "Ce créneau commence dans moins de 2 h : la réservation n’est possible qu’avec paiement en ligne.",
+        "restricted": "Pour le moment, vous ne pouvez réserver qu’en payant en ligne.",
+        "restrictedUntil": "Jusqu’au {date}, vous ne pouvez réserver qu’en payant en ligne.",
+        "limitReached": "Vous avez déjà {max} réservations à payer sur place : payez celle-ci en ligne.",
+        "notOffered": "Cet établissement n’accepte plus le paiement sur place. Vous pouvez payer en ligne.",
+        "generic": "Un problème est survenu lors de la confirmation de la réservation. Réessayez.",
+        "payOnline": "Payer en ligne",
+        "viewMyBookings": "Voir mes réservations"
+      }
+    },
+    "professionalPicker": {
+      "legend": "Avec qui souhaitez-vous prendre rendez-vous ?",
+      "anyHint": "Avec « Peu importe, le premier disponible », vous voyez les créneaux de toute l’équipe et nous vous attribuons une personne libre.",
+      "unavailable": "Cette personne ne propose plus ce service.",
+      "chooseAgain": "Choisir une autre personne",
+      "professionalGone": "La personne choisie ne propose plus ce service. Nous sommes revenus à « Peu importe, le premier disponible » : choisissez une heure pour continuer.",
+      "assignedLabel": "Rendez-vous avec"
+    }
+  },
+  "customerArea": {
+    "page": {
+      "title": "Mes réservations",
+      "subtitle": "Gérez vos prochains rendez-vous, consultez l’historique et laissez un avis sur les services déjà réalisés."
+    },
+    "identity": {
+      "role": "Compte client"
+    },
+    "nav": {
+      "ariaLabel": "Navigation de l’espace client",
+      "bookings": "Réservations",
+      "favorites": "Favoris",
+      "reviews": "Avis",
+      "profile": "Profil"
+    },
+    "sections": {
+      "count": "{count, plural, =0 {Aucun élément} one {# élément} other {# éléments}}",
+      "upcoming": {
+        "title": "Prochaines réservations",
+        "empty": "Vous n’avez aucune réservation à venir. Cherchez un service et réservez en quelques secondes."
+      },
+      "pendingReview": {
+        "title": "Avis à laisser",
+        "empty": "Lorsqu’un service sera marqué comme terminé, vous pourrez laisser votre avis ici."
+      },
+      "past": {
+        "title": "Historique",
+        "empty": "Vous n’avez pas encore de réservations passées."
+      }
+    },
+    "status": {
+      "pending": "En attente de paiement",
+      "confirmed": "Confirmée",
+      "completed": "Terminée",
+      "cancelled": "Annulée",
+      "refunded": "Remboursée",
+      "no_show": "Absence"
+    },
+    "actions": {
+      "viewDetail": "Voir le détail",
+      "cancel": "Annuler la réservation",
+      "lastMinuteHint": "Réservation de dernière minute : annulation impossible. Si l’établissement ne peut pas vous recevoir, écrivez-nous.",
+      "tooLateHint": "Annulation impossible : il reste moins de 2 h avant le rendez-vous. En cas d’imprévu, écrivez-nous.",
+      "review": "Laisser un avis",
+      "reviewWindowClosed": "Délai pour laisser un avis dépassé"
+    },
+    "cancelDialog": {
+      "title": "Annuler cette réservation ?",
+      "description": "{service} chez {provider}, {when}.",
+      "refundInfo": "Nous vous rembourserons le montant intégral ({amount}) sur le même moyen de paiement. Selon votre banque, cela peut prendre de 5 à 10 jours.",
+      "noPaymentInfo": "Rien ne vous a été facturé pour cette réservation : il n’y a donc rien à rembourser.",
+      "keep": "Conserver la réservation",
+      "confirm": "Oui, annuler",
+      "pending": "Annulation…",
+      "result": {
+        "refunded": "Réservation annulée. Nous vous remboursons {amount} : selon votre banque, cela peut prendre de 5 à 10 jours. Nous vous le confirmons par e-mail.",
+        "refund_pending": "Réservation annulée. Le remboursement de {amount} est en cours de traitement et nous vous écrirons par e-mail.",
+        "refund_uncertain": "Réservation annulée. Nous vérifions si le paiement a bien eu lieu ; si c’est le cas, nous vous rembourserons {amount}.",
+        "no_payment": "Réservation annulée. Rien ne vous avait été facturé."
+      },
+      "errors": {
+        "FORBIDDEN": "Impossible d’annuler cette réservation depuis ce compte. Vérifiez que vous utilisez le compte avec lequel vous avez réservé.",
+        "TOO_LATE": "Annulation impossible : il reste moins de 2 h avant le rendez-vous.",
+        "LAST_MINUTE": "C’est une réservation de dernière minute : annulation impossible.",
+        "NOT_CANCELLABLE": "Cette réservation ne peut plus être annulée. Rechargez la page pour voir son statut.",
+        "VALIDATION": "Impossible d’annuler la réservation. Rechargez la page et réessayez.",
+        "INTERNAL": "Impossible d’annuler la réservation. Réessayez dans quelques minutes."
+      }
+    },
+    "existingReview": {
+      "label": "Votre avis :",
+      "ratingAria": "{rating} étoiles sur 5",
+      "showMore": "Voir plus",
+      "showLess": "Voir moins"
+    },
+    "reviewForm": {
+      "title": "Donnez votre avis",
+      "description": "{service} chez {provider}. Votre avis aide d’autres personnes à choisir.",
+      "close": "Fermer",
+      "cancel": "Annuler",
+      "ratingLegend": "Note",
+      "ratingPrompt": "Choisissez de 1 à 5 étoiles",
+      "ratingOption": "{count, plural, one {# étoile} other {# étoiles}} : {label}",
+      "ratingLabels": {
+        "1": "Très mauvais",
+        "2": "À améliorer",
+        "3": "Correct",
+        "4": "Très bien",
+        "5": "Excellent"
+      },
+      "textLabel": "Racontez-nous comment cela s’est passé",
+      "textPlaceholder": "Qu’avez-vous aimé ? Que pourrait-on améliorer ?",
+      "textHint": "{min} caractères minimum.",
+      "counter": "{count} / {max}",
+      "submit": "Publier l’avis",
+      "submitting": "Publication…",
+      "success": "Merci ! Votre avis est maintenant visible sur la fiche de l’établissement.",
+      "dismiss": "Fermer le message",
+      "fieldErrors": {
+        "RATING_REQUIRED": "Choisissez une note de 1 à 5 étoiles.",
+        "TEXT_TOO_SHORT": "Écrivez au moins {min} caractères.",
+        "TEXT_TOO_LONG": "Le texte ne peut pas dépasser {max} caractères."
+      },
+      "errors": {
+        "NOT_COMPLETED": "Cette réservation n’est pas encore marquée comme terminée : vous ne pouvez pas encore laisser d’avis.",
+        "WINDOW_EXPIRED": "Le délai de 30 jours pour laisser un avis sur cette réservation est écoulé.",
+        "ALREADY_REVIEWED": "Cette réservation a déjà un avis.",
+        "FORBIDDEN": "Impossible de laisser un avis sur cette réservation depuis ce compte. Vérifiez que vous utilisez le compte avec lequel vous avez réservé.",
+        "VALIDATION": "Vérifiez la note et le texte, puis réessayez.",
+        "INTERNAL": "Impossible de publier l’avis. Réessayez dans quelques minutes."
+      }
+    },
+    "paymentOnsite": "Paiement sur place",
+    "onsiteRestriction": {
+      "title": "Pour le moment, seul le paiement en ligne est possible",
+      "body": "Vous avez cumulé 3 absences sans annulation au cours des 12 derniers mois. Jusqu’au {date}, vos réservations se paient en ligne au moment de réserver."
+    }
+  },
+  "adminArea": {
+    "badge": "Admin",
+    "title": "Espace de modération",
+    "subtitle": "Outil interne de l’équipe Yaiwell.",
+    "nav": {
+      "ariaLabel": "Navigation de l’espace admin",
+      "dashboard": "Tableau de bord",
+      "queue": "File d’attente",
+      "exit": "Quitter l’espace admin",
+      "refunds": "Remboursements échoués",
+      "sanctions": "Pénalités"
+    },
+    "dashboard": {
+      "title": "Résumé opérationnel",
+      "subtitle": "Indicateurs globaux de la marketplace et accès rapide à la file des vérifications en attente."
+    },
+    "metrics": {
+      "bookingsToday": "Réservations du jour",
+      "weeklyGmv": "GMV semaine",
+      "pendingProviders": "Pros en attente",
+      "cancellationRate": "Taux d’annulation",
+      "weeklyDelta": "Variation hebdomadaire : {delta}"
+    },
+    "verifications": {
+      "type": {
+        "centro": "Établissement",
+        "autonomo": "Indépendant"
+      },
+      "queue": {
+        "title": "File des vérifications",
+        "count": "{count, plural, =0 {Aucune en attente} one {# en attente} other {# en attente}}",
+        "empty": "Aucune demande en attente.",
+        "open": "Examiner",
+        "openAria": "Examiner la demande de {name}"
+      },
+      "detail": {
+        "back": "Retour à la file",
+        "contactTitle": "Coordonnées",
+        "descriptionTitle": "Description du prestataire",
+        "documentsTitle": "Documents",
+        "noDescription": "Le prestataire n’a pas encore rédigé de description.",
+        "noDocuments": "Le prestataire n’a pas encore envoyé de documents.",
+        "fields": {
+          "email": "E-mail",
+          "phone": "Téléphone",
+          "vat": "NIF / CIF",
+          "category": "Catégorie"
+        },
+        "docType": {
+          "identity": "Identité",
+          "business": "Document commercial",
+          "insurance": "Assurance",
+          "portfolio": "Portfolio"
+        },
+        "actions": {
+          "approve": "Approuver",
+          "approving": "Approbation…",
+          "reject": "Refuser",
+          "rejecting": "Refus…"
+        },
+        "rejectDialog": {
+          "title": "Refuser la vérification ?",
+          "description": "Vous allez refuser {name}. Indiquez un motif clair : nous le conservons dans le registre et il servira à répondre au prestataire.",
+          "notesLabel": "Motif du refus",
+          "notesPlaceholder": "Documents incomplets, données invérifiables, adresse qui ne correspond pas…",
+          "cancel": "Annuler",
+          "confirm": "Refuser"
+        },
+        "errors": {
+          "PROVIDER_NOT_FOUND": "Le prestataire n’est plus dans la file.",
+          "VALIDATION": "Les données envoyées ne sont pas valides.",
+          "NOTES_REQUIRED": "Le motif doit comporter au moins 5 caractères.",
+          "FORBIDDEN": "Vous n’avez pas l’autorisation pour cette action.",
+          "INTERNAL": "Une erreur s’est produite. Réessayez."
+        }
+      }
+    },
+    "refunds": {
+      "meta": {
+        "title": "Remboursements échoués · Admin"
+      },
+      "title": "Remboursements échoués",
+      "subtitle": "Réservations annulées dont le remboursement a été refusé par Stripe. Ces clients n’ont toujours pas récupéré leur argent : vérifiez le motif et réessayez.",
+      "notice": {
+        "title": "Réessayer est sans risque",
+        "noDoubleRefund": "Une nouvelle tentative ne peut pas rembourser deux fois : le remboursement est toujours intégral et Stripe refuse un second remboursement sur un paiement déjà remboursé.",
+        "stillFailing": "Si l’échec persiste, vérifiez la cause dans le tableau de bord Stripe avant de réessayer ; par exemple, le solde du compte connecté de l’établissement.",
+        "dismiss": "Si une entrée n’a jamais donné lieu à un paiement (par exemple, « pi_cancel_failed » avec le paiement non confirmé dans Stripe), écartez-la en indiquant un motif. Écarter ne rembourse pas : cela la retire seulement de la file et l’action est enregistrée avec votre utilisateur."
+      },
+      "queue": {
+        "title": "File des remboursements",
+        "count": "{count, plural, =0 {Aucun en attente} one {# en attente} other {# en attente}}",
+        "empty": "Aucun remboursement échoué en attente."
+      },
+      "item": {
+        "amount": "Montant",
+        "clientEmail": "E-mail du client",
+        "appointment": "Rendez-vous",
+        "failedAt": "Échec",
+        "reason": "Motif technique",
+        "reasonUnknown": "Stripe n’a renvoyé aucun motif.",
+        "openInStripe": "Voir le paiement dans Stripe",
+        "opensInNewTab": "(s’ouvre dans un nouvel onglet)",
+        "noPaymentIntent": "Aucun paiement associé dans Stripe"
+      },
+      "retry": {
+        "label": "Relancer le remboursement",
+        "pending": "Nouvelle tentative…",
+        "aria": "Relancer le remboursement de {provider}"
+      },
+      "dismiss": {
+        "label": "Écarter",
+        "aria": "Écarter de la file le remboursement de {provider}",
+        "reasonLabel": "Motif de la mise à l’écart",
+        "reasonHint": "Obligatoire, {min} caractères minimum. Enregistré avec votre utilisateur.",
+        "reasonTooShort": "Écrivez un motif d’au moins {min} caractères.",
+        "confirm": "Confirmer la mise à l’écart",
+        "pending": "Traitement…",
+        "cancel": "Annuler"
+      },
+      "feedback": {
+        "succeeded": "Remboursement émis ({provider}). Stripe le confirmera sous peu.",
+        "failed": "Le remboursement de {provider} échoue encore. Vérifiez le motif mis à jour et le paiement dans Stripe.",
+        "notApplicable": "La réservation de {provider} n’a pas de paiement dans Stripe : il n’y a rien à rembourser. Vérifiez-la manuellement.",
+        "dismissed": "Entrée de {provider} écartée. Elle n’apparaît plus dans la file.",
+        "dismiss": "Fermer",
+        "errors": {
+          "BOOKING_NOT_FOUND": "La réservation de {provider} n’existe plus.",
+          "NOT_IN_QUEUE": "Le remboursement de {provider} n’est plus dans la file. Rechargez la page pour voir l’état actuel.",
+          "VALIDATION": "Impossible de relancer le remboursement de {provider} : identifiant non valide.",
+          "FORBIDDEN": "Votre session n’a pas les droits admin pour relancer le remboursement de {provider}.",
+          "INTERNAL": "Erreur inattendue lors de la relance du remboursement de {provider}. Réessayez dans quelques minutes."
+        },
+        "dismissErrors": {
+          "BOOKING_NOT_FOUND": "La réservation de {provider} n’existe plus.",
+          "NOT_IN_QUEUE": "Le remboursement de {provider} n’est plus dans la file. Rechargez la page pour voir l’état actuel.",
+          "NOT_DISMISSABLE": "La réservation de {provider} n’est pas annulée : son remboursement ne peut pas être écarté.",
+          "INVALID_REASON": "Le motif pour écarter le remboursement de {provider} n’est pas valide.",
+          "VALIDATION": "Impossible d’écarter le remboursement de {provider} : identifiant non valide.",
+          "FORBIDDEN": "Votre session n’a pas les droits admin pour écarter le remboursement de {provider}.",
+          "INTERNAL": "Erreur inattendue lors de la mise à l’écart du remboursement de {provider}. Réessayez dans quelques minutes."
+        }
+      }
+    },
+    "sanctions": {
+      "meta": {
+        "title": "Pénalités · Admin"
+      },
+      "title": "Pénalités pour absence",
+      "subtitle": "Pénalités en cours pour des absences à un rendez-vous avec paiement sur place. Passé le délai de 24 h pendant lequel l’établissement peut annuler l’absence, seule l’assistance peut les retirer.",
+      "filter": {
+        "label": "E-mail du client",
+        "placeholder": "cliente@ejemplo.com",
+        "submit": "Rechercher"
+      },
+      "empty": "Aucune pénalité en cours.",
+      "emptyFiltered": "Aucune pénalité en cours pour « {email} ».",
+      "fields": {
+        "client": "Client",
+        "provider": "Établissement et service",
+        "occurredAt": "Rendez-vous",
+        "booking": "Réservation"
+      },
+      "revoke": {
+        "label": "Retirer la pénalité",
+        "aria": "Retirer la pénalité de {email}",
+        "reasonLabel": "Motif",
+        "reasonHint": "Obligatoire, {min} caractères minimum. Enregistré.",
+        "reasonTooShort": "Écrivez un motif d’au moins {min} caractères.",
+        "confirm": "Retirer la pénalité",
+        "cancel": "Annuler",
+        "pending": "Retrait…",
+        "errors": {
+          "NOT_FOUND": "Cette pénalité n’existe plus.",
+          "ALREADY_REVOKED": "Cette pénalité a déjà été retirée. Rechargez la page.",
+          "INVALID_REASON": "Vérifiez le motif.",
+          "VALIDATION": "Retrait impossible. Rechargez la page et réessayez.",
+          "FORBIDDEN": "Vous n’avez pas l’autorisation de retirer des pénalités.",
+          "INTERNAL": "Retrait impossible. Réessayez dans quelques minutes."
+        }
+      }
+    }
+  },
+  "notFound": {
+    "eyebrow": "Erreur 404",
+    "title": "Nous nous sommes perdus en cherchant ce lien",
+    "subtitle": "La page que vous tentiez d’ouvrir n’existe pas ou n’est plus disponible. Revenez à l’accueil ou explorez les services près de vous.",
+    "illustrationAlt": "Illustration décorative d’un miroir vide",
+    "backHome": "Retour à l’accueil",
+    "exploreServices": "Chercher des services",
+    "helpHint": "Si vous pensez qu’il s’agit d’une erreur, écrivez-nous à hola@yaiwell.com."
+  },
+  "serviceDetail": {
+    "breadcrumb": {
+      "home": "Accueil",
+      "search": "Rechercher"
+    },
+    "header": {
+      "eyebrow": "Service",
+      "durationLabel": "Durée",
+      "priceLabel": "Prix",
+      "anyProfessional": "Tout professionnel disponible de l’établissement"
+    },
+    "description": {
+      "title": "À propos de ce service"
+    },
+    "policy": {
+      "title": "Avant de réserver",
+      "cancellationTitle": "Annulation flexible",
+      "cancellationBody": "Annulez sans frais jusqu’à 2 heures avant le début. Passé ce délai, le montant n’est pas remboursable.",
+      "punctualityTitle": "Arrivez 5 minutes en avance",
+      "punctualityBody": "Pour que l’équipe prépare votre séance sereinement et que vous commenciez à l’heure.",
+      "paymentTitle": "Paiement sécurisé",
+      "paymentBody": "Payez en ligne à la réservation ou, si l’établissement le propose, sur place. Votre réservation est confirmée immédiatement.",
+      "ratingHint": "Vous ne pourrez laisser un avis qu’une fois le service marqué comme terminé par le professionnel."
+    },
+    "cta": {
+      "reserve": "Réserver",
+      "fromPrice": "dès {price}",
+      "secureNote": "Confirmation immédiate. Paiement sécurisé."
+    },
+    "team": {
+      "title": "Qui assure ce service",
+      "chooseHint": "En réservant, vous pourrez choisir qui s’occupe de vous ou nous laisser attribuer la personne disponible."
+    }
+  },
+  "forProviders": {
+    "meta": {
+      "title": "Pour les professionnels",
+      "description": "Yaiwell est la marketplace de beauté, de bien-être et de sport où vos clients vous trouvent quand ils sont prêts à réserver. Commencez gratuitement et sans engagement."
+    },
+    "hero": {
+      "eyebrow": "Pour les établissements et les indépendants",
+      "titleLine1": "Un agenda plein,",
+      "titleLine2": "sans effort.",
+      "subtitle": "Yaiwell est la marketplace de beauté, de bien-être et de sport où vos clients vous trouvent quand ils sont prêts à réserver.",
+      "ctaPrimary": "Commencer gratuitement",
+      "ctaSecondary": "Comment ça marche",
+      "trustNote": "Sans engagement · Sans frais d’inscription · Encaissement immédiat",
+      "mockBadge": "Réservations en direct",
+      "mockBookingService": "Coupe + shampoing",
+      "mockBookingClient": "Marta · 18:30",
+      "mockBookingStatus": "Confirmée",
+      "mockOccupancyLabel": "Occupation cette semaine",
+      "mockOccupancyValue": "86 %"
+    },
+    "benefits": {
+      "eyebrow": "Avantages",
+      "title": "Conçu pour que vous n’ayez plus qu’à ouvrir vos portes.",
+      "subtitle": "Nous nous occupons du marketing, des rappels et de l’encaissement. Vous consacrez votre temps à ce que vous faites bien.",
+      "items": {
+        "liveBookings": {
+          "title": "Réservations en direct",
+          "body": "Recevez des clients selon la disponibilité réelle de votre calendrier. Aucun créneau fantôme."
+        },
+        "noCalls": {
+          "title": "Zéro appel",
+          "body": "Paiements en ligne, rappels automatiques et confirmation immédiate. Adieu le téléphone."
+        },
+        "yourHours": {
+          "title": "Vous choisissez vos créneaux",
+          "body": "Le calendrier est à vous. Bloquez des heures, fermez des jours et n’ouvrez que lorsque vous voulez travailler."
+        },
+        "noLockIn": {
+          "title": "Sans engagement",
+          "body": "Inscrivez-vous aujourd’hui et testez. Si cela ne vous convient pas, résiliez demain sans frais."
+        }
+      }
+    },
+    "pricing": {
+      "eyebrow": "Formules",
+      "title": "Commencez gratuitement. Évoluez quand vous le souhaitez.",
+      "subtitle": "Vous ne payez de commission que sur vos réservations. L’abonnement mensuel réduit la commission et débloque des fonctions premium.",
+      "popularBadge": "La plus choisie",
+      "perMonth": "/mois",
+      "commission": "Commission {rate}",
+      "ctaStart": "Commencer",
+      "plans": {
+        "free": {
+          "name": "Gratuite",
+          "tagline": "Pour essayer Yaiwell sans engagement.",
+          "feature1": "1 service publié",
+          "feature2": "Réservations en ligne illimitées",
+          "feature3": "Paiement sécurisé avec Stripe",
+          "feature4": "Fiche publique sur la marketplace"
+        },
+        "basic": {
+          "name": "Basique",
+          "tagline": "Pour les professionnels qui commencent à remplir leur agenda.",
+          "feature1": "Jusqu’à 10 services publiés",
+          "feature2": "Rappels automatiques par e-mail",
+          "feature3": "Résumé hebdomadaire des revenus et des réservations",
+          "feature4": "Assistance par e-mail sous 48 h"
+        },
+        "pro": {
+          "name": "Pro",
+          "tagline": "Pour les établissements à la carte étendue.",
+          "feature1": "Jusqu’à 50 services publiés",
+          "feature2": "Paiement sur place en option",
+          "feature3": "Promotions sur les créneaux isolés",
+          "feature4": "Assistance prioritaire sous 24 h"
+        },
+        "premium": {
+          "name": "Premium",
+          "tagline": "Pour les établissements qui ne veulent pas de limites.",
+          "feature1": "Services illimités",
+          "feature2": "La commission la plus basse de Yaiwell",
+          "feature3": "Responsable de compte dédié",
+          "feature4": "Mise en route accompagnée par l’équipe"
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "Questions fréquentes",
+      "title": "Ce que vous nous demandez toujours.",
+      "items": {
+        "start": {
+          "question": "En combien de temps puis-je recevoir des réservations ?",
+          "answer": "Une fois votre compte vérifié (en moyenne sous 24 h ouvrées), votre fiche est publiée et vous pouvez recevoir des réservations le jour même. Il vous suffit d’avoir renseigné votre agenda et vos services."
+        },
+        "payouts": {
+          "question": "Comment mes réservations me sont-elles payées ?",
+          "answer": "Yaiwell utilise Stripe Connect. Le client paie en confirmant la réservation et nous virons automatiquement le montant (moins la commission) sur votre compte bancaire chaque semaine."
+        },
+        "cancel": {
+          "question": "Puis-je annuler une réservation ?",
+          "answer": "Oui, jusqu’à 2 heures avant le début du service, depuis votre espace pro. Si vous annulez, le client reçoit automatiquement un remboursement intégral, sans pénalité de votre part."
+        },
+        "regret": {
+          "question": "Et si je change d’avis ?",
+          "answer": "Il n’y a ni engagement ni pénalité en cas de résiliation. Vous entrez aujourd’hui, vous sortez demain. Vos informations sont conservées 30 jours au cas où vous changeriez encore d’avis."
+        },
+        "platform": {
+          "question": "Yaiwell est-il une application ou un site web ?",
+          "answer": "Aujourd’hui, nous sommes un site web optimisé pour le mobile ; votre espace pro fonctionne dans n’importe quel navigateur. L’application native iOS/Android arrivera dans la prochaine phase, sans coût supplémentaire pour vous."
+        },
+        "verification": {
+          "question": "De quoi ai-je besoin pour m’inscrire ?",
+          "answer": "Un e-mail et les données de votre établissement : nom, adresse et, si vous le souhaitez, votre NIF/CIF. Pour encaisser, Stripe vous demandera votre DNI ou CIF et votre IBAN. Nous vous guidons pas à pas lors de l’inscription."
+        }
+      }
+    },
+    "cta": {
+      "eyebrow": "C’est le moment",
+      "title": "Envie de remplir votre agenda ?",
+      "subtitle": "Créez votre compte gratuitement en moins de 5 minutes. Sans carte, sans engagement, sans obligation.",
+      "primary": "Créer un compte gratuit",
+      "secondary": "Contact commercial"
+    }
+  },
+  "signIn": {
+    "meta": {
+      "title": "Se connecter · Yaiwell",
+      "description": "Accédez à votre compte Yaiwell pour réserver beauté, bien-être et sport près de vous."
+    },
+    "title": "Connectez-vous à Yaiwell",
+    "subtitle": "Réservez beauté, bien-être et sport en quelques secondes.",
+    "aside": {
+      "badge": "Accès",
+      "title": "Votre agenda vous suit partout.",
+      "subtitle": "Réservez immédiatement, gérez vos rendez-vous et découvrez des professionnels près de vous.",
+      "bullet1": "Disponibilité réelle, sans appel ni attente.",
+      "bullet2": "Des règles claires : annulez gratuitement depuis l’appli jusqu’à 2 h avant. En dernière minute, paiement sécurisé immédiat et, si l’établissement ne peut pas vous recevoir, remboursement intégral via l’assistance."
+    },
+    "tabs": {
+      "ariaLabel": "Choisissez le type de compte",
+      "client": "Compte client",
+      "provider": "Compte pro",
+      "clientDescription": "Connexion à un compte client.",
+      "providerDescription": "Connexion à un compte pro."
+    },
+    "fields": {
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "vous@email.com",
+      "passwordLabel": "Mot de passe",
+      "passwordPlaceholder": "Votre mot de passe",
+      "remember": "Se souvenir de moi",
+      "forgot": "Mot de passe oublié ?"
+    },
+    "actions": {
+      "submit": "Se connecter",
+      "submitting": "Connexion…"
+    },
+    "divider": "ou continuez avec",
+    "social": {
+      "apple": "Apple",
+      "appleAria": "Continuer avec Apple (bientôt disponible)",
+      "comingSoon": "Bientôt disponible"
+    },
+    "footer": {
+      "noAccount": "Pas encore de compte ?",
+      "createOne": "Créez-en un"
+    },
+    "errors": {
+      "emailRequired": "Saisissez votre e-mail pour continuer.",
+      "emailInvalid": "Cet e-mail ne semble pas valide. Vérifiez-le et réessayez.",
+      "passwordRequired": "Saisissez votre mot de passe pour continuer.",
+      "invalidCredentials": "E-mail ou mot de passe incorrect. Vérifiez vos informations et réessayez.",
+      "tooManyAttempts": "Trop de tentatives d’affilée. Patientez quelques minutes avant de réessayer.",
+      "sessionExists": "Une session est déjà active dans ce navigateur. Déconnectez-vous avant de changer de compte.",
+      "networkError": "Connexion impossible. Vérifiez votre connexion et réessayez.",
+      "unknown": "Un problème est survenu. Réessayez dans quelques secondes."
+    }
+  },
+  "account": {
+    "meta": {
+      "title": "Votre compte",
+      "description": "Accédez à vos réservations, favoris et réglages depuis un seul endroit sur Yaiwell."
+    },
+    "hero": {
+      "badgeGuest": "Session non ouverte",
+      "badgeAuthenticated": "Votre compte",
+      "titleGuest": "Connectez-vous ou créez votre compte",
+      "titleAuthenticated": "Bonjour, que souhaitez-vous faire aujourd’hui ?",
+      "subtitleGuest": "Connectez-vous pour voir vos réservations, enregistrer vos établissements favoris et recevoir les confirmations par e-mail.",
+      "subtitleAuthenticated": "Gérez vos réservations, favoris et préférences depuis un seul endroit."
+    },
+    "guest": {
+      "signInCta": "Se connecter",
+      "signUpCta": "Créer un compte"
+    },
+    "authenticated": {
+      "navLabel": "Accès de votre compte",
+      "bookings": "Mes réservations",
+      "favorites": "Mes favoris",
+      "settings": "Réglages et préférences",
+      "signOut": "Se déconnecter",
+      "signedInAs": "Session ouverte en tant que",
+      "becomeProvider": "Vous avez un établissement ? Créez votre profil professionnel"
+    },
+    "mode": {
+      "label": "Mode d’utilisation",
+      "providerActive": "Vous utilisez l’appli en mode professionnel",
+      "clientActive": "Vous utilisez l’appli en mode utilisateur",
+      "hint": "Passez de votre espace pro à l’appli publique sans créer un autre compte.",
+      "switchToClient": "Passer en mode utilisateur",
+      "switchToProvider": "Revenir en mode professionnel"
+    }
+  },
+  "onboarding": {
+    "meta": {
+      "title": "Inscrivez votre établissement",
+      "description": "Inscrivez votre établissement sur Yaiwell en 6 étapes : type, informations, emplacement, premier service, formule et vérification."
+    },
+    "badge": "Inscription du prestataire",
+    "title": "Inscrivez votre établissement",
+    "subtitle": "Cinq étapes rapides pour commencer à recevoir des réservations.",
+    "stepper": {
+      "step1": "Type",
+      "step2": "Infos",
+      "step3": "Lieu",
+      "step4": "Service",
+      "step5": "Formule",
+      "step6": "Confirmer",
+      "current": "Étape {current} sur {total}"
+    },
+    "common": {
+      "next": "Suivant",
+      "back": "Retour",
+      "saving": "Enregistrement…",
+      "publishCta": "Publier et accéder à l’espace pro",
+      "requiredField": "Champ obligatoire",
+      "publishAndPayCta": "Publier et passer au paiement"
+    },
+    "syncing": {
+      "title": "Synchronisation de votre compte…",
+      "subtitle": "Nous finissons de préparer votre accès. Cela prend quelques secondes."
+    },
+    "errors": {
+      "UNAUTHORIZED": "Session expirée. Reconnectez-vous pour continuer.",
+      "USER_NOT_SYNCED": "Votre compte est encore en cours de synchronisation. Patientez quelques secondes et réessayez.",
+      "INVALID_BODY": "Des données manquent ou leur format est incorrect.",
+      "SLUG_ALREADY_TAKEN": "Cette URL est déjà utilisée. Choisissez-en une autre.",
+      "ONBOARDING_ALREADY_COMPLETE": "Votre établissement est déjà inscrit.",
+      "PROVIDER_FOR_ONBOARDING_NOT_FOUND": "Votre établissement est introuvable. Revenez à la première étape.",
+      "CATEGORY_NOT_FOUND": "La catégorie sélectionnée n’est plus disponible.",
+      "PLAN_TIER_NOT_FOUND": "La formule sélectionnée n’est pas disponible. Contactez l’assistance.",
+      "FREE_PLAN_NOT_SEEDED": "La formule gratuite n’est pas disponible pour le moment. Contactez l’assistance.",
+      "INTERNAL": "Une erreur s’est produite. Réessayez dans quelques minutes.",
+      "NETWORK": "Connexion impossible. Vérifiez votre connexion et réessayez."
+    },
+    "businessType": {
+      "title": "Comment travaillez-vous ?",
+      "subtitle": "Cela nous aide à préparer votre espace pro dès le premier jour.",
+      "autonomo": {
+        "title": "À mon compte",
+        "description": "Je travaille sans équipe et je gère mon propre agenda."
+      },
+      "centro": {
+        "title": "J’ai un établissement",
+        "description": "Je coordonne plusieurs professionnels sous le même toit."
+      }
+    },
+    "businessData": {
+      "title": "Informations de l’établissement",
+      "subtitle": "Ce que vos clients verront sur votre fiche publique.",
+      "fields": {
+        "businessName": "Nom de l’établissement",
+        "businessNamePlaceholder": "Studio Aura",
+        "slug": "URL publique",
+        "slugPrefix": "yaiwell.com/centro/",
+        "slugChecking": "Vérification de la disponibilité…",
+        "slugAvailable": "Disponible",
+        "slugTaken": "Cette URL est déjà utilisée",
+        "slugInvalid": "Minuscules, chiffres et tirets uniquement (3–60 caractères).",
+        "slugHelp": "Elle apparaîtra sur votre fiche publique. Elle ne pourra pas être modifiée facilement.",
+        "vatNumber": "CIF / NIF (facultatif)",
+        "vatNumberHelp": "Utilisé uniquement pour la facturation.",
+        "description": "Description publique",
+        "descriptionCharCount": "{count}/{max}",
+        "descriptionHelp": "Une ou deux phrases. Vos clients la verront.",
+        "priceRange": "Gamme de prix",
+        "priceRangeHelp": "À titre indicatif : cela aide vos clients à se faire une idée."
+      }
+    },
+    "location": {
+      "title": "Où êtes-vous ?",
+      "subtitle": "Saisissez l’adresse et sélectionnez une suggestion pour fixer les coordonnées.",
+      "addressLabel": "Adresse de l’établissement",
+      "locationMissing": "Sélectionnez une suggestion dans la liste pour fixer l’emplacement.",
+      "mapHint": "Plus tard, vous pourrez affiner l’emplacement en déplaçant le repère sur la carte."
+    },
+    "categoriesService": {
+      "title": "Catégorie et premier service",
+      "subtitle": "Choisissez votre catégorie principale et décrivez le premier service que vous proposerez.",
+      "categoriesLabel": "Catégorie principale",
+      "service": {
+        "title": "Votre premier service",
+        "name": "Nom du service",
+        "namePlaceholder": "Coupe et coiffage",
+        "duration": "Durée",
+        "durationMinutes": "{minutes} min",
+        "priceEuros": "Prix (€)",
+        "priceFreeHint": "Laissez 0 si c’est gratuit."
+      }
+    },
+    "confirm": {
+      "title": "Vérifiez et publiez",
+      "subtitle": "Confirmez que les informations sont correctes avant de publier votre fiche.",
+      "termsLabel": "J’ai lu et j’accepte les conditions applicables aux prestataires.",
+      "sections": {
+        "business": "Établissement",
+        "location": "Emplacement",
+        "service": "Premier service",
+        "plan": "Formule"
+      }
+    },
+    "planStep": {
+      "title": "Choisissez votre formule",
+      "subtitle": "Prix mensuels TVA incluse. Vous pouvez changer de formule ou la résilier à tout moment depuis votre espace pro.",
+      "legend": "Formules disponibles",
+      "freeNote": "Vous démarrez sans abonnement. Si vous avez besoin de plus de services par la suite, changez de formule depuis votre espace pro.",
+      "paidNote": "À la publication, nous vous dirigerons vers la page sécurisée de Stripe pour payer la formule. Votre établissement est publié en formule Gratuite et la formule choisie s’active dès votre paiement.",
+      "unavailable": "Nous ne pouvons pas afficher les formules pour le moment. Vous démarrerez en formule Gratuite et pourrez en changer depuis votre espace pro."
+    }
+  },
+  "signUp": {
+    "meta": {
+      "title": "Créez votre compte",
+      "description": "Inscrivez-vous sur Yaiwell pour réserver beauté, bien-être et sport près de vous, ou pour commencer à proposer vos services."
+    },
+    "eyebrow": "Rejoignez Yaiwell",
+    "title": "Créez votre compte",
+    "subtitle": "Réservez immédiatement ou commencez à proposer vos services. Cela ne prend qu’une minute.",
+    "tabs": {
+      "client": "Compte client",
+      "provider": "Compte pro"
+    },
+    "fields": {
+      "fullName": "Prénom et nom",
+      "contactName": "Nom du responsable",
+      "businessName": "Nom de l’établissement",
+      "email": "E-mail",
+      "password": "Mot de passe",
+      "passwordRepeat": "Répétez le mot de passe"
+    },
+    "verificationNotice": "Avant votre publication, nous vérifierons vos informations et vos documents. Nous vous préviendrons par e-mail lorsque votre profil sera vérifié.",
+    "termsLabel": "J’ai lu et j’accepte les <terms>conditions d’utilisation</terms> et la <privacy>politique de confidentialité</privacy>.",
+    "cta": {
+      "submit": "Créer un compte",
+      "submitting": "Création du compte…"
+    },
+    "socialDivider": "ou inscrivez-vous avec",
+    "social": {
+      "apple": "Continuer avec Apple"
+    },
+    "haveAccount": "Vous avez déjà un compte ? <link>Connectez-vous ici</link>",
+    "illustration": {
+      "badge": "Yaiwell Premium",
+      "title": "Prendre soin de soi ne devrait pas attendre.",
+      "subtitle": "Associez votre agenda à celui des meilleurs professionnels près de vous.",
+      "footer": "Nous n’acceptons que des professionnels vérifiés manuellement. La qualité avant la quantité."
+    },
+    "verification": {
+      "eyebrow": "Vérification de l’e-mail",
+      "title": "Confirmez votre e-mail",
+      "subtitle": "Nous vous avons envoyé un code à {email}. Saisissez-le ici pour activer votre compte.",
+      "codeLabel": "Code à 6 chiffres",
+      "submit": "Confirmer et se connecter",
+      "submitting": "Confirmation…",
+      "back": "Revenir et modifier mes informations"
+    },
+    "errors": {
+      "required": "Ce champ est obligatoire.",
+      "fullNameMin": "Indiquez un nom d’au moins 2 caractères.",
+      "businessNameMin": "Le nom de l’établissement doit comporter au moins 2 caractères.",
+      "emailInvalid": "Saisissez un e-mail valide.",
+      "passwordShort": "Le mot de passe doit comporter au moins 8 caractères.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "termsRequired": "Vous devez accepter les conditions pour continuer.",
+      "emailAlreadyExists": "Un compte existe déjà avec cet e-mail. Essayez plutôt de vous connecter.",
+      "passwordCompromised": "Ce mot de passe figure dans des fuites connues. Choisissez-en un autre.",
+      "verificationCodeInvalid": "Le code est incorrect. Vérifiez-le et réessayez.",
+      "verificationCodeExpired": "Le code a expiré. Revenez en arrière pour en recevoir un nouveau.",
+      "invalidCredentials": "Informations incorrectes. Vérifiez-les et réessayez.",
+      "tooManyAttempts": "Trop de tentatives d’affilée. Patientez quelques minutes avant de réessayer.",
+      "sessionExists": "Une session est déjà active dans ce navigateur.",
+      "networkError": "Connexion impossible. Vérifiez votre connexion et réessayez.",
+      "unknown": "Un problème est survenu. Réessayez dans quelques secondes."
+    }
+  },
+  "location": {
+    "label": "Votre position",
+    "labelNone": "Aucune position",
+    "permissionTitle": "Voulez-vous voir ce qui se trouve près de vous ?",
+    "permissionBody": "Activez la localisation pour voir d’abord les professionnels les plus proches de vous. Vous pouvez la désactiver quand vous le souhaitez.",
+    "permissionEnable": "Activer la localisation",
+    "permissionDismiss": "Pas maintenant",
+    "requesting": "Recherche de votre position…",
+    "granted": "Localisation activée",
+    "denied": "Vous avez refusé la localisation",
+    "deniedHelp": "Pour l’activer, cherchez l’icône de cadenas dans la barre d’adresse et autorisez la localisation pour ce site.",
+    "unavailable": "Nous n’avons pas pu obtenir votre position",
+    "unavailableHelp": "Vérifiez votre connexion ou réessayez dans quelques secondes.",
+    "timeout": "Le délai a été dépassé",
+    "notSupported": "Votre navigateur ne prend pas en charge la localisation",
+    "retry": "Réessayer",
+    "clear": "Retirer la position",
+    "useFallback": "Afficher les résultats de Barcelona",
+    "fallbackHint": "Nous affichons les résultats du centre de Barcelona. Activez votre position pour voir ce qui est le plus proche de vous.",
+    "distanceAway": "à {distance}",
+    "nearYou": "Près de vous",
+    "barcelona": "Barcelona",
+    "defaultBadge": "par défaut",
+    "pill": {
+      "ariaLabel": "Position actuelle",
+      "openAria": "Ouvrir les options de localisation",
+      "fallbackTitle": "Vous consultez Barcelona",
+      "fallbackBody": "Activez votre position pour voir ce qui est le plus proche de vous.",
+      "grantedTitle": "Localisation activée",
+      "grantedBody": "Nous vous montrons les résultats triés par proximité avec votre position.",
+      "deniedTitle": "Autorisation bloquée",
+      "requestingTitle": "Recherche de votre position…",
+      "unavailableTitle": "Position non disponible",
+      "shortLabelDefault": "Barcelona",
+      "shortLabelGranted": "Près de vous",
+      "shortLabelRequesting": "Localisation…",
+      "shortLabelUnavailable": "Aucune position"
+    }
+  },
+  "designSystem": {
+    "meta": {
+      "title": "Système de design",
+      "description": "Galerie interne de tokens de marque, de typographie et de composants shadcn."
+    },
+    "title": "Système de design",
+    "subtitle": "Catalogue vivant de tokens et de composants. Page interne pour le contrôle visuel ; elle n’apparaît pas dans la navigation.",
+    "colors": {
+      "title": "Couleurs sémantiques",
+      "description": "Tokens de base de shadcn déjà associés à la palette Yaiwell (prune chaud + crèmes).",
+      "sample": "Aa Texte"
+    },
+    "brand": {
+      "title": "Pastels de marque",
+      "description": "Paires saturé/doux pensées pour les badges, chips et icônes sur fonds chauds.",
+      "solid": "Saturé",
+      "soft": "Doux"
+    },
+    "typography": {
+      "title": "Typographie",
+      "description": "Display avec Fraunces pour les titres ; Inter comme sans-serif par défaut.",
+      "displaySample": "Beauté, bien-être et sport",
+      "headlineSample": "Réservez en quelques secondes",
+      "leadSample": "Découvrez des professionnels près de vous avec disponibilité immédiate.",
+      "bodySample": "Texte courant standard pour les descriptions de services, les fiches et les formulaires.",
+      "captionSample": "Texte secondaire pour les métadonnées et l’aide contextuelle."
+    },
+    "buttons": {
+      "title": "Boutons",
+      "description": "Variantes et tailles du composant Button (cva).",
+      "label": "{variant} · {size}"
+    },
+    "radius": {
+      "title": "Rayons",
+      "description": "Échelle de rayons dérivée de --radius (0.875rem)."
+    },
+    "components": {
+      "title": "Composants",
+      "description": "Exemples vivants des composants shadcn installés.",
+      "selectPlaceholder": "Choisissez une option",
+      "selectOption": "Option {index}",
+      "tabLabel": "Onglet {index}",
+      "tabContent": "Contenu de l’onglet {index}"
+    }
+  },
+  "resetPassword": {
+    "meta": {
+      "title": "Récupérez votre mot de passe",
+      "description": "Récupérez l’accès à votre compte Yaiwell en deux étapes."
+    },
+    "illustration": {
+      "badge": "Yaiwell",
+      "title": "Retrouvez votre rythme",
+      "subtitle": "Nous vous aidons à retrouver votre compte en moins d’une minute.",
+      "footer": "© Yaiwell"
+    },
+    "request": {
+      "eyebrow": "Récupérer l’accès",
+      "title": "Mot de passe oublié ?",
+      "subtitle": "Saisissez votre e-mail et nous vous enverrons un code pour en créer un nouveau.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "vous@email.com",
+      "submit": "Envoyer le code",
+      "submitting": "Envoi…",
+      "backToSignIn": "Ça vous revient ? <link>Reconnectez-vous</link>."
+    },
+    "reset": {
+      "eyebrow": "Nouveau mot de passe",
+      "title": "Créez un nouveau mot de passe",
+      "subtitle": "Si un compte existe pour {email}, nous vous avons envoyé un code à 6 chiffres. Saisissez-le ici avec votre nouveau mot de passe.",
+      "codeLabel": "Code à 6 chiffres",
+      "newPasswordLabel": "Nouveau mot de passe",
+      "newPasswordRepeatLabel": "Répétez le mot de passe",
+      "submit": "Mettre à jour et se connecter",
+      "submitting": "Mise à jour…",
+      "back": "Demander à nouveau le code",
+      "success": "C’est fait ! Nous vous redirigeons vers votre compte…"
+    },
+    "errors": {
+      "emailRequired": "Saisissez votre e-mail.",
+      "emailInvalid": "Saisissez un e-mail valide.",
+      "passwordRequired": "Ce champ est obligatoire.",
+      "passwordTooShort": "Le mot de passe doit comporter au moins 8 caractères.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "passwordCompromised": "Ce mot de passe figure dans des fuites connues. Choisissez-en un autre.",
+      "invalidCredentials": "Nous n’avons pas pu traiter la demande. Réessayez.",
+      "verificationCodeInvalid": "Le code est incorrect. Vérifiez-le et réessayez.",
+      "verificationCodeExpired": "Le code a expiré. Revenez en arrière pour en recevoir un nouveau.",
+      "tooManyAttempts": "Trop de tentatives d’affilée. Patientez quelques minutes avant de réessayer.",
+      "sessionExists": "Une session est déjà active dans ce navigateur.",
+      "networkError": "Connexion impossible. Vérifiez votre connexion et réessayez.",
+      "unknown": "Un problème est survenu. Réessayez dans quelques secondes."
+    }
+  },
+  "error": {
+    "title": "Un problème est survenu de notre côté",
+    "description": "Nous n’avons pas pu charger cette page. C’est généralement temporaire : réessayez dans quelques secondes.",
+    "retry": "Réessayer",
+    "backHome": "Retour à l’accueil",
+    "digestLabel": "Code d’erreur",
+    "panel": {
+      "title": "L’espace pro a rencontré un problème",
+      "description": "Nous n’avons pas pu charger cette section. Réessayez et, si le problème persiste, communiquez le code d’erreur à l’assistance.",
+      "backToDashboard": "Aller au résumé"
+    }
+  },
+  "googleAuth": {
+    "continue": "Continuer avec Google",
+    "redirecting": "Ouverture de Google…",
+    "signInNote": "Si vous n’avez pas encore de compte, nous créerons un compte client. En continuant, vous acceptez les conditions d’utilisation et la politique de confidentialité.",
+    "errors": {
+      "networkError": "Pas de connexion. Vérifiez-la et réessayez.",
+      "unknown": "Nous n’avons pas pu nous connecter à Google. Réessayez ou connectez-vous avec votre e-mail."
+    },
+    "callback": {
+      "title": "Connexion avec Google…",
+      "description": "Un instant, nous finissons de connecter votre compte."
+    }
+  },
+  "becomeProvider": {
+    "meta": {
+      "title": "Créez votre profil professionnel",
+      "description": "Convertissez votre compte en compte professionnel pour proposer vos services sur Yaiwell."
+    },
+    "eyebrow": "Pour les professionnels",
+    "title": "Créez votre profil professionnel",
+    "description": "Avec ce même compte, vous pourrez inscrire votre établissement, publier vos services et recevoir des réservations. En vous connectant, vous accéderez directement à votre espace pro.",
+    "bookingsNote": "Vos réservations en tant que client ne sont pas perdues : elles restent dans « Mes réservations ». Vous pouvez revenir à la vue client quand vous le souhaitez depuis « Mon compte ».",
+    "cta": {
+      "confirm": "Créer mon profil professionnel",
+      "submitting": "Préparation de votre profil…",
+      "cancel": "Annuler"
+    },
+    "errors": {
+      "forbidden": "Ce compte ne peut pas être converti en profil professionnel.",
+      "unknown": "Nous n’avons pas pu créer votre profil professionnel. Réessayez dans quelques secondes.",
+      "sessionRefresh": "Votre compte est déjà professionnel, mais nous n’avons pas pu actualiser votre session. Appuyez de nouveau sur le bouton ou reconnectez-vous pour continuer."
+    }
+  }
+}

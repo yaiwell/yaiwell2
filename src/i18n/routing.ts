@@ -9,20 +9,21 @@ import { defineRouting } from 'next-intl/routing';
  *  - `en` inglés — turismo británico/irlandés/internacional.
  *  - `de` alemán — turismo alemán/austríaco/suizo (segmento alto en
  *    Mallorca, especialmente sur y costa).
+ *  - `fr` francés — turismo francés y belga, y residentes francófonos.
  *
- * **Decisión `localePrefix: 'always'`**: con 4 idiomas casi paritarios en
+ * **Decisión `localePrefix: 'always'`**: con varios idiomas casi paritarios en
  * peso de mercado preferimos que la URL refleje siempre el idioma activo
- * (`/es/...`, `/ca/...`, `/en/...`, `/de/...`). Aterrizar a un turista
+ * (`/es/...`, `/ca/...`, `/en/...`, `/de/...`, `/fr/...`). Aterrizar a un turista
  * alemán en `/` (que servía `es` con la estrategia `as-needed`) era una
  * UX rota: el usuario tenía que descubrir el switcher antes de poder leer
  * la página. Con `always`:
  *  - el middleware de next-intl negocia el idioma desde `Accept-Language`
- *    y redirige a `/es`, `/ca`, `/en` o `/de` según corresponda;
+ *    y redirige a `/es`, `/ca`, `/en`, `/de` o `/fr` según corresponda;
  *  - los crawlers no pueden confundir contenido entre idiomas;
  *  - las hreflang tags apuntan a URLs canónicas inequívocas.
  */
 export const routing = defineRouting({
-  locales: ['es', 'ca', 'en', 'de'],
+  locales: ['es', 'ca', 'en', 'de', 'fr'],
   defaultLocale: 'es',
   localePrefix: 'always',
 });

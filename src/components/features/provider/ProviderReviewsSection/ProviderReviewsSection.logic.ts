@@ -91,6 +91,13 @@ const RELATIVE_DICT = {
     month: { one: 'vor {n} Mon.', other: 'vor {n} Mon.' },
     year: { one: 'vor {n} J.', other: 'vor {n} J.' },
   },
+  fr: {
+    now: 'à l’instant',
+    day: { one: 'il y a {n} jour', other: 'il y a {n} jours' },
+    week: { one: 'il y a {n} sem.', other: 'il y a {n} sem.' },
+    month: { one: 'il y a {n} mois', other: 'il y a {n} mois' },
+    year: { one: 'il y a {n} an', other: 'il y a {n} ans' },
+  },
 } as const;
 
 /**
@@ -107,7 +114,7 @@ const RELATIVE_DICT = {
  */
 export function formatRelativeDate(
   date: Date,
-  locale: 'es' | 'ca' | 'en' | 'de',
+  locale: 'es' | 'ca' | 'en' | 'de' | 'fr',
   now: Date = new Date(),
 ): string {
   // eslint-disable-next-line no-restricted-syntax -- RELATIVE_DICT es un objeto literal de constantes con las cuatro claves escritas a mano en este mismo archivo, no un LocalizedText de dominio: el compilador ya garantiza que la clave existe.

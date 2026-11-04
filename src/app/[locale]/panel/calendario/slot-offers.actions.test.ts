@@ -112,7 +112,7 @@ describe('slot-offers actions', () => {
   });
 
   it('rechaza un locale desconocido sin tocar la sesión ni el service', async () => {
-    const result = await withdrawSlotOfferAction('fr' as AppLocale, 'offer-1');
+    const result = await withdrawSlotOfferAction('pt' as AppLocale, 'offer-1');
 
     expect(result).toEqual({ ok: false, code: 'INVALID_INPUT' });
     expect(requireCurrentProviderMock).not.toHaveBeenCalled();

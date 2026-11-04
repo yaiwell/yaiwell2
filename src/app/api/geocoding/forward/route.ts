@@ -21,7 +21,7 @@ import { geocodeAddress, MapboxConfigError, MapboxRequestError } from '@/lib/int
 // vivir en frontera y querer FR/PT).
 const querySchema = z.object({
   q: z.string().trim().min(2).max(120),
-  language: z.enum(['es', 'ca', 'en', 'de']).optional(),
+  language: z.enum(['es', 'ca', 'en', 'de', 'fr']).optional(),
   country: z.string().length(2).optional(),
   limit: z.coerce.number().int().min(1).max(10).optional(),
   proximityLat: z.coerce.number().min(-90).max(90).optional(),

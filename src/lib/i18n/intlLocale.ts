@@ -8,9 +8,9 @@ import { pickLocalized } from './pickLocalized';
  *
  * Los territorios se eligen por mercado, igual que en los `og:locale`
  * de `@/lib/seo`: `en-GB` (turismo británico e irlandés, y formato de
- * fecha día/mes como el resto de Europa) y `de-DE`.
+ * fecha día/mes como el resto de Europa) , `de-DE` y `fr-FR`.
  *
- * Las cuatro claves están garantizadas, así que `pickLocalized` nunca
+ * Todas las claves están garantizadas, así que `pickLocalized` nunca
  * dispara el fallback; lo usamos porque es el único acceso indexado por
  * locale permitido por la regla ESLint `no-restricted-syntax`.
  */
@@ -19,6 +19,7 @@ const INTL_LOCALES: Record<AppLocale, string> = {
   ca: 'ca-ES',
   en: 'en-GB',
   de: 'de-DE',
+  fr: 'fr-FR',
 };
 
 /**

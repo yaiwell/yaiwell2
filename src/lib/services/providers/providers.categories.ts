@@ -96,5 +96,6 @@ function normalizeLocalizedName(raw: unknown): LocalizedText {
     ca: name.ca ?? '',
     en: name.en,
     de: name.de,
+    fr: name.fr,
   };
 }

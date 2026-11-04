@@ -141,7 +141,7 @@ describe('searchProviders', () => {
 
   it('lanza SearchValidationError si language no es es/ca', async () => {
     // @ts-expect-error — queremos comprobar que Zod rechaza en runtime.
-    await expect(searchProviders({ query: 'zen', language: 'fr' })).rejects.toBeInstanceOf(
+    await expect(searchProviders({ query: 'zen', language: 'pt' })).rejects.toBeInstanceOf(
       SearchValidationError,
     );
   });
