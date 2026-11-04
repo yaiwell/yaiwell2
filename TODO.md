@@ -252,7 +252,6 @@
   - [ ] Quitar un bloqueo no restaura las ofertas que retiró: avisarlo en el diálogo.
   - [ ] `ScheduleBlockNoProfessionalError` acaba como `INTERNAL` y en Sentry: darle código propio.
 - [ ] **Francés, flecos** (2026-11-04):
-  - [ ] **Aplicar la migración 9i y después desplegar** (lo hace o autoriza el dev).
   - [ ] Decidir si en francés se escribe «Barcelone» (hoy «Barcelona» en `location.*` y `search.map.fallbackCenter`).
   - [ ] Los servicios y descripciones que escriben los negocios no se traducen: en `/fr` salen en el idioma original. `search_vector` no indexa francés.
   - [ ] Las categorías en BD no tienen `en` ni `de` (solo `es`, `ca` y, con 9i, `fr`): en inglés y alemán salen en castellano.

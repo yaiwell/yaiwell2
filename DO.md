@@ -17,7 +17,7 @@
 P5/P11 (cableado por el orquestador, 4 agentes de traducción con glosario y validador común, 1 revisor nativo).
 
 - **Web, correos y legales** en `src/messages/fr.json`, `emails/fr.json` y `legal/fr.json` (vouvoiement, apóstrofo `’`). Rutas `/fr/...`, hreflang, sitemap, `og:locale` `fr_FR`, formatos `fr-FR`, Stripe en francés.
-- **Migración 9i** (pendiente de aplicar): valor `fr` en el enum `Locale` y nombres de categoría en francés. Hay que aplicarla antes de desplegar.
+- **Migración 9i** (aplicada el 2026-11-04, antes del despliegue): valor `fr` en el enum `Locale` y nombres de categoría en francés.
 - **Búsqueda**: sin índice en francés, busca con `simple` y trigramas sobre `name->>'fr'`.
 - Test nuevo de paridad de claves de la web en los 5 idiomas; correos y legales incluyen `fr` en los suyos.
 
