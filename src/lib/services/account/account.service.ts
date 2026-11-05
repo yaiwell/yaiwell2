@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { clerkClient } from '@clerk/nextjs/server';
+import type { Locale } from '@prisma/client';
 
 import { ensureUserFromClerk, userRepository } from '@/lib/services/user';
 
@@ -113,4 +114,20 @@ async function findDeletionBlock(
   if ((await accountRepository.countOpenBookings(userId)) > 0) return 'open_bookings';
   if ((await accountRepository.countOpenRefunds(userId)) > 0) return 'open_refunds';
   return null;
+}
+
+/**
+ * Guarda el idioma de los correos de la cuenta.
+ *
+ * También en Clerk, porque cada `user.updated` vuelve a leer de ahí el idioma:
+ * si solo cambiara en BD, el siguiente cambio de perfil lo pisaría.
+ *
+ * @param clerkUserId — usuario autenticado.
+ * @param locale — idioma ya validado.
+ */
+export async function updateAccountLocale(clerkUserId: string, locale: Locale): Promise<void> {
+  const user = await ensureUserFromClerk(clerkUserId);
+  const client = await clerkClient();
+  await client.users.updateUserMetadata(clerkUserId, { unsafeMetadata: { locale } });
+  await userRepository.setLocale(user.id, locale);
 }

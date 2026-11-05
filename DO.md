@@ -12,6 +12,13 @@
 
 ## 2026-11-05
 
+### 2026-11-05 — Cuenta visible en escritorio y Ajustes y preferencias
+
+P2 (orquestador).
+
+- **Cabecera de escritorio**: muestra foto y nombre de quien ha entrado, también en modo profesional, y enlaza a `/cuenta`.
+- **`/cuenta/ajustes`**: foto y nombre (en Clerk), email y contraseña (ventana de Clerk sin su baja, que se saltaría las reglas), idioma de la web, idioma de los correos (`users.locale` y Clerk), tema, ubicación y «Tus datos», movido desde `/cuenta`.
+
 ### 2026-11-05 — Las acciones de `/panel`, plan, centro y alta fallaban con 500
 
 P1 (orquestador).

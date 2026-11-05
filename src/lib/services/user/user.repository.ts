@@ -1,3 +1,5 @@
+import type { Locale } from '@prisma/client';
+
 import { prisma } from '@/lib/db/prisma';
 
 import type { ClerkUserSyncInput } from './user.types';
@@ -113,6 +115,11 @@ export const userRepository = {
         },
       });
     });
+  },
+
+  /** Guarda el idioma de los correos de la cuenta. */
+  setLocale(id: string, locale: Locale) {
+    return prisma.user.update({ where: { id }, data: { locale } });
   },
 
   async findByClerkId(clerkId: string) {

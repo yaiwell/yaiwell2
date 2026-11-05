@@ -1,5 +1,5 @@
 import { auth } from '@clerk/nextjs/server';
-import { LayoutDashboard, Sparkles, User } from 'lucide-react';
+import { LayoutDashboard, Sparkles } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/i18n/navigation';
@@ -10,6 +10,7 @@ import { ThemeToggle } from '@/components/shared/ThemeToggle';
 import type { UiMode } from '@/lib/auth/ui-mode.types';
 
 import { headerStyles as s } from './Header.styles';
+import { HeaderAccount } from './HeaderAccount';
 import type { HeaderNavItem } from './Header.types';
 
 /**
@@ -53,9 +54,6 @@ export async function Header({ mode }: HeaderProps) {
   const { userId } = await auth();
   const isAuthenticated = userId !== null;
   const isProviderMode = mode === 'provider';
-  // En modo cliente autenticado el CTA lleva a /cuenta. En modo provider
-  // lleva al panel. Anónimos no ven CTA único — ven entrar/registrarse.
-  const accountHref = isProviderMode ? '/panel' : '/cuenta';
 
   return (
     <header className={s.root} data-component="header">
@@ -111,16 +109,19 @@ export async function Header({ mode }: HeaderProps) {
           <LocationPill />
           <LangSwitcher />
           {isAuthenticated ? (
-            <Button asChild variant="outline" size="lg" data-component="header-account">
-              <Link href={accountHref} className="inline-flex items-center gap-2">
-                {isProviderMode ? (
-                  <LayoutDashboard className="size-4" aria-hidden="true" />
-                ) : (
-                  <User className="size-4" aria-hidden="true" />
-                )}
-                {isProviderMode ? tNav('panel') : tNav('account')}
-              </Link>
-            </Button>
+            <>
+              {/* En modo profesional el panel es el acceso principal, pero
+                  también hay que saber con qué cuenta se está dentro. */}
+              {isProviderMode ? (
+                <Button asChild variant="outline" size="lg" data-component="header-account">
+                  <Link href="/panel" className="inline-flex items-center gap-2">
+                    <LayoutDashboard className="size-4" aria-hidden="true" />
+                    {tNav('panel')}
+                  </Link>
+                </Button>
+              ) : null}
+              <HeaderAccount />
+            </>
           ) : (
             <>
               <Button asChild variant="outline" size="lg" data-component="header-sign-in">

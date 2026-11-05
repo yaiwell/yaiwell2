@@ -1948,6 +1948,37 @@
         "internal": "No hemos podido eliminar tu cuenta. Inténtalo de nuevo en unos minutos.",
         "open_refunds": "Tienes una devolución en curso. Podrás eliminar tu cuenta cuando termine; si tarda, escríbenos a hola@yaiwell.com."
       }
+    },
+    "settings": {
+      "title": "Ajustes y preferencias",
+      "subtitle": "Tu perfil, tus preferencias y tus datos.",
+      "back": "Mi cuenta",
+      "profile": {
+        "title": "Perfil",
+        "photoChange": "Cambiar foto",
+        "photoRemove": "Quitar foto",
+        "photoError": "No hemos podido cambiar la foto. Prueba con otra imagen.",
+        "firstName": "Nombre",
+        "lastName": "Apellidos",
+        "save": "Guardar",
+        "saved": "Guardado.",
+        "error": "No hemos podido guardarlo. Inténtalo de nuevo.",
+        "security": "Email y contraseña",
+        "securityCta": "Gestionar email y contraseña"
+      },
+      "preferences": {
+        "title": "Preferencias",
+        "language": "Idioma de la web",
+        "emailLanguage": "Idioma de los correos",
+        "emailLanguageHint": "Es el idioma en que te escribimos sobre tus reservas.",
+        "saved": "Guardado.",
+        "error": "No hemos podido guardarlo. Inténtalo de nuevo.",
+        "theme": "Tema",
+        "location": "Ubicación",
+        "locationHint": "La usamos para enseñarte lo que tienes cerca. Puedes desactivarla cuando quieras.",
+        "emails": "Correos",
+        "emailsHint": "Solo te escribimos sobre tus reservas y tu cuenta, así que no hay avisos que desactivar."
+      }
     }
   },
   "onboarding": {

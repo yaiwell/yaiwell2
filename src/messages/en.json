@@ -1948,6 +1948,37 @@
         "internal": "We could not delete your account. Please try again in a few minutes.",
         "open_refunds": "You have a refund in progress. You can delete your account once it finishes; if it takes long, write to us at hola@yaiwell.com."
       }
+    },
+    "settings": {
+      "title": "Settings and preferences",
+      "subtitle": "Your profile, your preferences and your data.",
+      "back": "My account",
+      "profile": {
+        "title": "Profile",
+        "photoChange": "Change photo",
+        "photoRemove": "Remove photo",
+        "photoError": "We could not change the photo. Try another image.",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "save": "Save",
+        "saved": "Saved.",
+        "error": "We could not save it. Please try again.",
+        "security": "Email and password",
+        "securityCta": "Manage email and password"
+      },
+      "preferences": {
+        "title": "Preferences",
+        "language": "Website language",
+        "emailLanguage": "Email language",
+        "emailLanguageHint": "The language we use to write to you about your bookings.",
+        "saved": "Saved.",
+        "error": "We could not save it. Please try again.",
+        "theme": "Theme",
+        "location": "Location",
+        "locationHint": "We use it to show you what is nearby. You can turn it off at any time.",
+        "emails": "Emails",
+        "emailsHint": "We only write to you about your bookings and your account, so there are no notifications to turn off."
+      }
     }
   },
   "onboarding": {

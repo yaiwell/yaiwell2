@@ -9,6 +9,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   deleteUser: vi.fn(),
+  updateUserMetadata: vi.fn(),
+  setLocale: vi.fn(),
   ensureUser: vi.fn(),
   anonymize: vi.fn(),
   countOwnedProviders: vi.fn(),
@@ -18,11 +20,13 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('@clerk/nextjs/server', () => ({
-  clerkClient: async () => ({ users: { deleteUser: mocks.deleteUser } }),
+  clerkClient: async () => ({
+    users: { deleteUser: mocks.deleteUser, updateUserMetadata: mocks.updateUserMetadata },
+  }),
 }));
 vi.mock('@/lib/services/user', () => ({
   ensureUserFromClerk: mocks.ensureUser,
-  userRepository: { anonymizeByClerkId: mocks.anonymize },
+  userRepository: { anonymizeByClerkId: mocks.anonymize, setLocale: mocks.setLocale },
 }));
 vi.mock('./account.repository', () => ({
   accountRepository: {
@@ -34,7 +38,7 @@ vi.mock('./account.repository', () => ({
 }));
 
 import { AccountDeletionBlockedError } from './account.errors';
-import { buildAccountExport, deleteOwnAccount } from './account.service';
+import { buildAccountExport, deleteOwnAccount, updateAccountLocale } from './account.service';
 
 const USER = {
   id: 'u1',
@@ -95,6 +99,24 @@ describe('deleteOwnAccount', () => {
     mocks.anonymize.mockRejectedValue(new Error('db down'));
 
     await expect(deleteOwnAccount('clerk_1')).resolves.toBeUndefined();
+  });
+});
+
+describe('updateAccountLocale', () => {
+  it('guarda el idioma en Clerk y en BD', async () => {
+    await updateAccountLocale('clerk_1', 'de');
+
+    expect(mocks.updateUserMetadata).toHaveBeenCalledWith('clerk_1', {
+      unsafeMetadata: { locale: 'de' },
+    });
+    expect(mocks.setLocale).toHaveBeenCalledWith(USER.id, 'de');
+  });
+
+  it('si Clerk falla no deja la BD distinta', async () => {
+    mocks.updateUserMetadata.mockRejectedValueOnce(new Error('clerk down'));
+
+    await expect(updateAccountLocale('clerk_1', 'de')).rejects.toThrow('clerk down');
+    expect(mocks.setLocale).not.toHaveBeenCalled();
   });
 });
 

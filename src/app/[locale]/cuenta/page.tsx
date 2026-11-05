@@ -19,7 +19,6 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { AccountDataCard } from '@/components/features/account/AccountDataCard';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { BECOME_PROVIDER_PATH } from '@/lib/auth/become-provider';
@@ -124,8 +123,8 @@ const accountStyles = {
  *    "Cuenta" del MobileNav sin haber iniciado sesión.
  *
  *  - **Autenticado:** muestra identidad (avatar + email), accesos al
- *    área cliente (reservas reales; favoritos y ajustes quedan como
- *    "Próximamente" hasta que existan las rutas) y un botón de cerrar
+ *    área cliente (reservas y ajustes; favoritos queda como
+ *    "Próximamente" hasta que exista la ruta) y un botón de cerrar
  *    sesión vía `SignOutButton` de Clerk.
  *
  *  Detectamos la sesión con `auth()` server-side. Cuando hay `userId`,
@@ -224,10 +223,8 @@ export default async function AccountPage({ params }: AccountPageProps) {
             aria-label={t('authenticated.navLabel')}
             data-component="account-authenticated-links"
           >
-            {/* "Mis reservas" sí existe como ruta (layout protegido por rol
-                cliente). Favoritos y Ajustes aún no — los dejamos visibles
-                como "Próximamente" en lugar de enlazar a /panel, que era el
-                bug previo (los 3 links llevaban al mismo sitio). */}
+            {/* Favoritos aún no existe: se ve como "Próximamente" en lugar de
+                enlazar a /panel, que era el bug previo. */}
             <Link href="/mis-reservas" className={accountStyles.linkItem}>
               <span className={accountStyles.linkLeft}>
                 <CalendarCheck className={accountStyles.linkIcon} aria-hidden="true" />
@@ -242,13 +239,17 @@ export default async function AccountPage({ params }: AccountPageProps) {
               </span>
               <span className={accountStyles.comingSoonTag}>{tCommon('comingSoon')}</span>
             </div>
-            <div className={accountStyles.linkItemDisabled} aria-disabled="true">
+            <Link
+              href="/cuenta/ajustes"
+              className={accountStyles.linkItem}
+              data-component="account-settings-link"
+            >
               <span className={accountStyles.linkLeft}>
                 <Settings className={accountStyles.linkIcon} aria-hidden="true" />
                 {t('authenticated.settings')}
               </span>
-              <span className={accountStyles.comingSoonTag}>{tCommon('comingSoon')}</span>
-            </div>
+              <ChevronRight className={accountStyles.linkChevron} aria-hidden="true" />
+            </Link>
             {/* Solo clientes: el camino para crear un negocio con esta
                 misma cuenta (p. ej. quien entró por primera vez con Google). */}
             {role === 'client' ? (
@@ -304,8 +305,6 @@ export default async function AccountPage({ params }: AccountPageProps) {
               </form>
             </section>
           ) : null}
-
-          <AccountDataCard locale={locale} />
 
           {/* Logout. `SignOutButton` es un Client Component de Clerk;
               renderizarlo desde aquí (Server Component) es válido porque

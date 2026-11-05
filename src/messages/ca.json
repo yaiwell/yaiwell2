@@ -1948,6 +1948,37 @@
         "internal": "No hem pogut eliminar el teu compte. Torna-ho a provar d'aquí a uns minuts.",
         "open_refunds": "Tens una devolució en curs. Podràs eliminar el teu compte quan acabi; si triga, escriu-nos a hola@yaiwell.com."
       }
+    },
+    "settings": {
+      "title": "Ajustaments i preferències",
+      "subtitle": "El teu perfil, les teves preferències i les teves dades.",
+      "back": "El meu compte",
+      "profile": {
+        "title": "Perfil",
+        "photoChange": "Canviar foto",
+        "photoRemove": "Treure foto",
+        "photoError": "No hem pogut canviar la foto. Prova amb una altra imatge.",
+        "firstName": "Nom",
+        "lastName": "Cognoms",
+        "save": "Desar",
+        "saved": "Desat.",
+        "error": "No ho hem pogut desar. Torna-ho a provar.",
+        "security": "Correu i contrasenya",
+        "securityCta": "Gestionar correu i contrasenya"
+      },
+      "preferences": {
+        "title": "Preferències",
+        "language": "Idioma de la web",
+        "emailLanguage": "Idioma dels correus",
+        "emailLanguageHint": "És l'idioma en què t'escrivim sobre les teves reserves.",
+        "saved": "Desat.",
+        "error": "No ho hem pogut desar. Torna-ho a provar.",
+        "theme": "Tema",
+        "location": "Ubicació",
+        "locationHint": "La fem servir per ensenyar-te el que tens a prop. Pots desactivar-la quan vulguis.",
+        "emails": "Correus",
+        "emailsHint": "Només t'escrivim sobre les teves reserves i el teu compte, així que no hi ha avisos per desactivar."
+      }
     }
   },
   "onboarding": {

@@ -1948,6 +1948,37 @@
         "internal": "Nous n’avons pas pu supprimer votre compte. Réessayez dans quelques minutes.",
         "open_refunds": "Un remboursement est en cours. Vous pourrez supprimer votre compte une fois terminé ; si cela prend du temps, écrivez-nous à hola@yaiwell.com."
       }
+    },
+    "settings": {
+      "title": "Réglages et préférences",
+      "subtitle": "Votre profil, vos préférences et vos données.",
+      "back": "Mon compte",
+      "profile": {
+        "title": "Profil",
+        "photoChange": "Changer la photo",
+        "photoRemove": "Retirer la photo",
+        "photoError": "Nous n’avons pas pu changer la photo. Essayez une autre image.",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "save": "Enregistrer",
+        "saved": "Enregistré.",
+        "error": "Nous n’avons pas pu l’enregistrer. Réessayez.",
+        "security": "E-mail et mot de passe",
+        "securityCta": "Gérer l’e-mail et le mot de passe"
+      },
+      "preferences": {
+        "title": "Préférences",
+        "language": "Langue du site",
+        "emailLanguage": "Langue des e-mails",
+        "emailLanguageHint": "C’est la langue dans laquelle nous vous écrivons au sujet de vos réservations.",
+        "saved": "Enregistré.",
+        "error": "Nous n’avons pas pu l’enregistrer. Réessayez.",
+        "theme": "Thème",
+        "location": "Position",
+        "locationHint": "Nous l’utilisons pour vous montrer ce qui est proche. Vous pouvez la désactiver à tout moment.",
+        "emails": "E-mails",
+        "emailsHint": "Nous vous écrivons uniquement au sujet de vos réservations et de votre compte : il n’y a donc aucune notification à désactiver."
+      }
     }
   },
   "onboarding": {

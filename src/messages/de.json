@@ -1948,6 +1948,37 @@
         "internal": "Wir konnten dein Konto nicht löschen. Bitte versuche es in ein paar Minuten erneut.",
         "open_refunds": "Du hast eine laufende Erstattung. Du kannst dein Konto löschen, sobald sie abgeschlossen ist; falls es länger dauert, schreib uns an hola@yaiwell.com."
       }
+    },
+    "settings": {
+      "title": "Einstellungen",
+      "subtitle": "Dein Profil, deine Einstellungen und deine Daten.",
+      "back": "Mein Konto",
+      "profile": {
+        "title": "Profil",
+        "photoChange": "Foto ändern",
+        "photoRemove": "Foto entfernen",
+        "photoError": "Wir konnten das Foto nicht ändern. Versuche es mit einem anderen Bild.",
+        "firstName": "Vorname",
+        "lastName": "Nachname",
+        "save": "Speichern",
+        "saved": "Gespeichert.",
+        "error": "Das konnten wir nicht speichern. Bitte versuche es erneut.",
+        "security": "E-Mail und Passwort",
+        "securityCta": "E-Mail und Passwort verwalten"
+      },
+      "preferences": {
+        "title": "Einstellungen",
+        "language": "Sprache der Website",
+        "emailLanguage": "Sprache der E-Mails",
+        "emailLanguageHint": "In dieser Sprache schreiben wir dir zu deinen Buchungen.",
+        "saved": "Gespeichert.",
+        "error": "Das konnten wir nicht speichern. Bitte versuche es erneut.",
+        "theme": "Design",
+        "location": "Standort",
+        "locationHint": "Damit zeigen wir dir, was in deiner Nähe ist. Du kannst ihn jederzeit deaktivieren.",
+        "emails": "E-Mails",
+        "emailsHint": "Wir schreiben dir nur zu deinen Buchungen und deinem Konto, daher gibt es keine Benachrichtigungen zum Abschalten."
+      }
     }
   },
   "onboarding": {
