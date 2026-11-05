@@ -32,8 +32,14 @@ import {
 
 export type { PlanActionErrorCode, PlanActionResult } from './actions.helpers';
 
-/** Recorridos del portal que la UI puede pedir (schema en `billing`). */
-export type { BillingPortalIntent };
+/**
+ * Recorridos del portal que la UI puede pedir (schema en `billing`).
+ *
+ * Con `from` a propósito: en un fichero `'use server'`, `export type { X };`
+ * se compila como una exportación real de algo que no existe y el módulo
+ * revienta al cargarse, con todas las acciones de las páginas que lo usan.
+ */
+export type { BillingPortalIntent } from '@/lib/services/billing';
 
 async function openPortal(
   providerId: string,

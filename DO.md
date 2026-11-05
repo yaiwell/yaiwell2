@@ -12,6 +12,12 @@
 
 ## 2026-11-05
 
+### 2026-11-05 — Las acciones de `/panel`, plan, centro y alta fallaban con 500
+
+P1 (orquestador).
+
+- `panel/plan/actions.ts` (`'use server'`) tenía `export type { BillingPortalIntent };`, que se compila como exportación real: `ReferenceError` al cargar el módulo. Rompía cualquier server action de `/panel`, `/panel/plan`, `/panel/centro` y `/onboarding`, incluido «Cambiar a modo usuario» en el resumen. Venía de 69a852d (2026-10-30). Corregido con `export type { X } from`, y un test impide repetirlo.
+
 ### 2026-11-05 — La ubicación guardada se actualiza al moverse
 
 P1 (orquestador).
