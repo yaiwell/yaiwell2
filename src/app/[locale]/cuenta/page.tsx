@@ -19,6 +19,7 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { AccountDataCard } from '@/components/features/account/AccountDataCard';
 import { Link } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { BECOME_PROVIDER_PATH } from '@/lib/auth/become-provider';
@@ -303,6 +304,8 @@ export default async function AccountPage({ params }: AccountPageProps) {
               </form>
             </section>
           ) : null}
+
+          <AccountDataCard locale={locale} />
 
           {/* Logout. `SignOutButton` es un Client Component de Clerk;
               renderizarlo desde aquí (Server Component) es válido porque

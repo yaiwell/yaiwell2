@@ -29,7 +29,7 @@ export interface PendingRefundRow {
  * Condición única de "reembolso pendiente de soporte": falló, no se ha
  * devuelto y nadie lo ha descartado a mano.
  */
-const PENDING_REFUND_WHERE = {
+export const PENDING_REFUND_WHERE = {
   refundFailedAt: { not: null },
   refundedAt: null,
   refundDismissedAt: null,

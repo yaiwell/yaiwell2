@@ -858,7 +858,8 @@
         }
       },
       "empty": "No hay valoraciones que coincidan con los filtros.",
-      "emptyNone": "Aún no tienes valoraciones. Aparecerán aquí cuando tus clientes valoren un servicio finalizado."
+      "emptyNone": "Aún no tienes valoraciones. Aparecerán aquí cuando tus clientes valoren un servicio finalizado.",
+      "anonymousAuthor": "Anónimo"
     },
     "payments": {
       "title": "Pagos",
@@ -1838,6 +1839,25 @@
       "hint": "Cambia entre tu panel de gestión y la app pública sin crear otra cuenta.",
       "switchToClient": "Cambiar a modo usuario",
       "switchToProvider": "Volver a modo profesional"
+    },
+    "data": {
+      "title": "Tus datos",
+      "hint": "Descarga una copia de tus datos o elimina tu cuenta.",
+      "download": "Descargar mis datos",
+      "delete": "Eliminar mi cuenta",
+      "confirmTitle": "¿Eliminar tu cuenta?",
+      "confirmText": "No se puede deshacer. Borramos tu nombre, tu email y tus notas. Conservamos sin tu nombre ni tu email los datos de reservas y pagos que la ley nos obliga a guardar, y tu historial de no presentados. Tus reseñas siguen publicadas como anónimas y sin fotos.",
+      "confirm": "Sí, eliminar mi cuenta",
+      "cancel": "Cancelar",
+      "deleting": "Eliminando…",
+      "errors": {
+        "admin": "Las cuentas de administración no se pueden eliminar desde aquí.",
+        "provider": "Esta cuenta administra un negocio. Escríbenos a hola@yaiwell.com y te ayudamos a cerrarlo.",
+        "open_bookings": "Tienes reservas pendientes o sin cerrar. Cancela las que puedas en «Mis reservas» y vuelve a intentarlo; las ya pasadas se cierran en un máximo de 72 horas.",
+        "unauthenticated": "Tu sesión ha caducado. Vuelve a entrar e inténtalo de nuevo.",
+        "internal": "No hemos podido eliminar tu cuenta. Inténtalo de nuevo en unos minutos.",
+        "open_refunds": "Tienes una devolución en curso. Podrás eliminar tu cuenta cuando termine; si tarda, escríbenos a hola@yaiwell.com."
+      }
     }
   },
   "onboarding": {

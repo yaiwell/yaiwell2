@@ -56,7 +56,7 @@ export default async function PanelReviewsPage({ params }: PanelReviewsPageProps
         providerResponse: true,
         providerResponseAt: true,
         createdAt: true,
-        author: { select: { fullName: true, email: true } },
+        author: { select: { fullName: true, email: true, deletedAt: true } },
         booking: {
           select: {
             service: { select: { name: true } },
@@ -66,11 +66,13 @@ export default async function PanelReviewsPage({ params }: PanelReviewsPageProps
       orderBy: { createdAt: 'desc' },
     });
 
+    const tReviews = await getTranslations('providerPanel.reviews');
     reviews = records.map((r) => ({
       id: r.id,
-      // Si el autor borró su nombre completo caemos al email (siempre
-      // existe por unique constraint en User).
-      authorName: r.author.fullName ?? r.author.email,
+      // Sin nombre caemos al email, salvo en una cuenta eliminada: el suyo es
+      // técnico y la reseña queda anónima.
+      authorName:
+        r.author.fullName ?? (r.author.deletedAt ? tReviews('anonymousAuthor') : r.author.email),
       // `rating` en BD es Int (1-5); casteo seguro al union literal.
       rating: r.rating as 1 | 2 | 3 | 4 | 5,
       text: r.text,

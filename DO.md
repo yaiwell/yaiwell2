@@ -10,6 +10,16 @@
 
 ## 2026-11-02
 
+## 2026-11-05
+
+### 2026-11-05 — Descargar los datos y eliminar la cuenta (RGPD)
+
+P3 (orquestador).
+
+- **`/cuenta` › Tus datos**: descarga JSON desde `GET /api/account/export` (perfil, reservas, reseñas, sanciones y negocios; sin ids de Stripe) y eliminación con confirmación.
+- **Eliminación**: bloqueada para administración, titulares de un negocio, reservas `pending`/`confirmed` y reembolsos sin terminar. Primero Clerk y luego BD. La fila `users` se anonimiza (email `.invalid`, `clerkId` propio, sin nombre ni avatar), se borran las notas de sus reservas y las fotos de sus reseñas, y se conservan reservas, comisiones y sanciones. El webhook `user.deleted` anonimiza solo si no hay obligaciones: con negocio, reservas abiertas o rol admin marca la baja, conserva los datos y avisa a Sentry.
+- Privacidad actualizada en los 5 idiomas.
+
 ## 2026-11-04
 
 ### 2026-11-04 — 30 minutos también al pagar y NIF fuera de la clave pública

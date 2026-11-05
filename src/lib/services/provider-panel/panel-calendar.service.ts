@@ -60,7 +60,7 @@ export async function getPanelWeekBookings(
       noShowAt: true,
       priceCents: true,
       professionalId: true,
-      client: { select: { fullName: true, email: true } },
+      client: { select: { fullName: true, email: true, deletedAt: true } },
       service: { select: { name: true } },
       professional: { select: { name: true } },
       // Para ofrecer «Liberar con descuento» sobre las canceladas.
@@ -76,7 +76,8 @@ export async function getPanelWeekBookings(
     weekday: weekdayInMadrid(r.startAt),
     startTime: timeInMadrid(r.startAt),
     endTime: timeInMadrid(r.endAt),
-    clientName: r.client.fullName ?? r.client.email,
+    // Una cuenta eliminada solo tiene un email técnico que no aporta nada.
+    clientName: r.client.fullName ?? (r.client.deletedAt ? '—' : r.client.email),
     serviceName: pickLocalized(r.service.name as unknown as LocalizedText, locale),
     professionalId: r.professionalId,
     professionalName: r.professional?.name ?? null,

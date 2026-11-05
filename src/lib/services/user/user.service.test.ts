@@ -6,20 +6,25 @@
  *    cadena public→unsafe→default, locale válido vs inválido, nombre
  *    completo compuesto, avatar vacío.
  *  - syncUserFromClerk: upsert con los datos normalizados.
- *  - deleteUserFromClerk: soft delete OK, idempotencia cuando no existe.
+ *  - deleteUserFromClerk: anonimización OK, idempotencia cuando no existe.
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/lib/db/prisma', () => ({
-  prisma: {
+vi.mock('@/lib/db/prisma', () => {
+  const prisma = {
     user: {
       upsert: vi.fn(),
       findUnique: vi.fn(),
       update: vi.fn(),
     },
-  },
-}));
+    booking: { updateMany: vi.fn(), count: vi.fn(async () => 0) },
+    provider: { count: vi.fn(async () => 0) },
+    review: { updateMany: vi.fn() },
+    $transaction: vi.fn((fn: (tx: unknown) => unknown) => fn(prisma)),
+  };
+  return { prisma };
+});
 
 import { prisma } from '@/lib/db/prisma';
 
@@ -211,9 +216,10 @@ describe('deleteUserFromClerk', () => {
   beforeEach(() => {
     vi.mocked(prisma.user.findUnique).mockReset();
     vi.mocked(prisma.user.update).mockReset();
+    vi.mocked(prisma.$transaction).mockClear();
   });
 
-  it('soft delete cuando el usuario existe', async () => {
+  it('anonimiza cuando el usuario existe', async () => {
     vi.mocked(prisma.user.findUnique).mockResolvedValue({
       id: 'db-uuid',
       clerkId: 'user_abc',
@@ -227,10 +233,42 @@ describe('deleteUserFromClerk', () => {
 
     expect(prisma.user.update).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { clerkId: 'user_abc' },
-        data: { deletedAt: expect.any(Date) },
+        where: { id: 'db-uuid' },
+        data: {
+          clerkId: 'deleted_db-uuid',
+          email: 'deleted-db-uuid@deleted.yaiwell.invalid',
+          fullName: null,
+          avatarUrl: null,
+          deletedAt: expect.any(Date),
+        },
       }),
     );
+    expect(prisma.booking.updateMany).toHaveBeenCalledWith({
+      where: { clientId: 'db-uuid', notes: { not: null } },
+      data: { notes: null },
+    });
+    expect(prisma.review.updateMany).toHaveBeenCalledWith({
+      where: { authorId: 'db-uuid' },
+      data: { photos: [] },
+    });
+  });
+
+  it('a un titular de negocio no lo anonimiza: solo marca la baja', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.mocked(prisma.user.findUnique).mockResolvedValue({
+      id: 'db-uuid',
+      clerkId: 'user_abc',
+      role: 'provider',
+    } as never);
+    vi.mocked(prisma.provider.count).mockResolvedValueOnce(1);
+
+    await deleteUserFromClerk({ id: 'user_abc' } as never);
+
+    expect(prisma.user.update).toHaveBeenCalledWith({
+      where: { clerkId: 'user_abc' },
+      data: { deletedAt: expect.any(Date) },
+    });
+    expect(prisma.$transaction).not.toHaveBeenCalled();
   });
 
   it('lanza UserNotFoundError si el usuario no existe', async () => {

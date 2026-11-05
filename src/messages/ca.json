@@ -858,7 +858,8 @@
         }
       },
       "empty": "No hi ha valoracions que coincideixin amb els filtres.",
-      "emptyNone": "Encara no tens valoracions. Apareixeran aquí quan els teus clients valorin un servei finalitzat."
+      "emptyNone": "Encara no tens valoracions. Apareixeran aquí quan els teus clients valorin un servei finalitzat.",
+      "anonymousAuthor": "Anònim"
     },
     "payments": {
       "title": "Pagaments",
@@ -1838,6 +1839,25 @@
       "hint": "Canvia entre el teu tauler de gestió i l'app pública sense crear un altre compte.",
       "switchToClient": "Canviar a mode usuari",
       "switchToProvider": "Tornar a mode professional"
+    },
+    "data": {
+      "title": "Les teves dades",
+      "hint": "Descarrega una còpia de les teves dades o elimina el teu compte.",
+      "download": "Descarregar les meves dades",
+      "delete": "Eliminar el meu compte",
+      "confirmTitle": "Vols eliminar el teu compte?",
+      "confirmText": "No es pot desfer. Esborrem el teu nom, el teu correu i les teves notes. Conservem sense el teu nom ni el teu correu les dades de reserves i pagaments que la llei ens obliga a guardar, i el teu historial de no presentats. Les teves ressenyes continuen publicades com a anònimes i sense fotos.",
+      "confirm": "Sí, eliminar el meu compte",
+      "cancel": "Cancel·lar",
+      "deleting": "Eliminant…",
+      "errors": {
+        "admin": "Els comptes d'administració no es poden eliminar des d'aquí.",
+        "provider": "Aquest compte administra un negoci. Escriu-nos a hola@yaiwell.com i t'ajudarem a tancar-lo.",
+        "open_bookings": "Tens reserves pendents o sense tancar. Cancel·la les que puguis a «Les meves reserves» i torna-ho a provar; les ja passades es tanquen en un màxim de 72 hores.",
+        "unauthenticated": "La teva sessió ha caducat. Torna a entrar i prova-ho de nou.",
+        "internal": "No hem pogut eliminar el teu compte. Torna-ho a provar d'aquí a uns minuts.",
+        "open_refunds": "Tens una devolució en curs. Podràs eliminar el teu compte quan acabi; si triga, escriu-nos a hola@yaiwell.com."
+      }
     }
   },
   "onboarding": {

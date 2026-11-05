@@ -48,15 +48,61 @@ export const userRepository = {
   },
 
   /**
-   * Soft delete por `clerkId`. Devuelve `null` si el usuario no existe.
-   * No usamos `delete` físico para conservar FKs en bookings y reviews.
+   * Marca la cuenta como eliminada sin tocar sus datos. Es para quien la
+   * perdió en Clerk con obligaciones vivas: el email sigue sirviendo a soporte
+   * y un nuevo registro con ese email recupera la fila.
    */
-  async softDeleteByClerkId(clerkId: string) {
-    const user = await prisma.user.findUnique({ where: { clerkId } });
+  softDeleteByClerkId(clerkId: string) {
+    return prisma.user.update({ where: { clerkId }, data: { deletedAt: new Date() } });
+  },
+
+  /**
+   * Indica si la persona tiene un negocio vivo o reservas sin cerrar.
+   *
+   * @param userId — `User.id` interno.
+   */
+  async hasOpenObligations(userId: string): Promise<boolean> {
+    const [providers, bookings] = await Promise.all([
+      prisma.provider.count({ where: { userId, deletedAt: null } }),
+      prisma.booking.count({
+        where: { clientId: userId, status: { in: ['pending', 'confirmed'] } },
+      }),
+    ]);
+    return providers > 0 || bookings > 0;
+  },
+
+  /**
+   * Anonimiza a quien ha eliminado su cuenta. La fila se conserva porque
+   * reservas y comisiones son datos que la ley obliga a guardar; deja de
+   * identificar a la persona. Las reseñas se mantienen como «Anónimo».
+   *
+   * El email usa un dominio `.invalid`: `deliverEmail` no envía a esos
+   * dominios y el mismo email puede volver a registrarse como cuenta nueva,
+   * sin recuperar nada. Idempotente: al cambiar `clerkId`, una segunda
+   * llamada (acción y webhook) no encuentra la fila.
+   *
+   * @returns la fila anonimizada o `null` si ya no existe ese `clerkId`.
+   */
+  async anonymizeByClerkId(clerkId: string) {
+    const user = await prisma.user.findUnique({ where: { clerkId }, select: { id: true } });
     if (!user) return null;
-    return prisma.user.update({
-      where: { clerkId },
-      data: { deletedAt: new Date() },
+    return prisma.$transaction(async (tx) => {
+      // Texto libre y fotos de la persona: pueden identificarla.
+      await tx.booking.updateMany({
+        where: { clientId: user.id, notes: { not: null } },
+        data: { notes: null },
+      });
+      await tx.review.updateMany({ where: { authorId: user.id }, data: { photos: [] } });
+      return tx.user.update({
+        where: { id: user.id },
+        data: {
+          clerkId: `deleted_${user.id}`,
+          email: `deleted-${user.id}@deleted.yaiwell.invalid`,
+          fullName: null,
+          avatarUrl: null,
+          deletedAt: new Date(),
+        },
+      });
     });
   },
 

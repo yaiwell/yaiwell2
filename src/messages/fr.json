@@ -858,7 +858,8 @@
         }
       },
       "empty": "Aucun avis ne correspond aux filtres.",
-      "emptyNone": "Vous n’avez pas encore d’avis. Ils apparaîtront ici lorsque vos clients évalueront une prestation terminée."
+      "emptyNone": "Vous n’avez pas encore d’avis. Ils apparaîtront ici lorsque vos clients évalueront une prestation terminée.",
+      "anonymousAuthor": "Anonyme"
     },
     "payments": {
       "title": "Paiements",
@@ -1838,6 +1839,25 @@
       "hint": "Passez de votre espace pro à l’appli publique sans créer un autre compte.",
       "switchToClient": "Passer en mode utilisateur",
       "switchToProvider": "Revenir en mode professionnel"
+    },
+    "data": {
+      "title": "Vos données",
+      "hint": "Téléchargez une copie de vos données ou supprimez votre compte.",
+      "download": "Télécharger mes données",
+      "delete": "Supprimer mon compte",
+      "confirmTitle": "Supprimer votre compte ?",
+      "confirmText": "Cette action est irréversible. Nous effaçons votre nom, votre e-mail et vos notes. Nous conservons, sans votre nom ni votre e-mail, les données de réservation et de paiement que la loi nous oblige à garder, ainsi que votre historique d’absences. Vos avis restent publiés de façon anonyme, sans photos.",
+      "confirm": "Oui, supprimer mon compte",
+      "cancel": "Annuler",
+      "deleting": "Suppression…",
+      "errors": {
+        "admin": "Les comptes d’administration ne peuvent pas être supprimés ici.",
+        "provider": "Ce compte gère un établissement. Écrivez-nous à hola@yaiwell.com et nous vous aiderons à le fermer.",
+        "open_bookings": "Vous avez des réservations en attente ou non clôturées. Annulez celles que vous pouvez dans « Mes réservations » et réessayez ; celles déjà passées sont clôturées sous 72 heures au maximum.",
+        "unauthenticated": "Votre session a expiré. Reconnectez-vous et réessayez.",
+        "internal": "Nous n’avons pas pu supprimer votre compte. Réessayez dans quelques minutes.",
+        "open_refunds": "Un remboursement est en cours. Vous pourrez supprimer votre compte une fois terminé ; si cela prend du temps, écrivez-nous à hola@yaiwell.com."
+      }
     }
   },
   "onboarding": {

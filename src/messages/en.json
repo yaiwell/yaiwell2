@@ -858,7 +858,8 @@
         }
       },
       "empty": "No reviews match these filters.",
-      "emptyNone": "You have no reviews yet. They will appear here once your clients review a completed service."
+      "emptyNone": "You have no reviews yet. They will appear here once your clients review a completed service.",
+      "anonymousAuthor": "Anonymous"
     },
     "payments": {
       "title": "Payments",
@@ -1838,6 +1839,25 @@
       "hint": "Switch between your management panel and the public app without a second account.",
       "switchToClient": "Switch to customer mode",
       "switchToProvider": "Back to professional mode"
+    },
+    "data": {
+      "title": "Your data",
+      "hint": "Download a copy of your data or delete your account.",
+      "download": "Download my data",
+      "delete": "Delete my account",
+      "confirmTitle": "Delete your account?",
+      "confirmText": "This cannot be undone. We erase your name, email and notes. We keep, without your name or email, the booking and payment data the law requires us to retain and your no-show history. Your reviews stay published as anonymous, without photos.",
+      "confirm": "Yes, delete my account",
+      "cancel": "Cancel",
+      "deleting": "Deleting…",
+      "errors": {
+        "admin": "Admin accounts cannot be deleted from here.",
+        "provider": "This account manages a business. Write to us at hola@yaiwell.com and we will help you close it.",
+        "open_bookings": "You have pending or unclosed bookings. Cancel the ones you can in “My bookings” and try again; past ones close within 72 hours at most.",
+        "unauthenticated": "Your session has expired. Sign in again and retry.",
+        "internal": "We could not delete your account. Please try again in a few minutes.",
+        "open_refunds": "You have a refund in progress. You can delete your account once it finishes; if it takes long, write to us at hola@yaiwell.com."
+      }
     }
   },
   "onboarding": {

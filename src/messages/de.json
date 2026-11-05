@@ -858,7 +858,8 @@
         }
       },
       "empty": "Keine Bewertungen entsprechen den Filtern.",
-      "emptyNone": "Du hast noch keine Bewertungen. Sie erscheinen hier, sobald deine Kundschaft eine abgeschlossene Leistung bewertet."
+      "emptyNone": "Du hast noch keine Bewertungen. Sie erscheinen hier, sobald deine Kundschaft eine abgeschlossene Leistung bewertet.",
+      "anonymousAuthor": "Anonym"
     },
     "payments": {
       "title": "Zahlungen",
@@ -1838,6 +1839,25 @@
       "hint": "Wechsle zwischen deinem Management-Panel und der öffentlichen App ohne Zweitkonto.",
       "switchToClient": "Zum Nutzermodus wechseln",
       "switchToProvider": "Zurück zum Profi-Modus"
+    },
+    "data": {
+      "title": "Deine Daten",
+      "hint": "Lade eine Kopie deiner Daten herunter oder lösche dein Konto.",
+      "download": "Meine Daten herunterladen",
+      "delete": "Mein Konto löschen",
+      "confirmTitle": "Konto löschen?",
+      "confirmText": "Das lässt sich nicht rückgängig machen. Wir löschen deinen Namen, deine E-Mail-Adresse und deine Notizen. Ohne Namen und E-Mail-Adresse behalten wir die Buchungs- und Zahlungsdaten, die wir gesetzlich aufbewahren müssen, sowie deinen Verlauf nicht wahrgenommener Termine. Deine Bewertungen bleiben anonym und ohne Fotos veröffentlicht.",
+      "confirm": "Ja, mein Konto löschen",
+      "cancel": "Abbrechen",
+      "deleting": "Wird gelöscht…",
+      "errors": {
+        "admin": "Administrationskonten können hier nicht gelöscht werden.",
+        "provider": "Dieses Konto verwaltet ein Unternehmen. Schreib uns an hola@yaiwell.com, und wir helfen dir beim Schließen.",
+        "open_bookings": "Du hast ausstehende oder nicht abgeschlossene Buchungen. Storniere, was möglich ist, unter „Meine Buchungen“ und versuche es erneut; vergangene werden innerhalb von höchstens 72 Stunden abgeschlossen.",
+        "unauthenticated": "Deine Sitzung ist abgelaufen. Melde dich erneut an und versuche es noch einmal.",
+        "internal": "Wir konnten dein Konto nicht löschen. Bitte versuche es in ein paar Minuten erneut.",
+        "open_refunds": "Du hast eine laufende Erstattung. Du kannst dein Konto löschen, sobald sie abgeschlossen ist; falls es länger dauert, schreib uns an hola@yaiwell.com."
+      }
     }
   },
   "onboarding": {

@@ -2,6 +2,8 @@ import type { DeletedObjectJSON, User as ClerkBackendUser, UserJSON } from '@cle
 import { clerkClient } from '@clerk/nextjs/server';
 import type { Locale, UserRole } from '@prisma/client';
 
+import { isSentryEnabled } from '@/lib/integrations/sentry/sentry.shared';
+
 import { MissingPrimaryEmailError, UserNotFoundError } from './user.errors';
 import { userRepository } from './user.repository';
 import type { ClerkUserSyncInput } from './user.types';
@@ -88,8 +90,9 @@ export async function syncUserFromBackendUser(user: ClerkBackendUser) {
 /**
  * Procesa un evento `user.deleted` de Clerk.
  *
- * Hace soft delete (`deletedAt = now`) para no romper las FKs de
- * `bookings` y `reviews`. Es idempotente: si no encuentra el usuario
+ * Anonimiza la fila en vez de borrarla para no romper las FKs de
+ * `bookings` y `reviews`; con negocio, reservas abiertas o rol admin solo
+ * marca la baja y avisa a soporte. Es idempotente: si no encuentra el usuario
  * (race con `user.created` perdido) lanza `UserNotFoundError` y el
  * caller decide loguear y devolver 200 al webhook para que Clerk no
  * reintente eternamente.
@@ -98,11 +101,35 @@ export async function deleteUserFromClerk(payload: DeletedObjectJSON) {
   if (!payload.id) {
     throw new UserNotFoundError('El evento user.deleted no incluye id.');
   }
-  const deleted = await userRepository.softDeleteByClerkId(payload.id);
-  if (!deleted) {
+  const user = await userRepository.findByClerkId(payload.id);
+  if (!user) {
     throw new UserNotFoundError();
   }
-  return deleted;
+  // Borrada desde el panel de Clerk: nadie comprobó las reglas de la acción.
+  // Anonimizar dejaría sin dueño ni avisos a un negocio que sigue reservable.
+  if (user.role === 'admin' || (await userRepository.hasOpenObligations(user.id))) {
+    reportDeletedWithObligations(user.id);
+    return userRepository.softDeleteByClerkId(payload.id);
+  }
+  const anonymized = await userRepository.anonymizeByClerkId(payload.id);
+  if (!anonymized) {
+    throw new UserNotFoundError();
+  }
+  return anonymized;
+}
+
+/** Avisa a soporte: hay que cerrar el negocio o las reservas a mano. */
+function reportDeletedWithObligations(userId: string): void {
+  const message = `Clerk user deleted with open obligations; not anonymized: ${userId}`;
+  console.error(`[user] ${message}`);
+  if (!isSentryEnabled()) return;
+  void import('@sentry/nextjs')
+    .then((Sentry) => {
+      Sentry.captureMessage(message, { level: 'error', tags: { domain: 'account' } });
+    })
+    .catch(() => {
+      // Sin Sentry queda el log de consola.
+    });
 }
 
 /**
