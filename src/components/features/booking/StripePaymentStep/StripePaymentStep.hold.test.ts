@@ -15,6 +15,10 @@ describe('resolveHoldCheck', () => {
     expect(resolveHoldCheck({ ok: false, code })).toBe('expired');
   });
 
+  it('no cobra si faltan menos de 30 minutos', () => {
+    expect(resolveHoldCheck({ ok: false, code: 'SLOT_TOO_SOON' })).toBe('too_soon');
+  });
+
   it('pasa a la confirmación si ya está pagada', () => {
     expect(resolveHoldCheck({ ok: false, code: 'ALREADY_PAID' })).toBe('paid');
   });

@@ -25,6 +25,15 @@
 export const MIN_BOOKING_LEAD_TIME_MS = 30 * 60 * 1000;
 
 /**
+ * Margen para un pago que pasó la comprobación previa y aún se está
+ * confirmando (3D Secure, wallet). La comprobación exige los 30 minutos
+ * exactos, pero el cobro llega unos minutos después: sin este margen
+ * devolveríamos pagos legítimos. Es amplio a propósito: la red del webhook
+ * solo debe cazar a quien se salta la comprobación, no a un banco lento.
+ */
+export const PAYMENT_IN_FLIGHT_GRACE_MS = 10 * 60 * 1000;
+
+/**
  * Primer instante en que puede empezar una reserva creada en `now`.
  *
  * Se expone para que el motor de disponibilidad y la validación usen
@@ -61,4 +70,15 @@ export function isSlotStillBookable(slotStartIso: string, now: Date = new Date()
   const startMs = new Date(slotStartIso).getTime();
   if (Number.isNaN(startMs)) return false;
   return meetsMinBookingLeadTime(startMs, now);
+}
+
+/**
+ * Indica si un cobro ya hecho llegó dentro de la antelación mínima,
+ * contando el margen de un pago en curso.
+ *
+ * @param startMs — inicio de la reserva en milisegundos epoch.
+ * @param paidAt — instante del cobro según Stripe.
+ */
+export function wasPaidWithinLeadTime(startMs: number, paidAt: Date): boolean {
+  return startMs - paidAt.getTime() >= MIN_BOOKING_LEAD_TIME_MS - PAYMENT_IN_FLIGHT_GRACE_MS;
 }

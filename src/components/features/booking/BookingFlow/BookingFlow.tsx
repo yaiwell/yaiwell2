@@ -53,8 +53,16 @@ export function BookingFlow({
 
   const professionalIds = useMemo(() => professionals.map((p) => p.id), [professionals]);
   const flow = useBookingFlow({ serviceId: service.id, professionalIds });
-  const { step, stepIndex, draft, checkout, slotExpired, paymentPending } = flow;
-  const { goNext, selectSlot, updateDraft, completePayment, retryCheckout, expireCheckout } = flow;
+  const { step, stepIndex, draft, checkout, slotExpired, paymentPending, paymentRejected } = flow;
+  const {
+    goNext,
+    selectSlot,
+    updateDraft,
+    completePayment,
+    retryCheckout,
+    expireCheckout,
+    rejectCheckoutTooSoon,
+  } = flow;
   const { selectProfessional, clearSlot } = flow;
   // Método de pago y reserva en el local; envuelve volver y «otra hora»
   // para que un error del local no sobreviva al cambio de paso.
@@ -100,7 +108,9 @@ export function BookingFlow({
   // Si llegamos a la confirmación renderizamos solo esa pantalla con
   // su propio layout interno: no necesita stepper ni navegación.
   const confirmed =
-    step === 'confirmation' ? resolveConfirmation(onsiteState, draft, price, paymentPending) : null;
+    step === 'confirmation'
+      ? resolveConfirmation(onsiteState, draft, price, paymentPending, paymentRejected)
+      : null;
   if (confirmed) {
     return (
       <section className={s.root} data-component="booking-flow-confirmation">
@@ -227,6 +237,7 @@ export function BookingFlow({
             onRetry={retryCheckout}
             onChooseAnotherSlot={chooseAnotherSlot}
             onHoldExpired={expireCheckout}
+            onSlotTooSoon={rejectCheckoutTooSoon}
           />
         )}
       </div>

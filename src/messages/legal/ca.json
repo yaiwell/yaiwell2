@@ -102,7 +102,7 @@
           "El preu que veus és el preu final que fixa el centre per a aquest servei.",
           "Si pagues en línia, en triar una hora te la guardem 30 minuts perquè completis el pagament. Si no pagues en aquest temps, l’hora torna a quedar lliure.",
           "Si pagues en línia, la reserva es confirma quan el pagament s’ha completat; si tries pagar al local, es confirma al moment. T’enviem la confirmació per correu.",
-          "Només oferim hores que comencin com a mínim 30 minuts després del moment de reservar.",
+          "Només oferim hores que comencin com a mínim 30 minuts després del moment de reservar. El pagament també s’ha de fer amb almenys 30 minuts d’antelació; si no, la reserva no es confirma i, si s’arriba a cobrar, et retornem l’import íntegre.",
           "En reservar, el contracte del servei es forma entre tu i el centre o professional.",
           "Si 72 hores després de l’inici de la cita el centre no l’ha marcada com a finalitzada ni com a no presentada, la donem per completada i et convidem a valorar-la."
         ]

@@ -36,6 +36,7 @@ interface BookingCheckoutPanelProps {
   onChooseAnotherSlot: () => void;
   /** La retención de la reserva venció antes de pagar. */
   onHoldExpired: () => void;
+  onSlotTooSoon: () => void;
 }
 
 /**
@@ -54,6 +55,7 @@ export function BookingCheckoutPanel({
   onRetry,
   onChooseAnotherSlot,
   onHoldExpired,
+  onSlotTooSoon,
 }: BookingCheckoutPanelProps) {
   const t = useTranslations('booking.checkout');
   const tPicker = useTranslations('booking.professionalPicker');
@@ -81,6 +83,7 @@ export function BookingCheckoutPanel({
           returnUrl={returnUrl}
           onSucceeded={onSucceeded}
           onHoldExpired={onHoldExpired}
+          onSlotTooSoon={onSlotTooSoon}
         />
       </>
     );

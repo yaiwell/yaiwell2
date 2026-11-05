@@ -34,6 +34,8 @@ const messages = {
       totalLabel: 'Total',
       backToProvider: 'Volver al centro',
       viewMyBookings: 'Ver mis reservas',
+      rejectedTitle: 'Reserva no confirmada',
+      rejectedSubtitle: 'No hemos podido confirmar esta reserva.',
       pendingTitle: 'Pago en curso',
       pendingSubtitle:
         'Estamos confirmando el cobro con tu banco. En cuanto termine, verás la reserva en «Mis reservas».',
@@ -88,6 +90,14 @@ describe('BookingConfirmation — honestidad del estado de pago', () => {
 
     expect(screen.getByText('Pago en curso')).toBeInTheDocument();
     expect(screen.queryByText('¡Reserva confirmada!')).not.toBeInTheDocument();
+  });
+
+  it('dice que no se ha confirmado si la reserva se canceló', () => {
+    renderConfirmation({ paymentRejected: true, paymentPending: false });
+
+    expect(screen.getByText('Reserva no confirmada')).toBeInTheDocument();
+    expect(screen.queryByText('¡Reserva confirmada!')).not.toBeInTheDocument();
+    expect(screen.queryByText('Pago en curso')).not.toBeInTheDocument();
   });
 
   it('anuncia la confirmación sólo cuando el pago está liquidado', () => {

@@ -12,6 +12,13 @@
 
 ## 2026-11-04
 
+### 2026-11-04 — 30 minutos también al pagar y NIF fuera de la clave pública
+
+P12/P13 (orquestador, migración revisada por `db-migration-guard`).
+
+- **Pago**: `checkBookingPayable` rechaza con `BookingPaymentTooLateError` si faltan menos de 30 min, caduca la reserva y cancela su PaymentIntent; el cliente ve el mensaje de hueco demasiado próximo y elige otra hora. Si un cobro entra igualmente a menos de 20 min (se saltó la comprobación o el banco tardó mucho), el webhook cancela, reembolsa y avisa a Sentry; esos 10 min son el margen de un 3D Secure en curso. Si la reserva acaba cancelada, la confirmación dice «Reserva no confirmada» en vez de «Pago en curso». Términos actualizados en los 5 idiomas.
+- **Migración 9j, aplicada**: `anon` y `authenticated` solo leen las columnas públicas de `providers`. Quedan fuera `vatNumber`, `userId`, `stripeAccountId`, `planId` y `search_vector`. Se conserva la lectura de esas columnas porque las policies de `services`, `professionals`, `provider_categories` y `reviews` consultan `providers` con el rol que invoca.
+
 ### 2026-11-04 — Textos veraces y flecos de idioma
 
 P1/P2 (orquestador, en los 5 idiomas).

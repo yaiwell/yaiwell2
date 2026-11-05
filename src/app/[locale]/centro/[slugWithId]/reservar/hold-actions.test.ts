@@ -11,10 +11,15 @@ import { z } from 'zod';
 const { authMock, checkMock, errors } = vi.hoisted(() => {
   class BookingForCheckoutNotFoundError extends Error {}
   class BookingHoldExpiredError extends Error {}
+  class BookingPaymentTooLateError extends Error {}
   return {
     authMock: vi.fn(),
     checkMock: vi.fn(),
-    errors: { BookingForCheckoutNotFoundError, BookingHoldExpiredError },
+    errors: {
+      BookingForCheckoutNotFoundError,
+      BookingHoldExpiredError,
+      BookingPaymentTooLateError,
+    },
   };
 });
 
@@ -26,6 +31,7 @@ vi.mock('@/lib/services/checkout', () => ({
   checkBookingPayable: checkMock,
   BookingForCheckoutNotFoundError: errors.BookingForCheckoutNotFoundError,
   BookingHoldExpiredError: errors.BookingHoldExpiredError,
+  BookingPaymentTooLateError: errors.BookingPaymentTooLateError,
 }));
 
 import { verifyBookingPayableAction } from './hold-actions';
@@ -62,6 +68,7 @@ describe('verifyBookingPayableAction', () => {
 
   it.each([
     [new errors.BookingHoldExpiredError(), 'HOLD_EXPIRED'],
+    [new errors.BookingPaymentTooLateError(), 'SLOT_TOO_SOON'],
     [new errors.BookingForCheckoutNotFoundError(), 'NOT_FOUND'],
     [z.object({ id: z.string().uuid() }).safeParse({ id: 'x' }).error, 'VALIDATION'],
   ])('traduce %o a %s', async (error, code) => {

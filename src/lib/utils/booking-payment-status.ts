@@ -27,3 +27,13 @@ const SETTLED_STATUSES = new Set(['confirmed', 'completed']);
 export function isBookingPaymentSettled(status: string): boolean {
   return SETTLED_STATUSES.has(status);
 }
+
+/**
+ * Indica si la reserva ya no se va a confirmar: pasó a cancelada o
+ * reembolsada. Decir «pago en curso» aquí sería falso.
+ *
+ * @param status — estado tal y como está persistido en BD.
+ */
+export function isBookingPaymentRejected(status: string): boolean {
+  return status === 'cancelled' || status === 'refunded';
+}

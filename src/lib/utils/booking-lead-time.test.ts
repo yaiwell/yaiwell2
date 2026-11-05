@@ -4,6 +4,7 @@ import {
   MIN_BOOKING_LEAD_TIME_MS,
   getEarliestBookableStart,
   isSlotStillBookable,
+  wasPaidWithinLeadTime,
 } from './booking-lead-time';
 
 /**
@@ -34,5 +35,17 @@ describe('isSlotStillBookable', () => {
 
   it('rechaza una fecha inválida en vez de devolver NaN hacia arriba', () => {
     expect(isSlotStillBookable('no-es-una-fecha', NOW)).toBe(false);
+  });
+});
+
+describe('wasPaidWithinLeadTime', () => {
+  const START = new Date('2026-10-05T11:00:00.000Z').getTime();
+
+  it('acepta un cobro a 20:00, el margen de un pago en curso', () => {
+    expect(wasPaidWithinLeadTime(START, new Date('2026-10-05T10:40:00.000Z'))).toBe(true);
+  });
+
+  it('rechaza un cobro a 19:59', () => {
+    expect(wasPaidWithinLeadTime(START, new Date('2026-10-05T10:40:01.000Z'))).toBe(false);
   });
 });

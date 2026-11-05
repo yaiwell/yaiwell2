@@ -133,6 +133,7 @@ export function useStripePaymentForm(args: {
   returnUrl: string;
   onSucceeded: () => void;
   onHoldExpired: () => void;
+  onSlotTooSoon: () => void;
 }): StripePaymentFormState {
   const stripe = useStripe();
   const elements = useElements();
@@ -141,7 +142,7 @@ export function useStripePaymentForm(args: {
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const { bookingId, returnUrl, onSucceeded, onHoldExpired } = args;
+  const { bookingId, returnUrl, onSucceeded, onHoldExpired, onSlotTooSoon } = args;
 
   const submit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -180,6 +181,10 @@ export function useStripePaymentForm(args: {
           onHoldExpired();
           return;
         }
+        if (decision === 'too_soon') {
+          onSlotTooSoon();
+          return;
+        }
 
         const { error, paymentIntent } = await stripe.confirmPayment({
           elements,
@@ -204,7 +209,16 @@ export function useStripePaymentForm(args: {
         fail(null);
       })();
     },
-    [stripe, elements, isProcessing, bookingId, returnUrl, onSucceeded, onHoldExpired],
+    [
+      stripe,
+      elements,
+      isProcessing,
+      bookingId,
+      returnUrl,
+      onSucceeded,
+      onHoldExpired,
+      onSlotTooSoon,
+    ],
   );
 
   return {

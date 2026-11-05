@@ -1,9 +1,14 @@
 import 'server-only';
 
 import { isBookingHoldingSlot, PENDING_HOLD_PAYMENT_MARGIN_MS } from '@/lib/services/booking';
+import { meetsMinBookingLeadTime } from '@/lib/utils/booking-lead-time';
 import { isBookingPaymentSettled } from '@/lib/utils/booking-payment-status';
 
-import { BookingForCheckoutNotFoundError, BookingHoldExpiredError } from './checkout.errors';
+import {
+  BookingForCheckoutNotFoundError,
+  BookingHoldExpiredError,
+  BookingPaymentTooLateError,
+} from './checkout.errors';
 import { tryExpirePendingBooking, type PendingExpiryAttempt } from './checkout.expire-one';
 import { checkoutRepository, type CheckoutBookingRow } from './checkout.repository';
 import { verifyBookingPayableSchema } from './checkout.validation';
@@ -41,6 +46,7 @@ export type BookingPayability = 'payable' | 'already_paid';
  * @param options.now — instante de referencia; inyectable en tests.
  * @throws BookingForCheckoutNotFoundError — no existe o es de otro cliente.
  * @throws BookingHoldExpiredError — ya no retiene su franja.
+ * @throws BookingPaymentTooLateError — faltan menos de 30 min para el inicio.
  */
 export async function checkBookingPayable(
   input: unknown,
@@ -58,10 +64,11 @@ export async function checkBookingPayable(
   if (booking.status !== 'pending') {
     throw new BookingHoldExpiredError();
   }
+  const tooLate = !meetsMinBookingLeadTime(booking.startAt.getTime(), now);
   // Con el margen: si quedan menos de 2 min de retención, no da tiempo a
   // un 3D Secure y el pago se evaluaría ya vencido. Mejor elegir de nuevo.
   const paymentDeadline = new Date(now.getTime() + PENDING_HOLD_PAYMENT_MARGIN_MS);
-  if (isBookingHoldingSlot(booking, paymentDeadline)) return 'payable';
+  if (!tooLate && isBookingHoldingSlot(booking, paymentDeadline)) return 'payable';
 
   const attempt = await expireEagerly(booking, now);
   if (attempt === 'already_paid' || attempt === 'processing') return 'already_paid';
@@ -71,14 +78,14 @@ export async function checkBookingPayable(
     const current = await checkoutRepository.findCheckoutRow(booking.id);
     if (current && isBookingPaymentSettled(current.status)) return 'already_paid';
   }
-  throw new BookingHoldExpiredError();
+  throw tooLate ? new BookingPaymentTooLateError() : new BookingHoldExpiredError();
 }
 
 /**
- * Caduca en el momento una `pending` vencida.
+ * Caduca en el momento una `pending` vencida o ya impagable por antelación.
  *
  * Best effort: si Stripe o la BD fallan, el cliente recibe igualmente
- * "retención vencida" y el cron de caducidad lo reintenta esa noche.
+ * el rechazo y el cron de caducidad lo reintenta esa noche.
  *
  * @returns el desenlace, o `null` si no se pudo intentar. `already_paid`
  *   y `processing` significan que Stripe ya la había cobrado (otra

@@ -102,7 +102,7 @@
           "The price you see is the final price the venue sets for that service.",
           "If you pay online, when you choose a time slot we hold it for 30 minutes so you can complete payment. If you do not pay within that time, the slot becomes available again.",
           "If you pay online, the booking is confirmed once payment is complete; if you choose to pay at the venue, it is confirmed straight away. We send you the confirmation by email.",
-          "We only offer time slots that start at least 30 minutes after the moment of booking.",
+          "We only offer time slots that start at least 30 minutes after the moment of booking. Payment must also be made at least 30 minutes in advance; otherwise the booking is not confirmed and, if you are charged, we refund the full amount.",
           "When you book, the contract for the service is formed between you and the venue or professional.",
           "If, 72 hours after the appointment starts, the venue has not marked it as completed or as a no-show, we treat it as completed and invite you to review it."
         ]

@@ -102,7 +102,7 @@
           "Der angezeigte Preis ist der Endpreis, den das Studio für diese Leistung festlegt.",
           "Wenn du online zahlst und eine Uhrzeit wählst, reservieren wir sie 30 Minuten lang für dich, damit du die Zahlung abschließen kannst. Zahlst du in dieser Zeit nicht, wird die Uhrzeit wieder frei.",
           "Wenn du online zahlst, ist die Buchung bestätigt, sobald die Zahlung abgeschlossen ist; wenn du dich für die Zahlung vor Ort entscheidest, ist sie sofort bestätigt. Die Bestätigung schicken wir dir per E-Mail.",
-          "Wir bieten nur Uhrzeiten an, die mindestens 30 Minuten nach dem Zeitpunkt der Buchung beginnen.",
+          "Wir bieten nur Uhrzeiten an, die mindestens 30 Minuten nach dem Zeitpunkt der Buchung beginnen. Auch die Zahlung muss mindestens 30 Minuten im Voraus erfolgen; sonst wird die Buchung nicht bestätigt und ein bereits abgebuchter Betrag vollständig erstattet.",
           "Mit der Buchung kommt der Vertrag über die Leistung zwischen dir und dem Studio oder der Fachkraft zustande.",
           "Hat das Studio den Termin 72 Stunden nach Beginn weder als erledigt noch als nicht erschienen markiert, gilt er als erledigt und wir laden dich ein, ihn zu bewerten."
         ]

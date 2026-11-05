@@ -127,6 +127,26 @@ describe('estado real del pago en el camino sin 3DS', () => {
     await waitFor(() => expect(result.current.paymentPending).toBe(false));
   });
 
+  it('deja de decir «pago en curso» si la reserva se canceló', async () => {
+    const { result } = renderFlow();
+    await advanceToPayment(result);
+    await waitFor(() => expect(result.current.checkout.status).toBe('ready'));
+
+    mockedStatus.mockResolvedValue({
+      ok: true,
+      bookingId: 'bk-123',
+      status: 'cancelled',
+      isConfirmed: false,
+    });
+
+    await act(async () => {
+      result.current.completePayment();
+    });
+
+    await waitFor(() => expect(result.current.paymentRejected).toBe(true));
+    expect(result.current.paymentPending).toBe(false);
+  });
+
   it('mantiene el copy honesto si la consulta de estado falla', async () => {
     // Un fallo de red no puede convertirse en una confirmación falsa.
     mockedStatus.mockResolvedValue({ ok: false, code: 'INTERNAL' });

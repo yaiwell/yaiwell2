@@ -100,7 +100,7 @@
           "El precio que ves es el precio final que fija el centro para ese servicio.",
           "Si pagas online, al elegir una hora te la guardamos 30 minutos para que completes el pago. Si no pagas en ese tiempo, la hora vuelve a quedar libre.",
           "Si pagas online, la reserva se confirma cuando el pago se completa; si eliges pagar en el local, se confirma al momento. Te enviamos la confirmación por email.",
-          "Solo ofrecemos horas que empiecen al menos 30 minutos después del momento de reservar.",
+          "Solo ofrecemos horas que empiecen al menos 30 minutos después del momento de reservar. El pago también tiene que hacerse con al menos 30 minutos de antelación; si no, la reserva no se confirma y, si se llega a cobrar, te devolvemos el importe íntegro.",
           "Al reservar, el contrato del servicio se forma entre tú y el centro o profesional.",
           "Si 72 horas después del inicio de la cita el centro no la ha marcado como finalizada ni como no presentada, la damos por completada y te invitamos a valorarla."
         ]

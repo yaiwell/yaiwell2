@@ -9,7 +9,10 @@ import { routing, type AppLocale } from '@/i18n/routing';
 import { getBookingForConfirmation } from '@/lib/services/checkout';
 import { getBookedProfessional, getProviderDetail } from '@/lib/services/providers';
 import { ensureUserFromClerk } from '@/lib/services/user';
-import { isBookingPaymentSettled } from '@/lib/utils/booking-payment-status';
+import {
+  isBookingPaymentRejected,
+  isBookingPaymentSettled,
+} from '@/lib/utils/booking-payment-status';
 import { parseProviderIdFromSlugWithId } from '@/lib/utils/provider-slug';
 
 /**
@@ -109,6 +112,7 @@ export default async function BookingConfirmationPage({
         // está liquidado, el copy lo dice en lugar de prometer una
         // confirmación falsa. Mismo criterio que el camino sin 3DS.
         paymentPending={!isBookingPaymentSettled(booking.status)}
+        paymentRejected={isBookingPaymentRejected(booking.status)}
         professional={professional}
       />
     </section>

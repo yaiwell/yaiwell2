@@ -4,7 +4,8 @@ import { cancelPaymentIntentForExpiry } from './checkout.payment-intent';
 import { checkoutRepository } from './checkout.repository';
 
 /**
- * Caducidad de una única reserva `pending` cuya retención ha vencido.
+ * Caducidad de una única reserva `pending` cuya retención ha vencido o
+ * que ya no se puede pagar por antelación.
  *
  * La comparten el cron diario de caducidad y la comprobación previa al
  * pago (`checkout.hold-check.service`): cuando el cliente intenta pagar
@@ -49,7 +50,7 @@ export function expiryIdempotencyKey(bookingId: string): string {
  *
  * No comprueba que la retención haya vencido: es responsabilidad del
  * caller (el cron filtra por `createdAt`; la comprobación previa al pago
- * usa `isBookingHoldingSlot`).
+ * usa `isBookingHoldingSlot` y la antelación mínima).
  *
  * @param booking — id y PaymentIntent anclado de la reserva.
  * @param now — instante de la cancelación.

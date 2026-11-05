@@ -32,6 +32,8 @@ export interface StripePaymentStepProps {
   onSucceeded: () => void;
   /** El servidor dice que la retención venció: no se cobra. */
   onHoldExpired: () => void;
+  /** Faltan menos de 30 min para el inicio (nada cobrado). */
+  onSlotTooSoon: () => void;
 }
 
 /**
@@ -49,4 +51,6 @@ export interface StripePaymentFormProps {
   returnUrl: string;
   onSucceeded: () => void;
   onHoldExpired: () => void;
+  /** Faltan menos de 30 min para el inicio (nada cobrado). */
+  onSlotTooSoon: () => void;
 }

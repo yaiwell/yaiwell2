@@ -40,6 +40,11 @@ export interface BookingConfirmationProps {
    */
   paymentPending?: boolean;
   /**
+   * `true` cuando la reserva se canceló en vez de confirmarse (por ejemplo,
+   * el cobro llegó fuera de plazo y se devolvió). Tiene prioridad.
+   */
+  paymentRejected?: boolean;
+  /**
    * `onsite`: reserva con pago en el local (§4.bis). No hubo cobro: el
    * copy dice cuánto se pagará en el negocio en vez de «total».
    */

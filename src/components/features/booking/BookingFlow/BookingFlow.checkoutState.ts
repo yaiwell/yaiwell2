@@ -36,5 +36,18 @@ export function useCheckoutState() {
     [commitCheckout],
   );
 
-  return { checkout, checkoutRef, commitCheckout, resetCheckout, expireCheckout };
+  /** Menos de 30 min para el inicio al ir a pagar (nada cobrado): otra hora. */
+  const rejectCheckoutTooSoon = useCallback(
+    () => commitCheckout({ status: 'error', code: 'SLOT_TOO_SOON' }),
+    [commitCheckout],
+  );
+
+  return {
+    checkout,
+    checkoutRef,
+    commitCheckout,
+    resetCheckout,
+    expireCheckout,
+    rejectCheckoutTooSoon,
+  };
 }

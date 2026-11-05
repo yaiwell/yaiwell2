@@ -12,6 +12,8 @@ export const bookingConfirmationStyles = {
   // en claro y oscuro (los soft están definidos en globals.css por modo).
   iconCircle:
     'flex size-16 items-center justify-center rounded-full bg-brand-sage-soft text-brand-sage',
+  iconCircleRejected:
+    'flex size-16 items-center justify-center rounded-full bg-muted text-foreground',
   icon: 'size-9',
 
   // Bloque de título + subtítulo.

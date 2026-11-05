@@ -102,7 +102,7 @@
           "Le prix affiché est le prix final fixé par l’établissement pour ce service.",
           "Si vous payez en ligne, lorsque vous choisissez une heure, nous vous la réservons pendant 30 minutes pour que vous finalisiez le paiement. Si vous ne payez pas dans ce délai, l’heure redevient libre.",
           "Si vous payez en ligne, la réservation est confirmée lorsque le paiement est finalisé ; si vous choisissez de payer sur place, elle est confirmée immédiatement. Nous vous envoyons la confirmation par e-mail.",
-          "Nous proposons uniquement des heures commençant au moins 30 minutes après le moment de la réservation.",
+          "Nous proposons uniquement des heures commençant au moins 30 minutes après le moment de la réservation. Le paiement doit lui aussi être effectué au moins 30 minutes à l’avance ; sinon, la réservation n’est pas confirmée et, si vous êtes débité, nous vous remboursons l’intégralité du montant.",
           "Lors de la réservation, le contrat de service est conclu entre vous et l’établissement ou le professionnel.",
           "Si, 72 heures après le début du rendez-vous, l’établissement ne l’a marqué ni comme terminé ni comme « absence », nous le considérons comme terminé et vous invitons à laisser un avis."
         ]

@@ -159,6 +159,20 @@ export class BookingHoldExpiredError extends Error {
 }
 
 /**
+ * Se intentó pagar una reserva a la que ya le faltan menos de 30 minutos
+ * para empezar: la antelación mínima también vale al pagar, para que el
+ * centro no se entere de la cita sin margen.
+ */
+export class BookingPaymentTooLateError extends Error {
+  readonly code = 'BOOKING_PAYMENT_TOO_LATE';
+
+  constructor(message = 'La reserva empieza en menos de 30 minutos; elige otra hora.') {
+    super(message);
+    this.name = 'BookingPaymentTooLateError';
+  }
+}
+
+/**
  * Se pidió descartar de la cola de reembolsos una reserva que no puede
  * descartarse: no está `cancelled`, ya tiene `refundedAt` o ya estaba
  * descartada. Si la reserva ni existe se lanza

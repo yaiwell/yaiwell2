@@ -13,8 +13,9 @@ import type { BookingPayableActionState } from '@/app/[locale]/centro/[slugWithI
  *  - `proceed`: confirmar el pago con Stripe.
  *  - `paid`: ya está cobrada; pasar a la confirmación sin cobrar otra vez.
  *  - `expired`: la franja ya no es del cliente; no cobrar y ofrecer otra hora.
+ *  - `too_soon`: faltan menos de 30 min; no cobrar y ofrecer otra hora.
  */
-export type HoldCheckDecision = 'proceed' | 'paid' | 'expired';
+export type HoldCheckDecision = 'proceed' | 'paid' | 'expired' | 'too_soon';
 
 /**
  * Traduce la respuesta de `verifyBookingPayableAction` a una decisión.
@@ -32,6 +33,8 @@ export function resolveHoldCheck(state: BookingPayableActionState | null): HoldC
   switch (state.code) {
     case 'ALREADY_PAID':
       return 'paid';
+    case 'SLOT_TOO_SOON':
+      return 'too_soon';
     case 'HOLD_EXPIRED':
     case 'NOT_FOUND':
       return 'expired';

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import { getBookingStatusAction } from '@/app/[locale]/centro/[slugWithId]/reservar/actions';
+import { isBookingPaymentRejected } from '@/lib/utils/booking-payment-status';
 
 /**
  * Seguimiento del estado real de la reserva en la pantalla final.
@@ -33,22 +34,24 @@ export const PAYMENT_STATUS_POLL_INTERVAL_MS = 2_000;
 export const PAYMENT_STATUS_MAX_POLLS = 5;
 
 /**
- * Consulta el estado de la reserva hasta verla confirmada.
+ * Consulta el estado de la reserva hasta verla confirmada o rechazada.
  *
  * @param args.bookingId — reserva a vigilar; `null` desactiva el hook.
  * @param args.active — `true` sólo en la pantalla de confirmación, para
  *   no consultar mientras el usuario sigue rellenando el formulario.
- * @returns `paymentPending`, que es lo que decide el copy de la
- *   confirmación.
+ * @returns `paymentPending` y `paymentRejected`, que deciden el copy de
+ *   la confirmación.
  */
 export function useBookingPaymentStatus(args: { bookingId: string | null; active: boolean }): {
   paymentPending: boolean;
+  paymentRejected: boolean;
 } {
   const { bookingId, active } = args;
   const [isConfirmed, setIsConfirmed] = useState(false);
+  const [isRejected, setIsRejected] = useState(false);
 
   useEffect(() => {
-    if (!active || !bookingId || isConfirmed) return;
+    if (!active || !bookingId || isConfirmed || isRejected) return;
 
     let cancelled = false;
     let handle: ReturnType<typeof setTimeout> | null = null;
@@ -62,6 +65,11 @@ export function useBookingPaymentStatus(args: { bookingId: string | null; active
 
       if (result.ok && result.isConfirmed) {
         setIsConfirmed(true);
+        return;
+      }
+      // El webhook la canceló y devolvió el pago: no es un pago en curso.
+      if (result.ok && isBookingPaymentRejected(result.status)) {
+        setIsRejected(true);
         return;
       }
       // Un error (sesión caída, reserva no encontrada) no se pinta: el
@@ -80,7 +88,7 @@ export function useBookingPaymentStatus(args: { bookingId: string | null; active
       cancelled = true;
       if (handle !== null) clearTimeout(handle);
     };
-  }, [active, bookingId, isConfirmed]);
+  }, [active, bookingId, isConfirmed, isRejected]);
 
-  return { paymentPending: !isConfirmed };
+  return { paymentPending: !isConfirmed && !isRejected, paymentRejected: isRejected };
 }

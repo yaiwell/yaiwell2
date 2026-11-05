@@ -67,6 +67,7 @@ export type ConfirmationDetails = Pick<
   | 'originalPriceCents'
   | 'discountPct'
   | 'paymentPending'
+  | 'paymentRejected'
   | 'paymentMode'
 >;
 
@@ -83,6 +84,7 @@ export function resolveConfirmation(
   draft: BookingDraft,
   price: DisplayedBookingPrice,
   paymentPending: boolean,
+  paymentRejected = false,
 ): ConfirmationDetails | null {
   if (onsite.status === 'done') {
     const { booking } = onsite;
@@ -106,6 +108,7 @@ export function resolveConfirmation(
     originalPriceCents: price.originalPriceCents,
     discountPct: price.discountPct,
     paymentPending,
+    paymentRejected,
     paymentMode: 'online',
   };
 }

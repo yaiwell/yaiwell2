@@ -32,6 +32,7 @@ export function StripePaymentForm({
   returnUrl,
   onSucceeded,
   onHoldExpired,
+  onSlotTooSoon,
 }: StripePaymentFormProps) {
   const t = useTranslations('booking.payment');
   const { isReady, isProcessing, hasError, errorMessage, submit } = useStripePaymentForm({
@@ -39,6 +40,7 @@ export function StripePaymentForm({
     returnUrl,
     onSucceeded,
     onHoldExpired,
+    onSlotTooSoon,
   });
 
   return (

@@ -33,7 +33,11 @@ const repoMock = vi.hoisted(() => ({
 
 vi.mock('./checkout.repository', () => ({ checkoutRepository: repoMock }));
 
-import { BookingForCheckoutNotFoundError, BookingHoldExpiredError } from './checkout.errors';
+import {
+  BookingForCheckoutNotFoundError,
+  BookingHoldExpiredError,
+  BookingPaymentTooLateError,
+} from './checkout.errors';
 import { checkBookingPayable } from './checkout.hold-check.service';
 
 const BOOKING_ID = '9a1f7c2d-3b4e-4f5a-8b9c-0d1e2f3a4b5c';
@@ -95,6 +99,44 @@ describe('checkBookingPayable', () => {
       { idempotencyKey: `booking_expire_${BOOKING_ID}` },
     );
     expect(repoMock.cancelIfPending).toHaveBeenCalledWith(BOOKING_ID, NOW);
+  });
+
+  it('deja pagar justo a 30:00 del inicio', async () => {
+    repoMock.findOwnedCheckoutRow.mockResolvedValue(
+      row({ startAt: new Date('2026-10-29T10:30:00.000Z') }),
+    );
+
+    expect(await check()).toBe('payable');
+  });
+
+  it('a 29:59 caduca la reserva y lanza BookingPaymentTooLateError', async () => {
+    repoMock.findOwnedCheckoutRow.mockResolvedValue(
+      row({ startAt: new Date('2026-10-29T10:29:59.000Z') }),
+    );
+
+    await expect(check()).rejects.toBeInstanceOf(BookingPaymentTooLateError);
+    expect(stripeMock.paymentIntents.cancel).toHaveBeenCalled();
+    expect(repoMock.cancelIfPending).toHaveBeenCalledWith(BOOKING_ID, NOW);
+  });
+
+  it('a 29:59 rechaza aunque Stripe falle al caducar', async () => {
+    repoMock.findOwnedCheckoutRow.mockResolvedValue(
+      row({ startAt: new Date('2026-10-29T10:29:59.000Z') }),
+    );
+    stripeMock.paymentIntents.cancel.mockRejectedValue(new Error('stripe down'));
+
+    await expect(check()).rejects.toBeInstanceOf(BookingPaymentTooLateError);
+    expect(repoMock.cancelIfPending).not.toHaveBeenCalled();
+  });
+
+  it('a 29:59 no lo bloquea si Stripe ya la había cobrado', async () => {
+    repoMock.findOwnedCheckoutRow.mockResolvedValue(
+      row({ startAt: new Date('2026-10-29T10:29:59.000Z') }),
+    );
+    stripeMock.paymentIntents.cancel.mockRejectedValue(unexpectedState());
+    stripeMock.paymentIntents.retrieve.mockResolvedValue({ status: 'succeeded' });
+
+    expect(await check()).toBe('already_paid');
   });
 
   it('si Stripe ya la cobró (otra pestaña) responde already_paid', async () => {

@@ -6,6 +6,7 @@ import { ZodError } from 'zod';
 import {
   BookingForCheckoutNotFoundError,
   BookingHoldExpiredError,
+  BookingPaymentTooLateError,
   checkBookingPayable,
 } from '@/lib/services/checkout';
 import { ensureUserFromClerk } from '@/lib/services/user';
@@ -23,12 +24,14 @@ import { ensureUserFromClerk } from '@/lib/services/user';
  * Códigos de la comprobación.
  *
  *  - `HOLD_EXPIRED`: la retención venció (o la reserva ya no está viva).
+ *  - `SLOT_TOO_SOON`: faltan menos de 30 min para el inicio.
  *  - `ALREADY_PAID`: ya está cobrada; la UI pasa a la confirmación.
  *  - `NOT_FOUND`: no existe o no es del usuario (no se distingue).
  *  - El resto son fallos de la propia comprobación, no de la reserva.
  */
 export type BookingPayableErrorCode =
   | 'HOLD_EXPIRED'
+  | 'SLOT_TOO_SOON'
   | 'ALREADY_PAID'
   | 'NOT_FOUND'
   | 'UNAUTHENTICATED'
@@ -60,6 +63,7 @@ export async function verifyBookingPayableAction(
     return payability === 'payable' ? { ok: true } : { ok: false, code: 'ALREADY_PAID' };
   } catch (error) {
     if (error instanceof BookingHoldExpiredError) return { ok: false, code: 'HOLD_EXPIRED' };
+    if (error instanceof BookingPaymentTooLateError) return { ok: false, code: 'SLOT_TOO_SOON' };
     if (error instanceof BookingForCheckoutNotFoundError) return { ok: false, code: 'NOT_FOUND' };
     if (error instanceof ZodError) return { ok: false, code: 'VALIDATION' };
     console.error('[reservar/hold-actions] error al comprobar la retención:', error);

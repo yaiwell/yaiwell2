@@ -176,6 +176,7 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
 
 ### Antelación mínima y reservas de última hora (decidido 2026-10-27)
 - Se puede reservar **hasta 30 minutos antes** del inicio, si hay hueco. El motor de disponibilidad no ofrece huecos por debajo de ese margen: todo lo que se muestra debe poder reservarse.
+- **El pago también debe hacerse con al menos 30 minutos de antelación** (decidido 2026-11-04). Por debajo se rechaza antes de cobrar y la reserva caduca; un cobro que entre a menos de 20 min (10 min de margen para 3D Secure) se reembolsa en el webhook con aviso a Sentry.
 - **Reserva de última hora** = la que empieza en menos de 2 h desde que se reserva: **pago online obligatorio en el momento y sin devolución**. La UI lo avisa antes de pagar.
 - Con más de 2 h de antelación el cliente podrá **pagar en el local** (funcionalidad pendiente, ver `TODO.md`).
 - Las constantes viven en `src/lib/utils/` y las comparten servidor y cliente.

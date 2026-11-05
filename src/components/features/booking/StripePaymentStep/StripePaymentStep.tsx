@@ -33,6 +33,7 @@ export function StripePaymentStep({
   returnUrl,
   onSucceeded,
   onHoldExpired,
+  onSlotTooSoon,
 }: StripePaymentStepProps) {
   const t = useTranslations('booking.payment');
   const { resolved } = useTheme();
@@ -71,6 +72,7 @@ export function StripePaymentStep({
         returnUrl={returnUrl}
         onSucceeded={onSucceeded}
         onHoldExpired={onHoldExpired}
+        onSlotTooSoon={onSlotTooSoon}
       />
     </Elements>
   );

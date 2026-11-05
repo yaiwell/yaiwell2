@@ -39,8 +39,14 @@ export function useBookingFlow(args: {
   const { serviceId, professionalIds } = args;
 
   const [step, setStep] = useState<BookingStep>('slot');
-  const { checkout, checkoutRef, commitCheckout, resetCheckout, expireCheckout } =
-    useCheckoutState();
+  const {
+    checkout,
+    checkoutRef,
+    commitCheckout,
+    resetCheckout,
+    expireCheckout,
+    rejectCheckoutTooSoon,
+  } = useCheckoutState();
   // El borrador se recupera de `sessionStorage` al montar y se guarda en
   // cada cambio: así sobrevive al viaje a `/entrar` o `/registro`.
   // `slotExpired` avisa de que el hueco guardado ya no admite reserva.
@@ -62,7 +68,7 @@ export function useBookingFlow(args: {
   const stepIndex = useMemo(() => BOOKING_STEPS.indexOf(step), [step]);
 
   // En la confirmación el estado lo dicta BD, no el retorno de Stripe.
-  const { paymentPending } = useBookingPaymentStatus({
+  const { paymentPending, paymentRejected } = useBookingPaymentStatus({
     bookingId: draft.bookingId,
     active: step === 'confirmation',
   });
@@ -228,6 +234,7 @@ export function useBookingFlow(args: {
     canAdvance,
     slotExpired,
     paymentPending,
+    paymentRejected,
     goNext,
     goBack,
     updateDraft,
@@ -238,6 +245,7 @@ export function useBookingFlow(args: {
     completePayment,
     retryCheckout,
     expireCheckout,
+    rejectCheckoutTooSoon,
     discardCheckout,
   };
 }

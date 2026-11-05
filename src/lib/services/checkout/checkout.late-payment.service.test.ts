@@ -216,6 +216,30 @@ describe('settlePaymentOnPendingBooking', () => {
     expect(result.status).toBe('cancelled');
   });
 
+  it('reembolsa un cobro por debajo de la antelación mínima, aunque esté libre', async () => {
+    const tooLate = row({ startAt: new Date(NOW.getTime() + 19 * MINUTE) });
+
+    const result = await settlePaymentOnPendingBooking(tooLate, 'pi_123', LATE_CLOCK);
+
+    expect(repoMock.confirmIfPending).not.toHaveBeenCalled();
+    expect(warnMock.reportCheckoutWarning).toHaveBeenCalledWith(
+      expect.stringContaining('below minimum lead time'),
+      'bk-1',
+      'error',
+    );
+    expect(issueMock.issueBookingRefund).toHaveBeenCalled();
+    expect(result.status).toBe('cancelled');
+  });
+
+  it('confirma un cobro a 20 min: el margen de un pago en curso', async () => {
+    const inFlight = row({ startAt: new Date(NOW.getTime() + 20 * MINUTE) });
+
+    const result = await settlePaymentOnPendingBooking(inFlight, 'pi_123', LATE_CLOCK);
+
+    expect(issueMock.issueBookingRefund).not.toHaveBeenCalled();
+    expect(result.status).toBe('confirmed');
+  });
+
   it('avisa a Sentry si pagó dentro de la retención pero el webhook llegó tarde', async () => {
     // Pagó a los 10 min de crear; procesamos a los 45 min y la franja
     // ya es de otro.

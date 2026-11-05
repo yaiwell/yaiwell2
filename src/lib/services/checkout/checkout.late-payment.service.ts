@@ -5,6 +5,7 @@ import { isExclusionViolation } from '@/lib/db/prisma-errors';
 import { bookingRepository, isBookingHoldingSlot } from '@/lib/services/booking';
 // Ruta directa: solo hace falta el repositorio, no el servicio de bloqueos.
 import { scheduleBlocksRepository } from '@/lib/services/schedule-blocks/schedule-blocks.repository';
+import { wasPaidWithinLeadTime } from '@/lib/utils/booking-lead-time';
 
 import { reportCheckoutWarning } from './checkout.payment-intent';
 import { issueBookingRefund } from './checkout.refund.issue';
@@ -68,6 +69,8 @@ export async function refundPaymentOnCancelledBooking(
  * Resuelve un `succeeded` sobre una reserva `pending`.
  *
  *  - Franja ya empezada o pasada: cancelar y reembolsar.
+ *  - Cobro por debajo de la antelación mínima (se saltó la comprobación
+ *    previa al pago): cancelar y reembolsar.
  *  - Retención vigente al pagar y todavía ahora: confirmar.
  *  - En otro caso, confirmar si la franja sigue libre; si otra reserva
  *    activa o un bloqueo de agenda la ocupa, cancelar y reembolsar. La comprobación y la
@@ -91,6 +94,15 @@ export async function settlePaymentOnPendingBooking(
 ): Promise<BookingTransitionResult> {
   if (booking.startAt.getTime() <= clock.now.getTime()) {
     return cancelAndRefund(booking, paymentIntentId, clock.now, 'slot already started');
+  }
+  if (!wasPaidWithinLeadTime(booking.startAt.getTime(), clock.paidAt)) {
+    // Puede ser un banco muy lento: soporte debe poder avisar al cliente.
+    reportCheckoutWarning(
+      `Booking ${booking.id} paid below minimum lead time; refunded.`,
+      booking.id,
+      'error',
+    );
+    return cancelAndRefund(booking, paymentIntentId, clock.now, 'paid below minimum lead time');
   }
 
   const heldWhenPaid = isBookingHoldingSlot(booking, clock.paidAt);

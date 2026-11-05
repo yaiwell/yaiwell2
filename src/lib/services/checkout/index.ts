@@ -37,6 +37,7 @@ export { checkoutRepository } from './checkout.repository';
 export {
   BookingForCheckoutNotFoundError,
   BookingHoldExpiredError,
+  BookingPaymentTooLateError,
   MissingBookingReferenceError,
   OnsitePaymentNotAllowedError,
   PaymentIntentCreationError,

@@ -1,4 +1,4 @@
-import { CheckCircle2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { ProfessionalAvatar } from '@/components/shared/ProfessionalAvatar';
@@ -35,6 +35,7 @@ export function BookingConfirmation({
   originalPriceCents = null,
   discountPct = null,
   paymentPending = false,
+  paymentRejected = false,
   paymentMode = 'online',
   professional = null,
 }: BookingConfirmationProps) {
@@ -46,20 +47,29 @@ export function BookingConfirmation({
   const serviceName = pickLocalized(service.name, locale);
   const isOnsite = paymentMode === 'onsite';
   // En el local no hay cobro que esperar: la reserva ya nace confirmada.
-  const subtitle = isOnsite
-    ? t('onsiteSubtitle', { amount: formatPriceCents(amountCents, locale) })
-    : paymentPending
-      ? t('pendingSubtitle')
-      : t('subtitle');
+  const rejected = paymentRejected && !isOnsite;
+  const subtitle = rejected
+    ? t('rejectedSubtitle')
+    : isOnsite
+      ? t('onsiteSubtitle', { amount: formatPriceCents(amountCents, locale) })
+      : paymentPending
+        ? t('pendingSubtitle')
+        : t('subtitle');
+  const title = rejected
+    ? t('rejectedTitle')
+    : paymentPending && !isOnsite
+      ? t('pendingTitle')
+      : t('title');
+  const Icon = rejected ? AlertCircle : CheckCircle2;
 
   return (
     <div className={s.root} data-component="booking-confirmation">
-      <span className={s.iconCircle} aria-hidden>
-        <CheckCircle2 className={s.icon} aria-hidden />
+      <span className={rejected ? s.iconCircleRejected : s.iconCircle} aria-hidden>
+        <Icon className={s.icon} aria-hidden />
       </span>
 
       <div className={s.titleBlock}>
-        <h2 className={s.title}>{paymentPending && !isOnsite ? t('pendingTitle') : t('title')}</h2>
+        <h2 className={s.title}>{title}</h2>
         <p className={s.subtitle} data-component="booking-confirmation-subtitle">
           {subtitle}
         </p>
