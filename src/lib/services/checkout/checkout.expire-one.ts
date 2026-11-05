@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { cancelPaymentIntentForExpiry } from './checkout.payment-intent';
+import { cancelBookingPaymentIntent } from './checkout.payment-intent';
 import { checkoutRepository } from './checkout.repository';
 
 /**
@@ -21,7 +21,7 @@ import { checkoutRepository } from './checkout.repository';
  *  - `processing`: el pago está en curso; la reserva no se toca.
  *  - `still_open`: Stripe no dejó cancelar (respuesta cacheada en la
  *    clave compartida) pero el intent sigue sin cobrar; se reintenta en
- *    la próxima ejecución. Ver `PaymentIntentExpiryOutcome`.
+ *    la próxima ejecución. Ver `PaymentIntentCancelAttempt`.
  *  - `not_pending`: la fila cambió de estado en paralelo (webhook, proveedor).
  */
 export type PendingExpiryAttempt =
@@ -61,7 +61,7 @@ export async function tryExpirePendingBooking(
   now: Date,
 ): Promise<PendingExpiryAttempt> {
   if (booking.stripePaymentIntentId) {
-    const outcome = await cancelPaymentIntentForExpiry(
+    const outcome = await cancelBookingPaymentIntent(
       booking.stripePaymentIntentId,
       expiryIdempotencyKey(booking.id),
     );

@@ -12,6 +12,12 @@
 
 ## 2026-11-05
 
+### 2026-11-05 — Cancelar una reserva con el pago a medias
+
+P1 (orquestador).
+
+- Al cancelar una `pending` cuyo PaymentIntent sigue en `requires_*` y Stripe no deja cancelar, ya no se intenta un reembolso sin cobro ni entra en la cola de `/admin`: se reintenta con otra clave para cerrar el intent y, si tampoco se puede, queda un aviso. Si llegara a pagarse, lo reembolsa el webhook.
+
 ### 2026-11-05 — Reembolso por incidencia del centro en `/admin`
 
 P12 (`stripe-payments`, dos auditorías de `business-rules-auditor`, `conventions-reviewer` y `db-migration-guard`).

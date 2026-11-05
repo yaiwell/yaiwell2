@@ -4,7 +4,7 @@ import {
   cancelBookingPaymentIntent,
   classifyPaymentIntent,
   reportCheckoutWarning,
-  type PaymentIntentCancelOutcome,
+  type PaymentIntentCancelAttempt,
 } from './checkout.payment-intent';
 import { describeStripeCode, issueBookingRefund } from './checkout.refund.issue';
 import { refundRepository } from './checkout.refund.repository';
@@ -97,6 +97,8 @@ function notApplicable(bookingId: string): BookingCancellationResult {
  *  - `already_paid`: el caller reembolsa en el acto.
  *  - `processing`: si el pago acaba cobrándose, el webhook del pago
  *    tardío lo reembolsa; aquí solo se registra.
+ *  - `still_open`: Stripe no dejó cancelarlo y no hay cobro: nada que
+ *    devolver. Si aun así llegara a pagarse, lo reembolsa el webhook.
  *  - `queued`: Stripe falló al cancelar y no pudimos confirmar el estado
  *    real del intent. Como el pago pudo entrar en la carrera, la reserva
  *    entra en la cola de admin (`pi_cancel_failed: <código>`) en vez de
@@ -106,11 +108,18 @@ async function cancelPendingPaymentIntent(
   bookingId: string,
   paymentIntentId: string,
   actor: CancellationActor,
-): Promise<PaymentIntentCancelOutcome | 'queued'> {
-  let outcome: PaymentIntentCancelOutcome | 'inconclusive';
+): Promise<PaymentIntentCancelAttempt | 'queued'> {
+  let outcome: PaymentIntentCancelAttempt | 'inconclusive';
   let failureCode: string | null = null;
   try {
-    outcome = await cancelBookingPaymentIntent(paymentIntentId, `booking_cancel_pi_${bookingId}`);
+    const key = `booking_cancel_pi_${bookingId}`;
+    outcome = await cancelBookingPaymentIntent(paymentIntentId, key);
+    // La clave pudo traer cacheado un «no cancelable» de cuando el pago estaba
+    // en curso. La reserva ya está cancelada y nadie volverá a intentarlo:
+    // con otra clave cerramos el intent para que no se pueda pagar.
+    if (outcome === 'still_open') {
+      outcome = await cancelBookingPaymentIntent(paymentIntentId, `${key}_retry`);
+    }
   } catch (err) {
     failureCode = describeStripeCode(err);
     console.error(
@@ -142,7 +151,7 @@ async function cancelPendingPaymentIntent(
 /** Tras un fallo al cancelar, consulta el estado real; si falla también, no concluye. */
 async function classifyAfterFailure(
   paymentIntentId: string,
-): Promise<PaymentIntentCancelOutcome | 'inconclusive'> {
+): Promise<PaymentIntentCancelAttempt | 'inconclusive'> {
   try {
     return await classifyPaymentIntent(paymentIntentId);
   } catch {

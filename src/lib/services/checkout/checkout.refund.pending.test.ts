@@ -111,6 +111,36 @@ describe('cancelBookingByProviderWithRefund sobre una pending', () => {
     expect(result).toEqual(NOT_APPLICABLE);
   });
 
+  it('intent sin cobrar que no se deja cancelar: reintenta con otra clave y no reembolsa', async () => {
+    stripeMock.paymentIntents.cancel
+      .mockRejectedValueOnce(unexpectedState())
+      .mockResolvedValueOnce({ status: 'canceled' });
+    stripeMock.paymentIntents.retrieve.mockResolvedValue({ status: 'requires_payment_method' });
+
+    const result = await cancel();
+
+    expect(stripeMock.paymentIntents.cancel).toHaveBeenLastCalledWith(
+      'pi_pending',
+      { cancellation_reason: 'abandoned' },
+      { idempotencyKey: `booking_cancel_pi_${BOOKING_ID}_retry` },
+    );
+    expect(stripeMock.refunds.create).not.toHaveBeenCalled();
+    expect(refundRepoMock.recordFailed).not.toHaveBeenCalled();
+    expect(result).toEqual(NOT_APPLICABLE);
+  });
+
+  it('si tampoco se deja cancelar al reintentar: avisa, sin reembolso ni cola', async () => {
+    stripeMock.paymentIntents.cancel.mockRejectedValue(unexpectedState());
+    stripeMock.paymentIntents.retrieve.mockResolvedValue({ status: 'requires_action' });
+
+    const result = await cancel();
+
+    expect(console.warn).toHaveBeenCalled();
+    expect(stripeMock.refunds.create).not.toHaveBeenCalled();
+    expect(refundRepoMock.recordFailed).not.toHaveBeenCalled();
+    expect(result).toEqual(NOT_APPLICABLE);
+  });
+
   it('error genérico al cancelar y el intent resulta cobrado: reembolsa', async () => {
     stripeMock.paymentIntents.cancel.mockRejectedValue(new Error('ECONNRESET'));
     stripeMock.paymentIntents.retrieve.mockResolvedValue({ status: 'succeeded' });

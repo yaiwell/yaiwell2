@@ -29,17 +29,16 @@ const STRIPE_UNEXPECTED_STATE_CODE = 'payment_intent_unexpected_state';
 export type PaymentIntentCancelOutcome = 'canceled' | 'already_paid' | 'processing';
 
 /**
- * Desenlace de la cancelación por caducidad. Añade `still_open` a los de
+ * Desenlace de una llamada de cancelación. Añade `still_open` a los de
  * `PaymentIntentCancelOutcome`: el intent sigue en `requires_*` aunque
- * Stripe no nos dejase cancelarlo.
+ * Stripe no nos dejase cancelarlo. No hay cobro, así que no es dinero que
+ * devolver.
  *
- * Pasa cuando la clave `booking_expire_<id>` (compartida por el cron y la
- * comprobación previa al pago) trae cacheado un "no cancelable" de cuando
- * el intent estaba `processing` y el pago acabó fallando después. Stripe
- * guarda esa respuesta 24 h: no hay cobro, y la reserva se reintenta al
- * día siguiente, con la clave ya caducada.
+ * Pasa cuando la clave de idempotencia trae cacheado un "no cancelable" de
+ * cuando el intent estaba `processing` y el pago acabó fallando después.
+ * Stripe guarda esa respuesta 24 h.
  */
-export type PaymentIntentExpiryOutcome = PaymentIntentCancelOutcome | 'still_open';
+export type PaymentIntentCancelAttempt = PaymentIntentCancelOutcome | 'still_open';
 
 /**
  * Cancela un PaymentIntent con la clave de idempotencia indicada.
@@ -48,11 +47,6 @@ export type PaymentIntentExpiryOutcome = PaymentIntentCancelOutcome | 'still_ope
  * ese código cubre tanto "ya cancelado" (éxito) como "cobrado o
  * procesando" (no tocar).
  *
- * Un intent que sigue en `requires_*` cuenta aquí como `already_paid`:
- * es el comportamiento histórico de la cancelación del proveedor, que
- * ante la duda lo manda a reembolsar (y a la cola si no hay cargo). La
- * caducidad usa `cancelPaymentIntentForExpiry`, que lo distingue.
- *
  * @param paymentIntentId — intent anclado a la reserva.
  * @param idempotencyKey — clave propia del camino que cancela.
  * @throws cualquier otro error de Stripe; el caller decide si es fatal.
@@ -60,28 +54,7 @@ export type PaymentIntentExpiryOutcome = PaymentIntentCancelOutcome | 'still_ope
 export async function cancelBookingPaymentIntent(
   paymentIntentId: string,
   idempotencyKey: string,
-): Promise<PaymentIntentCancelOutcome> {
-  const outcome = await cancelAndClassify(paymentIntentId, idempotencyKey);
-  return outcome === 'still_open' ? 'already_paid' : outcome;
-}
-
-/**
- * Cancelación por caducidad: como `cancelBookingPaymentIntent`, pero
- * devuelve `still_open` en vez de dar por cobrado un intent sin cargo.
- *
- * @throws cualquier error de Stripe que no sea "estado inesperado".
- */
-export async function cancelPaymentIntentForExpiry(
-  paymentIntentId: string,
-  idempotencyKey: string,
-): Promise<PaymentIntentExpiryOutcome> {
-  return cancelAndClassify(paymentIntentId, idempotencyKey);
-}
-
-async function cancelAndClassify(
-  paymentIntentId: string,
-  idempotencyKey: string,
-): Promise<PaymentIntentExpiryOutcome> {
+): Promise<PaymentIntentCancelAttempt> {
   const stripe = getStripeClient();
   try {
     await stripe.paymentIntents.cancel(
