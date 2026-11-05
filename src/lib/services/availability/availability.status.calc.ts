@@ -55,7 +55,7 @@ function statusFromMinutes(minutesUntilNext: number): ProviderAvailability['stat
  * Devuelve `null` si el horario no es válido, si no hay duración de
  * servicio utilizable o si no queda ningún hueco.
  */
-function findNextSlotForProfessional(params: {
+export function findNextSlotForProfessional(params: {
   bundle: ProfessionalScheduleBundle;
   bookableFrom: Date;
   civilDays: readonly Date[];

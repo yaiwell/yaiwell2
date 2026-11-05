@@ -36,6 +36,7 @@ function makeInitial(overrides: Partial<SearchViewInitialState> = {}): SearchVie
       categorySlug: 'belleza',
       availabilityOnly: false,
       discountOnly: false,
+      when: null,
       priceRange: [],
       minRating: null,
     },
@@ -112,7 +113,12 @@ describe('useSearchView — sheet de filtros avanzados', () => {
 
     act(() => result.current.setFiltersSheetOpen(true));
     act(() =>
-      result.current.handleApplyAdvanced({ priceRange: ['€€'], minRating: 4, discountOnly: false }),
+      result.current.handleApplyAdvanced({
+        priceRange: ['€€'],
+        minRating: 4,
+        discountOnly: false,
+        when: null,
+      }),
     );
 
     expect(result.current.filtersSheetOpen).toBe(false);
@@ -124,7 +130,12 @@ describe('useSearchView — sheet de filtros avanzados', () => {
     expect(result.current.advancedValue.discountOnly).toBe(false);
 
     act(() =>
-      result.current.handleApplyAdvanced({ priceRange: [], minRating: null, discountOnly: true }),
+      result.current.handleApplyAdvanced({
+        priceRange: [],
+        minRating: null,
+        discountOnly: true,
+        when: null,
+      }),
     );
 
     expect(lastReplacedUrl()).toBe('/buscar?cat=belleza&discount=1');

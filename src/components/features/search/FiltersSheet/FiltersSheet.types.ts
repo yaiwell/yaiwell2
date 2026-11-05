@@ -1,3 +1,4 @@
+import type { SearchWhen } from '@/lib/utils/search-when';
 import type { PriceRange } from '@/types/domain';
 
 /**
@@ -15,6 +16,8 @@ export interface AdvancedFiltersValue {
    * se enseña en móvil; desde `md` está en la barra.
    */
   discountOnly: boolean;
+  /** Rango de días (`?when=`); `null` = cualquier día. */
+  when: SearchWhen | null;
 }
 
 /** Qué limpia el botón "Limpiar" del sheet. */

@@ -43,6 +43,7 @@ const emptyState: ActiveFiltersState = {
   categorySlug: null,
   availabilityOnly: false,
   discountOnly: false,
+  when: null,
   priceRange: [],
   minRating: null,
 };

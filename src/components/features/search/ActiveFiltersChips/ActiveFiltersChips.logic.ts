@@ -3,7 +3,7 @@ import type { ActiveFilterChip, ActiveFiltersState } from './ActiveFiltersChips.
 /**
  * Convierte el estado plano de filtros en una lista ordenada de chips.
  *
- * Orden estable (texto → categoría → disponibilidad → descuento →
+ * Orden estable (texto → categoría → disponibilidad → descuento → días →
  * precios → rating)
  * para que añadir/quitar un filtro no reordene los chips ya pintados,
  * lo que sería disruptivo visualmente.
@@ -28,6 +28,10 @@ export function buildActiveFilterChips(
 
   if (filters.discountOnly) {
     chips.push({ kind: 'discount' });
+  }
+
+  if (filters.when) {
+    chips.push({ kind: 'when', value: filters.when });
   }
 
   for (const price of filters.priceRange) {

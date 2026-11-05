@@ -14,6 +14,7 @@ import type { ActiveFilterChip, ActiveFiltersChipsProps } from './ActiveFiltersC
  */
 function useChipLabel() {
   const t = useTranslations('searchFilters.chips');
+  const tWhen = useTranslations('search.when');
 
   return (chip: ActiveFilterChip): string => {
     switch (chip.kind) {
@@ -25,6 +26,8 @@ function useChipLabel() {
         return t('availabilityLabel');
       case 'discount':
         return t('discountLabel');
+      case 'when':
+        return tWhen(chip.value);
       case 'price':
         return t('priceLabel', { value: chip.value });
       case 'rating':
@@ -47,6 +50,8 @@ function chipKey(chip: ActiveFilterChip): string {
       return 'availability';
     case 'discount':
       return 'discount';
+    case 'when':
+      return `when-${chip.value}`;
     case 'price':
       return `price-${chip.value.length}`;
     case 'rating':

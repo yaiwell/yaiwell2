@@ -10,11 +10,7 @@ import { useHeroSearch } from './Hero.logic';
  * Tests del hook de búsqueda del Hero.
  *
  * Foco: que la URL que se compone sólo lleve parámetros que `/buscar`
- * sepa interpretar. El selector "¿Cuándo?" llegó a ofrecer "hoy",
- * "mañana" y "esta semana", que escribían un `?when=` que la página de
- * búsqueda nunca ha parseado: el usuario filtraba y recibía el catálogo
- * entero. Estos tests fijan el contrato para que no se reponga sin que
- * exista el filtro real detrás.
+ * sepa interpretar, incluido el `?when=` del selector "¿Cuándo?".
  *
  * Mockeamos router y provider de ubicación porque el hook sólo compone
  * URLs; no queremos navegación ni permisos de geolocalización reales.
@@ -64,8 +60,8 @@ beforeEach(() => {
 });
 
 describe('selector "¿Cuándo?" del Hero', () => {
-  it('sólo ofrece las dos opciones que /buscar sabe aplicar', () => {
-    expect(heroWhenOptions).toEqual(['now', 'any']);
+  it('ofrece las opciones que /buscar sabe aplicar', () => {
+    expect(heroWhenOptions).toEqual(['now', 'today', 'tomorrow', 'this-week', 'any']);
   });
 
   it('"Ahora" (valor por defecto) produce ?now=1', () => {
@@ -85,17 +81,14 @@ describe('selector "¿Cuándo?" del Hero', () => {
     expect(submitAndGetUrl(result.current.handleSubmit)).toBe('/buscar');
   });
 
-  it('ninguna opción del desplegable emite el parámetro fantasma ?when=', () => {
+  it.each(['today', 'tomorrow', 'this-week'] as const)('"%s" emite ?when=', (option) => {
     const { result } = renderHook(() => useHeroSearch());
 
-    for (const option of heroWhenOptions) {
-      act(() => {
-        result.current.setWhen(option);
-      });
+    act(() => {
+      result.current.setWhen(option);
+    });
 
-      const url = submitAndGetUrl(result.current.handleSubmit);
-      expect(url, `la opción "${option}" emitió ?when=`).not.toContain('when=');
-    }
+    expect(submitAndGetUrl(result.current.handleSubmit)).toBe(`/buscar?when=${option}`);
   });
 });
 

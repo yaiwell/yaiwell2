@@ -114,7 +114,10 @@
         },
         "whenOptions": {
           "now": "Ahora",
-          "any": "Cualquier día"
+          "any": "Cualquier día",
+          "today": "Hoy",
+          "tomorrow": "Mañana",
+          "this-week": "Esta semana"
         }
       }
     },
@@ -175,7 +178,7 @@
     "filters": {
       "button": "Filtros",
       "title": "Filtros avanzados",
-      "description": "Afina tu búsqueda por precio y valoración mínima.",
+      "description": "Afina tu búsqueda por día, precio y valoración mínima.",
       "price": "Precio",
       "priceLow": "Económico",
       "priceMid": "Medio",
@@ -209,7 +212,8 @@
       "viewDetail": "Ver detalle",
       "typeAutonomous": "Autónomo",
       "typeCenter": "Centro",
-      "noPhoto": "Sin fotos"
+      "noPhoto": "Sin fotos",
+      "whenSlot": "Primer hueco: {date}"
     },
     "availability": {
       "now": "Disponible ahora",
@@ -234,7 +238,14 @@
     "nearMeLocating": "Localizando…",
     "nearMeLocationFailed": "No hemos podido saber dónde estás. Revisa que el navegador tenga permiso de ubicación y vuelve a probar.",
     "nearMeChipAria": "Filtrar a profesionales en un radio de {radius} km",
-    "resultsCount": "{count, plural, one {# resultado} other {# resultados}}"
+    "resultsCount": "{count, plural, one {# resultado} other {# resultados}}",
+    "when": {
+      "label": "Cuándo",
+      "any": "Cualquier día",
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "this-week": "Esta semana"
+    }
   },
   "searchAutocomplete": {
     "placeholder": "Busca un servicio, centro o tratamiento...",

@@ -22,7 +22,9 @@ import { weeklyScheduleSchema } from './availability.validation';
 type Busy = { startAt: Date; endAt: Date };
 
 /** Agrupa tramos ocupados (reservas y bloqueos) por profesional. */
-function groupBusy(rows: readonly (Busy & { professionalId: string })[]): Map<string, Busy[]> {
+export function groupBusy(
+  rows: readonly (Busy & { professionalId: string })[],
+): Map<string, Busy[]> {
   const map = new Map<string, Busy[]>();
   for (const row of rows) {
     const list = map.get(row.professionalId) ?? [];

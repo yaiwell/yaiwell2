@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
+import type { SearchWhen } from '@/lib/utils/search-when';
 import type { PriceRange } from '@/types/domain';
 
 import type { AdvancedFiltersValue, ClearAdvancedOptions } from './FiltersSheet.types';
@@ -71,6 +72,10 @@ export function useFiltersSheet(
     setDraft((prev) => ({ ...prev, discountOnly: !prev.discountOnly }));
   }, []);
 
+  const setWhen = useCallback((when: SearchWhen | null) => {
+    setDraft((prev) => ({ ...prev, when }));
+  }, []);
+
   const handleApply = useCallback(() => {
     onApply(draft);
   }, [draft, onApply]);
@@ -84,6 +89,7 @@ export function useFiltersSheet(
     togglePrice,
     setRating,
     toggleDiscount,
+    setWhen,
     handleApply,
     handleClear,
   };

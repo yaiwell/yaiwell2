@@ -84,8 +84,8 @@ export function useHeroSearch() {
    *
    *  - `near=me`: filtra por proximidad usando la ubicación del provider.
    *  - `q=...`: texto a buscar (nombre de zona predefinida).
-   *  - `now=1`: disponibilidad inmediata. Es el único parámetro temporal
-   *    que `/buscar` sabe interpretar, así que es el único que emitimos.
+   *  - `now=1`: disponibilidad inmediata.
+   *  - `when=...`: hueco en un rango de días.
    */
   const handleSubmit = useCallback(
     (event: FormEvent<HTMLFormElement>) => {
@@ -99,10 +99,11 @@ export function useHeroSearch() {
         params.set('q', LOCATION_QUERY[draft.location]);
       }
 
-      // `now=1` es el único parámetro temporal que /buscar interpreta.
       // `any` no filtra, así que no emite nada.
       if (draft.when === 'now') {
         params.set('now', '1');
+      } else if (draft.when !== 'any') {
+        params.set('when', draft.when);
       }
 
       const qs = params.toString();

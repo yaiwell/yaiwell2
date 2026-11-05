@@ -24,6 +24,13 @@ const messages = {
       clear: 'Limpiar',
       close: 'Cerrar',
     },
+    when: {
+      label: 'Cuándo',
+      any: 'Cualquier día',
+      today: 'Hoy',
+      tomorrow: 'Mañana',
+      'this-week': 'Esta semana',
+    },
     slotOffer: {
       filterToggle: 'Con descuento',
       sheetSectionLabel: 'Huecos liberados',
@@ -35,7 +42,7 @@ function renderSheet(overrides: Partial<FiltersSheetProps> = {}) {
   const props: FiltersSheetProps = {
     open: true,
     onOpenChange: vi.fn(),
-    value: { priceRange: [], minRating: null, discountOnly: false },
+    value: { priceRange: [], minRating: null, discountOnly: false, when: null },
     onApply: vi.fn(),
     onClear: vi.fn(),
     ...overrides,
@@ -89,12 +96,24 @@ describe('FiltersSheet — «Con descuento»', () => {
       priceRange: [],
       minRating: null,
       discountOnly: true,
+      when: null,
     });
+  });
+
+  it('aplica el rango de días elegido', async () => {
+    const props = renderSheet();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Mañana' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Aplicar filtros' }));
+
+    expect(props.onApply).toHaveBeenCalledWith(expect.objectContaining({ when: 'tomorrow' }));
   });
 
   it('«Limpiar» en móvil incluye el descuento', async () => {
     mockViewport(false);
-    const props = renderSheet({ value: { priceRange: [], minRating: null, discountOnly: true } });
+    const props = renderSheet({
+      value: { priceRange: [], minRating: null, discountOnly: true, when: null },
+    });
 
     await userEvent.click(screen.getByRole('button', { name: 'Limpiar' }));
     expect(props.onClear).toHaveBeenCalledWith({ includeDiscount: true });
@@ -102,7 +121,9 @@ describe('FiltersSheet — «Con descuento»', () => {
 
   it('«Limpiar» desde md no toca el descuento, que vive en la barra', async () => {
     mockViewport(true);
-    const props = renderSheet({ value: { priceRange: [], minRating: null, discountOnly: true } });
+    const props = renderSheet({
+      value: { priceRange: [], minRating: null, discountOnly: true, when: null },
+    });
 
     await userEvent.click(screen.getByRole('button', { name: 'Limpiar' }));
     expect(props.onClear).toHaveBeenCalledWith({ includeDiscount: false });

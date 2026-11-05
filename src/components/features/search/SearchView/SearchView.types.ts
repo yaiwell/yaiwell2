@@ -1,3 +1,4 @@
+import type { SearchWhen } from '@/lib/utils/search-when';
 import type { PriceRange, ProviderWithAvailability } from '@/types/domain';
 
 /** Filtros que viajan en la URL y que el server aplica en la búsqueda. */
@@ -7,6 +8,8 @@ export interface SearchFilters {
   availabilityOnly: boolean;
   /** Solo centros con algún hueco liberado con descuento (`?discount=1`). */
   discountOnly: boolean;
+  /** Solo centros con hueco en ese rango de días (`?when=`). */
+  when: SearchWhen | null;
   priceRange: PriceRange[];
   minRating: number | null;
 }

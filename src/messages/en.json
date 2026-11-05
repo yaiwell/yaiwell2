@@ -114,7 +114,10 @@
         },
         "whenOptions": {
           "now": "Now",
-          "any": "Any day"
+          "any": "Any day",
+          "today": "Today",
+          "tomorrow": "Tomorrow",
+          "this-week": "This week"
         }
       }
     },
@@ -175,7 +178,7 @@
     "filters": {
       "button": "Filters",
       "title": "Advanced filters",
-      "description": "Refine your search by price and minimum rating.",
+      "description": "Refine your search by day, price and minimum rating.",
       "price": "Price",
       "priceLow": "Budget",
       "priceMid": "Mid-range",
@@ -209,7 +212,8 @@
       "viewDetail": "View details",
       "typeAutonomous": "Freelancer",
       "typeCenter": "Centre",
-      "noPhoto": "No photos"
+      "noPhoto": "No photos",
+      "whenSlot": "First slot: {date}"
     },
     "availability": {
       "now": "Available now",
@@ -234,7 +238,14 @@
     "nearMeLocating": "Locating…",
     "nearMeLocationFailed": "We couldn't find your location. Check that your browser has location permission and try again.",
     "nearMeChipAria": "Filter to professionals within a {radius} km radius",
-    "resultsCount": "{count, plural, one {# result} other {# results}}"
+    "resultsCount": "{count, plural, one {# result} other {# results}}",
+    "when": {
+      "label": "When",
+      "any": "Any day",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "this-week": "This week"
+    }
   },
   "searchAutocomplete": {
     "placeholder": "Search for a service, centre or treatment...",

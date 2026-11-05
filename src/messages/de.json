@@ -114,7 +114,10 @@
         },
         "whenOptions": {
           "now": "Jetzt",
-          "any": "Egal wann"
+          "any": "Egal wann",
+          "today": "Heute",
+          "tomorrow": "Morgen",
+          "this-week": "Diese Woche"
         }
       }
     },
@@ -175,7 +178,7 @@
     "filters": {
       "button": "Filter",
       "title": "Erweiterte Filter",
-      "description": "Verfeinere deine Suche nach Preis und Mindestbewertung.",
+      "description": "Verfeinere deine Suche nach Tag, Preis und Mindestbewertung.",
       "price": "Preis",
       "priceLow": "Günstig",
       "priceMid": "Mittel",
@@ -209,7 +212,8 @@
       "viewDetail": "Details ansehen",
       "typeAutonomous": "Selbstständig",
       "typeCenter": "Studio",
-      "noPhoto": "Keine Fotos"
+      "noPhoto": "Keine Fotos",
+      "whenSlot": "Erster freier Termin: {date}"
     },
     "availability": {
       "now": "Sofort verfügbar",
@@ -234,7 +238,14 @@
     "nearMeLocating": "Standort wird ermittelt…",
     "nearMeLocationFailed": "Wir konnten deinen Standort nicht ermitteln. Prüfe, ob dein Browser die Standortfreigabe hat, und versuch es noch einmal.",
     "nearMeChipAria": "Profis im Umkreis von {radius} km filtern",
-    "resultsCount": "{count, plural, one {# Ergebnis} other {# Ergebnisse}}"
+    "resultsCount": "{count, plural, one {# Ergebnis} other {# Ergebnisse}}",
+    "when": {
+      "label": "Wann",
+      "any": "Beliebiger Tag",
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "this-week": "Diese Woche"
+    }
   },
   "searchAutocomplete": {
     "placeholder": "Suche nach Service, Studio oder Behandlung...",

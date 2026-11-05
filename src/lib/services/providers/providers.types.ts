@@ -1,3 +1,4 @@
+import type { SearchWhen } from '@/lib/utils/search-when';
 import type {
   GeoBounds,
   GeoPoint,
@@ -30,6 +31,8 @@ export interface SearchProvidersFilters {
   availabilityOnly?: boolean;
   /** Solo centros con algún hueco liberado con descuento ahora. */
   discountOnly?: boolean;
+  /** Solo centros con algún hueco reservable en ese rango de días. */
+  when?: SearchWhen;
   minRating?: number;
   priceRange?: PriceRange[];
   bounds?: GeoBounds;

@@ -16,11 +16,13 @@ const mocks = vi.hoisted(() => ({
   findAllForSearch: vi.fn(),
   getProvidersAvailability: vi.fn(),
   getBestOfferByProvider: vi.fn(),
+  getFirstSlotInRangeByProvider: vi.fn(),
 }));
 
 vi.mock('server-only', () => ({}));
 vi.mock('@/lib/db/prisma', () => ({ prisma: { category: { findUnique: vi.fn() } } }));
 vi.mock('@/lib/services/availability', () => ({
+  getFirstSlotInRangeByProvider: mocks.getFirstSlotInRangeByProvider,
   getProvidersAvailability: mocks.getProvidersAvailability,
 }));
 // Huecos con descuento: sin ofertas salvo que un test diga lo contrario.
@@ -185,5 +187,37 @@ describe('searchProviders — huecos con descuento', () => {
     const result = await searchProviders({ discountOnly: true });
 
     expect(result.map((p) => p.id)).toEqual(['born']);
+  });
+});
+
+describe('searchProviders — filtro por días', () => {
+  const slotAt = new Date('2026-11-06T09:00:00.000Z');
+
+  it('sin filtro no consulta el rango ni añade whenSlotAt', async () => {
+    const result = await searchProviders({});
+
+    expect(mocks.getFirstSlotInRangeByProvider).not.toHaveBeenCalled();
+    expect(result.every((p) => p.whenSlotAt === undefined)).toBe(true);
+  });
+
+  it('deja solo a quien tiene hueco y le añade su primer hueco', async () => {
+    const all = await searchProviders({});
+    const [kept] = all;
+    mocks.getFirstSlotInRangeByProvider.mockResolvedValue(
+      new Map([[kept.id, { startAt: slotAt, endAt: slotAt }]]),
+    );
+
+    const result = await searchProviders({ when: 'tomorrow' });
+
+    expect(result.map((p) => p.id)).toEqual([kept.id]);
+    expect(result[0].whenSlotAt).toEqual(slotAt);
+    expect(mocks.getFirstSlotInRangeByProvider).toHaveBeenCalledWith(
+      expect.arrayContaining([kept.id]),
+      'tomorrow',
+    );
+  });
+
+  it('rechaza un valor que no existe', async () => {
+    await expect(searchProviders({ when: 'ayer' as never })).rejects.toThrow();
   });
 });

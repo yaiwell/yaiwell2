@@ -1,3 +1,4 @@
+import { parseSearchWhen } from '@/lib/utils/search-when';
 import type { PriceRange } from '@/types/domain';
 
 import type { SearchUrlState } from './SearchView.types';
@@ -47,6 +48,7 @@ export function parseSearchParams(sp: RawSearchParams): SearchUrlState {
     // cualquier otro valor se ignora. El servidor lo revalida con Zod
     // (`searchProvidersFiltersSchema.discountOnly`).
     discountOnly: sp.discount === '1' || sp.discount === 'true',
+    when: parseSearchWhen(sp.when),
     priceRange,
     // `Number('')` es 0, pero solo llega aquí si `rating` existe; aun
     // así filtramos NaN/Infinity para no inventar un filtro.
@@ -76,6 +78,7 @@ export function buildSearchParams(state: SearchUrlState): string {
   if (state.categorySlug) params.set('cat', state.categorySlug);
   if (state.availabilityOnly) params.set('now', '1');
   if (state.discountOnly) params.set('discount', '1');
+  if (state.when) params.set('when', state.when);
   if (state.priceRange.length > 0) params.set('price', state.priceRange.join(','));
   if (state.minRating !== null) params.set('rating', String(state.minRating));
   if (state.nearMeOnly) params.set('near', 'me');

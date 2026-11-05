@@ -16,6 +16,8 @@ import { landingCategoryLabelKey, landingCategorySlugs } from '../categories';
 
 import { useHeroSearch } from './Hero.logic';
 import { heroStyles as s } from './Hero.styles';
+import { SEARCH_WHEN_OPTIONS } from '@/lib/utils/search-when';
+
 import type { HeroCategorySlug, HeroLocationOption, HeroWhenOption } from './Hero.types';
 
 /**
@@ -68,16 +70,10 @@ const locationLabelKey: Record<HeroLocationOption, LocationLabelKey> = {
 /**
  * Opciones del dropdown "¿Cuándo?".
  *
- * Solo las dos que `/buscar` sabe aplicar de verdad. El porqué de que
- * no haya "hoy" / "mañana" / "esta semana" está en `HeroWhenOption`:
- * escribían un `?when=` que nadie leía. Volverán cuando el motor de
- * disponibilidad sepa filtrar por rango de días; hasta entonces, no
- * reponerlas.
- *
  * Se exporta para que `Hero.logic.test.ts` pueda comprobar el contenido
  * exacto del desplegable sin montar el `Select` de Radix.
  */
-export const heroWhenOptions: HeroWhenOption[] = ['now', 'any'];
+export const heroWhenOptions: HeroWhenOption[] = ['now', ...SEARCH_WHEN_OPTIONS, 'any'];
 
 /**
  * Hero principal de la landing.

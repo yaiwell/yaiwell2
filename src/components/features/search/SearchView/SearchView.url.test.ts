@@ -22,6 +22,7 @@ const emptyState: SearchUrlState = {
   categorySlug: null,
   availabilityOnly: false,
   discountOnly: false,
+  when: null,
   priceRange: [],
   minRating: null,
   nearMeOnly: false,
@@ -30,6 +31,11 @@ const emptyState: SearchUrlState = {
 describe('buildSearchParams / parseSearchParams', () => {
   it('devuelve cadena vacía cuando todo está en su valor por defecto', () => {
     expect(buildSearchParams(emptyState)).toBe('');
+  });
+
+  it('ignora un when desconocido en vez de inventar un filtro', () => {
+    expect(parseSearchParams({ when: 'ayer' }).when).toBeNull();
+    expect(parseSearchParams({ when: 'tomorrow' }).when).toBe('tomorrow');
   });
 
   it('emite near=me cuando "Cerca de ti" está activo', () => {
@@ -42,6 +48,7 @@ describe('buildSearchParams / parseSearchParams', () => {
       categorySlug: 'manicura-pedicura',
       availabilityOnly: true,
       discountOnly: true,
+      when: 'this-week',
       priceRange: ['€', '€€€'],
       minRating: 4.5,
       nearMeOnly: true,

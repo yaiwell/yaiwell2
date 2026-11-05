@@ -114,7 +114,10 @@
         },
         "whenOptions": {
           "now": "Maintenant",
-          "any": "N’importe quel jour"
+          "any": "N’importe quel jour",
+          "today": "Aujourd’hui",
+          "tomorrow": "Demain",
+          "this-week": "Cette semaine"
         }
       }
     },
@@ -175,7 +178,7 @@
     "filters": {
       "button": "Filtres",
       "title": "Filtres avancés",
-      "description": "Affinez votre recherche par prix et note minimale.",
+      "description": "Affinez votre recherche par jour, prix et note minimale.",
       "price": "Prix",
       "priceLow": "Économique",
       "priceMid": "Moyen",
@@ -209,7 +212,8 @@
       "viewDetail": "Voir le détail",
       "typeAutonomous": "Indépendant",
       "typeCenter": "Établissement",
-      "noPhoto": "Sans photo"
+      "noPhoto": "Sans photo",
+      "whenSlot": "Premier créneau : {date}"
     },
     "availability": {
       "now": "Disponible maintenant",
@@ -234,7 +238,14 @@
     "nearMeLocating": "Localisation…",
     "nearMeLocationFailed": "Nous n’avons pas pu déterminer votre position. Vérifiez que le navigateur a l’autorisation de localisation et réessayez.",
     "nearMeChipAria": "Filtrer les professionnels dans un rayon de {radius} km",
-    "resultsCount": "{count, plural, one {# résultat} other {# résultats}}"
+    "resultsCount": "{count, plural, one {# résultat} other {# résultats}}",
+    "when": {
+      "label": "Quand",
+      "any": "N’importe quel jour",
+      "today": "Aujourd’hui",
+      "tomorrow": "Demain",
+      "this-week": "Cette semaine"
+    }
   },
   "searchAutocomplete": {
     "placeholder": "Cherchez un service, un établissement ou un soin…",

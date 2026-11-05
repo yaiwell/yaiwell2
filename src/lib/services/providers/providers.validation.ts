@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { SEARCH_WHEN_OPTIONS } from '@/lib/utils/search-when';
+
 /**
  * Schemas Zod para validar los filtros de búsqueda en cada borde del
  * sistema (page que lee searchParams, futura API route, server action).
@@ -46,6 +48,7 @@ export const searchProvidersFiltersSchema = z.object({
     .union([z.boolean(), z.literal('1'), z.literal('true'), z.literal('0'), z.literal('false')])
     .transform((v) => v === true || v === '1' || v === 'true')
     .optional(),
+  when: z.enum(SEARCH_WHEN_OPTIONS).optional(),
   minRating: z.coerce.number().min(0).max(5).optional(),
   priceRange: z.array(priceRangeSchema).optional(),
   bounds: geoBoundsSchema.optional(),

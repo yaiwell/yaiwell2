@@ -121,6 +121,7 @@ export function useSearchView(initial: SearchViewInitialState) {
         priceRange: value.priceRange,
         minRating: value.minRating,
         discountOnly: value.discountOnly,
+        when: value.when,
       });
       setFiltersSheetOpen(false);
     },
@@ -135,6 +136,7 @@ export function useSearchView(initial: SearchViewInitialState) {
       updateFilters({
         priceRange: [] as PriceRange[],
         minRating: null,
+        when: null,
         ...(options.includeDiscount ? { discountOnly: false } : {}),
       });
       setFiltersSheetOpen(false);
@@ -200,11 +202,13 @@ export function useSearchView(initial: SearchViewInitialState) {
       priceRange: filters.priceRange,
       minRating: filters.minRating,
       discountOnly: filters.discountOnly,
+      when: filters.when,
     }),
-    [filters.priceRange, filters.minRating, filters.discountOnly],
+    [filters.priceRange, filters.minRating, filters.discountOnly, filters.when],
   );
 
-  const hasAdvancedFilters = filters.priceRange.length > 0 || filters.minRating !== null;
+  const hasAdvancedFilters =
+    filters.priceRange.length > 0 || filters.minRating !== null || filters.when !== null;
 
   return {
     // Datos derivados

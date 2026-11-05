@@ -1,3 +1,4 @@
+import type { SearchWhen } from '@/lib/utils/search-when';
 import type { PriceRange } from '@/types/domain';
 
 /**
@@ -11,6 +12,7 @@ export type ActiveFilterChip =
   | { kind: 'category'; slug: string; label: string }
   | { kind: 'availability' }
   | { kind: 'discount' }
+  | { kind: 'when'; value: SearchWhen }
   | { kind: 'price'; value: PriceRange }
   | { kind: 'rating'; value: number };
 
@@ -24,6 +26,7 @@ export interface ActiveFiltersState {
   categorySlug: string | null;
   availabilityOnly: boolean;
   discountOnly: boolean;
+  when: SearchWhen | null;
   priceRange: PriceRange[];
   minRating: number | null;
 }

@@ -1,3 +1,5 @@
+import type { SearchWhen } from '@/lib/utils/search-when';
+
 /**
  * Tipos del componente Hero de la landing.
  *
@@ -33,18 +35,10 @@ export type HeroLocationOption = 'any' | 'near-me' | 'barcelona' | 'castellar' |
 /**
  * Opciones del selector "¿Cuándo?" del Hero.
  *
- * Solo dos opciones, y es deliberado. `now` se traduce a `now=1`, el
- * filtro de disponibilidad que `/buscar` ya entiende; `any` no filtra.
- *
- * Hubo tres más (`today`, `tomorrow`, `this-week`) que escribían un
- * `when=...` que **nadie leía**: el usuario filtraba "mañana" y recibía
- * el catálogo entero. Volverán cuando el motor de disponibilidad sepa
- * responder "¿tiene hueco en este rango de días?", que es una pregunta
- * distinta de la que responde hoy ("¿tiene hueco en los próximos 60
- * minutos?"). Hasta entonces no se reponen: un filtro que no filtra es
- * peor que un filtro que no está.
+ * `now` se traduce a `now=1`, `any` no filtra y el resto a `when=...`, que
+ * `/buscar` aplica con el motor de disponibilidad.
  */
-export type HeroWhenOption = 'now' | 'any';
+export type HeroWhenOption = 'now' | 'any' | SearchWhen;
 
 export interface HeroSearchDraft {
   category: HeroCategorySlug | '';

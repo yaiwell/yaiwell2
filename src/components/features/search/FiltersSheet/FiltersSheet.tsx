@@ -6,6 +6,7 @@ import { Dialog } from 'radix-ui';
 
 import type { PriceRange } from '@/types/domain';
 import { cn } from '@/lib/utils';
+import { SEARCH_WHEN_OPTIONS } from '@/lib/utils/search-when';
 
 import { useFiltersSheet } from './FiltersSheet.logic';
 import { filtersSheetStyles as s } from './FiltersSheet.styles';
@@ -15,7 +16,7 @@ const PRICE_OPTIONS: PriceRange[] = ['€', '€€', '€€€'];
 const RATING_OPTIONS: number[] = [4, 4.5, 4.8];
 
 /**
- * Sheet de filtros avanzados (precio, valoración mínima y, en móvil,
+ * Sheet de filtros avanzados (días, precio, valoración mínima y, en móvil,
  * "Con descuento", que desde `md` está en la barra).
  *
  * Implementado con Radix Dialog. En móvil se ve como bottom-sheet,
@@ -25,7 +26,8 @@ const RATING_OPTIONS: number[] = [4, 4.5, 4.8];
 export function FiltersSheet({ open, onOpenChange, value, onApply, onClear }: FiltersSheetProps) {
   const t = useTranslations('search.filters');
   const tOffer = useTranslations('search.slotOffer');
-  const { draft, togglePrice, setRating, toggleDiscount, handleApply, handleClear } =
+  const tWhen = useTranslations('search.when');
+  const { draft, togglePrice, setRating, toggleDiscount, setWhen, handleApply, handleClear } =
     useFiltersSheet(value, open, onApply, onClear);
 
   return (
@@ -46,6 +48,39 @@ export function FiltersSheet({ open, onOpenChange, value, onApply, onClear }: Fi
               <X className="size-4" />
             </Dialog.Close>
           </header>
+
+          <section className={s.section} data-component="filters-sheet-section-when">
+            <span className={s.sectionLabel}>{tWhen('label')}</span>
+            <div className={s.ratingRow}>
+              <button
+                type="button"
+                onClick={() => setWhen(null)}
+                aria-pressed={draft.when === null}
+                className={cn(
+                  s.ratingChip,
+                  draft.when === null ? s.ratingChipActive : s.ratingChipIdle,
+                )}
+                data-component="filters-sheet-when-any"
+              >
+                {tWhen('any')}
+              </button>
+              {SEARCH_WHEN_OPTIONS.map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => setWhen(option)}
+                  aria-pressed={draft.when === option}
+                  className={cn(
+                    s.ratingChip,
+                    draft.when === option ? s.ratingChipActive : s.ratingChipIdle,
+                  )}
+                  data-component={`filters-sheet-when-${option}`}
+                >
+                  {tWhen(option)}
+                </button>
+              ))}
+            </div>
+          </section>
 
           <section className={s.section} data-component="filters-sheet-section-price">
             <span className={s.sectionLabel}>{t('price')}</span>

@@ -114,7 +114,10 @@
         },
         "whenOptions": {
           "now": "Ara",
-          "any": "Qualsevol dia"
+          "any": "Qualsevol dia",
+          "today": "Avui",
+          "tomorrow": "Demà",
+          "this-week": "Aquesta setmana"
         }
       }
     },
@@ -175,7 +178,7 @@
     "filters": {
       "button": "Filtres",
       "title": "Filtres avançats",
-      "description": "Afina la teva cerca per preu i valoració mínima.",
+      "description": "Afina la teva cerca per dia, preu i valoració mínima.",
       "price": "Preu",
       "priceLow": "Econòmic",
       "priceMid": "Mitjà",
@@ -209,7 +212,8 @@
       "viewDetail": "Veure detall",
       "typeAutonomous": "Autònom",
       "typeCenter": "Centre",
-      "noPhoto": "Sense fotos"
+      "noPhoto": "Sense fotos",
+      "whenSlot": "Primer forat: {date}"
     },
     "availability": {
       "now": "Disponible ara",
@@ -234,7 +238,14 @@
     "nearMeLocating": "Localitzant…",
     "nearMeLocationFailed": "No hem pogut saber on ets. Comprova que el navegador tingui permís d'ubicació i torna-ho a provar.",
     "nearMeChipAria": "Filtrar a professionals en un radi de {radius} km",
-    "resultsCount": "{count, plural, one {# resultat} other {# resultats}}"
+    "resultsCount": "{count, plural, one {# resultat} other {# resultats}}",
+    "when": {
+      "label": "Quan",
+      "any": "Qualsevol dia",
+      "today": "Avui",
+      "tomorrow": "Demà",
+      "this-week": "Aquesta setmana"
+    }
   },
   "searchAutocomplete": {
     "placeholder": "Cerca un servei, centre o tractament...",

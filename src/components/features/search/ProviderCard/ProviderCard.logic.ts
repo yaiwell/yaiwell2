@@ -24,3 +24,21 @@ export function getMinutesUntilNextSlot(provider: ProviderWithAvailability): num
   const diff = slot.startAt.getTime() - Date.now();
   return Math.max(0, Math.ceil(diff / 60_000));
 }
+
+/**
+ * Fecha y hora del hueco del filtro `?when=` («jue, 6 nov, 10:00»). Hora de
+ * Madrid fija para que el servidor y el navegador pinten lo mismo.
+ *
+ * @param slotAt — inicio del hueco.
+ * @param locale — idioma activo.
+ */
+export function formatWhenSlot(slotAt: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Madrid',
+  }).format(slotAt);
+}

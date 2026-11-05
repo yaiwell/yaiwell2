@@ -40,6 +40,9 @@ export function useFilterChipHandlers(
         case 'discount':
           updateFilters({ discountOnly: false });
           return;
+        case 'when':
+          updateFilters({ when: null });
+          return;
         case 'price':
           updateFilters({
             priceRange: priceRange.filter((p) => p !== chip.value),
@@ -59,6 +62,7 @@ export function useFilterChipHandlers(
       categorySlug: null,
       availabilityOnly: false,
       discountOnly: false,
+      when: null,
       priceRange: [] as PriceRange[],
       minRating: null,
     });

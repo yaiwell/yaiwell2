@@ -12,6 +12,13 @@
 
 ## 2026-11-05
 
+### 2026-11-05 — Filtro de hoy, mañana y esta semana en `/buscar`
+
+P2 (orquestador).
+
+- `?when=today|tomorrow|this-week`, en el sheet de filtros, en los chips activos y en el selector «¿Cuándo?» del Hero. Muestra solo centros con hueco reservable en esos días, en hora de Madrid, y la tarjeta indica el primero («Primer hueco: vie, 6 nov, 10:00»).
+- `getFirstSlotInRangeByProvider` en el motor de disponibilidad: mismas reglas que el listado (antelación mínima, reservas, bloqueos y servicio más corto) y tres consultas en lote. «Esta semana» llega hasta el domingo.
+
 ### 2026-11-05 — Cancelar una reserva con el pago a medias
 
 P1 (orquestador).

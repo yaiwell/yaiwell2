@@ -152,6 +152,11 @@ export interface ProviderWithAvailability extends Provider {
    * `null` si no hay ninguno. Solo se anuncia, no reordena el listado.
    */
   bestOffer?: ProviderSlotOffer | null;
+  /**
+   * Primer hueco dentro del filtro `?when=`. Solo existe con el filtro activo:
+   * `availability` habla de hoy y no puede anunciar un hueco de otro día.
+   */
+  whenSlotAt?: Date | null;
 }
 
 /** Hueco liberado con descuento, tal como se anuncia en listados y ficha. */

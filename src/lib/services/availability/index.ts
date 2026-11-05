@@ -15,6 +15,7 @@
 export { getAvailableSlots, isSlotAvailable } from './availability.service';
 export { getServiceDaySlots, getSlotsForService } from './availability.service-day';
 export { getProvidersAvailability } from './availability.status.service';
+export { getFirstSlotInRangeByProvider } from './availability.range';
 export { availabilityRepository } from './availability.repository';
 export {
   AVAILABILITY_BUCKET_MINUTES,

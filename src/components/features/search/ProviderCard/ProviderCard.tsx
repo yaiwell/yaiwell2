@@ -13,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { buildProviderSlugWithId } from '@/lib/utils/provider-slug';
 
 import { AvailabilityBadge } from '../AvailabilityBadge';
-import { formatPriceCents, getMinutesUntilNextSlot } from './ProviderCard.logic';
+import { formatPriceCents, formatWhenSlot, getMinutesUntilNextSlot } from './ProviderCard.logic';
 import { providerCardStyles as s } from './ProviderCard.styles';
 import type { ProviderCardProps } from './ProviderCard.types';
 
@@ -110,6 +110,11 @@ export function ProviderCard({
           </div>
 
           <div className={s.body} data-component="provider-card-body">
+            {provider.whenSlotAt ? (
+              <p className={s.whenSlot} data-component="provider-card-when-slot">
+                {t('whenSlot', { date: formatWhenSlot(provider.whenSlotAt, locale) })}
+              </p>
+            ) : null}
             <div className={s.headerRow}>
               <div className="flex flex-col gap-1">
                 <span className={s.type} data-component="provider-card-type">
