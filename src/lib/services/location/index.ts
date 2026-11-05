@@ -13,6 +13,7 @@ export {
   GEOLOCATION_HIGH_ACCURACY_TIMEOUT_MS,
   GEOLOCATION_MAX_AGE_MS,
   GEOLOCATION_TIMEOUT_MS,
+  LOCATION_STALE_MS,
 } from './location.constants';
 
 export { formatDistance, haversineDistance } from './distance';

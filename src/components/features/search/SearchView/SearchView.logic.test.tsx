@@ -22,7 +22,7 @@ vi.mock('@/i18n/navigation', () => ({
 
 vi.mock('@/components/shared/UserLocationProvider', () => ({
   useUserLocation: () => ({
-    location: { lat: 41.3874, lng: 2.1686, source: 'gps', capturedAt: 0 },
+    location: { lat: 41.3874, lng: 2.1686, source: 'gps', capturedAt: Date.now() },
     hasRealLocation: true,
   }),
 }));

@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from 'react';
 
 import { useUserLocation } from '@/components/shared/UserLocationProvider';
-import { haversineDistance } from '@/lib/services/location';
+import { haversineDistance, LOCATION_STALE_MS } from '@/lib/services/location';
 import type { ProviderWithAvailability } from '@/types/domain';
 
 import type { ProviderWithDistance } from './SearchView.types';
@@ -136,8 +136,14 @@ export function useNearMe(
       void requestLocation().then((ok) => (ok ? apply() : setLocationFailed(true)));
       return;
     }
+    // Posición antigua (Safari no siempre deja refrescarla al cargar): la
+    // actualizamos antes de filtrar. Si no se puede, sirve la última conocida.
+    if (next && Date.now() - userLocation.capturedAt > LOCATION_STALE_MS) {
+      void requestLocation().then(apply);
+      return;
+    }
     apply();
-  }, [nearMeOnly, hasRealLocation, requestLocation, onNearMeChange]);
+  }, [nearMeOnly, hasRealLocation, userLocation, requestLocation, onNearMeChange]);
 
   const handleDisableNearMe = useCallback(() => {
     setNearMeOnly(false);

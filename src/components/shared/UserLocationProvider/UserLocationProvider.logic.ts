@@ -147,6 +147,20 @@ export function useUserLocationState({
     return run;
   }, []);
 
+  // Refresca una posición ya conocida sin que se note: sin «Localizando…» y,
+  // si falla, conservando la última, que sigue siendo mejor que nada.
+  const refreshSilently = useCallback(() => {
+    if (inflight.current || !('geolocation' in navigator)) return;
+    const run = readCurrentPosition().then((result) => {
+      inflight.current = null;
+      if (!result.ok) return false;
+      writeLocationCookie(result.location);
+      setLocation(result.location);
+      return true;
+    });
+    inflight.current = run;
+  }, []);
+
   const clear = useCallback(() => {
     clearLocationCookie();
     setLocation(buildFallbackLocation());
@@ -162,6 +176,8 @@ export function useUserLocationState({
   //  - Si ya lo concedió pero no tenemos su posición (cookie caducada o
   //    borrada), la leemos en silencio. Antes le volvíamos a pedir
   //    permiso aunque ya lo hubiera dado.
+  //  - Si lo concedió y tenemos una posición guardada, la refrescamos: la
+  //    cookie dura 30 días y quien viaja seguía ubicado donde estaba.
   //  - Si lo tiene bloqueado, lo decimos desde el principio en lugar de
   //    ofrecer un «Activar» que no puede funcionar.
   //  - Si lo cambia en los ajustes con la web abierta, reaccionamos.
@@ -172,6 +188,8 @@ export function useUserLocationState({
     const apply = (state: PermissionState, isChange: boolean) => {
       if (state === 'granted' && (isChange || !startedWithRealLocation)) {
         void request();
+      } else if (state === 'granted') {
+        refreshSilently();
       } else if (state === 'denied') {
         if (isChange) {
           // Revocado en los ajustes: dejamos de usar la posición guardada.
@@ -197,7 +215,7 @@ export function useUserLocationState({
       cancelled = true;
       permission?.removeEventListener('change', onChange);
     };
-  }, [request, startedWithRealLocation]);
+  }, [request, refreshSilently, startedWithRealLocation]);
 
   const hasRealLocation = location.source === 'gps' || location.source === 'manual';
 

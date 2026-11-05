@@ -12,6 +12,12 @@
 
 ## 2026-11-05
 
+### 2026-11-05 — La ubicación guardada se actualiza al moverse
+
+P1 (orquestador).
+
+- Con permiso concedido, la web se quedaba hasta 30 días con la posición de la cookie: quien viajaba seguía ubicado donde estaba. Ahora se refresca en silencio al cargar y, si tiene más de 30 min, también al activar «Cerca de ti». Si falla, conserva la última.
+
 ### 2026-11-05 — Filtro de hoy, mañana y esta semana en `/buscar`
 
 P2 (orquestador).

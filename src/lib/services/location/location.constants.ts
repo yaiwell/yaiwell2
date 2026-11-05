@@ -26,9 +26,9 @@ export const COOKIE_NAME = 'yaiwell_user_location';
 /**
  * Duración de la cookie en segundos (30 días).
  *
- * Suficiente para que el usuario no tenga que reconceder permiso en cada
- * visita, sin volverse stale. Si la ubicación queda desactualizada el
- * usuario puede pulsar "Actualizar" desde la pill (C2).
+ * Evita pedir permiso en cada visita. No garantiza que la posición siga
+ * siendo buena: con permiso concedido se refresca al cargar la web, y si no
+ * se puede, al activar «Cerca de ti» (ver `LOCATION_STALE_MS`).
  */
 export const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 
@@ -57,3 +57,10 @@ export const GEOLOCATION_HIGH_ACCURACY_TIMEOUT_MS = 15_000;
  * sin volver a pedir al chip GPS (ahorra batería y latencia).
  */
 export const GEOLOCATION_MAX_AGE_MS = 5 * 60 * 1000;
+
+/**
+ * A partir de esta edad, una posición guardada no se da por buena al activar
+ * «Cerca de ti». Una persona puede haber cambiado de ciudad en un día, y la
+ * cookie dura 30.
+ */
+export const LOCATION_STALE_MS = 30 * 60 * 1000;

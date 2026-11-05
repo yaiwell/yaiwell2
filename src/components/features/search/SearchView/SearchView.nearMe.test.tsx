@@ -93,6 +93,40 @@ describe('useNearMe', () => {
     expect(result.current.displayProviders.map((p) => p.id)).toEqual(['inside']);
   });
 
+  it('con una posición antigua la actualiza antes de activar el filtro', async () => {
+    const request = vi.fn().mockResolvedValue(true);
+    mockUseUserLocation.mockReturnValue({
+      location: { ...BCN_CENTER, source: 'gps', capturedAt: Date.now() - 2 * 60 * 60 * 1000 },
+      hasRealLocation: true,
+      request,
+    });
+
+    const { result } = renderHook(() => useNearMe([]));
+
+    await act(async () => {
+      result.current.handleToggleNearMe();
+    });
+
+    expect(request).toHaveBeenCalledOnce();
+    expect(result.current.nearMeOnly).toBe(true);
+  });
+
+  it('si no puede actualizarla, activa el filtro con la última conocida', async () => {
+    mockUseUserLocation.mockReturnValue({
+      location: { ...BCN_CENTER, source: 'gps', capturedAt: Date.now() - 2 * 60 * 60 * 1000 },
+      hasRealLocation: true,
+      request: vi.fn().mockResolvedValue(false),
+    });
+
+    const { result } = renderHook(() => useNearMe([]));
+
+    await act(async () => {
+      result.current.handleToggleNearMe();
+    });
+
+    expect(result.current.nearMeOnly).toBe(true);
+  });
+
   it('marca nearMeYieldedEmpty cuando el filtro no deja ningún resultado', () => {
     mockUseUserLocation.mockReturnValue({
       location: { ...BCN_CENTER, source: 'gps', capturedAt: Date.now() },
