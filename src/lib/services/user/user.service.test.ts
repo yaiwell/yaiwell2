@@ -247,6 +247,14 @@ describe('deleteUserFromClerk', () => {
       where: { clientId: 'db-uuid', notes: { not: null } },
       data: { notes: null },
     });
+    // Notas de soporte: fuera el texto libre, sin tocar quién ni cuándo.
+    expect(prisma.booking.updateMany).toHaveBeenCalledWith({
+      where: {
+        clientId: 'db-uuid',
+        OR: [{ incidentRefundNote: { not: null } }, { refundDismissReason: { not: null } }],
+      },
+      data: { incidentRefundNote: null, refundDismissReason: null },
+    });
     expect(prisma.review.updateMany).toHaveBeenCalledWith({
       where: { authorId: 'db-uuid' },
       data: { photos: [] },

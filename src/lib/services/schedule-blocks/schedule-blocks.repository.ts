@@ -88,6 +88,19 @@ export const scheduleBlocksRepository = {
     return count > 0;
   },
 
+  /** ¿Hay un bloqueo activo del profesional que cubra entero `[start, end)`? */
+  async hasCovering(
+    tx: Prisma.TransactionClient,
+    professionalId: string,
+    start: Date,
+    end: Date,
+  ): Promise<boolean> {
+    const count = await tx.scheduleBlock.count({
+      where: { professionalId, deletedAt: null, startAt: { lte: start }, endAt: { gte: end } },
+    });
+    return count > 0;
+  },
+
   /**
    * Reservas activas que pisan `[start, end)`, con lo que el panel
    * necesita para enseñarlas. Mismo criterio de «activa» que

@@ -47,6 +47,7 @@ import {
   SlotOfferOutsideWindowError,
   SlotOfferServiceInvalidError,
   SlotOfferSlotTakenError,
+  SlotOfferSourceIncidentError,
   SlotOfferSourceNotCancelledError,
 } from '@/lib/services/slot-offers/slot-offers.errors';
 import type { AppLocale } from '@/i18n/routing';
@@ -145,6 +146,7 @@ describe('slot-offers actions', () => {
     [new SlotOfferNotFoundError(), 'NOT_FOUND'],
     [new SlotOfferForbiddenError(), 'FORBIDDEN'],
     [new SlotOfferSourceNotCancelledError(), 'NOT_CANCELLED'],
+    [new SlotOfferSourceIncidentError(), 'INCIDENT'],
     [new SlotOfferSlotTakenError(), 'SLOT_TAKEN'],
     [new SlotOfferOutsideWindowError(), 'OUTSIDE_WINDOW'],
     [new SlotOfferAlreadyExistsError(), 'ALREADY_EXISTS'],

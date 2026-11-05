@@ -3,10 +3,14 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { RefundsQueue } from '@/components/features/admin';
+import {
+  IncidentRefundPanel,
+  RefundsQueue,
+  UnfinishedIncidentRefunds,
+} from '@/components/features/admin';
 import { routing } from '@/i18n/routing';
 import { requireRole } from '@/lib/auth/server';
-import { listPendingRefunds } from '@/lib/services/checkout';
+import { listPendingRefunds, listUnfinishedIncidentRefunds } from '@/lib/services/checkout';
 
 interface AdminRefundsPageProps {
   // En Next.js 16 los `params` son asíncronos.
@@ -52,7 +56,10 @@ export default async function AdminRefundsPage({ params }: AdminRefundsPageProps
   await requireRole(['admin'], locale);
 
   const t = await getTranslations('adminArea.refunds');
-  const refunds = await listPendingRefunds();
+  const [refunds, unfinished] = await Promise.all([
+    listPendingRefunds(),
+    listUnfinishedIncidentRefunds(),
+  ]);
 
   return (
     <div data-component="admin-refunds-page" className="flex flex-col gap-8">
@@ -64,6 +71,10 @@ export default async function AdminRefundsPage({ params }: AdminRefundsPageProps
       </header>
 
       <RefundsQueue refunds={refunds} locale={locale} />
+
+      <UnfinishedIncidentRefunds refunds={unfinished} locale={locale} />
+
+      <IncidentRefundPanel locale={locale} />
     </div>
   );
 }

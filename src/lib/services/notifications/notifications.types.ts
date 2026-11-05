@@ -87,6 +87,15 @@ export type CancellationRefundState =
   | 'no_payment';
 
 /**
+ * Qué pasó con la franja tras un reembolso por incidencia del centro:
+ *  - `blocked`: queda bloqueada en su agenda; puede desbloquearla.
+ *  - `not_blocked`: no se pudo bloquear; sigue reservable.
+ *  - `taken`: otra reserva activa ocupa ya esa hora con ese profesional.
+ *  - `not_applicable`: la cita ya empezó o pasó.
+ */
+export type IncidentSlotNotice = 'blocked' | 'not_blocked' | 'taken' | 'not_applicable';
+
+/**
  * Lo que cuenta el aviso de «no presentado» (de `markBookingNoShow`).
  * `sanctionsInWindow` y `restrictedUntil` solo tienen sentido con
  * `sanctionApplied` (reserva en el local).

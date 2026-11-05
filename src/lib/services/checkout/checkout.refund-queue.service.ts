@@ -4,6 +4,7 @@ import { pickLocalized } from '@/lib/i18n';
 import type { LocalizedText } from '@/types/domain';
 
 import { BookingForCheckoutNotFoundError, RefundNotInQueueError } from './checkout.errors';
+import { incidentMetadataFromColumns } from './checkout.incident-refund.metadata';
 import { issueBookingRefund } from './checkout.refund.issue';
 import { refundRepository } from './checkout.refund.repository';
 import type { PendingRefundSummary, RetryRefundResult } from './checkout.types';
@@ -87,10 +88,16 @@ export async function retryBookingRefund(input: unknown): Promise<RetryRefundRes
     return { bookingId, refund: 'not_applicable', stripeRefundId: null };
   }
 
+  const metadata = incidentMetadataFromColumns(state);
   const { outcome, stripeRefundId } = await issueBookingRefund(
     bookingId,
     state.stripePaymentIntentId,
-    { idempotencyKey: retryIdempotencyKey(bookingId, state.refundFailedAt) },
+    {
+      idempotencyKey: retryIdempotencyKey(bookingId, state.refundFailedAt),
+      // Solo las reservas de incidencia llevan auditoría. El rechazo original
+      // pudo no dejar ningún Refund en Stripe donde guardarla.
+      ...(metadata ? { metadata } : {}),
+    },
   );
   return {
     bookingId,

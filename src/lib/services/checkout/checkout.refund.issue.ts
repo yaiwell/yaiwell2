@@ -5,7 +5,7 @@ import type Stripe from 'stripe';
 import { isSentryEnabled } from '@/lib/integrations/sentry';
 import { getStripeClient } from '@/lib/integrations/stripe';
 
-import { RefundFailedError } from './checkout.errors';
+import { RefundFailedError, RefundKeyInUseError } from './checkout.errors';
 import { refundRepository } from './checkout.refund.repository';
 import type { RefundOutcome } from './checkout.types';
 
@@ -13,13 +13,16 @@ import type { RefundOutcome } from './checkout.types';
  * Emisión única de reembolsos íntegros de una reserva.
  *
  * Todos los caminos que devuelven dinero pasan por aquí: cancelación del
- * proveedor, pago que llega tarde sobre una reserva muerta y reintento
- * manual desde /admin. Así la clave de idempotencia, los parámetros de
+ * proveedor, pago que llega tarde sobre una reserva muerta, reintento
+ * manual desde /admin e incidencia del centro. Así los parámetros de
  * Connect y el registro en la cola de fallidos no pueden divergir.
  */
 
 /** Código de Stripe cuando el cargo ya estaba reembolsado: es un éxito. */
 const STRIPE_ALREADY_REFUNDED_CODE = 'charge_already_refunded';
+
+/** Código de Stripe cuando otra petición con la misma clave sigue en vuelo. */
+const STRIPE_KEY_IN_USE_CODE = 'idempotency_key_in_use';
 
 /** Límite del motivo guardado en BD: suficiente para código + mensaje. */
 const FAILURE_REASON_MAX_LENGTH = 500;
@@ -49,6 +52,19 @@ export interface IssueRefundOptions {
   now?: Date;
   /** Clave de idempotencia; por defecto `bookingRefundIdempotencyKey`. */
   idempotencyKey?: string;
+  /**
+   * Auditoría en el Refund de Stripe. Solo la usa el reembolso por
+   * incidencia del centro: los caminos automáticos mandan los mismos
+   * parámetros de siempre, y Stripe rechaza una clave reutilizada con
+   * parámetros distintos.
+   */
+  metadata?: Stripe.MetadataParam;
+  /**
+   * Lanzar `RefundKeyInUseError` si otra petición con la misma clave sigue en
+   * vuelo, sin grabar nada: no es un fallo, y la otra petición dirá cómo acaba.
+   * Solo la usa la incidencia del centro; sin ella se trata como cualquier fallo.
+   */
+  throwOnKeyInUse?: boolean;
 }
 
 /**
@@ -62,7 +78,7 @@ export interface IssueRefundOptions {
  * cobró su payout, la reversión puede dejarle saldo negativo; es
  * correcto y Stripe lo recupera de su volumen futuro.
  *
- * Nunca lanza: los callers (cancelación ya comprometida, webhook) no
+ * Nunca lanza, salvo con `throwOnKeyInUse`: los callers (cancelación ya comprometida, webhook) no
  * pueden hacer nada útil con una excepción. Un fallo deja la reserva en
  * la cola de /admin (`refundFailedAt`) y se reporta a Sentry.
  *
@@ -82,7 +98,12 @@ export async function issueBookingRefund(
   let refund: Stripe.Refund;
   try {
     refund = await stripe.refunds.create(
-      { payment_intent: paymentIntentId, refund_application_fee: true, reverse_transfer: true },
+      {
+        payment_intent: paymentIntentId,
+        refund_application_fee: true,
+        reverse_transfer: true,
+        ...(options.metadata ? { metadata: options.metadata } : {}),
+      },
       { idempotencyKey },
     );
   } catch (err) {
@@ -93,6 +114,10 @@ export async function issueBookingRefund(
       // reintentando en bucle algo que ya no tiene efecto.
       await recordSafely(bookingId, () => refundRepository.clearFailure(bookingId));
       return { outcome: 'already_refunded', stripeRefundId: null };
+    }
+
+    if (options.throwOnKeyInUse && describeStripeCode(err) === STRIPE_KEY_IN_USE_CODE) {
+      throw new RefundKeyInUseError();
     }
 
     reportRefundFailure(bookingId, err);

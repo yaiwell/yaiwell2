@@ -530,7 +530,8 @@
           "outsideWindow": "Ce créneau ne peut plus être libéré : il commence trop tôt ou hors de la période autorisée.",
           "alreadyExists": "Ce créneau est déjà libéré.",
           "serviceInvalid": "Ce service ne peut pas être proposé sur ce créneau.",
-          "internal": "Impossible de libérer le créneau. Réessayez dans quelques minutes."
+          "internal": "Impossible de libérer le créneau. Réessayez dans quelques minutes.",
+          "incident": "L’assistance a annulé cette réservation car le centre ne pouvait pas l’assurer : ce créneau ne peut pas être libéré avec une remise."
         },
         "free": {
           "title": "Créneaux libres dans les 2 prochaines heures",
@@ -1544,6 +1545,84 @@
           "FORBIDDEN": "Votre session n’a pas les droits admin pour écarter le remboursement de {provider}.",
           "INTERNAL": "Erreur inattendue lors de la mise à l’écart du remboursement de {provider}. Réessayez dans quelques minutes."
         }
+      },
+      "incident": {
+        "title": "Remboursement pour incident du centre",
+        "intro": "Pour les cas où le centre ne peut pas assurer le rendez-vous et ne peut plus annuler lui-même : dernière minute, moins de 2 h ou rendez-vous déjà commencé ou passé. La réservation est annulée et le client remboursé à 100 % ; la part nette du centre, sans la commission, est prélevée sur son solde.",
+        "lookup": {
+          "label": "Id de la réservation",
+          "submit": "Rechercher",
+          "pending": "Recherche…"
+        },
+        "summary": {
+          "provider": "Établissement",
+          "service": "Prestation",
+          "appointment": "Rendez-vous",
+          "amount": "Montant",
+          "status": "Statut"
+        },
+        "statuses": {
+          "pending": "En attente de paiement",
+          "confirmed": "Confirmée",
+          "completed": "Terminée",
+          "cancelled": "Annulée",
+          "refunded": "Remboursée",
+          "no_show": "Absence"
+        },
+        "ineligible": {
+          "onsite": "Cette réservation se paie sur place : aucun paiement dans l’app à rembourser. Le centre le gère directement avec le client.",
+          "no_payment": "Cette réservation n’a aucun paiement dans Stripe : il n’y a rien à rembourser.",
+          "status": "Seules les réservations confirmées ou terminées peuvent être remboursées ainsi, et celle-ci a un autre statut.",
+          "already_refunded": "Le montant de cette réservation a déjà été remboursé. Rien de plus à faire.",
+          "in_queue": "Le remboursement de cette réservation a déjà échoué et reste dans la file ci-dessus : réessayez depuis celle-ci.",
+          "in_progress": "Cette réservation vient d’être annulée pour incident et son remboursement est peut-être encore en cours. Recherchez-la à nouveau dans quelques minutes.",
+          "partially_refunded": "Ce paiement a déjà un remboursement partiel manuel. Remboursez le reste depuis le dashboard Stripe en annulant le transfert et la commission.",
+          "disputed": "Ce paiement fait l’objet d’une contestation : c’est elle qui décide de l’argent. Vérifiez-la dans le dashboard Stripe avant toute action.",
+          "stripe_unavailable": "Stripe ne répond pas et nous ne pouvons pas vérifier ce paiement : le remboursement n’est pas possible pour l’instant. Recherchez-la à nouveau dans quelques minutes."
+        },
+        "confirm": {
+          "warning": "Action irréversible : la réservation est annulée, le client et le centre sont prévenus. Si le rendez-vous n’a pas commencé, le créneau est bloqué dans l’agenda du centre, qui peut le débloquer depuis son calendrier.",
+          "label": "Annuler et rembourser {amount}",
+          "pending": "Remboursement…",
+          "resumeWarning": "Cette réservation est déjà annulée pour incident, mais rien n’indique que son remboursement a abouti. Le terminer ne peut pas rembourser deux fois et reprend le motif saisi à l’époque.",
+          "resumeLabel": "Terminer le remboursement de {amount}",
+          "resendHint": "Si le processus s’est interrompu juste après le remboursement, les notifications ne sont peut-être pas parties. Les renvoyer ne déplace aucun argent, et un e-mail identique n’est pas répété pendant 24 h.",
+          "resendLabel": "Renvoyer les notifications"
+        },
+        "note": {
+          "label": "Motif de l’incident",
+          "hint": "Obligatoire, de {min} à {max} caractères. Conservé dans Stripe avec votre utilisateur. N’indiquez pas de données personnelles.",
+          "invalid": "Saisissez un motif de {min} à {max} caractères."
+        },
+        "outcome": {
+          "issued": "Réservation annulée et remboursement de {amount} émis. Stripe le confirmera sous peu.",
+          "already_refunded": "Stripe indique que ce paiement était déjà remboursé : aucun autre remboursement n’a été émis. La réservation reste annulée.",
+          "failed": "Réservation annulée, mais Stripe n’a pas accepté le remboursement de {amount} : l’argent n’est toujours pas rendu. Il reste dans la file ci-dessus pour une nouvelle tentative.",
+          "failed_unrecorded": "Réservation annulée, mais le remboursement de {amount} n’a pas abouti et nous n’avons pas pu l’ajouter à la file : l’argent n’est toujours pas rendu. Recherchez à nouveau la réservation dans quelques minutes et cliquez sur « Terminer le remboursement »."
+        },
+        "errors": {
+          "BOOKING_NOT_FOUND": "Aucune réservation ne correspond à cet id.",
+          "VALIDATION": "Cet id de réservation n’est pas valide.",
+          "FORBIDDEN": "Votre session n’a pas les droits admin pour cette action.",
+          "CONFLICT": "Une autre action a modifié cette réservation. Recherchez-la à nouveau pour voir son statut.",
+          "INTERNAL": "Erreur inattendue : nous ne savons pas si l’action a été appliquée. Recherchez à nouveau la réservation avant de recommencer."
+        },
+        "reset": "Rechercher une autre réservation",
+        "slot": {
+          "blocked": "Le créneau est bloqué dans l’agenda du centre, qui peut le débloquer depuis son calendrier.",
+          "not_blocked": "Nous n’avons pas pu bloquer le créneau et il reste réservable : demandez au centre de le bloquer depuis son calendrier.",
+          "taken": "Une autre réservation occupe déjà cet horaire avec ce professionnel : il n’a donc pas été bloqué. Vérifiez avec le centre s’il peut assurer ce rendez-vous."
+        }
+      },
+      "unfinished": {
+        "title": "Remboursements non terminés",
+        "subtitle": "Réservations annulées pour incident dont le remboursement n’est enregistré ni comme émis ni comme échoué : l’argent n’est peut-être toujours pas rendu. Le terminer ne peut pas rembourser deux fois.",
+        "amount": "Montant",
+        "appointment": "Rendez-vous",
+        "markedAt": "Annulée",
+        "label": "Terminer",
+        "pending": "Finalisation…",
+        "aria": "Terminer le remboursement de {provider}"
       }
     },
     "sanctions": {

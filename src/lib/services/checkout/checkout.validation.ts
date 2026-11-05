@@ -11,6 +11,10 @@
 import { z } from 'zod';
 
 import {
+  INCIDENT_REFUND_NOTE_MAX_LENGTH,
+  INCIDENT_REFUND_NOTE_MIN_LENGTH,
+} from '@/lib/utils/incident-refund-note';
+import {
   REFUND_DISMISS_REASON_MAX_LENGTH,
   REFUND_DISMISS_REASON_MIN_LENGTH,
 } from '@/lib/utils/refund-dismiss-reason';
@@ -80,6 +84,21 @@ export const dismissBookingRefundSchema = z.object({
 });
 
 export type DismissBookingRefundParsed = z.infer<typeof dismissBookingRefundSchema>;
+
+/** Búsqueda de una reserva para el reembolso por incidencia (id pegado a mano). */
+export const previewIncidentRefundSchema = z.object({
+  bookingId: z.string().trim().uuid(),
+});
+
+/**
+ * Reembolso por incidencia del centro. Quién lo emite sale de la sesión. El
+ * motivo es obligatorio: va en la `metadata` del Refund, cuyo límite por
+ * valor en Stripe es el máximo de aquí.
+ */
+export const issueIncidentRefundSchema = z.object({
+  bookingId: z.string().trim().uuid(),
+  note: z.string().trim().min(INCIDENT_REFUND_NOTE_MIN_LENGTH).max(INCIDENT_REFUND_NOTE_MAX_LENGTH),
+});
 
 /**
  * Reserva con pago en el local. Mismo contrato que el checkout online:

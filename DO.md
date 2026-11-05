@@ -12,6 +12,15 @@
 
 ## 2026-11-05
 
+### 2026-11-05 — Reembolso por incidencia del centro en `/admin`
+
+P12 (`stripe-payments`, dos auditorías de `business-rules-auditor`, `conventions-reviewer` y `db-migration-guard`).
+
+- **`/admin/reembolsos`**: buscar por id, ver el resumen y reembolsar con motivo obligatorio. Vale a cualquier hora para reservas online `confirmed` o `completed`; se bloquea si hay reembolso parcial o disputa, o si Stripe no responde. Reembolso íntegro con `reverse_transfer` y `refund_application_fee`, mismo camino que los demás.
+- **Migración 9k**: `bookings.incidentRefundAt`, `incidentRefundBy` e `incidentRefundNote`. La marca impide liberar esa hora con descuento y permite completar un reembolso a medias (lista «Reembolsos sin completar», misma clave de idempotencia).
+- **Avisos veraces**: si Stripe falla, cliente y centro reciben la variante «en trámite». Al centro se le dice si la franja queda bloqueada, libre u ocupada por otra reserva. Si la cita no ha empezado, se crea un bloqueo de agenda que el centro puede quitar.
+- Al eliminar la cuenta se limpian la nota y el motivo de descarte; la copia en la `metadata` de Stripe se borra a mano si se pide.
+
 ### 2026-11-05 — Descargar los datos y eliminar la cuenta (RGPD)
 
 P3 (orquestador).

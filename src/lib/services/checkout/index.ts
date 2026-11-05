@@ -18,6 +18,21 @@ export { cancelBookingByClientWithRefund } from './checkout.client-cancel.servic
 
 export { listPendingRefunds, retryBookingRefund } from './checkout.refund-queue.service';
 export { dismissBookingRefund } from './checkout.refund-dismiss.service';
+export {
+  getIncidentRefundPreview,
+  refundBookingForCentreIncident,
+  resumeCentreIncidentRefund,
+} from './checkout.incident-refund.service';
+export { evaluateIncidentRefund } from './checkout.incident-refund.eligibility';
+export { listUnfinishedIncidentRefunds } from './checkout.incident-refund.unfinished';
+export type {
+  IncidentRefundEligibility,
+  IncidentRefundFromStatus,
+  IncidentRefundPreview,
+  IncidentRefundResult,
+  IncidentSlotState,
+  UnfinishedIncidentRefund,
+} from './checkout.incident-refund.types';
 
 export { checkBookingPayable } from './checkout.hold-check.service';
 export type { BookingPayability } from './checkout.hold-check.service';
@@ -49,6 +64,11 @@ export {
   RefundNotInQueueError,
 } from './checkout.errors';
 export type { OnsitePaymentBlockReason } from './checkout.errors';
+export {
+  IncidentRefundConflictError,
+  IncidentRefundNotEligibleError,
+} from './checkout.incident-refund.errors';
+export type { IncidentRefundIneligibleReason } from './checkout.incident-refund.errors';
 
 export {
   cancelBookingWithRefundSchema,
@@ -56,6 +76,8 @@ export {
   createOnsiteBookingSchema,
   dismissBookingRefundSchema,
   getPaymentOptionsSchema,
+  issueIncidentRefundSchema,
+  previewIncidentRefundSchema,
   retryBookingRefundSchema,
   verifyBookingPayableSchema,
 } from './checkout.validation';

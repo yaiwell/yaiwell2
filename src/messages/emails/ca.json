@@ -150,5 +150,23 @@
     "heading": "Absència retirada",
     "intro": "{provider} ha corregit l'avís anterior: la teva cita ja no consta com a «no presentat».",
     "sanctionRevoked": "Hem retirat la sanció del teu compte: ja no compta per al límit de 3 en 12 mesos."
+  },
+  "incidentRefund": {
+    "clientSubject": "Et retornem el pagament de la teva reserva a {provider}",
+    "clientHeading": "Et retornem la reserva",
+    "clientIntro": "Hi ha hagut una incidència amb la teva reserva a {provider} i et retornem el pagament.",
+    "clientCta": "Cercar una altra hora",
+    "providerSubject": "Reserva reemborsada: {service}, {when}",
+    "providerHeading": "Hem reemborsat una reserva",
+    "providerIntro": "L’equip de suport de Yaiwell ha gestionat una incidència del centre a la reserva de {client} i li retorna l’import íntegre ({amount}).",
+    "providerBalance": "Es retira del teu saldo de Stripe la teva part d’aquesta reserva ({net}, l’import sense la comissió) i Yaiwell no es queda comissió. Si ja l’havies rebuda al banc, el saldo pot quedar en negatiu i es compensa amb els teus propers cobraments.",
+    "providerSlotFree": "La franja torna a estar lliure i es pot reservar. Si no podràs atendre a aquesta hora, bloqueja-la des del calendari.",
+    "providerCta": "Obrir el calendari",
+    "providerSubjectPending": "Reemborsament en tràmit: {service}, {when}",
+    "providerHeadingPending": "Estem reemborsant una reserva",
+    "providerIntroPending": "L’equip de suport de Yaiwell ha gestionat una incidència del centre a la reserva de {client} i està tramitant la devolució de l’import íntegre ({amount}). Encara no s’ha completat.",
+    "providerBalancePending": "Quan es completi, es retirarà del teu saldo de Stripe la teva part d’aquesta reserva ({net}, l’import sense la comissió) i Yaiwell no es quedarà comissió. Si ja l’havies rebuda al banc, el saldo podrà quedar en negatiu i es compensarà amb els teus propers cobraments.",
+    "providerSlotBlocked": "Hem bloquejat aquesta franja al teu calendari perquè ningú no la reservi. Si finalment pots atendre, la pots desbloquejar des d’allà.",
+    "providerSlotTaken": "Aquesta franja ja té una altra reserva amb el mateix professional i continua al teu calendari. Suport es posarà en contacte amb tu si cal."
   }
 }

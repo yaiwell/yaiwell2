@@ -148,6 +148,9 @@ export const refundRepository = {
     refundFailedAt: Date | null;
     refundedAt: Date | null;
     refundDismissedAt: Date | null;
+    incidentRefundAt: Date | null;
+    incidentRefundBy: string | null;
+    incidentRefundNote: string | null;
   } | null> {
     return prisma.booking.findUnique({
       where: { id: bookingId },
@@ -158,6 +161,9 @@ export const refundRepository = {
         refundFailedAt: true,
         refundedAt: true,
         refundDismissedAt: true,
+        incidentRefundAt: true,
+        incidentRefundBy: true,
+        incidentRefundNote: true,
       },
     });
   },

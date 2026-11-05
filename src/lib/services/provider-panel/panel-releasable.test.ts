@@ -16,11 +16,19 @@ function input(overrides: Partial<ReleasableInput> = {}): ReleasableInput {
     startAt: new Date(NOW.getTime() + 5 * HOUR),
     releasedAs: null,
     slotOffer: null,
+    incidentRefundAt: null,
     ...overrides,
   };
 }
 
 describe('isCancelledSlotReleasable', () => {
+  it('nunca se ofrece sobre una reserva cancelada por incidencia del centro', () => {
+    expect(isCancelledSlotReleasable(input({ incidentRefundAt: NOW }), NOW)).toBe(false);
+    expect(
+      isCancelledSlotReleasable(input({ status: 'refunded', incidentRefundAt: NOW }), NOW),
+    ).toBe(false);
+  });
+
   it('cancelada o reembolsada con margen y sin oferta: se ofrece', () => {
     expect(isCancelledSlotReleasable(input(), NOW)).toBe(true);
     expect(isCancelledSlotReleasable(input({ status: 'refunded' }), NOW)).toBe(true);

@@ -530,7 +530,8 @@
           "outsideWindow": "Este hueco ya no se puede liberar: empieza demasiado pronto o fuera de la ventana permitida.",
           "alreadyExists": "Este hueco ya está liberado.",
           "serviceInvalid": "Este servicio no se puede ofrecer en este hueco.",
-          "internal": "No se ha podido liberar el hueco. Inténtalo de nuevo en unos minutos."
+          "internal": "No se ha podido liberar el hueco. Inténtalo de nuevo en unos minutos.",
+          "incident": "Esta reserva la canceló soporte porque el centro no podía atender: esa hora no se puede liberar con descuento."
         },
         "free": {
           "title": "Huecos libres en las próximas 2 h",
@@ -1544,6 +1545,84 @@
           "FORBIDDEN": "Tu sesión no tiene permisos de admin para descartar el reembolso de {provider}.",
           "INTERNAL": "Error inesperado al descartar el reembolso de {provider}. Vuelve a intentarlo en unos minutos."
         }
+      },
+      "incident": {
+        "title": "Reembolso por incidencia del centro",
+        "intro": "Para cuando el centro no puede atender y ya no puede cancelar por su cuenta: última hora, menos de 2 h o cita ya empezada o pasada. Cancela la reserva y devuelve el 100 % al cliente; del saldo del centro se retira su parte neta, sin la comisión.",
+        "lookup": {
+          "label": "Id de la reserva",
+          "submit": "Buscar",
+          "pending": "Buscando…"
+        },
+        "summary": {
+          "provider": "Negocio",
+          "service": "Servicio",
+          "appointment": "Cita",
+          "amount": "Importe",
+          "status": "Estado"
+        },
+        "statuses": {
+          "pending": "Pendiente de pago",
+          "confirmed": "Confirmada",
+          "completed": "Finalizada",
+          "cancelled": "Cancelada",
+          "refunded": "Reembolsada",
+          "no_show": "No presentado"
+        },
+        "ineligible": {
+          "onsite": "Esta reserva se paga en el local: no hay cobro en la app que devolver. Lo gestiona el centro directamente con el cliente.",
+          "no_payment": "Esta reserva no tiene ningún pago en Stripe: no hay nada que devolver.",
+          "status": "Solo se pueden reembolsar así las reservas confirmadas o finalizadas, y esta está en otro estado.",
+          "already_refunded": "El dinero de esta reserva ya se ha devuelto. No hay que hacer nada más.",
+          "in_queue": "El reembolso de esta reserva ya falló y sigue en la cola de arriba: reinténtalo desde allí.",
+          "in_progress": "Esta reserva se acaba de cancelar por incidencia y su reembolso puede seguir en curso. Vuelve a buscarla dentro de unos minutos.",
+          "partially_refunded": "Este pago ya tiene un reembolso parcial hecho a mano. Devuelve el resto desde el dashboard de Stripe, revirtiendo la transferencia y la comisión.",
+          "disputed": "Este pago tiene un contracargo: el dinero lo resuelve la disputa. Revísala en el dashboard de Stripe antes de hacer nada.",
+          "stripe_unavailable": "Stripe no responde y no podemos comprobar este pago, así que no se puede reembolsar ahora. Vuelve a buscarla en unos minutos."
+        },
+        "confirm": {
+          "warning": "No se puede deshacer: la reserva queda cancelada y se avisa al cliente y al centro. Si la cita aún no ha empezado, esa franja queda bloqueada en su agenda, y el centro puede desbloquearla desde su calendario.",
+          "label": "Cancelar y reembolsar {amount}",
+          "pending": "Reembolsando…",
+          "resumeWarning": "Esta reserva ya está cancelada por incidencia, pero no consta que su reembolso se completara. Completarlo no puede devolver el dinero dos veces y usa el motivo que se escribió entonces.",
+          "resumeLabel": "Completar el reembolso de {amount}",
+          "resendHint": "Si el proceso se cortó justo después de devolver el dinero, los avisos pueden no haber salido. Reenviarlos no mueve dinero, y un correo idéntico no se repite durante 24 h.",
+          "resendLabel": "Reenviar los avisos"
+        },
+        "note": {
+          "label": "Motivo de la incidencia",
+          "hint": "Obligatorio, de {min} a {max} caracteres. Queda en Stripe con tu usuario. No escribas datos personales.",
+          "invalid": "Escribe un motivo de {min} a {max} caracteres."
+        },
+        "outcome": {
+          "issued": "Reserva cancelada y reembolso de {amount} emitido. Stripe confirmará la devolución en breve.",
+          "already_refunded": "Stripe indica que este pago ya estaba devuelto, así que no se ha emitido otro reembolso. La reserva queda cancelada.",
+          "failed": "Reserva cancelada, pero Stripe no ha aceptado el reembolso de {amount}: el dinero sigue sin devolverse. Queda en la cola de arriba para reintentarlo.",
+          "failed_unrecorded": "Reserva cancelada, pero el reembolso de {amount} no se ha completado y tampoco hemos podido dejarlo en la cola: el dinero sigue sin devolverse. Vuelve a buscar la reserva dentro de unos minutos y pulsa «Completar el reembolso»."
+        },
+        "errors": {
+          "BOOKING_NOT_FOUND": "No existe ninguna reserva con ese id.",
+          "VALIDATION": "Ese id de reserva no es válido.",
+          "FORBIDDEN": "Tu sesión no tiene permisos de admin para esta acción.",
+          "CONFLICT": "Otra acción ha cambiado esta reserva. Búscala de nuevo para ver su estado.",
+          "INTERNAL": "Error inesperado: no sabemos si se ha aplicado. Vuelve a buscar la reserva antes de repetir."
+        },
+        "reset": "Buscar otra reserva",
+        "slot": {
+          "blocked": "La franja queda bloqueada en la agenda del centro, que puede desbloquearla desde su calendario.",
+          "not_blocked": "No hemos podido bloquear la franja y se puede reservar: pide al centro que la bloquee desde su calendario.",
+          "taken": "Otra reserva ocupa ya esa hora con ese profesional, así que no se ha bloqueado. Revisa con el centro si puede atender esa cita."
+        }
+      },
+      "unfinished": {
+        "title": "Reembolsos sin completar",
+        "subtitle": "Reservas canceladas por incidencia cuyo reembolso no consta ni como emitido ni como fallido: el dinero puede seguir sin devolverse. Completarlo no puede devolverlo dos veces.",
+        "amount": "Importe",
+        "appointment": "Cita",
+        "markedAt": "Cancelada",
+        "label": "Completar",
+        "pending": "Completando…",
+        "aria": "Completar el reembolso de {provider}"
       }
     },
     "sanctions": {

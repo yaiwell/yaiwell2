@@ -35,6 +35,7 @@ import {
   SlotOfferOutsideWindowError,
   SlotOfferServiceInvalidError,
   SlotOfferSlotTakenError,
+  SlotOfferSourceIncidentError,
   SlotOfferSourceNotCancelledError,
 } from './slot-offers.errors';
 import { releaseCancelledSlot, releaseFreeSlot, withdrawSlotOffer } from './slot-offers.service';
@@ -163,6 +164,13 @@ describe('releaseCancelledSlot', () => {
     );
     repo.findBookingForRelease.mockResolvedValue(cancelledBooking({ status: 'refunded' }));
     await expect(releaseCancelledSlot(input, OWNER, NOW)).resolves.toBeTruthy();
+  });
+
+  it('rechaza una reserva cancelada por incidencia del centro', async () => {
+    repo.findBookingForRelease.mockResolvedValue(cancelledBooking({ incidentRefundAt: NOW }));
+    await expect(releaseCancelledSlot(input, OWNER, NOW)).rejects.toBeInstanceOf(
+      SlotOfferSourceIncidentError,
+    );
   });
 
   it('rechaza un servicio que no cabe en la franja', async () => {

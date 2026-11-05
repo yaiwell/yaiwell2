@@ -1,11 +1,9 @@
 import { ExternalLink } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import {
-  buildStripePaymentUrl,
-  formatRefundAmount,
-  formatRefundDateTime,
-} from './RefundsQueue.logic';
+import { formatRefundAmount, formatRefundDateTime } from '@/lib/utils/admin-refund-format';
+
+import { buildStripePaymentUrl } from './RefundsQueue.logic';
 import { refundsQueueStyles as s } from './RefundsQueue.styles';
 import type { RefundsQueueItemProps } from './RefundsQueue.types';
 import { DismissRefundForm } from './DismissRefundForm';

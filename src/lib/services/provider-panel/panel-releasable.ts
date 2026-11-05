@@ -10,6 +10,8 @@ export interface ReleasableInput {
   releasedAs: { id: string } | null;
   /** Oferta con la que se vendió la reserva, si la hubo. */
   slotOffer: { status: SlotOfferStatus } | null;
+  /** Marca del reembolso por incidencia: el centro declaró que no puede atender. */
+  incidentRefundAt: Date | null;
 }
 
 /**
@@ -21,6 +23,7 @@ export interface ReleasableInput {
  * verdad (titularidad, solapes, servicio). Aquí solo se filtra lo que
  * seguro fallaría, para no ofrecer un botón que acaba en error:
  *  - la reserva no está cancelada ni reembolsada;
+ *  - la canceló soporte por una incidencia del centro, que no puede atender;
  *  - la hora ya no admite reservas (menos de 30 min de antelación);
  *  - ya se creó una oferta desde esta reserva (`sourceBookingId` único);
  *  - se vendió con una oferta que sigue activa: al cancelar el cliente
@@ -31,6 +34,7 @@ export interface ReleasableInput {
  */
 export function isCancelledSlotReleasable(booking: ReleasableInput, now: Date): boolean {
   if (booking.status !== 'cancelled' && booking.status !== 'refunded') return false;
+  if (booking.incidentRefundAt) return false;
   if (booking.startAt < getEarliestBookableStart(now)) return false;
   if (booking.releasedAs) return false;
   return booking.slotOffer?.status !== 'active';

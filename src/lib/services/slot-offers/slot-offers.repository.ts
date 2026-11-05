@@ -67,6 +67,7 @@ export const slotOffersRepository = {
         serviceId: true,
         professionalId: true,
         providerId: true,
+        incidentRefundAt: true,
         provider: { select: { userId: true } },
       },
     });

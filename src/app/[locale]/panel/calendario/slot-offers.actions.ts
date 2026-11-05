@@ -12,6 +12,7 @@ import {
   SlotOfferOutsideWindowError,
   SlotOfferServiceInvalidError,
   SlotOfferSlotTakenError,
+  SlotOfferSourceIncidentError,
   SlotOfferSourceNotCancelledError,
   releaseCancelledSlot,
   releaseFreeSlot,
@@ -30,6 +31,7 @@ export type SlotOfferActionCode =
   | 'NOT_FOUND'
   | 'FORBIDDEN'
   | 'NOT_CANCELLED'
+  | 'INCIDENT'
   | 'SLOT_TAKEN'
   | 'OUTSIDE_WINDOW'
   | 'ALREADY_EXISTS'
@@ -59,6 +61,7 @@ const ERROR_CODES: ReadonlyArray<[new (...args: never[]) => Error, SlotOfferActi
   [SlotOfferNotFoundError, 'NOT_FOUND'],
   [SlotOfferForbiddenError, 'FORBIDDEN'],
   [SlotOfferSourceNotCancelledError, 'NOT_CANCELLED'],
+  [SlotOfferSourceIncidentError, 'INCIDENT'],
   [SlotOfferSlotTakenError, 'SLOT_TAKEN'],
   [SlotOfferOutsideWindowError, 'OUTSIDE_WINDOW'],
   [SlotOfferAlreadyExistsError, 'ALREADY_EXISTS'],

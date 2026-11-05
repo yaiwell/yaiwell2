@@ -2,6 +2,7 @@ import 'server-only';
 
 import { prisma } from '@/lib/db/prisma';
 // Ruta directa: solo hace falta la condición, no el servicio de reembolsos.
+import { UNFINISHED_INCIDENT_REFUND_WHERE } from '@/lib/services/checkout/checkout.incident-refund.repository';
 import { PENDING_REFUND_WHERE } from '@/lib/services/checkout/checkout.refund.repository';
 
 /**
@@ -16,14 +17,18 @@ export const accountRepository = {
   },
 
   /**
-   * Reembolsos sin terminar: fallidos en la cola de soporte o ya emitidos sin
-   * confirmar. Soporte aún podría tener que contactar con la persona.
+   * Reembolsos sin terminar: fallidos en la cola de soporte, ya emitidos sin
+   * confirmar o de incidencia a medias. Soporte aún podría tener que contactar con la persona.
    */
   countOpenRefunds(userId: string) {
     return prisma.booking.count({
       where: {
         clientId: userId,
-        OR: [PENDING_REFUND_WHERE, { stripeRefundId: { not: null }, refundedAt: null }],
+        OR: [
+          PENDING_REFUND_WHERE,
+          { stripeRefundId: { not: null }, refundedAt: null },
+          UNFINISHED_INCIDENT_REFUND_WHERE,
+        ],
       },
     });
   },

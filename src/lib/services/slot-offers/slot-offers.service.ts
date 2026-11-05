@@ -28,6 +28,7 @@ import {
   SlotOfferOutsideWindowError,
   SlotOfferServiceInvalidError,
   SlotOfferSlotTakenError,
+  SlotOfferSourceIncidentError,
   SlotOfferSourceNotCancelledError,
 } from './slot-offers.errors';
 import { toLiveSlotOffer } from './slot-offers.mappers';
@@ -90,7 +91,8 @@ async function insertOffer(data: CreateSlotOfferData): Promise<LiveSlotOffer> {
  * @param input — `{ bookingId, serviceId?, discounts }`, validado con Zod.
  * @param providerUserId — `User.id` del dueño autenticado.
  * @throws SlotOfferNotFoundError, SlotOfferForbiddenError,
- *   SlotOfferSourceNotCancelledError, SlotOfferServiceInvalidError,
+ *   SlotOfferSourceNotCancelledError, SlotOfferSourceIncidentError,
+ *   SlotOfferServiceInvalidError,
  *   SlotOfferOutsideWindowError, SlotOfferSlotTakenError (también si un
  *   bloqueo de agenda pisa la hora), SlotOfferAlreadyExistsError.
  */
@@ -105,6 +107,7 @@ export async function releaseCancelledSlot(
   if (!booking) throw new SlotOfferNotFoundError();
   if (booking.provider.userId !== providerUserId) throw new SlotOfferForbiddenError();
   if (!RELEASABLE_STATUSES.has(booking.status)) throw new SlotOfferSourceNotCancelledError();
+  if (booking.incidentRefundAt) throw new SlotOfferSourceIncidentError();
 
   const service = await loadOwnedService(
     data.serviceId ?? booking.serviceId,

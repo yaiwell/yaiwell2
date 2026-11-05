@@ -92,6 +92,15 @@ export const userRepository = {
         where: { clientId: user.id, notes: { not: null } },
         data: { notes: null },
       });
+      // Notas de soporte sobre sus reservas: texto libre que puede nombrarla.
+      // Quién y cuándo se quedan: son la auditoría del dinero.
+      await tx.booking.updateMany({
+        where: {
+          clientId: user.id,
+          OR: [{ incidentRefundNote: { not: null } }, { refundDismissReason: { not: null } }],
+        },
+        data: { incidentRefundNote: null, refundDismissReason: null },
+      });
       await tx.review.updateMany({ where: { authorId: user.id }, data: { photos: [] } });
       return tx.user.update({
         where: { id: user.id },

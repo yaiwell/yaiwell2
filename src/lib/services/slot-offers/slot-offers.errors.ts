@@ -23,6 +23,19 @@ export class SlotOfferForbiddenError extends Error {
   }
 }
 
+/**
+ * La reserva la canceló soporte por una incidencia del centro. El centro no
+ * puede atender esa hora: no tiene sentido venderla con descuento.
+ */
+export class SlotOfferSourceIncidentError extends Error {
+  readonly code = 'SLOT_OFFER_SOURCE_INCIDENT';
+
+  constructor(message = 'La reserva se canceló por una incidencia del centro.') {
+    super(message);
+    this.name = 'SlotOfferSourceIncidentError';
+  }
+}
+
 /** Solo se libera el hueco de una reserva ya cancelada. */
 export class SlotOfferSourceNotCancelledError extends Error {
   readonly code = 'SLOT_OFFER_SOURCE_NOT_CANCELLED';

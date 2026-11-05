@@ -150,5 +150,23 @@
     "heading": "Absence retirée",
     "intro": "{provider} a corrigé le signalement précédent : votre rendez-vous n’est plus enregistré comme « absence ».",
     "sanctionRevoked": "Nous avons retiré la pénalité de votre compte : elle ne compte plus dans la limite de 3 en 12 mois."
+  },
+  "incidentRefund": {
+    "clientSubject": "Nous vous remboursons votre réservation chez {provider}",
+    "clientHeading": "Nous vous remboursons votre réservation",
+    "clientIntro": "Un incident est survenu sur votre réservation chez {provider} : nous vous remboursons votre paiement.",
+    "clientCta": "Trouver un autre créneau",
+    "providerSubject": "Réservation remboursée : {service}, {when}",
+    "providerHeading": "Nous avons remboursé une réservation",
+    "providerIntro": "L’équipe d’assistance de Yaiwell a traité un incident du centre sur la réservation de {client} et lui rembourse la totalité du montant ({amount}).",
+    "providerBalance": "Votre part de cette réservation ({net}, le montant sans la commission) est prélevée sur votre solde Stripe et Yaiwell ne garde aucune commission. Si elle était déjà arrivée sur votre compte bancaire, votre solde peut devenir négatif et se compense avec vos prochains encaissements.",
+    "providerSlotFree": "Le créneau est de nouveau libre et réservable. Si vous ne pouvez pas assurer cet horaire, bloquez-le depuis le calendrier.",
+    "providerCta": "Ouvrir le calendrier",
+    "providerSubjectPending": "Remboursement en cours : {service}, {when}",
+    "providerHeadingPending": "Nous remboursons une réservation",
+    "providerIntroPending": "L’équipe d’assistance de Yaiwell a traité un incident du centre sur la réservation de {client} et procède au remboursement de la totalité du montant ({amount}). Il n’est pas encore terminé.",
+    "providerBalancePending": "Une fois terminé, votre part de cette réservation ({net}, le montant sans la commission) sera prélevée sur votre solde Stripe et Yaiwell ne gardera aucune commission. Si elle était déjà arrivée sur votre compte bancaire, votre solde pourra devenir négatif et se compensera avec vos prochains encaissements.",
+    "providerSlotBlocked": "Nous avons bloqué ce créneau dans votre calendrier pour que personne ne le réserve. Si vous pouvez finalement l’assurer, vous pouvez le débloquer depuis celui-ci.",
+    "providerSlotTaken": "Ce créneau a déjà une autre réservation avec le même professionnel, et elle reste dans votre calendrier. L’assistance vous contactera si nécessaire."
   }
 }

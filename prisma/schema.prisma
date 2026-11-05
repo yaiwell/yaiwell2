@@ -463,6 +463,14 @@ model Booking {
   refundDismissedAt     DateTime?
   refundDismissedBy     String?
   refundDismissReason   String?
+  /// Reembolso por incidencia del centro gestionado por soporte (migración 9k).
+  /// La marca impide liberar la hora con descuento y, sin `stripeRefundId` ni
+  /// `refundFailedAt`, indica un reembolso sin completar que se puede reanudar.
+  incidentRefundAt      DateTime?
+  /// `User.id` interno del admin que lo emitió.
+  incidentRefundBy      String?
+  /// Motivo escrito por soporte; va también en la `metadata` del Refund.
+  incidentRefundNote    String?
   /// Oferta de hueco liberado con la que se reservó. Con ella se congelan
   /// el precio de referencia y el descuento aplicado: `priceCents` sigue
   /// siendo lo cobrado, y la comisión se calcula sobre ese importe.

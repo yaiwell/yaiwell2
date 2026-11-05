@@ -530,7 +530,8 @@
           "outsideWindow": "Dieser Termin kann nicht mehr freigegeben werden: Er beginnt zu bald oder liegt außerhalb des erlaubten Zeitfensters.",
           "alreadyExists": "Dieser Termin ist bereits freigegeben.",
           "serviceInvalid": "Diese Leistung kann in diesem Termin nicht angeboten werden.",
-          "internal": "Der Termin konnte nicht freigegeben werden. Bitte versuche es in ein paar Minuten erneut."
+          "internal": "Der Termin konnte nicht freigegeben werden. Bitte versuche es in ein paar Minuten erneut.",
+          "incident": "Der Support hat diese Buchung storniert, weil der Betrieb den Termin nicht wahrnehmen konnte: Diese Zeit kann nicht mit Rabatt freigegeben werden."
         },
         "free": {
           "title": "Freie Termine in den nächsten 2 Std.",
@@ -1544,6 +1545,84 @@
           "FORBIDDEN": "Deine Sitzung hat keine Admin-Rechte, um die Erstattung für {provider} zu verwerfen.",
           "INTERNAL": "Unerwarteter Fehler beim Verwerfen der Erstattung für {provider}. Versuche es in ein paar Minuten erneut."
         }
+      },
+      "incident": {
+        "title": "Erstattung wegen eines Vorfalls beim Betrieb",
+        "intro": "Für den Fall, dass der Betrieb den Termin nicht wahrnehmen und auch nicht mehr selbst stornieren kann: Last-Minute-Buchung, weniger als 2 Std. oder Termin bereits begonnen oder vorbei. Die Buchung wird storniert und der Kundschaft zu 100 % erstattet; dem Guthaben des Betriebs wird sein Nettoanteil ohne Provision entnommen.",
+        "lookup": {
+          "label": "Buchungs-ID",
+          "submit": "Suchen",
+          "pending": "Wird gesucht …"
+        },
+        "summary": {
+          "provider": "Betrieb",
+          "service": "Leistung",
+          "appointment": "Termin",
+          "amount": "Betrag",
+          "status": "Status"
+        },
+        "statuses": {
+          "pending": "Zahlung ausstehend",
+          "confirmed": "Bestätigt",
+          "completed": "Abgeschlossen",
+          "cancelled": "Storniert",
+          "refunded": "Erstattet",
+          "no_show": "Nicht erschienen"
+        },
+        "ineligible": {
+          "onsite": "Diese Buchung wird vor Ort bezahlt: Es gibt keine Zahlung in der App, die erstattet werden könnte. Der Betrieb klärt das direkt mit der Kundschaft.",
+          "no_payment": "Zu dieser Buchung gibt es keine Zahlung in Stripe: Es gibt nichts zu erstatten.",
+          "status": "Auf diesem Weg lassen sich nur bestätigte oder abgeschlossene Buchungen erstatten; diese hat einen anderen Status.",
+          "already_refunded": "Das Geld für diese Buchung wurde bereits erstattet. Es ist nichts weiter zu tun.",
+          "in_queue": "Die Erstattung dieser Buchung ist bereits fehlgeschlagen und steht noch in der Warteschlange oben: Versuche es von dort aus erneut.",
+          "in_progress": "Diese Buchung wurde gerade wegen eines Vorfalls storniert, und die Erstattung läuft möglicherweise noch. Suche sie in einigen Minuten erneut.",
+          "partially_refunded": "Für diese Zahlung gibt es bereits eine manuelle Teilerstattung. Erstatte den Rest im Stripe-Dashboard und mache dabei die Überweisung und die Provision rückgängig.",
+          "disputed": "Für diese Zahlung liegt eine Rückbuchung vor: Über das Geld entscheidet die Anfechtung. Prüfe sie im Stripe-Dashboard, bevor du etwas unternimmst.",
+          "stripe_unavailable": "Stripe antwortet nicht und wir können diese Zahlung nicht prüfen, daher ist eine Erstattung gerade nicht möglich. Suche sie in einigen Minuten erneut."
+        },
+        "confirm": {
+          "warning": "Das lässt sich nicht rückgängig machen: Die Buchung wird storniert, Kundschaft und Betrieb werden benachrichtigt. Hat der Termin noch nicht begonnen, wird die Zeit im Kalender des Betriebs gesperrt; der Betrieb kann sie dort wieder freigeben.",
+          "label": "Stornieren und {amount} erstatten",
+          "pending": "Wird erstattet …",
+          "resumeWarning": "Diese Buchung ist bereits wegen eines Vorfalls storniert, aber es ist nicht vermerkt, dass die Erstattung abgeschlossen wurde. Der Abschluss kann das Geld nicht doppelt erstatten und verwendet den damals eingetragenen Grund.",
+          "resumeLabel": "Erstattung von {amount} abschließen",
+          "resendHint": "Falls der Vorgang direkt nach der Erstattung abgebrochen ist, wurden die Benachrichtigungen möglicherweise nicht versendet. Das erneute Senden bewegt kein Geld, und eine identische E-Mail wird 24 Std. lang nicht wiederholt.",
+          "resendLabel": "Benachrichtigungen erneut senden"
+        },
+        "note": {
+          "label": "Grund des Vorfalls",
+          "hint": "Pflichtfeld, {min} bis {max} Zeichen. Wird mit deinem Benutzer in Stripe gespeichert. Keine personenbezogenen Daten eintragen.",
+          "invalid": "Gib einen Grund mit {min} bis {max} Zeichen ein."
+        },
+        "outcome": {
+          "issued": "Buchung storniert und Erstattung von {amount} ausgelöst. Stripe bestätigt sie in Kürze.",
+          "already_refunded": "Laut Stripe war diese Zahlung bereits erstattet, daher wurde keine weitere Erstattung ausgelöst. Die Buchung bleibt storniert.",
+          "failed": "Buchung storniert, aber Stripe hat die Erstattung von {amount} nicht angenommen: Das Geld ist noch nicht zurückgezahlt. Der Vorgang bleibt zum erneuten Versuch in der Warteschlange oben.",
+          "failed_unrecorded": "Buchung storniert, aber die Erstattung von {amount} wurde nicht abgeschlossen und konnte auch nicht in die Warteschlange aufgenommen werden: Das Geld ist noch nicht zurückgezahlt. Suche die Buchung in einigen Minuten erneut und klicke auf „Erstattung abschließen“."
+        },
+        "errors": {
+          "BOOKING_NOT_FOUND": "Es gibt keine Buchung mit dieser ID.",
+          "VALIDATION": "Diese Buchungs-ID ist ungültig.",
+          "FORBIDDEN": "Deine Sitzung hat für diese Aktion keine Admin-Rechte.",
+          "CONFLICT": "Eine andere Aktion hat diese Buchung geändert. Suche sie erneut, um ihren Status zu sehen.",
+          "INTERNAL": "Unerwarteter Fehler: Wir wissen nicht, ob die Aktion ausgeführt wurde. Suche die Buchung erneut, bevor du es wiederholst."
+        },
+        "reset": "Andere Buchung suchen",
+        "slot": {
+          "blocked": "Die Zeit ist im Kalender des Betriebs gesperrt; der Betrieb kann sie dort wieder freigeben.",
+          "not_blocked": "Wir konnten die Zeit nicht sperren und sie ist buchbar: Bitte den Betrieb, sie im Kalender zu sperren.",
+          "taken": "Eine andere Buchung belegt diese Zeit bereits bei dieser Fachkraft, daher wurde sie nicht gesperrt. Kläre mit dem Betrieb, ob er diesen Termin wahrnehmen kann."
+        }
+      },
+      "unfinished": {
+        "title": "Nicht abgeschlossene Erstattungen",
+        "subtitle": "Wegen eines Vorfalls stornierte Buchungen, deren Erstattung weder als ausgelöst noch als fehlgeschlagen vermerkt ist: Das Geld ist möglicherweise noch nicht zurückgezahlt. Der Abschluss kann es nicht doppelt erstatten.",
+        "amount": "Betrag",
+        "appointment": "Termin",
+        "markedAt": "Storniert",
+        "label": "Abschließen",
+        "pending": "Wird abgeschlossen …",
+        "aria": "Erstattung für {provider} abschließen"
       }
     },
     "sanctions": {

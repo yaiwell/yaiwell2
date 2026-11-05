@@ -530,7 +530,8 @@
           "outsideWindow": "Aquest forat ja no es pot alliberar: comença massa aviat o fora de la finestra permesa.",
           "alreadyExists": "Aquest forat ja està alliberat.",
           "serviceInvalid": "Aquest servei no es pot oferir en aquest forat.",
-          "internal": "No s'ha pogut alliberar el forat. Torna-ho a provar d'aquí a uns minuts."
+          "internal": "No s'ha pogut alliberar el forat. Torna-ho a provar d'aquí a uns minuts.",
+          "incident": "Aquesta reserva la va cancel·lar suport perquè el centre no podia atendre: aquesta hora no es pot alliberar amb descompte."
         },
         "free": {
           "title": "Forats lliures en les pròximes 2 h",
@@ -1544,6 +1545,84 @@
           "FORBIDDEN": "La teva sessió no té permisos d'admin per descartar el reemborsament de {provider}.",
           "INTERNAL": "Error inesperat en descartar el reemborsament de {provider}. Torna-ho a intentar d'aquí a uns minuts."
         }
+      },
+      "incident": {
+        "title": "Reemborsament per incidència del centre",
+        "intro": "Per quan el centre no pot atendre i ja no pot cancel·lar pel seu compte: última hora, menys de 2 h o cita ja començada o passada. Cancel·la la reserva i retorna el 100 % al client; del saldo del centre es retira la seva part neta, sense la comissió.",
+        "lookup": {
+          "label": "Id de la reserva",
+          "submit": "Cercar",
+          "pending": "Cercant…"
+        },
+        "summary": {
+          "provider": "Negoci",
+          "service": "Servei",
+          "appointment": "Cita",
+          "amount": "Import",
+          "status": "Estat"
+        },
+        "statuses": {
+          "pending": "Pendent de pagament",
+          "confirmed": "Confirmada",
+          "completed": "Finalitzada",
+          "cancelled": "Cancel·lada",
+          "refunded": "Reemborsada",
+          "no_show": "No presentat"
+        },
+        "ineligible": {
+          "onsite": "Aquesta reserva es paga al local: no hi ha cap cobrament a l'app per retornar. Ho gestiona el centre directament amb el client.",
+          "no_payment": "Aquesta reserva no té cap pagament a Stripe: no hi ha res a retornar.",
+          "status": "Només es poden reemborsar així les reserves confirmades o finalitzades, i aquesta està en un altre estat.",
+          "already_refunded": "Els diners d'aquesta reserva ja s'han retornat. No cal fer res més.",
+          "in_queue": "El reemborsament d'aquesta reserva ja va fallar i continua a la cua de dalt: torna-ho a provar des d'allà.",
+          "in_progress": "Aquesta reserva s'acaba de cancel·lar per incidència i el reemborsament pot continuar en curs. Torna-la a cercar d'aquí a uns minuts.",
+          "partially_refunded": "Aquest pagament ja té un reemborsament parcial fet a mà. Retorna la resta des del dashboard de Stripe, revertint la transferència i la comissió.",
+          "disputed": "Aquest pagament té una retrocessió: els diners els resol la disputa. Revisa-la al dashboard de Stripe abans de fer res.",
+          "stripe_unavailable": "Stripe no respon i no podem comprovar aquest pagament, així que ara no es pot reemborsar. Torna-la a cercar d'aquí a uns minuts."
+        },
+        "confirm": {
+          "warning": "No es pot desfer: la reserva queda cancel·lada i s'avisa el client i el centre. Si la cita encara no ha començat, aquesta franja queda bloquejada a la seva agenda, i el centre la pot desbloquejar des del calendari.",
+          "label": "Cancel·lar i reemborsar {amount}",
+          "pending": "Reemborsant…",
+          "resumeWarning": "Aquesta reserva ja està cancel·lada per incidència, però no consta que el reemborsament es completés. Completar-lo no pot retornar els diners dues vegades i fa servir el motiu que es va escriure llavors.",
+          "resumeLabel": "Completar el reemborsament de {amount}",
+          "resendHint": "Si el procés es va tallar just després de retornar els diners, és possible que els avisos no hagin sortit. Reenviar-los no mou diners, i un correu idèntic no es repeteix durant 24 h.",
+          "resendLabel": "Reenviar els avisos"
+        },
+        "note": {
+          "label": "Motiu de la incidència",
+          "hint": "Obligatori, de {min} a {max} caràcters. Queda a Stripe amb el teu usuari. No escriguis dades personals.",
+          "invalid": "Escriu un motiu de {min} a {max} caràcters."
+        },
+        "outcome": {
+          "issued": "Reserva cancel·lada i reemborsament de {amount} emès. Stripe confirmarà la devolució aviat.",
+          "already_refunded": "Stripe indica que aquest pagament ja estava retornat, així que no s'ha emès cap altre reemborsament. La reserva queda cancel·lada.",
+          "failed": "Reserva cancel·lada, però Stripe no ha acceptat el reemborsament de {amount}: els diners continuen sense retornar-se. Queda a la cua de dalt per tornar-ho a provar.",
+          "failed_unrecorded": "Reserva cancel·lada, però el reemborsament de {amount} no s'ha completat i tampoc l'hem pogut deixar a la cua: els diners continuen sense retornar-se. Torna a cercar la reserva d'aquí a uns minuts i prem «Completar el reemborsament»."
+        },
+        "errors": {
+          "BOOKING_NOT_FOUND": "No existeix cap reserva amb aquest id.",
+          "VALIDATION": "Aquest id de reserva no és vàlid.",
+          "FORBIDDEN": "La teva sessió no té permisos d'admin per a aquesta acció.",
+          "CONFLICT": "Una altra acció ha canviat aquesta reserva. Torna-la a cercar per veure el seu estat.",
+          "INTERNAL": "Error inesperat: no sabem si s'ha aplicat. Torna a cercar la reserva abans de repetir."
+        },
+        "reset": "Cercar una altra reserva",
+        "slot": {
+          "blocked": "La franja queda bloquejada a l'agenda del centre, que la pot desbloquejar des del calendari.",
+          "not_blocked": "No hem pogut bloquejar la franja i es pot reservar: demana al centre que la bloquegi des del calendari.",
+          "taken": "Una altra reserva ja ocupa aquesta hora amb aquest professional, així que no s'ha bloquejat. Revisa amb el centre si pot atendre aquesta cita."
+        }
+      },
+      "unfinished": {
+        "title": "Reemborsaments sense completar",
+        "subtitle": "Reserves cancel·lades per incidència el reemborsament de les quals no consta ni com a emès ni com a fallit: és possible que els diners continuïn sense retornar-se. Completar-lo no els pot retornar dues vegades.",
+        "amount": "Import",
+        "appointment": "Cita",
+        "markedAt": "Cancel·lada",
+        "label": "Completar",
+        "pending": "Completant…",
+        "aria": "Completar el reemborsament de {provider}"
       }
     },
     "sanctions": {

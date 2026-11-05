@@ -187,6 +187,19 @@ export class RefundNotDismissableError extends Error {
   }
 }
 
+/**
+ * Otra petición con la misma clave de idempotencia sigue en vuelo en Stripe.
+ * Solo lo lanza `issueBookingRefund` con `throwOnKeyInUse`.
+ */
+export class RefundKeyInUseError extends Error {
+  readonly code = 'REFUND_KEY_IN_USE';
+
+  constructor(message = 'Otra petición de reembolso sigue en curso.') {
+    super(message);
+    this.name = 'RefundKeyInUseError';
+  }
+}
+
 /** Por qué no se puede pagar en el local (ver `PaymentOptions`). */
 export type OnsitePaymentBlockReason =
   | 'last_minute'

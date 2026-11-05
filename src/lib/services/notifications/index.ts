@@ -14,6 +14,7 @@ export {
   notifyRefundDelayed,
 } from './notifications.service';
 export { notifyBookingCancelledByClient } from './notifications.client-cancellation';
+export { notifyCentreIncidentRefund } from './notifications.incident-refund';
 export { notifyBookingNoShow, notifyNoShowUndone } from './notifications.no-show';
 export { notifyPlanDowngraded, notifyPlanPaymentFailed } from './notifications.billing';
 export { notifyCommissionPaymentFailed } from './notifications.commission';

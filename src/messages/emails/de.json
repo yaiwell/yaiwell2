@@ -150,5 +150,23 @@
     "heading": "Nichterscheinen aufgehoben",
     "intro": "{provider} hat die vorherige Meldung korrigiert: Dein Termin gilt nicht mehr als nicht wahrgenommen.",
     "sanctionRevoked": "Wir haben die Sanktion von deinem Konto entfernt: Sie zählt nicht mehr zur Grenze von 3 in 12 Monaten."
+  },
+  "incidentRefund": {
+    "clientSubject": "Wir erstatten dir die Zahlung für deine Buchung bei {provider}",
+    "clientHeading": "Wir erstatten dir die Zahlung für deine Buchung bei {provider}",
+    "clientIntro": "Bei deiner Buchung bei {provider} gab es einen Vorfall, deshalb erstatten wir dir die Zahlung.",
+    "clientCta": "Anderen Termin suchen",
+    "providerSubject": "Buchung erstattet: {service}, {when}",
+    "providerHeading": "Wir haben eine Buchung erstattet",
+    "providerIntro": "Der Yaiwell-Support hat einen Vorfall deines Betriebs bei der Buchung von {client} bearbeitet und erstattet den vollen Betrag ({amount}).",
+    "providerBalance": "Dein Anteil an dieser Buchung ({net}, der Betrag ohne Provision) wird deinem Stripe-Guthaben entnommen, und Yaiwell behält keine Provision ein. War er bereits auf deinem Bankkonto, kann dein Guthaben negativ werden und wird mit deinen nächsten Einnahmen verrechnet.",
+    "providerSlotFree": "Der Termin ist wieder frei und kann gebucht werden. Wenn du zu dieser Zeit nicht kannst, sperre ihn im Kalender.",
+    "providerCta": "Kalender öffnen",
+    "providerSubjectPending": "Erstattung in Bearbeitung: {service}, {when}",
+    "providerHeadingPending": "Wir erstatten gerade eine Buchung",
+    "providerIntroPending": "Der Yaiwell-Support hat einen Vorfall deines Betriebs bei der Buchung von {client} bearbeitet und veranlasst die Erstattung des vollen Betrags ({amount}). Sie ist noch nicht abgeschlossen.",
+    "providerBalancePending": "Nach Abschluss wird dein Anteil an dieser Buchung ({net}, der Betrag ohne Provision) deinem Stripe-Guthaben entnommen, und Yaiwell behält keine Provision ein. War er bereits auf deinem Bankkonto, kann dein Guthaben negativ werden und wird mit deinen nächsten Einnahmen verrechnet.",
+    "providerSlotBlocked": "Wir haben diese Zeit in deinem Kalender gesperrt, damit niemand sie bucht. Wenn du doch kannst, kannst du sie dort wieder freigeben.",
+    "providerSlotTaken": "Für diese Zeit gibt es bereits eine andere Buchung bei derselben Fachkraft; sie bleibt in deinem Kalender. Der Support meldet sich bei dir, falls nötig."
   }
 }

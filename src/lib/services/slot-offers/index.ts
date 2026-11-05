@@ -31,6 +31,7 @@ export {
   SlotOfferOutsideWindowError,
   SlotOfferServiceInvalidError,
   SlotOfferSlotTakenError,
+  SlotOfferSourceIncidentError,
   SlotOfferSourceNotCancelledError,
 } from './slot-offers.errors';
 export type {

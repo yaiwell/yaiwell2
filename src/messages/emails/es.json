@@ -150,5 +150,23 @@
     "heading": "Ausencia retirada",
     "intro": "{provider} ha corregido el aviso anterior: tu cita ya no consta como «no presentado».",
     "sanctionRevoked": "Hemos retirado la sanción de tu cuenta: ya no cuenta para el límite de 3 en 12 meses."
+  },
+  "incidentRefund": {
+    "clientSubject": "Te devolvemos el pago de tu reserva en {provider}",
+    "clientHeading": "Te devolvemos tu reserva",
+    "clientIntro": "Ha habido una incidencia con tu reserva en {provider} y te devolvemos el pago.",
+    "clientCta": "Buscar otra hora",
+    "providerSubject": "Reserva reembolsada: {service}, {when}",
+    "providerHeading": "Hemos reembolsado una reserva",
+    "providerIntro": "El equipo de soporte de Yaiwell ha gestionado una incidencia del centro en la reserva de {client} y le devuelve el importe íntegro ({amount}).",
+    "providerBalance": "Se retira de tu saldo de Stripe tu parte de esta reserva ({net}, el importe sin la comisión) y Yaiwell no se queda comisión. Si ya la habías recibido en tu banco, tu saldo puede quedar en negativo y se compensa con tus próximos cobros.",
+    "providerSlotFree": "La franja vuelve a estar libre y se puede reservar. Si no vas a poder atender a esa hora, bloquéala desde el calendario.",
+    "providerCta": "Abrir el calendario",
+    "providerSubjectPending": "Reembolso en trámite: {service}, {when}",
+    "providerHeadingPending": "Estamos reembolsando una reserva",
+    "providerIntroPending": "El equipo de soporte de Yaiwell ha gestionado una incidencia del centro en la reserva de {client} y está tramitando la devolución del importe íntegro ({amount}). Aún no se ha completado.",
+    "providerBalancePending": "Cuando se complete, se retirará de tu saldo de Stripe tu parte de esta reserva ({net}, el importe sin la comisión) y Yaiwell no se quedará comisión. Si ya la habías recibido en tu banco, tu saldo podrá quedar en negativo y se compensará con tus próximos cobros.",
+    "providerSlotBlocked": "Hemos bloqueado esa franja en tu calendario para que nadie la reserve. Si al final puedes atender, puedes desbloquearla desde allí.",
+    "providerSlotTaken": "Esa franja ya tiene otra reserva con el mismo profesional y sigue en tu calendario. Soporte se pondrá en contacto contigo si hace falta."
   }
 }

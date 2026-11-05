@@ -150,5 +150,23 @@
     "heading": "Missed appointment removed",
     "intro": "{provider} has corrected the previous notice: your appointment is no longer recorded as missed.",
     "sanctionRevoked": "We’ve removed the penalty from your account: it no longer counts towards the limit of 3 in 12 months."
+  },
+  "incidentRefund": {
+    "clientSubject": "We are refunding your booking at {provider}",
+    "clientHeading": "We are refunding your booking",
+    "clientIntro": "There was an incident with your booking at {provider}, so we are returning your payment.",
+    "clientCta": "Find another time",
+    "providerSubject": "Booking refunded: {service}, {when}",
+    "providerHeading": "We have refunded a booking",
+    "providerIntro": "The Yaiwell support team has handled an incident at your centre on {client}'s booking and is returning the full amount ({amount}).",
+    "providerBalance": "Your share of this booking ({net}, the amount without commission) is taken from your Stripe balance and Yaiwell keeps no commission. If it had already reached your bank, your balance may go negative and is offset against your next payments.",
+    "providerSlotFree": "The slot is free again and can be booked. If you cannot serve at that time, block it from the calendar.",
+    "providerCta": "Open the calendar",
+    "providerSubjectPending": "Refund in progress: {service}, {when}",
+    "providerHeadingPending": "We are refunding a booking",
+    "providerIntroPending": "The Yaiwell support team has handled an incident at your centre on {client}'s booking and is processing the return of the full amount ({amount}). It has not been completed yet.",
+    "providerBalancePending": "Once completed, your share of this booking ({net}, the amount without commission) will be taken from your Stripe balance and Yaiwell will keep no commission. If it had already reached your bank, your balance may go negative and will be offset against your next payments.",
+    "providerSlotBlocked": "We have blocked this slot in your calendar so nobody can book it. If you can serve after all, you can unblock it from there.",
+    "providerSlotTaken": "That slot already has another booking with the same professional, and it stays in your calendar. Support will contact you if needed."
   }
 }

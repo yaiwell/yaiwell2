@@ -530,7 +530,8 @@
           "outsideWindow": "This slot can no longer be released: it starts too soon or outside the allowed window.",
           "alreadyExists": "This slot has already been released.",
           "serviceInvalid": "This service can't be offered in this slot.",
-          "internal": "The slot couldn't be released. Please try again in a few minutes."
+          "internal": "The slot couldn't be released. Please try again in a few minutes.",
+          "incident": "Support cancelled this booking because the centre could not serve it: this time cannot be released at a discount."
         },
         "free": {
           "title": "Free slots in the next 2 h",
@@ -1544,6 +1545,84 @@
           "FORBIDDEN": "Your session does not have admin permissions to dismiss the refund for {provider}.",
           "INTERNAL": "Unexpected error while dismissing the refund for {provider}. Try again in a few minutes."
         }
+      },
+      "incident": {
+        "title": "Refund for a centre incident",
+        "intro": "For when the centre cannot serve the client and can no longer cancel on its own: last-minute bookings, under 2 h, or an appointment already started or past. It cancels the booking and returns 100 % to the client; the centre’s net share, without the commission, is taken from its balance.",
+        "lookup": {
+          "label": "Booking ID",
+          "submit": "Search",
+          "pending": "Searching…"
+        },
+        "summary": {
+          "provider": "Centre",
+          "service": "Service",
+          "appointment": "Appointment",
+          "amount": "Amount",
+          "status": "Status"
+        },
+        "statuses": {
+          "pending": "Awaiting payment",
+          "confirmed": "Confirmed",
+          "completed": "Completed",
+          "cancelled": "Cancelled",
+          "refunded": "Refunded",
+          "no_show": "No-show"
+        },
+        "ineligible": {
+          "onsite": "This booking is paid at the venue: there is no in-app charge to return. The centre handles it directly with the client.",
+          "no_payment": "This booking has no payment in Stripe: there is nothing to return.",
+          "status": "Only confirmed or completed bookings can be refunded this way, and this one is in another status.",
+          "already_refunded": "The money for this booking has already been returned. Nothing else to do.",
+          "in_queue": "The refund for this booking already failed and is still in the queue above: retry it from there.",
+          "in_progress": "This booking has just been cancelled for an incident and its refund may still be in progress. Search for it again in a few minutes.",
+          "partially_refunded": "This payment already has a manual partial refund. Return the rest from the Stripe dashboard, reversing the transfer and the commission.",
+          "disputed": "This payment has a chargeback: the dispute decides the money. Review it in the Stripe dashboard before doing anything.",
+          "stripe_unavailable": "Stripe is not responding and we cannot check this payment, so it cannot be refunded now. Search for it again in a few minutes."
+        },
+        "confirm": {
+          "warning": "This cannot be undone: the booking is cancelled and both client and centre are notified. If the appointment has not started, the slot is blocked in the centre’s schedule, and the centre can unblock it from its calendar.",
+          "label": "Cancel and refund {amount}",
+          "pending": "Refunding…",
+          "resumeWarning": "This booking is already cancelled for an incident, but there is no record of its refund being completed. Completing it cannot return the money twice and uses the reason written at the time.",
+          "resumeLabel": "Complete the refund of {amount}",
+          "resendHint": "If the process stopped right after returning the money, the notices may not have gone out. Resending them moves no money, and an identical email is not repeated for 24 h.",
+          "resendLabel": "Resend the notices"
+        },
+        "note": {
+          "label": "Reason for the incident",
+          "hint": "Required, {min} to {max} characters. Stored in Stripe with your user. Do not include personal data.",
+          "invalid": "Enter a reason of {min} to {max} characters."
+        },
+        "outcome": {
+          "issued": "Booking cancelled and refund of {amount} issued. Stripe will confirm it shortly.",
+          "already_refunded": "Stripe reports this payment was already returned, so no other refund was issued. The booking stays cancelled.",
+          "failed": "Booking cancelled, but Stripe did not accept the refund of {amount}: the money has not been returned. It stays in the queue above to be retried.",
+          "failed_unrecorded": "Booking cancelled, but the refund of {amount} was not completed and we could not add it to the queue either: the money has not been returned. Search for the booking again in a few minutes and press “Complete the refund”."
+        },
+        "errors": {
+          "BOOKING_NOT_FOUND": "There is no booking with that ID.",
+          "VALIDATION": "That booking ID is not valid.",
+          "FORBIDDEN": "Your session does not have admin permissions for this action.",
+          "CONFLICT": "Another action has changed this booking. Search for it again to see its status.",
+          "INTERNAL": "Unexpected error: we do not know whether it was applied. Search for the booking again before retrying."
+        },
+        "reset": "Search for another booking",
+        "slot": {
+          "blocked": "The slot is blocked in the centre’s schedule, and the centre can unblock it from its calendar.",
+          "not_blocked": "We could not block the slot and it can be booked: ask the centre to block it from its calendar.",
+          "taken": "Another booking already has that time with that professional, so it was not blocked. Check with the centre whether it can serve that appointment."
+        }
+      },
+      "unfinished": {
+        "title": "Unfinished refunds",
+        "subtitle": "Bookings cancelled for an incident whose refund is recorded neither as issued nor as failed: the money may still not have been returned. Completing it cannot return it twice.",
+        "amount": "Amount",
+        "appointment": "Appointment",
+        "markedAt": "Cancelled",
+        "label": "Complete",
+        "pending": "Completing…",
+        "aria": "Complete the refund for {provider}"
       }
     },
     "sanctions": {

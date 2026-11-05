@@ -74,6 +74,7 @@ export type SlotOfferErrorKey =
   | 'notFound'
   | 'forbidden'
   | 'notCancelled'
+  | 'incident'
   | 'slotTaken'
   | 'outsideWindow'
   | 'alreadyExists'
@@ -86,6 +87,7 @@ export const SLOT_OFFER_ERROR_KEYS: Record<SlotOfferActionCode, SlotOfferErrorKe
   NOT_FOUND: 'notFound',
   FORBIDDEN: 'forbidden',
   NOT_CANCELLED: 'notCancelled',
+  INCIDENT: 'incident',
   SLOT_TAKEN: 'slotTaken',
   OUTSIDE_WINDOW: 'outsideWindow',
   ALREADY_EXISTS: 'alreadyExists',
