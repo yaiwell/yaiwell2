@@ -30,6 +30,8 @@ const repoMock = vi.hoisted(() => ({
 vi.mock('./billing.repository', () => ({ billingRepository: repoMock }));
 
 const applyPlanLimitsMock = vi.hoisted(() => vi.fn());
+const founderSeatMock = vi.hoisted(() => vi.fn());
+vi.mock('./billing.founder-seat', () => ({ hasActiveFounderSeat: founderSeatMock }));
 vi.mock('./billing.plan-limits', () => ({ applyPlanLimits: applyPlanLimitsMock }));
 
 import { BillingProviderNotFoundError } from './billing.errors';
@@ -72,6 +74,33 @@ beforeEach(() => {
   repoMock.findPlanByTier.mockImplementation(async (tier: string) => planBy(tier));
   repoMock.findPlanById.mockImplementation(async (id: string) => planBy(id));
   repoMock.lockProviderPlan.mockResolvedValue('plan-free');
+  founderSeatMock.mockResolvedValue(false);
+});
+
+describe('syncSubscription — año de regalo', () => {
+  it('una suscripción muerta no baja el plan de regalo', async () => {
+    founderSeatMock.mockResolvedValue(true);
+    repoMock.lockProviderPlan.mockResolvedValue('plan-premium');
+    givenRow({ stripeSubscriptionId: 'sub_1', subscriptionStatus: 'active' });
+    stripeHas(buildSubscription({ status: 'canceled', tier: 'pro' }));
+
+    const result = await syncSubscription('sub_1');
+
+    expect(repoMock.setProviderPlan).not.toHaveBeenCalled();
+    expect(applyPlanLimitsMock).not.toHaveBeenCalled();
+    expect(result.planChanged).toBeUndefined();
+  });
+
+  it('un Checkout pagado durante el regalo se cancela sin tocar el plan', async () => {
+    founderSeatMock.mockResolvedValue(true);
+    stripeHas(buildSubscription({ status: 'active', tier: 'pro' }));
+
+    await syncSubscription('sub_1');
+
+    expect(stripeMock.subscriptions.cancel).toHaveBeenCalled();
+    expect(repoMock.setProviderPlan).not.toHaveBeenCalled();
+    expect(repoMock.writeMirror).not.toHaveBeenCalled();
+  });
 });
 
 describe('syncSubscription — estado → plan', () => {

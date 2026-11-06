@@ -9,7 +9,14 @@ import { isLiveSubscriptionStatus } from '@/lib/utils/plan-billing';
 import { PlanActionError, planSharedStyles as shared } from '../plan-shared';
 
 import { PlanCard } from './PlanCard';
-import { ctaActionKey, getPlanCta, hasScheduledChange, isActionableCta } from './PlanPicker.logic';
+import {
+  ctaActionKey,
+  getFounderPlanCta,
+  getPlanCta,
+  hasScheduledChange,
+  isActionableCta,
+  pickerHintKey,
+} from './PlanPicker.logic';
 import { planPickerStyles as s } from './PlanPicker.styles';
 import type { PlanPickerProps } from './PlanPicker.types';
 import { usePlanPicker } from './usePlanPicker';
@@ -44,12 +51,12 @@ export function PlanPicker({ plans, summary, locale, preselectedTier = null }: P
 
       <div className={s.grid}>
         {plans.map((plan) => {
-          const kind = getPlanCta(
+          const kind = getFounderPlanCta(
+            summary.founderSeat,
             currentTier,
             plan.tier,
-            summary.subscriptionStatus,
             live,
-            schedule,
+            getPlanCta(currentTier, plan.tier, summary.subscriptionStatus, live, schedule),
           );
           const isCurrent = kind === 'current';
           const actionable = isActionableCta(kind);
@@ -94,7 +101,7 @@ export function PlanPicker({ plans, summary, locale, preselectedTier = null }: P
         })}
       </div>
 
-      <p className={s.hint}>{locked ? t('picker.lockedHint') : t('picker.stripeHint')}</p>
+      <p className={s.hint}>{t(`picker.${pickerHintKey(summary.founderSeat, locked)}`)}</p>
     </section>
   );
 }

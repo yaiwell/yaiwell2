@@ -43,6 +43,9 @@ export function resolveBillingBanner(
     };
   }
 
+  // Con el plan de regalo no hay ningún cobro que resolver.
+  if (summary.founderSeat?.locked) return null;
+
   const status = summary.subscriptionStatus;
   if (status === 'past_due') {
     return {

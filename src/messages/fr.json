@@ -969,7 +969,8 @@
         "title": "Formules",
         "subtitle": "Prix mensuels, TVA incluse. Vous pouvez changer de formule ou résilier à tout moment.",
         "stripeHint": "Le paiement et les changements de formule sont confirmés sur la page sécurisée de Stripe. En cas de passage à une formule inférieure, le changement s’applique à la fin de la période déjà payée.",
-        "lockedHint": "Vous avez déjà un changement de formule programmé. Vous pourrez en choisir une autre une fois celui-ci appliqué, ou l’annuler depuis « Factures et carte »."
+        "lockedHint": "Vous avez déjà un changement de formule programmé. Vous pourrez en choisir une autre une fois celui-ci appliqué, ou l’annuler depuis « Factures et carte ».",
+        "founderHint": "Pendant l’année offerte, vous n’avez rien à souscrire. Vous pourrez choisir une formule dès la veille de la fin."
       },
       "summary": {
         "title": "Votre formule",
@@ -983,7 +984,9 @@
         "endsOn": "Se termine le {date}. Vous passerez ensuite à la formule Gratuite.",
         "pausedByPlan": "{count, plural, one {# service est masqué} other {# services sont masqués}} en raison de la limite de votre formule.",
         "changePlan": "Changer de formule",
-        "invoices": "Factures et carte"
+        "invoices": "Factures et carte",
+        "founderPrice": "Cadeau de lancement",
+        "founderUntil": "Votre année offerte se termine le {date}. Vous pourrez choisir une formule dès la veille ; sinon, vous passerez à Gratuit."
       },
       "banner": {
         "viewPlan": "Voir ma formule",
@@ -1019,7 +1022,8 @@
       "notices": {
         "checkoutCancelled": "Vous avez quitté le paiement. Rien ne vous a été facturé.",
         "checkoutFailed": "Nous n’avons pas pu ouvrir le paiement de la formule {plan}. Votre établissement est déjà publié en formule Gratuite ; vous pouvez souscrire à {plan} depuis cette page.",
-        "confirmFailed": "Nous n’avons pas pu confirmer ce paiement. Si un débit a eu lieu, la formule sera activée dans quelques minutes."
+        "confirmFailed": "Nous n’avons pas pu confirmer ce paiement. Si un débit a eu lieu, la formule sera activée dans quelques minutes.",
+        "founderRefunded": "Vous avez déjà Premium en cadeau : nous avons donc annulé cet abonnement et nous vous remboursons votre paiement."
       },
       "errors": {
         "INVALID_INPUT": "Un élément de la demande est incorrect. Rechargez la page et réessayez.",
@@ -1489,6 +1493,15 @@
           "FORBIDDEN": "Vous n’avez pas l’autorisation pour cette action.",
           "INTERNAL": "Une erreur s’est produite. Réessayez."
         }
+      },
+      "founderSeat": {
+        "title": "Cadeau Majorque",
+        "seated": "À la place {seat}, jusqu’au {date}.",
+        "willGrant": "À la validation, il recevra la place {seat} et un an de Premium.",
+        "no_service": "À Majorque, mais il ne recevra pas de place : aucun service publié.",
+        "no_schedule": "À Majorque, mais il ne recevra pas de place : aucun horaire.",
+        "paid_subscription": "À Majorque, mais il ne recevra pas de place : il paie déjà un abonnement.",
+        "seats_exhausted": "À Majorque, mais il ne recevra pas de place : il n’en reste plus."
       }
     },
     "refunds": {
@@ -1792,15 +1805,15 @@
           "feature1": "Jusqu’à 50 services publiés",
           "feature2": "Jusqu’à 15 professionnels",
           "feature3": "Promotions sur les créneaux isolés",
-          "feature4": "Assistance prioritaire sous 24 h"
+          "feature4": "Tout ce que comprend Basique"
         },
         "premium": {
           "name": "Premium",
           "tagline": "Pour les établissements qui ne veulent pas de limites.",
           "feature1": "Services et professionnels illimités",
           "feature2": "La commission la plus basse de Yaiwell",
-          "feature3": "Responsable de compte dédié",
-          "feature4": "Mise en route accompagnée par l’équipe"
+          "feature3": "Tout ce que comprend Pro",
+          "feature4": "Sans engagement"
         }
       }
     },
@@ -1840,6 +1853,14 @@
       "subtitle": "Créez votre compte gratuitement en moins de 5 minutes. Sans carte, sans engagement, sans obligation.",
       "primary": "Créer un compte gratuit",
       "secondary": "Contact commercial"
+    },
+    "founderPromo": {
+      "eyebrow": "Uniquement à Majorque",
+      "title": "Un an de Premium offert aux {total} premiers établissements",
+      "body": "Sans carte et sans renouvellement automatique. Pendant 12 mois, services et professionnels illimités et la commission la plus basse de Yaiwell.",
+      "remaining": "{remaining, plural, one {Il reste # place} other {Il reste # places}}",
+      "conditions": "Pour les établissements de Majorque ayant au moins un service et des horaires lors de notre validation, et sans abonnement payant : pour en bénéficier, choisissez Gratuit à l’inscription. L’année commence ce jour-là. La commission par réservation reste due. À la fin, vous passez à Gratuit, sauf si vous choisissez une formule.",
+      "cta": "Je veux ma place"
     }
   },
   "signIn": {

@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { prisma } from '@/lib/db/prisma';
+import { grantFounderSeat } from '@/lib/services/billing';
 
 import type { VerificationStatus } from './verification.types';
 
@@ -147,6 +148,8 @@ export const verificationRepository = {
         },
         select: { id: true },
       });
+      // Misma transacción: nunca un negocio aprobado sin la plaza que le toca.
+      if (status === 'approved') await grantFounderSeat(tx, providerId, new Date());
       return decision.id;
     });
   },

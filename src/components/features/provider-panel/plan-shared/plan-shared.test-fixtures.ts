@@ -17,6 +17,7 @@ export function buildSummary(patch: Partial<ProviderBillingSummary> = {}): Provi
     scheduledTier: null,
     scheduledChangeAt: null,
     lastPaymentFailedAt: null,
+    founderSeat: null,
     ...patch,
   };
 }

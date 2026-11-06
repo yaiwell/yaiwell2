@@ -3,11 +3,13 @@ import 'server-only';
 import type Stripe from 'stripe';
 
 import type { AppLocale } from '@/i18n/routing';
+import { prisma } from '@/lib/db/prisma';
 import { getStripeClient } from '@/lib/integrations/stripe';
 
 import { toStripeLocale } from './billing.catalog';
 import { reuseOrExpireOpenSessions } from './billing.checkout-sessions';
 import { invoiceCommissionsBeforePlan } from './billing.commission.pre-plan';
+import { hasActiveFounderSeat } from './billing.founder-seat';
 import { ensureBillingCustomer } from './billing.customer';
 import {
   BillingStripeError,
@@ -69,6 +71,10 @@ export async function createPlanCheckoutSession(
   const parsedTier = paidPlanTierSchema.safeParse(tier);
   if (!parsedTier.success) throw new PlanNotPurchasableError();
   const parsedLocale = billingLocaleSchema.parse(locale);
+  // Durante el regalo no se vende ningún plan: se contrata al terminar.
+  if (await hasActiveFounderSeat(prisma, providerId, new Date())) {
+    throw new PlanNotPurchasableError();
+  }
 
   const mirror = await billingRepository.findByProviderId(providerId);
   if (mirror?.subscriptionStatus && isLiveStatus(mirror.subscriptionStatus)) {

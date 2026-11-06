@@ -247,6 +247,9 @@ model Provider {
   /// propósito: la ficha lo enseña. Al reservar se exige además método de
   /// pago listo y sin comisiones impagadas (`ProviderBilling`).
   acceptsOnsitePayment Boolean                               @default(false)
+  /// Primera aprobación evaluada para el regalo de Mallorca (migración 9l).
+  /// La elegibilidad se congela ahí: reaprobar no da otra oportunidad.
+  founderEvaluatedAt   DateTime?
 
   /// Verificación operativa: solo `approved` puede recibir reservas reales.
   verificationStatus VerificationStatus @default(pending)
@@ -282,6 +285,7 @@ model Provider {
   verificationRequests VerificationRequest[]
   billing              ProviderBilling?
   onsiteCommissions    OnsiteCommissionCharge[]
+  founderSeat          FounderSeat?
 
   @@index([userId])
   @@index([planId])
@@ -610,6 +614,29 @@ model VerificationRequest {
   @@index([providerId, status])
   @@index([status, createdAt])
   @@map("verification_requests")
+}
+
+/// Plaza del año de Premium de regalo en Mallorca (migración 9l, CLAUDE.md §4.bis).
+/// Sin suscripción ni cupón de Stripe. Las plazas usadas no se liberan.
+model FounderSeat {
+  id              String    @id @default(uuid())
+  providerId      String    @unique
+  seatNumber      Int       @unique
+  startsAt        DateTime
+  endsAt          DateTime
+  notified60At    DateTime?
+  notified15At    DateTime?
+  endedAt         DateTime?
+  /// Aviso de fin enviado (o innecesario, si ya paga un plan). Si falla, se reintenta.
+  notifiedEndedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  provider Provider @relation(fields: [providerId], references: [id], onDelete: Restrict)
+
+  @@index([endedAt, endsAt])
+  @@map("founder_seats")
 }
 
 /// Plan de suscripción del proveedor.

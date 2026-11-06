@@ -245,7 +245,12 @@
   - [ ] Máx. 60 días medido en ms: 60 días civiles que cruzan el cambio de hora de octubre dan `TOO_LONG`; y un fin en la hora duplicada de octubre toma la primera aparición. Comparar días civiles.
   - [ ] Quitar un bloqueo no restaura las ofertas que retiró: avisarlo en el diálogo.
   - [ ] `ScheduleBlockNoProfessionalError` acaba como `INTERNAL` y en Sentry: darle código propio.
-- [ ] **Promesas de planes por confirmar** (2026-11-04, decisión del dev): `Account manager dedicado`, `Soporte prioritario en 24 h`, `Soporte por email en 48 h`, «Onboarding asistido» y «Promociones de huecos sueltos» como ventaja de Pro (no depende del plan).
+- [ ] **Promesas de planes por confirmar** (2026-11-04, decisión del dev): `Soporte por email en 48 h` y «Promociones de huecos sueltos» como ventaja de Pro (no depende del plan). Las de account manager, soporte en 24 h y onboarding asistido ya se han quitado.
+- [ ] **Regalo de Mallorca: flecos** (2026-11-06):
+  - Probar en modo test el Checkout pagado con plaza vigente y añadir correo propio al reembolso (hoy: aviso en el panel y Sentry para soporte).
+  - Decidir qué hace soporte con un negocio que pagó un plan antes de aprobarse (se queda sin plaza) y con uno rechazado tras recibirla (conserva plaza y avisos).
+  - Filtro «Mallorca» en el buscador de la portada: la búsqueda mira la dirección, que suele decir «Illes Balears»; hace falta filtrar por el rectángulo de la isla.
+  - El correo del regalo no se filtra por negocio borrado o dueño sin cuenta; borrar `updatePlan` (código muerto) de `provider-onboarding.repository.ts`; aviso propio en el asistente si lo aprueban a mitad del alta; límite de plazas por dueño cuando exista el multi-centro.
 - [ ] **Huecos a 30-33 min** (2026-11-04, decisión del dev): desde que el pago exige 30 min, un hueco ofrecido a 30:40 se puede elegir pero no pagar si el cliente tarda más de 40 s. Opciones: ofrecer solo desde 35 min (constante única en `booking-lead-time.ts`) o aceptarlo.
 - [ ] **Avisos a soporte en pagos** (2026-11-04): a Sentry cuando la caducidad falla en la comprobación previa (hoy `console.error`) y cuando un webhook retrasado reembolsa una cita ya empezada (hoy `console.warn`). Si se activan métodos asíncronos, igualar el `paidAt` del webhook (`event.created`) y del cron (`charge.created`).
 - [ ] **Desactivar en Clerk la autoeliminación de usuarios** (paso manual del dev, en instancia de desarrollo y de producción: *User & authentication › Delete account*): la web usa su propio botón con las reglas de negocio. Si sigue activa, una llamada directa a Clerk se salta los bloqueos; en ese caso el webhook conserva los datos y avisa a Sentry.
@@ -260,7 +265,7 @@
   - [ ] Los servicios y descripciones que escriben los negocios no se traducen: en `/fr` salen en el idioma original. `search_vector` no indexa francés.
   - [ ] Las categorías en BD no tienen `en` ni `de` (solo `es`, `ca` y, con 9i, `fr`): en inglés y alemán salen en castellano.
 - [ ] **Equipo, flecos** (auditorías 2026-11-03):
-  - [ ] **Migración 9l** (la 9j es la de las columnas públicas de `providers` y la 9k, la del reembolso por incidencia): repetir el relleno de `service_professionals` y borrar la columna obsoleta `services.professionalId` (hoy se sigue escribiendo con el primer profesional asignado).
+  - [ ] **Migración 9m** (la 9j es la de las columnas públicas de `providers`, la 9k, la del reembolso por incidencia y la 9l, la de las plazas del regalo): repetir el relleno de `service_professionals` y borrar la columna obsoleta `services.professionalId` (hoy se sigue escribiendo con el primer profesional asignado).
   - [ ] Editar un servicio publicado deja asignarlo solo a profesionales fuera de plan (el servicio queda sin huecos); `updateServiceAction` no toma el lock del negocio que usa el equipo. Exigir al menos uno dentro del cupo.
   - [ ] Test que compare el corte de plan en SQL (`ROW_NUMBER` en `availability.repository.team.ts`) con `selectBookableIds`.
   - [ ] `checkout` debería devolver el `professionalId` asignado (hoy la acción lo lee de la reserva con una consulta extra en «cualquiera»); y un error propio que distinga «el profesional elegido no lo presta» de «nadie lo presta».

@@ -1,6 +1,7 @@
 import { ForProvidersBenefits } from '../ForProvidersBenefits';
 import { ForProvidersCTA } from '../ForProvidersCTA';
 import { ForProvidersFAQ } from '../ForProvidersFAQ';
+import { ForProvidersFounderPromo } from '../ForProvidersFounderPromo';
 import { ForProvidersHero } from '../ForProvidersHero';
 import { ForProvidersPricing } from '../ForProvidersPricing';
 
@@ -21,10 +22,13 @@ import type { ForProvidersLandingProps } from './ForProvidersLanding.types';
  * publicar: el resto del embudo funciona igual sin la sección de
  * precios, así que la ausencia de planes no tumba la página entera.
  */
-export function ForProvidersLanding({ plans }: ForProvidersLandingProps) {
+export function ForProvidersLanding({ plans, founderPromo = null }: ForProvidersLandingProps) {
   return (
     <div className={s.root} data-component="for-providers-landing">
       <ForProvidersHero />
+      {founderPromo && founderPromo.remaining > 0 && (
+        <ForProvidersFounderPromo availability={founderPromo} />
+      )}
       <ForProvidersBenefits />
       {plans && <ForProvidersPricing plans={plans} />}
       <ForProvidersFAQ />

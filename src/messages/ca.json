@@ -969,7 +969,8 @@
         "title": "Plans",
         "subtitle": "Preus al mes amb IVA inclòs. Pots canviar o cancel·lar quan vulguis.",
         "stripeHint": "El pagament i els canvis de pla es confirmen a la pàgina segura de Stripe. Si baixes de pla, el canvi s’aplica al final del període ja pagat.",
-        "lockedHint": "Ja tens un canvi de pla programat. En podràs triar un altre quan s’apliqui, o desfer-lo des de «Factures i targeta»."
+        "lockedHint": "Ja tens un canvi de pla programat. En podràs triar un altre quan s’apliqui, o desfer-lo des de «Factures i targeta».",
+        "founderHint": "Durant l’any de regal no has de contractar res. Podràs triar pla des del dia anterior que acabi."
       },
       "summary": {
         "title": "El teu pla",
@@ -983,7 +984,9 @@
         "endsOn": "S’acaba el {date}. Després passaràs a Gratis.",
         "pausedByPlan": "{count, plural, one {# servei està ocult} other {# serveis estan ocults}} pel límit del teu pla.",
         "changePlan": "Canviar de pla",
-        "invoices": "Factures i targeta"
+        "invoices": "Factures i targeta",
+        "founderPrice": "Regal de llançament",
+        "founderUntil": "El teu any de regal acaba el {date}. Podràs contractar un pla des del dia anterior; si no, passaràs a Gratis."
       },
       "banner": {
         "viewPlan": "Veure el meu pla",
@@ -1019,7 +1022,8 @@
       "notices": {
         "checkoutCancelled": "Has sortit del pagament. No se t’ha cobrat res.",
         "checkoutFailed": "No hem pogut obrir el pagament del pla {plan}. El teu negoci ja està publicat en Gratis; el pots contractar des d’aquí.",
-        "confirmFailed": "No hem pogut confirmar aquest pagament. Si se t’ha cobrat, el pla s’activarà en uns minuts."
+        "confirmFailed": "No hem pogut confirmar aquest pagament. Si se t’ha cobrat, el pla s’activarà en uns minuts.",
+        "founderRefunded": "Ja tens el pla Premium de regal, així que hem cancel·lat aquesta subscripció i et retornem el que has pagat."
       },
       "errors": {
         "INVALID_INPUT": "Alguna cosa no quadra en la petició. Recarrega la pàgina i torna-ho a provar.",
@@ -1489,6 +1493,15 @@
           "FORBIDDEN": "No tens permís per a aquesta acció.",
           "INTERNAL": "Alguna cosa ha fallat. Torna-ho a provar."
         }
+      },
+      "founderSeat": {
+        "title": "Regal de Mallorca",
+        "seated": "Té la plaça {seat}, fins al {date}.",
+        "willGrant": "En aprovar-lo rebrà la plaça {seat} i un any de Premium.",
+        "no_service": "És de Mallorca, però no rebrà plaça: no té cap servei publicat.",
+        "no_schedule": "És de Mallorca, però no rebrà plaça: no té horari.",
+        "paid_subscription": "És de Mallorca, però no rebrà plaça: ja paga una subscripció.",
+        "seats_exhausted": "És de Mallorca, però no rebrà plaça: ja no en queden."
       }
     },
     "refunds": {
@@ -1792,15 +1805,15 @@
           "feature1": "Fins a 50 serveis publicats",
           "feature2": "Fins a 15 professionals",
           "feature3": "Promocions de forats solts",
-          "feature4": "Suport prioritari en 24 h"
+          "feature4": "Tot el que inclou Bàsic"
         },
         "premium": {
           "name": "Premium",
           "tagline": "Per a negocis que no volen límits.",
           "feature1": "Serveis i professionals il·limitats",
           "feature2": "La comissió més baixa de Yaiwell",
-          "feature3": "Account manager dedicat",
-          "feature4": "Onboarding assistit per l'equip"
+          "feature3": "Tot el que inclou Pro",
+          "feature4": "Sense permanència"
         }
       }
     },
@@ -1840,6 +1853,14 @@
       "subtitle": "Crea el teu compte gratis en menys de 5 minuts. Sense targeta, sense permanència, sense compromís.",
       "primary": "Crear compte gratis",
       "secondary": "Parlar amb vendes"
+    },
+    "founderPromo": {
+      "eyebrow": "Només a Mallorca",
+      "title": "Un any de Premium, de regal, per als {total} primers negocis",
+      "body": "Sense targeta i sense renovació automàtica. Durant 12 mesos tens serveis i professionals il·limitats i la comissió més baixa de Yaiwell.",
+      "remaining": "{remaining, plural, one {Queda # plaça} other {Queden # places}}",
+      "conditions": "Per a negocis de Mallorca amb almenys un servei i horari quan els aprovem, i sense cap subscripció de pagament: per optar a la plaça, tria Gratis en donar-te d’alta. L’any comença aquell dia. La comissió per reserva es continua cobrant. En acabar passes a Gratis, llevat que contractis un pla.",
+      "cta": "Vull la meva plaça"
     }
   },
   "signIn": {

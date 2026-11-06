@@ -1,17 +1,29 @@
-import { buildEmailUrl } from './notifications.format';
+import { buildEmailUrl, formatEmailDate } from './notifications.format';
 import { getEmailTranslator } from './notifications.i18n';
 import { closing, greet } from './notifications.template-helpers';
 import type { EmailContent, ProviderEmailContext } from './notifications.types';
 
-/** Aviso al dueño de que su negocio ya está publicado. */
-export function buildProviderApprovedEmail(ctx: ProviderEmailContext): EmailContent {
+/**
+ * Aviso al dueño de que su negocio ya está publicado.
+ *
+ * @param founderEndsAt — fin del año de regalo si le ha tocado plaza.
+ */
+export function buildProviderApprovedEmail(
+  ctx: ProviderEmailContext,
+  founderEndsAt: Date | null = null,
+): EmailContent {
   const { locale } = ctx.owner;
   const t = getEmailTranslator(locale);
   return {
     subject: t('providerApproved.subject', { provider: ctx.name }),
     heading: t('providerApproved.heading'),
     greeting: greet(t, ctx.owner),
-    paragraphs: [t('providerApproved.intro', { provider: ctx.name })],
+    paragraphs: [
+      t('providerApproved.intro', { provider: ctx.name }),
+      ...(founderEndsAt
+        ? [t('providerApproved.founder', { date: formatEmailDate(founderEndsAt, locale) })]
+        : []),
+    ],
     details: [],
     cta: { label: t('providerApproved.cta'), url: buildEmailUrl(locale, '/panel') },
     ...closing(t),

@@ -104,3 +104,13 @@ export async function hasOpenPlanCheckout(customerId: string): Promise<boolean> 
     throw new BillingStripeError('Could not list open checkout sessions.', err);
   }
 }
+
+/**
+ * Caduca todos los Checkout de plan abiertos del Customer.
+ *
+ * @throws BillingStripeError — si Stripe no responde.
+ */
+export async function expireOpenPlanCheckouts(customerId: string): Promise<void> {
+  // Reutiliza el reparto de abajo: ninguna sesión coincide con un tier vacío.
+  await reuseOrExpireOpenSessions(customerId, { tier: '', stripeLocale: '', successUrl: '' });
+}

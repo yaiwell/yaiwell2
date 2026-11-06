@@ -29,6 +29,9 @@ const repoMock = vi.hoisted(() => ({
   setProviderPlan: vi.fn(),
 }));
 vi.mock('./billing.repository', () => ({ billingRepository: repoMock }));
+vi.mock('./billing.founder-seat', () => ({
+  hasActiveFounderSeat: vi.fn().mockResolvedValue(false),
+}));
 vi.mock('./billing.plan-limits', () => ({ applyPlanLimits: vi.fn() }));
 
 import { SubscriptionSyncConflictError } from './billing.errors';

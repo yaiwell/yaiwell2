@@ -25,6 +25,14 @@ function toRecipient(user: {
  * explícito: el correo no necesita nada más que lo que pinta.
  */
 export const notificationsRepository = {
+  async findActiveFounderSeatEnd(providerId: string): Promise<Date | null> {
+    const seat = await prisma.founderSeat.findFirst({
+      where: { providerId, endedAt: null },
+      select: { endsAt: true },
+    });
+    return seat?.endsAt ?? null;
+  },
+
   async findBookingContext(bookingId: string): Promise<BookingEmailContext | null> {
     const row = await prisma.booking.findUnique({
       where: { id: bookingId },

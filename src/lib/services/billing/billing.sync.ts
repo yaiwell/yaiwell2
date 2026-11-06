@@ -7,6 +7,7 @@ import { prisma } from '@/lib/db/prisma';
 
 import { resolveDuplicateSubscription } from './billing.duplicates';
 import { BillingProviderNotFoundError, SubscriptionSyncConflictError } from './billing.errors';
+import { hasActiveFounderSeat } from './billing.founder-seat';
 import { applyPlanLimits } from './billing.plan-limits';
 import { billingRepository } from './billing.repository';
 import { customerIdOf, isDeadStatus, isLiveStatus } from './billing.sync.mapping';
@@ -24,6 +25,9 @@ import type { PlanChange, SubscriptionSyncResult } from './billing.types';
  * después que el nuestro). Cada intento vuelve a leer Stripe.
  */
 const MAX_ATTEMPTS = 3;
+
+/** Sustituye al id de la suscripción conservada en el aviso a soporte. */
+const FOUNDER_SEAT_KEPT = 'founder-seat';
 
 /** Lo que decide la transacción con la fila bloqueada. */
 type LockedOutcome =
@@ -135,11 +139,18 @@ async function decideAndWrite(
     if (!isLiveStatus(sub.status)) return { kind: 'ignored' };
     if (storedLive) return { kind: 'duplicate', keptId: storedSeen };
   }
+  // Un Checkout abierto antes de aprobar puede pagarse ya con la plaza dada:
+  // se deshace como una duplicada para no cobrar un plan que tiene de regalo.
+  const founderSeat = await hasActiveFounderSeat(tx, providerId, fetchedAt);
+  if (founderSeat && isLiveStatus(sub.status)) {
+    return { kind: 'duplicate', keptId: FOUNDER_SEAT_KEPT };
+  }
 
   const { mirror, target } = prepared;
   await billingRepository.writeMirror(tx, providerId, mirror, fetchedAt);
   let planChanged: PlanChange | undefined;
-  if (target) {
+  // Con plaza vigente el plan no se toca: una suscripción muerta no lo baja.
+  if (target && !founderSeat) {
     if (target.id !== currentPlanId) {
       const from = await billingRepository.findPlanById(currentPlanId, tx);
       await billingRepository.setProviderPlan(tx, providerId, target.id);

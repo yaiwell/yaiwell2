@@ -45,14 +45,15 @@ const ATTEMPT_TIMEOUT_MS = 8_000;
  * @param refId — reserva o negocio al que se refiere.
  * @param recipient — destinatario.
  * @param content — contenido ya traducido.
+ * @returns `true` si ha salido (o era una dirección de prueba); `false` si no.
  */
 export async function deliverEmail(
   kind: string,
   refId: string,
   recipient: EmailRecipient,
   content: EmailContent,
-): Promise<void> {
-  if (isTestAddress(recipient.email)) return;
+): Promise<boolean> {
+  if (isTestAddress(recipient.email)) return true;
   const message = {
     to: [recipient.email],
     subject: content.subject,
@@ -65,7 +66,7 @@ export async function deliverEmail(
   for (let attempt = 0; ; attempt++) {
     try {
       await withTimeout(sendEmail(message), ATTEMPT_TIMEOUT_MS);
-      return;
+      return true;
     } catch (err) {
       const delay = RETRY_DELAYS_MS[attempt];
       if (err instanceof EmailSendError && err.retryable && delay !== undefined) {
@@ -73,7 +74,7 @@ export async function deliverEmail(
         continue;
       }
       reportNotificationFailure(kind, refId, err);
-      return;
+      return false;
     }
   }
 }

@@ -969,7 +969,8 @@
         "title": "Tarife",
         "subtitle": "Monatspreise inkl. MwSt. Du kannst jederzeit wechseln oder kündigen.",
         "stripeHint": "Zahlung und Tarifwechsel bestätigst du auf der sicheren Seite von Stripe. Wechselst du in einen günstigeren Tarif, gilt das ab Ende des bereits bezahlten Zeitraums.",
-        "lockedHint": "Du hast bereits einen Tarifwechsel geplant. Einen anderen kannst du wählen, sobald er gilt, oder ihn unter „Rechnungen und Karte“ rückgängig machen."
+        "lockedHint": "Du hast bereits einen Tarifwechsel geplant. Einen anderen kannst du wählen, sobald er gilt, oder ihn unter „Rechnungen und Karte“ rückgängig machen.",
+        "founderHint": "Während des Geschenkjahres musst du nichts buchen. Ab dem Tag vor dem Ende kannst du einen Tarif wählen."
       },
       "summary": {
         "title": "Dein Tarif",
@@ -983,7 +984,9 @@
         "endsOn": "Endet am {date}. Danach wechselst du zu Kostenlos.",
         "pausedByPlan": "{count, plural, one {# Leistung ist} other {# Leistungen sind}} durch das Limit deines Tarifs ausgeblendet.",
         "changePlan": "Tarif wechseln",
-        "invoices": "Rechnungen und Karte"
+        "invoices": "Rechnungen und Karte",
+        "founderPrice": "Geschenk zum Start",
+        "founderUntil": "Dein Geschenkjahr endet am {date}. Ab dem Vortag kannst du einen Tarif wählen, sonst wechselst du zu Gratis."
       },
       "banner": {
         "viewPlan": "Meinen Tarif ansehen",
@@ -1019,7 +1022,8 @@
       "notices": {
         "checkoutCancelled": "Du hast die Zahlung verlassen. Es wurde nichts abgebucht.",
         "checkoutFailed": "Wir konnten die Zahlung für den Tarif {plan} nicht öffnen. Dein Geschäft ist bereits im Tarif Kostenlos veröffentlicht; du kannst ihn hier buchen.",
-        "confirmFailed": "Wir konnten diese Zahlung nicht bestätigen. Falls etwas abgebucht wurde, wird der Tarif in wenigen Minuten aktiviert."
+        "confirmFailed": "Wir konnten diese Zahlung nicht bestätigen. Falls etwas abgebucht wurde, wird der Tarif in wenigen Minuten aktiviert.",
+        "founderRefunded": "Du hast Premium bereits geschenkt, deshalb haben wir dieses Abo gekündigt und erstatten dir deine Zahlung."
       },
       "errors": {
         "INVALID_INPUT": "Mit der Anfrage stimmt etwas nicht. Lade die Seite neu und versuche es noch einmal.",
@@ -1489,6 +1493,15 @@
           "FORBIDDEN": "Du hast keine Berechtigung für diese Aktion.",
           "INTERNAL": "Etwas ist schiefgegangen. Bitte erneut versuchen."
         }
+      },
+      "founderSeat": {
+        "title": "Mallorca-Geschenk",
+        "seated": "Hat Platz {seat}, bis zum {date}.",
+        "willGrant": "Bei Freigabe erhält der Betrieb Platz {seat} und ein Jahr Premium.",
+        "no_service": "Auf Mallorca, erhält aber keinen Platz: keine veröffentlichte Leistung.",
+        "no_schedule": "Auf Mallorca, erhält aber keinen Platz: keine Öffnungszeiten.",
+        "paid_subscription": "Auf Mallorca, erhält aber keinen Platz: zahlt bereits ein Abo.",
+        "seats_exhausted": "Auf Mallorca, erhält aber keinen Platz: keine mehr frei."
       }
     },
     "refunds": {
@@ -1792,15 +1805,15 @@
           "feature1": "Bis zu 50 veröffentlichte Leistungen",
           "feature2": "Bis zu 15 Profis",
           "feature3": "Last-Minute-Termin-Aktionen",
-          "feature4": "Priorisierter Support innerhalb von 24 Std."
+          "feature4": "Alles aus Basis"
         },
         "premium": {
           "name": "Premium",
           "tagline": "Für Betriebe, die keine Grenzen wollen.",
           "feature1": "Unbegrenzte Leistungen und Profis",
           "feature2": "Die niedrigste Provision bei Yaiwell",
-          "feature3": "Persönlicher Account Manager",
-          "feature4": "Onboarding mit Unterstützung vom Team"
+          "feature3": "Alles aus Pro",
+          "feature4": "Keine Mindestlaufzeit"
         }
       }
     },
@@ -1840,6 +1853,14 @@
       "subtitle": "Erstelle deinen kostenlosen Account in weniger als 5 Minuten. Ohne Karte, ohne Bindung, ohne Verpflichtung.",
       "primary": "Kostenlosen Account erstellen",
       "secondary": "Mit dem Vertrieb sprechen"
+    },
+    "founderPromo": {
+      "eyebrow": "Nur auf Mallorca",
+      "title": "Ein Jahr Premium geschenkt für die ersten {total} Betriebe",
+      "body": "Ohne Karte und ohne automatische Verlängerung. 12 Monate lang unbegrenzte Leistungen und Fachkräfte und die niedrigste Provision bei Yaiwell.",
+      "remaining": "{remaining, plural, one {Noch # Platz frei} other {Noch # Plätze frei}}",
+      "conditions": "Für Betriebe auf Mallorca, die bei unserer Freigabe mindestens eine Leistung und Öffnungszeiten und kein bezahltes Abo haben: Wähle bei der Anmeldung Gratis, um teilzunehmen. Das Jahr beginnt an diesem Tag. Die Provision pro Buchung fällt weiterhin an. Danach wechselst du zu Gratis, außer du wählst einen Tarif.",
+      "cta": "Platz sichern"
     }
   },
   "signIn": {

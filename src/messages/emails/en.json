@@ -95,7 +95,8 @@
     "subject": "{provider} is now live on Yaiwell",
     "heading": "You're on Yaiwell",
     "intro": "We have reviewed {provider} and it now appears in search results. Your services can be booked from now on.",
-    "cta": "Go to my dashboard"
+    "cta": "Go to my dashboard",
+    "founder": "As a gift, you have free Premium until {date}: no card and no automatic renewal. The commission per booking still applies."
   },
   "providerRejected": {
     "subject": "We need to review some details of {provider}",
@@ -168,5 +169,26 @@
     "providerBalancePending": "Once completed, your share of this booking ({net}, the amount without commission) will be taken from your Stripe balance and Yaiwell will keep no commission. If it had already reached your bank, your balance may go negative and will be offset against your next payments.",
     "providerSlotBlocked": "We have blocked this slot in your calendar so nobody can book it. If you can serve after all, you can unblock it from there.",
     "providerSlotTaken": "That slot already has another booking with the same professional, and it stays in your calendar. Support will contact you if needed."
+  },
+  "founderSeat": {
+    "cta": "See my plan",
+    "first": {
+      "subject": "Your free year for {provider} ends on {date}",
+      "heading": "About 60 days of your gift left",
+      "intro": "Free Premium for {provider} ends on {date}.",
+      "next": "You will not be charged any fee and nothing renews automatically. When it ends you will move to Free: the commission per booking will be that plan’s, and services and professionals over its limit will stop taking bookings. To avoid this, you can choose a plan from the day before."
+    },
+    "last": {
+      "subject": "15 days left of your gift for {provider}",
+      "heading": "Your free year is about to end",
+      "intro": "Free Premium for {provider} ends on {date}.",
+      "next": "You will not be charged any fee and nothing renews automatically. When it ends you will move to Free: the commission per booking will be that plan’s, and services and professionals over its limit will stop taking bookings. To avoid this, you can choose a plan from the day before."
+    },
+    "ended": {
+      "subject": "Your free year for {provider} has ended",
+      "heading": "Your free year has ended",
+      "intro": "Your free year ended on {date} and {provider} is now on the Free plan. You have not been charged any fee.",
+      "next": "The commission per booking is now the Free plan’s, and services and professionals over its limit do not take bookings. If you choose a plan, they come back up to that plan’s limit."
+    }
   }
 }

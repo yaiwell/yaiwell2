@@ -95,7 +95,8 @@
     "subject": "{provider} ist jetzt auf Yaiwell online",
     "heading": "Du bist auf Yaiwell",
     "intro": "Wir haben {provider} geprüft; es erscheint jetzt in den Suchergebnissen. Ab sofort können deine Leistungen gebucht werden.",
-    "cta": "Zu meinem Dashboard"
+    "cta": "Zu meinem Dashboard",
+    "founder": "Als Geschenk hast du Premium kostenlos bis zum {date}: ohne Karte und ohne automatische Verlängerung. Die Provision pro Buchung fällt weiterhin an."
   },
   "providerRejected": {
     "subject": "Wir müssen einige Angaben von {provider} prüfen",
@@ -168,5 +169,26 @@
     "providerBalancePending": "Nach Abschluss wird dein Anteil an dieser Buchung ({net}, der Betrag ohne Provision) deinem Stripe-Guthaben entnommen, und Yaiwell behält keine Provision ein. War er bereits auf deinem Bankkonto, kann dein Guthaben negativ werden und wird mit deinen nächsten Einnahmen verrechnet.",
     "providerSlotBlocked": "Wir haben diese Zeit in deinem Kalender gesperrt, damit niemand sie bucht. Wenn du doch kannst, kannst du sie dort wieder freigeben.",
     "providerSlotTaken": "Für diese Zeit gibt es bereits eine andere Buchung bei derselben Fachkraft; sie bleibt in deinem Kalender. Der Support meldet sich bei dir, falls nötig."
+  },
+  "founderSeat": {
+    "cta": "Meinen Tarif ansehen",
+    "first": {
+      "subject": "Dein Geschenkjahr für {provider} endet am {date}",
+      "heading": "Noch etwa 60 Tage Geschenk",
+      "intro": "Das kostenlose Premium für {provider} endet am {date}.",
+      "next": "Dir wird keine Gebühr berechnet und nichts verlängert sich automatisch. Danach wechselst du zu Gratis: Es gilt die Provision dieses Tarifs, und Leistungen und Fachkräfte über dem Limit nehmen keine Buchungen mehr an. Um das zu vermeiden, kannst du ab dem Vortag einen Tarif wählen."
+    },
+    "last": {
+      "subject": "Noch 15 Tage Geschenk für {provider}",
+      "heading": "Dein Geschenkjahr endet bald",
+      "intro": "Das kostenlose Premium für {provider} endet am {date}.",
+      "next": "Dir wird keine Gebühr berechnet und nichts verlängert sich automatisch. Danach wechselst du zu Gratis: Es gilt die Provision dieses Tarifs, und Leistungen und Fachkräfte über dem Limit nehmen keine Buchungen mehr an. Um das zu vermeiden, kannst du ab dem Vortag einen Tarif wählen."
+    },
+    "ended": {
+      "subject": "Dein Geschenkjahr für {provider} ist zu Ende",
+      "heading": "Dein Geschenkjahr ist zu Ende",
+      "intro": "Dein Geschenkjahr endete am {date} und {provider} ist jetzt im Tarif Gratis. Dir wurde keine Gebühr berechnet.",
+      "next": "Es gilt jetzt die Provision des Tarifs Gratis, und Leistungen und Fachkräfte über dem Limit nehmen keine Buchungen an. Wenn du einen Tarif wählst, kommen sie bis zu dessen Limit zurück."
+    }
   }
 }

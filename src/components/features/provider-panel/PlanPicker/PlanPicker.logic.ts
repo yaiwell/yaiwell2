@@ -53,6 +53,34 @@ export function getPlanCta(
   return 'subscribe';
 }
 
+/**
+ * Ajusta el botón con plaza del regalo: bloqueado mientras dura, y en sus últimas
+ * 24 h se puede contratar cualquier plan, también el Premium que ya disfruta. El
+ * servidor aplica la misma regla: esto solo evita ofrecer lo que rechazaría.
+ *
+ * @param base — lo que decidió `getPlanCta` sin tener en cuenta el regalo.
+ */
+export function getFounderPlanCta(
+  seat: { locked: boolean } | null,
+  currentTier: PlanTierId,
+  targetTier: PlanTierId,
+  hasLiveSubscription: boolean,
+  base: PlanCtaKind,
+): PlanCtaKind {
+  if (!seat || hasLiveSubscription) return base;
+  if (seat.locked) return targetTier === currentTier ? 'current' : 'locked';
+  return targetTier === 'free' ? base : 'subscribe';
+}
+
+/** Nota al pie del selector. */
+export function pickerHintKey(
+  seat: { locked: boolean } | null,
+  scheduleLocked: boolean,
+): 'founderHint' | 'lockedHint' | 'stripeHint' {
+  if (seat?.locked) return 'founderHint';
+  return scheduleLocked ? 'lockedHint' : 'stripeHint';
+}
+
 /** Hay un cambio programado que bloquea elegir otro plan. */
 export function hasScheduledChange(currentTier: PlanTierId, schedule: PlanSchedule): boolean {
   const pendingTier = schedule.cancelAtPeriodEnd ? 'free' : schedule.scheduledTier;

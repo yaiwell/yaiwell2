@@ -2,8 +2,9 @@ import { notFound } from 'next/navigation';
 import { hasLocale } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 
-import { VerificationDetail } from '@/components/features/admin';
+import { FounderSeatNotice, VerificationDetail } from '@/components/features/admin';
 import { routing, type AppLocale } from '@/i18n/routing';
+import { getFounderSeatPreview } from '@/lib/services/billing';
 import { getVerificationDetail } from '@/lib/services/verification';
 
 interface VerificationDetailPageProps {
@@ -35,9 +36,11 @@ export default async function VerificationDetailPage({ params }: VerificationDet
   if (!request) {
     notFound();
   }
+  const founderSeat = await getFounderSeatPreview(id);
 
   return (
     <div data-component="admin-verification-detail-page" className="flex flex-col gap-6">
+      <FounderSeatNotice preview={founderSeat} />
       <VerificationDetail request={request} locale={locale as AppLocale} />
     </div>
   );

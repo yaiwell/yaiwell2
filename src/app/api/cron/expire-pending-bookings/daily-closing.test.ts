@@ -11,12 +11,17 @@ const mocks = vi.hoisted(() => ({
   sweep: vi.fn(),
   invites: vi.fn(),
   select: vi.fn(),
+  founderSweep: vi.fn(),
 }));
 vi.mock('@/lib/services/booking', () => ({ autoCompleteStaleBookings: mocks.autoComplete }));
-vi.mock('@/lib/services/billing', () => ({ runCommissionSweep: mocks.sweep }));
+vi.mock('@/lib/services/billing', () => ({
+  runCommissionSweep: mocks.sweep,
+  runFounderSeatSweep: mocks.founderSweep,
+}));
 vi.mock('@/lib/services/notifications', () => ({
   sendReviewInvites: mocks.invites,
   selectReviewInviteCandidates: mocks.select,
+  notifyFounderSeat: vi.fn(),
 }));
 
 import {
@@ -53,6 +58,18 @@ beforeEach(() => {
   mocks.select.mockImplementation(async (ids: string[]) => ids);
   mocks.sweep.mockResolvedValue(SWEEP);
   mocks.invites.mockResolvedValue({ sent: 2, skipped: 0 });
+  mocks.founderSweep.mockResolvedValue({ ended: 0, notified: 0, failed: 0 });
+});
+
+describe('runDailyClosing — año de regalo', () => {
+  it('si el barrido del regalo falla, el cierre sigue y queda en el resumen', async () => {
+    mocks.founderSweep.mockRejectedValue(new Error('boom'));
+
+    const summary = await runDailyClosing(NOW, Date.now(), Promise.resolve());
+
+    expect(summary.founderSeats).toBeNull();
+    expect(summary.commissions).toEqual(SWEEP);
+  });
 });
 
 describe('runDailyClosing', () => {
@@ -77,6 +94,7 @@ describe('runDailyClosing', () => {
       autoCompleteFailed: 1,
       commissions: SWEEP,
       reviewInvites: { sent: 2, skipped: 0 },
+      founderSeats: { ended: 0, notified: 0, failed: 0 },
     });
   });
 

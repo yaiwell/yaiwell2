@@ -95,7 +95,8 @@
     "subject": "{provider} est maintenant publié sur Yaiwell",
     "heading": "Vous êtes sur Yaiwell",
     "intro": "Nous avons vérifié {provider}, qui apparaît désormais dans les recherches. Vos services peuvent maintenant être réservés.",
-    "cta": "Accéder à mon espace pro"
+    "cta": "Accéder à mon espace pro",
+    "founder": "En cadeau, vous avez Premium gratuit jusqu’au {date} : sans carte et sans renouvellement automatique. La commission par réservation reste due."
   },
   "providerRejected": {
     "subject": "Nous devons revoir certaines informations de {provider}",
@@ -168,5 +169,26 @@
     "providerBalancePending": "Une fois terminé, votre part de cette réservation ({net}, le montant sans la commission) sera prélevée sur votre solde Stripe et Yaiwell ne gardera aucune commission. Si elle était déjà arrivée sur votre compte bancaire, votre solde pourra devenir négatif et se compensera avec vos prochains encaissements.",
     "providerSlotBlocked": "Nous avons bloqué ce créneau dans votre calendrier pour que personne ne le réserve. Si vous pouvez finalement l’assurer, vous pouvez le débloquer depuis celui-ci.",
     "providerSlotTaken": "Ce créneau a déjà une autre réservation avec le même professionnel, et elle reste dans votre calendrier. L’assistance vous contactera si nécessaire."
+  },
+  "founderSeat": {
+    "cta": "Voir ma formule",
+    "first": {
+      "subject": "Votre année offerte pour {provider} se termine le {date}",
+      "heading": "Il vous reste environ 60 jours de cadeau",
+      "intro": "Le Premium gratuit de {provider} se termine le {date}.",
+      "next": "Aucun abonnement ne vous sera facturé et rien ne se renouvelle automatiquement. À la fin, vous passerez à Gratuit : la commission par réservation sera celle de cette formule, et les services et professionnels au-delà de sa limite n’accepteront plus de réservations. Pour l’éviter, vous pouvez choisir une formule dès la veille."
+    },
+    "last": {
+      "subject": "Plus que 15 jours de cadeau pour {provider}",
+      "heading": "Votre année offerte se termine bientôt",
+      "intro": "Le Premium gratuit de {provider} se termine le {date}.",
+      "next": "Aucun abonnement ne vous sera facturé et rien ne se renouvelle automatiquement. À la fin, vous passerez à Gratuit : la commission par réservation sera celle de cette formule, et les services et professionnels au-delà de sa limite n’accepteront plus de réservations. Pour l’éviter, vous pouvez choisir une formule dès la veille."
+    },
+    "ended": {
+      "subject": "Votre année offerte pour {provider} est terminée",
+      "heading": "Votre année offerte est terminée",
+      "intro": "Votre année offerte s’est terminée le {date} et {provider} est maintenant en formule Gratuit. Aucun abonnement ne vous a été facturé.",
+      "next": "La commission par réservation est désormais celle de la formule Gratuit, et les services et professionnels au-delà de sa limite n’acceptent pas de réservations. Si vous choisissez une formule, ils reviennent jusqu’à sa limite."
+    }
   }
 }

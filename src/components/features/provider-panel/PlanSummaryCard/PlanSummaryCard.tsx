@@ -5,6 +5,7 @@ import { useFormatter, useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
 import { PANEL_TIMEZONE } from '@/lib/utils/madrid-week';
+import { isLiveSubscriptionStatus } from '@/lib/utils/plan-billing';
 import { formatCommissionRate, formatPlanPrice } from '@/lib/utils/plan-format';
 
 import {
@@ -35,8 +36,17 @@ export function PlanSummaryCard({
   const { plan } = summary;
   const invoicesPending = pendingKey === portalActionKey('manage');
 
-  const price =
-    plan.monthlyPriceCents === 0
+  // Si contrata el último día, manda lo que paga y no el regalo.
+  const founderEnd =
+    summary.founderSeat && !isLiveSubscriptionStatus(summary.subscriptionStatus)
+      ? format.dateTime(summary.founderSeat.endsAt, {
+          dateStyle: 'long',
+          timeZone: PANEL_TIMEZONE,
+        })
+      : null;
+  const price = founderEnd
+    ? t('summary.founderPrice')
+    : plan.monthlyPriceCents === 0
       ? t('card.free')
       : t('summary.priceValue', { price: formatPlanPrice(plan.monthlyPriceCents, locale) });
   const services =
@@ -71,6 +81,11 @@ export function PlanSummaryCard({
         </div>
       </dl>
 
+      {founderEnd ? (
+        <p className={s.note} data-component="plan-summary-founder">
+          {t('summary.founderUntil', { date: founderEnd })}
+        </p>
+      ) : null}
       {view.period && periodDate ? (
         <p className={s.note} data-component="plan-summary-period">
           {view.period.kind === 'ends'

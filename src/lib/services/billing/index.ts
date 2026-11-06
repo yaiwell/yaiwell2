@@ -15,6 +15,16 @@ export { resolveVatTaxRate } from './billing.tax';
 export { resolvePortalConfiguration } from './billing.portal-config';
 export { syncSubscription } from './billing.sync';
 export { getProviderBillingSummary } from './billing.status';
+export {
+  expireCheckoutsAfterFounderSeat,
+  getFounderPromoAvailability,
+  getFounderSeatPreview,
+  grantFounderSeat,
+} from './billing.founder-seat';
+export { runFounderSeatSweep } from './billing.founder-seat.sweep';
+export type { FounderPromoAvailability, FounderSeatPreview } from './billing.founder-seat';
+export type { FounderSeatBlockReason } from './billing.founder-seat.rules';
+export type { FounderSeatNoticeKind, FounderSeatSweepSummary } from './billing.founder-seat.sweep';
 export { handleBillingEvent, isBillingEvent, BILLING_EVENTS } from './billing.webhook.service';
 export {
   PAID_PLAN_TIERS,

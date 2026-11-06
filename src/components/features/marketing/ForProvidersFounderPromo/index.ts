@@ -1,0 +1,1 @@
+export { ForProvidersFounderPromo } from './ForProvidersFounderPromo';

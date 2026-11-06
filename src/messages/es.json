@@ -969,7 +969,8 @@
         "title": "Planes",
         "subtitle": "Precios al mes con IVA incluido. Puedes cambiar o cancelar cuando quieras.",
         "stripeHint": "El pago y los cambios de plan se confirman en la página segura de Stripe. Al bajar de plan, el cambio se aplica al final del periodo ya pagado.",
-        "lockedHint": "Ya tienes un cambio de plan programado. Podrás elegir otro cuando se aplique, o deshacerlo desde «Facturas y tarjeta»."
+        "lockedHint": "Ya tienes un cambio de plan programado. Podrás elegir otro cuando se aplique, o deshacerlo desde «Facturas y tarjeta».",
+        "founderHint": "Durante el año de regalo no tienes que contratar nada. Podrás elegir plan desde el día anterior a que termine."
       },
       "summary": {
         "title": "Tu plan",
@@ -983,7 +984,9 @@
         "endsOn": "Termina el {date}. Después pasarás a Gratis.",
         "pausedByPlan": "{count, plural, one {# servicio está oculto} other {# servicios están ocultos}} por el límite de tu plan.",
         "changePlan": "Cambiar plan",
-        "invoices": "Facturas y tarjeta"
+        "invoices": "Facturas y tarjeta",
+        "founderPrice": "Regalo de lanzamiento",
+        "founderUntil": "Tu año de regalo termina el {date}. Podrás contratar un plan desde el día anterior; si no, pasarás a Gratis."
       },
       "banner": {
         "viewPlan": "Ver mi plan",
@@ -1019,7 +1022,8 @@
       "notices": {
         "checkoutCancelled": "Has salido del pago. No se te ha cobrado nada.",
         "checkoutFailed": "No hemos podido abrir el pago del plan {plan}. Tu negocio ya está publicado en Gratis; puedes contratarlo desde aquí.",
-        "confirmFailed": "No hemos podido confirmar ese pago. Si se te ha cobrado, el plan se activará en unos minutos."
+        "confirmFailed": "No hemos podido confirmar ese pago. Si se te ha cobrado, el plan se activará en unos minutos.",
+        "founderRefunded": "Ya tienes el plan Premium de regalo, así que hemos cancelado esa suscripción y te devolvemos lo que has pagado."
       },
       "errors": {
         "INVALID_INPUT": "Algo no cuadra en la petición. Recarga la página e inténtalo de nuevo.",
@@ -1489,6 +1493,15 @@
           "FORBIDDEN": "No tienes permiso para esta acción.",
           "INTERNAL": "Algo ha fallado. Inténtalo de nuevo."
         }
+      },
+      "founderSeat": {
+        "title": "Regalo de Mallorca",
+        "seated": "Tiene la plaza {seat}, hasta el {date}.",
+        "willGrant": "Al aprobarlo recibirá la plaza {seat} y un año de Premium.",
+        "no_service": "Es de Mallorca, pero no recibirá plaza: no tiene ningún servicio publicado.",
+        "no_schedule": "Es de Mallorca, pero no recibirá plaza: no tiene horario.",
+        "paid_subscription": "Es de Mallorca, pero no recibirá plaza: ya paga una suscripción.",
+        "seats_exhausted": "Es de Mallorca, pero no recibirá plaza: ya no quedan."
       }
     },
     "refunds": {
@@ -1792,15 +1805,15 @@
           "feature1": "Hasta 50 servicios publicados",
           "feature2": "Hasta 15 profesionales",
           "feature3": "Promociones de huecos sueltos",
-          "feature4": "Soporte prioritario en 24 h"
+          "feature4": "Todo lo que incluye Básico"
         },
         "premium": {
           "name": "Premium",
           "tagline": "Para negocios que no quieren límites.",
           "feature1": "Servicios y profesionales ilimitados",
           "feature2": "La comisión más baja de Yaiwell",
-          "feature3": "Account manager dedicado",
-          "feature4": "Onboarding asistido por el equipo"
+          "feature3": "Todo lo que incluye Pro",
+          "feature4": "Sin permanencia"
         }
       }
     },
@@ -1840,6 +1853,14 @@
       "subtitle": "Crea tu cuenta gratis en menos de 5 minutos. Sin tarjeta, sin permanencia, sin compromiso.",
       "primary": "Crear cuenta gratis",
       "secondary": "Hablar con ventas"
+    },
+    "founderPromo": {
+      "eyebrow": "Solo en Mallorca",
+      "title": "Un año de Premium, de regalo, para los {total} primeros negocios",
+      "body": "Sin tarjeta y sin renovación automática. Durante 12 meses tienes servicios y profesionales ilimitados y la comisión más baja de Yaiwell.",
+      "remaining": "{remaining, plural, one {Queda # plaza} other {Quedan # plazas}}",
+      "conditions": "Para negocios de Mallorca con al menos un servicio y horario cuando los aprobamos, y sin una suscripción de pago: para optar a la plaza, elige Gratis al darte de alta. El año empieza ese día. La comisión por reserva se sigue cobrando. Al terminar pasas a Gratis, salvo que contrates un plan.",
+      "cta": "Quiero mi plaza"
     }
   },
   "signIn": {

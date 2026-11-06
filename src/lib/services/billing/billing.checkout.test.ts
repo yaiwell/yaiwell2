@@ -19,6 +19,9 @@ const mocks = vi.hoisted(() => ({
 vi.mock('./billing.repository', () => ({
   billingRepository: { findByProviderId: mocks.findByProviderId },
 }));
+const founderSeatMock = vi.hoisted(() => vi.fn());
+vi.mock('@/lib/db/prisma', () => ({ prisma: {} }));
+vi.mock('./billing.founder-seat', () => ({ hasActiveFounderSeat: founderSeatMock }));
 vi.mock('./billing.customer', () => ({ ensureBillingCustomer: mocks.ensureBillingCustomer }));
 vi.mock('./billing.prices', () => ({
   resolvePriceForTier: mocks.resolvePriceForTier,
@@ -48,6 +51,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   vi.useFakeTimers();
   vi.setSystemTime(new Date('2026-10-29T10:00:30Z'));
+  founderSeatMock.mockResolvedValue(false);
   mocks.findByProviderId.mockResolvedValue(null);
   mocks.ensureBillingCustomer.mockResolvedValue(CUSTOMER_ID);
   mocks.resolvePriceForTier.mockResolvedValue(buildPrice('pro', 4900));
@@ -66,6 +70,14 @@ afterEach(() => {
 });
 
 describe('createPlanCheckoutSession', () => {
+  it('no vende ningún plan durante el año de regalo', async () => {
+    founderSeatMock.mockResolvedValue(true);
+    await expect(createPlanCheckoutSession(PROVIDER_ID, 'pro', URLS, 'es')).rejects.toBeInstanceOf(
+      PlanNotPurchasableError,
+    );
+    expect(stripeMock.checkout.sessions.create).not.toHaveBeenCalled();
+  });
+
   it('factura aparte las comisiones pendientes antes de crear el Checkout', async () => {
     prePlanMock.mockResolvedValue('invoiced');
     await createPlanCheckoutSession(PROVIDER_ID, 'pro', URLS, 'es');

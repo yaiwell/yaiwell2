@@ -2,6 +2,7 @@
  * Props del orquestador de la landing /profesionales.
  */
 
+import type { FounderPromoAvailability } from '@/lib/services/billing';
 import type { PublicPlan } from '@/lib/services/plans';
 
 export interface ForProvidersLandingProps {
@@ -13,4 +14,6 @@ export interface ForProvidersLandingProps {
    * que esta prop existe para impedir.
    */
   plans: PublicPlan[] | null;
+  /** Plazas del regalo de Mallorca; `null` oculta el aviso (sin plazas o sin datos). */
+  founderPromo?: FounderPromoAvailability | null;
 }

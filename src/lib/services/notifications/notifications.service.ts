@@ -205,9 +205,15 @@ export async function notifyProviderApproved(
   providerId: string,
   decisionId: string,
 ): Promise<void> {
-  await withProvider('provider-approved', providerId, (ctx) =>
-    deliverEmail('provider-approved', decisionId, ctx.owner, buildProviderApprovedEmail(ctx)),
-  );
+  await withProvider('provider-approved', providerId, async (ctx) => {
+    const founderEndsAt = await notificationsRepository.findActiveFounderSeatEnd(providerId);
+    await deliverEmail(
+      'provider-approved',
+      decisionId,
+      ctx.owner,
+      buildProviderApprovedEmail(ctx, founderEndsAt),
+    );
+  });
 }
 
 /**

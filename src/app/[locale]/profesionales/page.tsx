@@ -7,6 +7,7 @@ import { ForProvidersLanding } from '@/components/features/marketing';
 import { routing } from '@/i18n/routing';
 import { isSentryEnabled } from '@/lib/integrations/sentry';
 import { buildAlternates } from '@/lib/seo';
+import { getFounderPromoAvailability } from '@/lib/services/billing';
 import { listPublicPlans, PlansNotSeededError, type PublicPlan } from '@/lib/services/plans';
 
 interface ForProvidersPageProps {
@@ -91,9 +92,15 @@ export default async function ForProvidersPage({ params }: ForProvidersPageProps
     reportMissingPlans(error);
   }
 
+  // Sin el contador se capta igual: el aviso desaparece, la página no.
+  const founderPromo = await getFounderPromoAvailability().catch((err: unknown) => {
+    console.error('[profesionales] founder promo unavailable:', err);
+    return null;
+  });
+
   return (
     <div data-component="for-providers-page" className="contents">
-      <ForProvidersLanding plans={plans} />
+      <ForProvidersLanding plans={plans} founderPromo={founderPromo} />
     </div>
   );
 }

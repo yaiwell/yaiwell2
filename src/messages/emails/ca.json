@@ -95,7 +95,8 @@
     "subject": "{provider} ja està publicat a Yaiwell",
     "heading": "Ja ets a Yaiwell",
     "intro": "Hem revisat {provider} i ja apareix a les cerques. Des d'ara es poden reservar els teus serveis.",
-    "cta": "Anar al meu panell"
+    "cta": "Anar al meu panell",
+    "founder": "De regal, tens Premium gratis fins al {date}: sense targeta i sense renovació automàtica. La comissió per reserva es continua cobrant."
   },
   "providerRejected": {
     "subject": "Hem de revisar algunes dades de {provider}",
@@ -168,5 +169,26 @@
     "providerBalancePending": "Quan es completi, es retirarà del teu saldo de Stripe la teva part d’aquesta reserva ({net}, l’import sense la comissió) i Yaiwell no es quedarà comissió. Si ja l’havies rebuda al banc, el saldo podrà quedar en negatiu i es compensarà amb els teus propers cobraments.",
     "providerSlotBlocked": "Hem bloquejat aquesta franja al teu calendari perquè ningú no la reservi. Si finalment pots atendre, la pots desbloquejar des d’allà.",
     "providerSlotTaken": "Aquesta franja ja té una altra reserva amb el mateix professional i continua al teu calendari. Suport es posarà en contacte amb tu si cal."
+  },
+  "founderSeat": {
+    "cta": "Veure el meu pla",
+    "first": {
+      "subject": "El teu any de regal de {provider} acaba el {date}",
+      "heading": "Et queden uns 60 dies de regal",
+      "intro": "El Premium gratis de {provider} acaba el {date}.",
+      "next": "No se’t cobrarà cap quota i res es renova sol. En acabar passaràs a Gratis: la comissió per reserva serà la d’aquest pla, i els serveis i professionals que superin el límit deixaran d’acceptar reserves. Per evitar-ho, pots contractar un pla des del dia anterior."
+    },
+    "last": {
+      "subject": "Queden 15 dies del teu regal a {provider}",
+      "heading": "El teu any de regal està a punt d’acabar",
+      "intro": "El Premium gratis de {provider} acaba el {date}.",
+      "next": "No se’t cobrarà cap quota i res es renova sol. En acabar passaràs a Gratis: la comissió per reserva serà la d’aquest pla, i els serveis i professionals que superin el límit deixaran d’acceptar reserves. Per evitar-ho, pots contractar un pla des del dia anterior."
+    },
+    "ended": {
+      "subject": "Ha acabat el teu any de regal a {provider}",
+      "heading": "El teu any de regal ha acabat",
+      "intro": "El teu any de regal va acabar el {date} i {provider} ara és al pla Gratis. No se t’ha cobrat cap quota.",
+      "next": "La comissió per reserva ja és la del pla Gratis, i els serveis i professionals que superen el límit no accepten reserves. Si contractes un pla, tornen fins al límit d’aquest pla."
+    }
   }
 }

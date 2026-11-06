@@ -39,6 +39,7 @@ vi.mock('@/lib/services/verification', () => ({
   approveProvider: mocks.approveProvider,
   rejectProvider: mocks.rejectProvider,
 }));
+vi.mock('@/lib/services/billing', () => ({ expireCheckoutsAfterFounderSeat: vi.fn() }));
 vi.mock('@/lib/services/notifications', () => ({
   scheduleNotification: mocks.scheduleNotification,
   notifyProviderApproved: mocks.notifyProviderApproved,

@@ -969,7 +969,8 @@
         "title": "Plans",
         "subtitle": "Monthly prices, VAT included. Change or cancel whenever you like.",
         "stripeHint": "Payments and plan changes are confirmed on Stripe’s secure page. If you move to a lower plan, the change applies at the end of the period you have already paid for.",
-        "lockedHint": "You already have a plan change scheduled. You can pick another once it applies, or undo it from “Invoices and card”."
+        "lockedHint": "You already have a plan change scheduled. You can pick another once it applies, or undo it from “Invoices and card”.",
+        "founderHint": "During your free year there is nothing to buy. You can choose a plan from the day before it ends."
       },
       "summary": {
         "title": "Your plan",
@@ -983,7 +984,9 @@
         "endsOn": "Ends on {date}. After that you will move to Free.",
         "pausedByPlan": "{count, plural, one {# service is hidden} other {# services are hidden}} by your plan’s limit.",
         "changePlan": "Change plan",
-        "invoices": "Invoices and card"
+        "invoices": "Invoices and card",
+        "founderPrice": "Launch gift",
+        "founderUntil": "Your free year ends on {date}. You can choose a plan from the day before; otherwise you will move to Free."
       },
       "banner": {
         "viewPlan": "View my plan",
@@ -1019,7 +1022,8 @@
       "notices": {
         "checkoutCancelled": "You left the payment page. You have not been charged.",
         "checkoutFailed": "We could not open the payment for the {plan} plan. Your business is already published on Free; you can get the plan from here.",
-        "confirmFailed": "We could not confirm that payment. If you were charged, the plan will activate in a few minutes."
+        "confirmFailed": "We could not confirm that payment. If you were charged, the plan will activate in a few minutes.",
+        "founderRefunded": "You already have Premium as a gift, so we have cancelled that subscription and are refunding your payment."
       },
       "errors": {
         "INVALID_INPUT": "Something is off with the request. Reload the page and try again.",
@@ -1489,6 +1493,15 @@
           "FORBIDDEN": "You don’t have permission for this action.",
           "INTERNAL": "Something went wrong. Please try again."
         }
+      },
+      "founderSeat": {
+        "title": "Mallorca gift",
+        "seated": "Holds spot {seat}, until {date}.",
+        "willGrant": "On approval it will get spot {seat} and a year of Premium.",
+        "no_service": "In Mallorca, but it will not get a spot: no published service.",
+        "no_schedule": "In Mallorca, but it will not get a spot: no opening hours.",
+        "paid_subscription": "In Mallorca, but it will not get a spot: it already pays a subscription.",
+        "seats_exhausted": "In Mallorca, but it will not get a spot: none left."
       }
     },
     "refunds": {
@@ -1792,15 +1805,15 @@
           "feature1": "Up to 50 published services",
           "feature2": "Up to 15 professionals",
           "feature3": "Last-minute slot promotions",
-          "feature4": "Priority support within 24 h"
+          "feature4": "Everything in Basic"
         },
         "premium": {
           "name": "Premium",
           "tagline": "For businesses that want no limits.",
           "feature1": "Unlimited services and professionals",
           "feature2": "The lowest commission on Yaiwell",
-          "feature3": "Dedicated account manager",
-          "feature4": "Onboarding assisted by our team"
+          "feature3": "Everything in Pro",
+          "feature4": "No lock-in"
         }
       }
     },
@@ -1840,6 +1853,14 @@
       "subtitle": "Create your free account in under 5 minutes. No card, no lock-in, no strings attached.",
       "primary": "Create free account",
       "secondary": "Talk to sales"
+    },
+    "founderPromo": {
+      "eyebrow": "Mallorca only",
+      "title": "A free year of Premium for the first {total} businesses",
+      "body": "No card and no automatic renewal. For 12 months you get unlimited services and professionals and the lowest commission on Yaiwell.",
+      "remaining": "{remaining, plural, one {# spot left} other {# spots left}}",
+      "conditions": "For businesses in Mallorca with at least one service and opening hours when we approve them, and no paid subscription: to qualify, choose Free when you sign up. The year starts that day. The commission per booking still applies. When it ends you move to Free, unless you choose a plan.",
+      "cta": "I want my spot"
     }
   },
   "signIn": {

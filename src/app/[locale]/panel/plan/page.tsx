@@ -123,11 +123,18 @@ export default async function PanelPlanPage({ params, searchParams }: PanelPlanP
     listPublicPlans(),
     getOnsiteBillingSummary(providerId),
   ]);
-  const checkoutState = resolveCheckoutState(outcome, summary.subscriptionStatus);
+  // Volver de un pago con el regalo vigente: la sincronización lo ha deshecho.
+  const founderRefunded = query.checkout === 'success' && summary.founderSeat?.locked === true;
+  const checkoutState = founderRefunded
+    ? null
+    : resolveCheckoutState(outcome, summary.subscriptionStatus);
 
   return (
     <div className="flex flex-col gap-6">
-      <PlanPageHeader notice={pageNotice(query, outcome)} noticePlan={query.plan} />
+      <PlanPageHeader
+        notice={founderRefunded ? 'founderRefunded' : pageNotice(query, outcome)}
+        noticePlan={query.plan}
+      />
       <BillingStatusBanner summary={summary} locale={panelLocale} checkoutState={checkoutState} />
       <PlanSummaryCard summary={summary} locale={panelLocale} showChangePlanLink={false} />
       <OnsitePaymentCard summary={onsite} locale={panelLocale} />

@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { BillingProviderNotFoundError } from './billing.errors';
+import { getActiveFounderSeat } from './billing.founder-seat';
 import { billingRepository } from './billing.repository';
 import type { ProviderBillingSummary } from './billing.types';
 
@@ -16,9 +17,10 @@ import type { ProviderBillingSummary } from './billing.types';
 export async function getProviderBillingSummary(
   providerId: string,
 ): Promise<ProviderBillingSummary> {
-  const [row, services] = await Promise.all([
+  const [row, services, founderSeat] = await Promise.all([
     billingRepository.findSummaryRows(providerId),
     billingRepository.countServices(providerId),
+    getActiveFounderSeat(providerId),
   ]);
   if (!row) throw new BillingProviderNotFoundError();
   const { plan, billing } = row;
@@ -40,5 +42,6 @@ export async function getProviderBillingSummary(
     scheduledTier: billing?.scheduledPlan?.tier ?? null,
     scheduledChangeAt: billing?.scheduledChangeAt ?? null,
     lastPaymentFailedAt: billing?.lastPaymentFailedAt ?? null,
+    founderSeat,
   };
 }

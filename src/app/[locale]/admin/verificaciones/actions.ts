@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 
 import type { AppLocale } from '@/i18n/routing';
 import { requireRole } from '@/lib/auth/server';
+import { expireCheckoutsAfterFounderSeat } from '@/lib/services/billing';
 import {
   notifyProviderApproved,
   notifyProviderRejected,
@@ -79,6 +80,7 @@ export async function approveProviderAction(
   if (decisionId) {
     const id = decisionId;
     scheduleNotification(() => notifyProviderApproved(providerId, id));
+    scheduleNotification(() => expireCheckoutsAfterFounderSeat(providerId));
   }
 
   // Invalida caches y vuelve a la cola — la UI tras éxito ya no

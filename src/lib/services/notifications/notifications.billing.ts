@@ -5,9 +5,11 @@
  */
 import 'server-only';
 
+import type { FounderSeatNoticeKind } from '@/lib/services/billing';
 import type { PlanTierId } from '@/lib/services/plans';
 
 import {
+  buildFounderSeatEmail,
   buildPlanDowngradedEmail,
   buildPlanPaymentFailedEmail,
 } from './notifications.billing-templates';
@@ -47,4 +49,25 @@ export async function notifyPlanDowngraded(
       buildPlanDowngradedEmail(ctx, fromPlan),
     ),
   );
+}
+
+/**
+ * Avisos del año de regalo: a 60 y 15 días del final y al terminar. La clave
+ * lleva la fecha de fin porque cada plaza da un solo aviso de cada tipo.
+ *
+ * @returns `true` si el correo ha salido; el barrido reintenta los demás.
+ */
+export async function notifyFounderSeat(
+  notice: FounderSeatNoticeKind,
+  providerId: string,
+  endsAt: Date,
+): Promise<boolean> {
+  const kind = `founder-seat-${notice}`;
+  const refId = `${providerId}:${endsAt.toISOString().slice(0, 10)}`;
+  const outcome = { delivered: false };
+  await withProvider(kind, providerId, async (ctx) => {
+    const content = buildFounderSeatEmail(ctx, notice, endsAt);
+    outcome.delivered = await deliverEmail(kind, refId, ctx.owner, content);
+  });
+  return outcome.delivered;
 }

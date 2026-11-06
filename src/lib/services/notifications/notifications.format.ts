@@ -40,6 +40,14 @@ export function formatEmailShortDate(date: Date, locale: AppLocale): string {
   return formatShortDayMonth(date, toIntlLocale(locale), EMAIL_TIMEZONE);
 }
 
+/** Fecha larga en hora de Madrid, sin hora (p. ej., el fin del año de regalo). */
+export function formatEmailDate(date: Date, locale: AppLocale): string {
+  return new Intl.DateTimeFormat(toIntlLocale(locale), {
+    dateStyle: 'long',
+    timeZone: EMAIL_TIMEZONE,
+  }).format(date);
+}
+
 /**
  * Buzón de soporte que citan los correos. Es el mismo contacto público
  * del footer y de los textos legales (`LEGAL_CONTACT_EMAIL`), que no se

@@ -6,6 +6,10 @@
 
 ---
 
+## 2026-11-06
+
+- **Año de Premium de regalo en Mallorca**: 50 plazas en la tabla `founder_seats` (migración `9l`, aplicada), asignadas en la primera aprobación. Sin suscripción ni tarjeta; bloquea la venta de planes hasta 24 h antes del final, avisos a 60 y 15 días y al terminar, y baja a Gratis en el cierre diario. Aviso con plazas reales en `/profesionales`, aviso previo en la ficha de admin y fecha del regalo en el panel. Se quitan de los planes las promesas de account manager, soporte en 24 h y onboarding asistido.
+
 ## 2026-10-29
 
 ## 2026-11-02

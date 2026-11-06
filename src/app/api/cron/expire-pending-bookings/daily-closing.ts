@@ -1,6 +1,12 @@
-import { runCommissionSweep, type CommissionSweepSummary } from '@/lib/services/billing';
+import {
+  runCommissionSweep,
+  runFounderSeatSweep,
+  type CommissionSweepSummary,
+  type FounderSeatSweepSummary,
+} from '@/lib/services/billing';
 import { autoCompleteStaleBookings } from '@/lib/services/booking';
 import {
+  notifyFounderSeat,
   selectReviewInviteCandidates,
   sendReviewInvites,
   type ReviewInviteSummary,
@@ -34,6 +40,12 @@ export const COMMISSION_BUDGET_MS = 25_000;
  */
 export const REVIEW_INVITES_BUDGET_MS = 45_000;
 
+/**
+ * Último momento para empezar con otra plaza del regalo. Va tras las
+ * invitaciones porque también envía por Resend y comparte su límite.
+ */
+export const FOUNDER_SEATS_BUDGET_MS = 50_000;
+
 /** Resumen del cierre diario para la respuesta del cron. */
 export interface DailyClosingSummary {
   autoCompleted: number;
@@ -42,6 +54,7 @@ export interface DailyClosingSummary {
   autoCompleteFailed: number;
   commissions: CommissionSweepSummary | null;
   reviewInvites: ReviewInviteSummary | null;
+  founderSeats: FounderSeatSweepSummary | null;
 }
 
 interface AutoCompleteRound {
@@ -94,12 +107,21 @@ export async function runDailyClosing(
   if (invites.status === 'rejected') {
     console.error('[cron/daily-closing] review invites failed:', invites.reason);
   }
+  const founderSeats = await runFounderSeatSweep({
+    now,
+    deadline: startedAt + FOUNDER_SEATS_BUDGET_MS,
+    notify: notifyFounderSeat,
+  }).catch((err: unknown) => {
+    console.error('[cron/daily-closing] founder seats failed:', err);
+    return null;
+  });
   return {
     autoCompleted: round.completed,
     autoCompletedWithoutInvite: round.completed - round.invitable.length,
     autoCompleteFailed: round.failed,
     commissions: commissions.status === 'fulfilled' ? commissions.value : null,
     reviewInvites: invites.status === 'fulfilled' ? invites.value : null,
+    founderSeats,
   };
 }
 

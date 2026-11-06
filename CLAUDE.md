@@ -166,6 +166,12 @@ Reglas de producto que afectan al modelo, a las APIs y a la UI. Toda implementac
 - Un profesional que entra por primera vez con Google puede crear su perfil profesional igual que con email. Cualquier cliente con sesión puede convertir su cuenta en profesional desde `/hazte-profesional` (autoservicio; admin nunca). Si un día hay que impedírselo a alguien concreto, hará falta una marca de bloqueo en Clerk (ver TODO).
 - Los negocios que ya tenían más servicios publicados que su límite antes de aplicarlo (2026-10-29) se respetan como están: el límite solo impide publicar o reactivar por encima a partir de ahora. Al cambiar de plan sí se aplica.
 
+### Año de Premium de regalo en Mallorca (decidido 2026-11-05)
+- **50 plazas** (`FOUNDER_SEATS_TOTAL`), 12 meses desde la aprobación, sin tarjeta, sin renovación y sin cupón de Stripe. Las plazas usadas no se liberan. La comisión del 6 % de Premium se sigue cobrando.
+- La plaza se da en la transacción de la primera aprobación si el punto del negocio está en Mallorca (rectángulo sin Menorca ni Eivissa), tiene un servicio publicado y horario, y no paga ya una suscripción viva. **La elegibilidad se congela ahí** (`Provider.founderEvaluatedAt`): rechazar y reaprobar no da otra oportunidad. La ficha de admin avisa de qué pasará antes de aprobar.
+- Durante el regalo no se vende ningún plan. Al aprobar se caducan los Checkout abiertos; si aun así se paga uno, se reembolsa, se cancela y queda en Sentry para soporte. Una suscripción muerta no baja el plan.
+- Avisos a 60 y 15 días y al terminar; un aviso solo se marca si sale. Se puede contratar desde 24 h antes del final. En el primer cron tras vencer pasa a Gratis (servicios de más ocultos, profesionales de más sin reservas, comisión de Gratis) salvo que ya haya contratado.
+
 ### Equipo: varios profesionales por negocio (decidido 2026-11-03)
 - Cada negocio gestiona su equipo en el panel: alta, edición y baja de profesionales, cada uno con **su horario y sus bloqueos**. Cada servicio lo prestan uno o varios profesionales.
 - **Límite por plan**: Gratis 3, Básico 10, Pro 15, Premium ilimitado. Al bajar de plan, los que sobren dejan de aceptar reservas nuevas (igual que los servicios).

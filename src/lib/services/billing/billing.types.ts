@@ -117,6 +117,8 @@ export interface ProviderBillingSummary {
   scheduledTier: PlanTierId | null;
   scheduledChangeAt: Date | null;
   lastPaymentFailedAt: Date | null;
+  /** Plaza sin cerrar del regalo de Mallorca; `locked` impide contratar. */
+  founderSeat: { endsAt: Date; locked: boolean } | null;
 }
 
 /**

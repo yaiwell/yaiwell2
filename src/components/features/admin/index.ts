@@ -3,5 +3,6 @@ export { AdminShell } from './AdminShell';
 export { IncidentRefundPanel, UnfinishedIncidentRefunds } from './IncidentRefundPanel';
 export { RefundsQueue } from './RefundsQueue';
 export { SanctionsList } from './SanctionsList';
+export { FounderSeatNotice } from './FounderSeatNotice';
 export { VerificationDetail } from './VerificationDetail';
 export { VerificationsQueue } from './VerificationsQueue';

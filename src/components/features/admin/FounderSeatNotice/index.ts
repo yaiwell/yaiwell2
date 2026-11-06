@@ -1,0 +1,1 @@
+export { FounderSeatNotice } from './FounderSeatNotice';

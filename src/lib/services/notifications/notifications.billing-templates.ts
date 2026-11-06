@@ -1,6 +1,7 @@
+import type { FounderSeatNoticeKind } from '@/lib/services/billing';
 import type { PlanTierId } from '@/lib/services/plans';
 
-import { buildEmailUrl } from './notifications.format';
+import { buildEmailUrl, formatEmailDate } from './notifications.format';
 import { getEmailTranslator } from './notifications.i18n';
 import { closing, greet } from './notifications.template-helpers';
 import type { EmailContent, ProviderEmailContext } from './notifications.types';
@@ -53,6 +54,30 @@ export function buildPlanDowngradedEmail(
     details: [],
     outro: [t('planDowngraded.next')],
     cta: { label: t('planDowngraded.cta'), url: buildEmailUrl(locale, PLAN_PANEL_PATH) },
+    ...closing(t),
+  };
+}
+
+/**
+ * Aviso del año de Premium de regalo. Nunca promete renovación: al terminar
+ * pasa a Gratis salvo que contrate un plan, y eso se dice desde el primer aviso.
+ */
+export function buildFounderSeatEmail(
+  ctx: ProviderEmailContext,
+  notice: FounderSeatNoticeKind,
+  endsAt: Date,
+): EmailContent {
+  const { locale } = ctx.owner;
+  const t = getEmailTranslator(locale);
+  const values = { provider: ctx.name, date: formatEmailDate(endsAt, locale) };
+  return {
+    subject: t(`founderSeat.${notice}.subject`, values),
+    heading: t(`founderSeat.${notice}.heading`),
+    greeting: greet(t, ctx.owner),
+    paragraphs: [t(`founderSeat.${notice}.intro`, values)],
+    details: [],
+    outro: [t(`founderSeat.${notice}.next`)],
+    cta: { label: t('founderSeat.cta'), url: buildEmailUrl(locale, PLAN_PANEL_PATH) },
     ...closing(t),
   };
 }
