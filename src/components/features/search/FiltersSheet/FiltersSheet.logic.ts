@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 
-import type { SearchWhen } from '@/lib/utils/search-when';
+import { SEARCH_DAYS_MAX, type SearchWhen } from '@/lib/utils/search-when';
 import type { PriceRange } from '@/types/domain';
 
 import type { AdvancedFiltersValue, ClearAdvancedOptions } from './FiltersSheet.types';
@@ -44,12 +44,18 @@ export function useFiltersSheet(
 ) {
   const [draft, setDraft] = useState<AdvancedFiltersValue>(initial);
   const [wasOpen, setWasOpen] = useState(open);
+  // Calendario desplegado. Va aparte de `draft.days` porque se abre antes de
+  // que haya ningún día elegido.
+  const [pickingDays, setPickingDays] = useState(initial.days.length > 0);
 
   // Detectamos la transición closed → open y restablecemos el draft
   // con el valor "fuente de verdad" del padre.
   if (open !== wasOpen) {
     setWasOpen(open);
-    if (open) setDraft(initial);
+    if (open) {
+      setDraft(initial);
+      setPickingDays(initial.days.length > 0);
+    }
   }
 
   const togglePrice = useCallback((range: PriceRange) => {
@@ -72,8 +78,25 @@ export function useFiltersSheet(
     setDraft((prev) => ({ ...prev, discountOnly: !prev.discountOnly }));
   }, []);
 
+  // Rango y días sueltos se excluyen: elegir uno limpia el otro.
   const setWhen = useCallback((when: SearchWhen | null) => {
-    setDraft((prev) => ({ ...prev, when }));
+    setDraft((prev) => ({ ...prev, when, days: [] }));
+    setPickingDays(false);
+  }, []);
+
+  const startPickingDays = useCallback(() => {
+    setDraft((prev) => ({ ...prev, when: null }));
+    setPickingDays(true);
+  }, []);
+
+  const toggleDay = useCallback((day: string) => {
+    setDraft((prev) => {
+      if (prev.days.includes(day)) {
+        return { ...prev, days: prev.days.filter((d) => d !== day) };
+      }
+      if (prev.days.length >= SEARCH_DAYS_MAX) return prev;
+      return { ...prev, when: null, days: [...prev.days, day].sort() };
+    });
   }, []);
 
   const handleApply = useCallback(() => {
@@ -90,6 +113,9 @@ export function useFiltersSheet(
     setRating,
     toggleDiscount,
     setWhen,
+    pickingDays,
+    startPickingDays,
+    toggleDay,
     handleApply,
     handleClear,
   };

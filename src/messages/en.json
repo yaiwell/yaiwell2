@@ -244,7 +244,9 @@
       "any": "Any day",
       "today": "Today",
       "tomorrow": "Tomorrow",
-      "this-week": "This week"
+      "this-week": "This week",
+      "pickDays": "Pick days",
+      "pickDaysHint": "Pick up to {max} days. You’ll see places with a free slot on any of them."
     }
   },
   "searchAutocomplete": {
@@ -1311,9 +1313,7 @@
     "nav": {
       "ariaLabel": "Client area navigation",
       "bookings": "Bookings",
-      "favorites": "Favourites",
-      "reviews": "Reviews",
-      "profile": "Profile"
+      "settings": "Settings"
     },
     "sections": {
       "count": "{count, plural, =0 {No items} one {# item} other {# items}}",

@@ -244,7 +244,9 @@
       "any": "Cualquier día",
       "today": "Hoy",
       "tomorrow": "Mañana",
-      "this-week": "Esta semana"
+      "this-week": "Esta semana",
+      "pickDays": "Elegir días",
+      "pickDaysHint": "Elige hasta {max} días. Verás los centros con hueco en alguno de ellos."
     }
   },
   "searchAutocomplete": {
@@ -1311,9 +1313,7 @@
     "nav": {
       "ariaLabel": "Navegación del área cliente",
       "bookings": "Reservas",
-      "favorites": "Favoritos",
-      "reviews": "Valoraciones",
-      "profile": "Perfil"
+      "settings": "Ajustes"
     },
     "sections": {
       "count": "{count, plural, =0 {Sin elementos} one {# elemento} other {# elementos}}",

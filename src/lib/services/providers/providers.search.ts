@@ -187,11 +187,12 @@ export async function searchProviders(
   // 2. Disponibilidad real (2 consultas) y huecos liberados con
   //    descuento (2 más), para todo el conjunto a la vez.
   const ids = filtered.map((p) => p.id);
-  const { when } = parsed.data;
+  const { when, days } = parsed.data;
+  const range = days?.length ? days : when;
   const [availabilityByProvider, offersByProvider, whenSlots] = await Promise.all([
     getProvidersAvailability(ids),
     getBestOfferByProvider(ids),
-    when ? getFirstSlotInRangeByProvider(ids, when) : null,
+    range ? getFirstSlotInRangeByProvider(ids, range) : null,
   ]);
 
   // 3. Enrichment con disponibilidad, oferta y distancia.
@@ -217,7 +218,7 @@ export async function searchProviders(
   const byDiscount = parsed.data.discountOnly
     ? byAvailability.filter((p) => p.bestOffer)
     : byAvailability;
-  // Filtro `?when=`: solo centros con hueco reservable en esos días.
+  // Filtro `?when=` o `?days=`: solo centros con hueco reservable en esos días.
   const final = whenSlots
     ? byDiscount
         .filter((p) => whenSlots.has(p.id))

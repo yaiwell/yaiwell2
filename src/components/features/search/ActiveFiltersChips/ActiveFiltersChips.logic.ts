@@ -34,6 +34,10 @@ export function buildActiveFilterChips(
     chips.push({ kind: 'when', value: filters.when });
   }
 
+  for (const day of filters.days) {
+    chips.push({ kind: 'day', value: day });
+  }
+
   for (const price of filters.priceRange) {
     chips.push({ kind: 'price', value: price });
   }

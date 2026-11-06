@@ -10,6 +10,8 @@ export interface SearchFilters {
   discountOnly: boolean;
   /** Solo centros con hueco en ese rango de días (`?when=`). */
   when: SearchWhen | null;
+  /** Solo centros con hueco en alguno de estos días (`?days=`, `YYYY-MM-DD`). */
+  days: string[];
   priceRange: PriceRange[];
   minRating: number | null;
 }

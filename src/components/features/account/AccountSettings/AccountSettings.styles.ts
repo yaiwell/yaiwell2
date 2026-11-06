@@ -10,6 +10,13 @@ export const accountSettingsStyles = {
   label: 'text-sm font-medium text-stone-800 dark:text-stone-200',
   input:
     'min-h-11 w-full rounded-xl border border-stone-300 bg-white px-3 text-base text-stone-900 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-100',
+  // Control compacto en píldora, a juego con los de idioma, tema y ubicación.
+  // `text-base` en móvil: con menos, iOS hace zoom al enfocar el select.
+  selectWrap: 'relative inline-flex',
+  select:
+    'h-9 cursor-pointer appearance-none rounded-full border border-stone-300 bg-white pl-3.5 pr-8 text-base font-medium text-stone-900 transition-colors hover:bg-stone-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-stone-400 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm dark:border-stone-700 dark:bg-stone-950 dark:text-stone-100 dark:hover:bg-stone-800',
+  selectIcon:
+    'pointer-events-none absolute right-2.5 top-1/2 size-4 -translate-y-1/2 text-stone-500 dark:text-stone-400',
   fields: 'grid gap-3 sm:grid-cols-2',
   field: 'flex flex-col gap-1',
   avatarRow: 'flex flex-wrap items-center gap-4',

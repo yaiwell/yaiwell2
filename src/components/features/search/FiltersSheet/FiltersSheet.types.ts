@@ -18,6 +18,8 @@ export interface AdvancedFiltersValue {
   discountOnly: boolean;
   /** Rango de días (`?when=`); `null` = cualquier día. */
   when: SearchWhen | null;
+  /** Días sueltos del calendario (`?days=`). Excluye a `when`. */
+  days: string[];
 }
 
 /** Qué limpia el botón "Limpiar" del sheet. */

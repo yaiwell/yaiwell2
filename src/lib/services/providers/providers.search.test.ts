@@ -219,5 +219,9 @@ describe('searchProviders — filtro por días', () => {
 
   it('rechaza un valor que no existe', async () => {
     await expect(searchProviders({ when: 'ayer' as never })).rejects.toThrow();
+    await expect(searchProviders({ days: ['mañana'] })).rejects.toThrow();
+    await expect(
+      searchProviders({ days: Array.from({ length: 8 }, (_, i) => `2026-11-1${i}`) }),
+    ).rejects.toThrow();
   });
 });

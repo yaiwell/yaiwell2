@@ -1,5 +1,6 @@
 'use client';
 
+import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { LangSwitcher } from '@/components/shared/LangSwitcher';
@@ -38,21 +39,24 @@ export function AccountPreferencesCard({ emailLocale }: AccountPreferencesCardPr
       </div>
 
       <div className={s.row}>
-        <label className={s.field}>
+        <label className={s.rowInline}>
           <span className={s.label}>{t('emailLanguage')}</span>
-          <select
-            className={s.input}
-            value={value}
-            disabled={isPending}
-            onChange={(event) => change(event.target.value as AppLocale)}
-            data-component="account-email-locale"
-          >
-            {routing.locales.map((locale) => (
-              <option key={locale} value={locale}>
-                {tNames(locale)}
-              </option>
-            ))}
-          </select>
+          <span className={s.selectWrap}>
+            <select
+              className={s.select}
+              value={value}
+              disabled={isPending}
+              onChange={(event) => change(event.target.value as AppLocale)}
+              data-component="account-email-locale"
+            >
+              {routing.locales.map((locale) => (
+                <option key={locale} value={locale}>
+                  {tNames(locale)}
+                </option>
+              ))}
+            </select>
+            <ChevronDown className={s.selectIcon} aria-hidden="true" />
+          </span>
         </label>
         <p className={s.hint}>{t('emailLanguageHint')}</p>
         <span role="status" aria-live="polite">

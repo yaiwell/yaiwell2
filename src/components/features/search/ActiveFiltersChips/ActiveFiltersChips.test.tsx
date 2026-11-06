@@ -44,6 +44,7 @@ const emptyState: ActiveFiltersState = {
   availabilityOnly: false,
   discountOnly: false,
   when: null,
+  days: [],
   priceRange: [],
   minRating: null,
 };

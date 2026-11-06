@@ -12,18 +12,12 @@ import type { ReactNode } from 'react';
  * Restringido al subset del namespace `customerArea.nav` que usamos
  * para que next-intl valide en tiempo de compilación.
  */
-export type CustomerNavLabelKey = 'nav.bookings' | 'nav.favorites' | 'nav.reviews' | 'nav.profile';
+export type CustomerNavLabelKey = 'nav.bookings' | 'nav.settings';
 
 export interface CustomerNavItem {
   href: string;
   labelKey: CustomerNavLabelKey;
-  iconKey: 'calendar' | 'star' | 'user' | 'heart';
-  /**
-   * Si es `true`, el item se renderiza como pill no clickable con un
-   * chip "Próximamente". Patrón espejo del que ya usa `/cuenta` para
-   * las features que aún no existen como ruta (Fase 1).
-   */
-  disabled?: boolean;
+  iconKey: 'calendar' | 'settings';
 }
 
 /**

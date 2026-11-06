@@ -84,23 +84,23 @@ export function Footer() {
               <span className={s.brandMark} aria-hidden="true">
                 <Sparkles className="size-4" />
               </span>
-              {tCommon('appName')}
+              <span className={s.brandText}>{tCommon('appName')}</span>
             </span>
             <p className={s.tagline} data-component="footer-tagline">
               {tFooter('tagline')}
             </p>
-            <div className={s.socials} data-component="footer-socials">
-              {/* `<a>` nativo y no el `Link` de next-intl: `mailto:` no
-                  pasa por el routing localizado. */}
-              <a
-                href={`mailto:${CONTACT_EMAIL}`}
-                className={s.socialButton}
-                aria-label={tFooter('contact')}
-                data-component="footer-social-contact"
-              >
-                <Send className="size-4" />
-              </a>
-            </div>
+            {/* `<a>` nativo y no el `Link` de next-intl: `mailto:` no pasa por
+                el routing localizado. La dirección va a la vista: un icono
+                suelto no decía qué hacía. */}
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className={s.contactLink}
+              title={tFooter('contact')}
+              data-component="footer-social-contact"
+            >
+              <Send className="size-3.5" aria-hidden="true" />
+              {CONTACT_EMAIL}
+            </a>
           </div>
 
           {/* Columnas de enlaces. */}

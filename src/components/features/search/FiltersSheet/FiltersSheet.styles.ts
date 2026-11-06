@@ -18,6 +18,7 @@ export const filtersSheetStyles = {
   description: 'text-sm text-muted-foreground',
   closeButton:
     'flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
+  body: '-mx-6 min-h-0 flex-1 overflow-y-auto px-6',
   section: 'flex flex-col gap-3 border-t border-border/60 py-5 first-of-type:border-t-0',
   sectionLabel: 'text-sm font-medium text-foreground',
   priceRow: 'flex flex-wrap gap-2',
@@ -36,7 +37,7 @@ export const filtersSheetStyles = {
     'inline-flex w-fit items-center gap-1.5 rounded-full border px-4 py-1.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1',
   offerChipIdle: 'border-border bg-card text-foreground/80 hover:bg-muted',
   offerChipActive: 'border-primary bg-primary text-primary-foreground',
-  footer: 'mt-auto flex items-center justify-between gap-3 border-t border-border/60 pt-5',
+  footer: 'flex shrink-0 items-center justify-between gap-3 border-t border-border/60 pt-5',
   applyButton:
     'inline-flex h-11 flex-1 items-center justify-center rounded-full bg-primary px-6 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2',
   clearButton:

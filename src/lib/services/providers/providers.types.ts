@@ -33,6 +33,8 @@ export interface SearchProvidersFilters {
   discountOnly?: boolean;
   /** Solo centros con algún hueco reservable en ese rango de días. */
   when?: SearchWhen;
+  /** Solo centros con hueco en alguno de estos días (`YYYY-MM-DD`). Manda sobre `when`. */
+  days?: string[];
   minRating?: number;
   priceRange?: PriceRange[];
   bounds?: GeoBounds;

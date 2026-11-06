@@ -23,6 +23,7 @@ const emptyState: SearchUrlState = {
   availabilityOnly: false,
   discountOnly: false,
   when: null,
+  days: [],
   priceRange: [],
   minRating: null,
   nearMeOnly: false,
@@ -49,12 +50,36 @@ describe('buildSearchParams / parseSearchParams', () => {
       availabilityOnly: true,
       discountOnly: true,
       when: 'this-week',
+      days: [],
       priceRange: ['€', '€€€'],
       minRating: 4.5,
       nearMeOnly: true,
     };
 
     expect(parseSearchParams(toRaw(buildSearchParams(state)))).toEqual(state);
+  });
+
+  it('conserva los días elegidos en un viaje de ida y vuelta', () => {
+    const state = { ...emptyState, days: ['2026-11-08', '2026-11-12'] };
+
+    expect(parseSearchParams(toRaw(buildSearchParams(state)))).toEqual(state);
+  });
+
+  it('si llegan días y rango, mandan los días', () => {
+    const parsed = parseSearchParams({ days: '2026-11-08', when: 'today' });
+
+    expect(parsed.days).toEqual(['2026-11-08']);
+    expect(parsed.when).toBeNull();
+  });
+
+  it('descarta días inválidos, repetidos y los que pasan del máximo', () => {
+    const parsed = parseSearchParams({
+      days: '2026-11-09,2026-02-31,mañana,2026-11-08,2026-11-09',
+    });
+    expect(parsed.days).toEqual(['2026-11-08', '2026-11-09']);
+
+    const many = Array.from({ length: 9 }, (_, i) => `2026-11-1${i}`).join(',');
+    expect(parseSearchParams({ days: many }).days).toHaveLength(7);
   });
 
   it('ignora valores inválidos en vez de inventar filtros', () => {

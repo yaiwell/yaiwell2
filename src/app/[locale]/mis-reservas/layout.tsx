@@ -7,7 +7,6 @@ import { CustomerShell } from '@/components/features/customer';
 import { redirect } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { getRoleFromSessionClaims, getRoleFromUser } from '@/lib/auth/role';
-import { getUiMode } from '@/lib/auth/ui-mode';
 
 interface CustomerLayoutProps {
   children: React.ReactNode;
@@ -25,10 +24,9 @@ interface CustomerLayoutProps {
  *  - Anónimos → `/entrar`.
  *  - Cliente real → entra.
  *  - Admin → redirect a `/admin` (no opera como cliente desde aquí).
- *  - Provider real → entra **solo si** su modo UI activo es `client`.
- *    En modo `provider` lo enviamos al `/panel`, que es su flujo natural.
- *    Esto permite que un provider haga "swap a modo usuario" desde
- *    `/cuenta` y use la app como cliente sin necesitar segunda cuenta.
+ *  - Provider real → entra en cualquier modo. Sus reservas como cliente
+ *    no dependen del modo: mandarlo al `/panel` le impedía verlas desde
+ *    «Mis reservas» de `/cuenta` y desde los enlaces de los correos.
  *
  * Las reservas que aparezcan aquí siempre se filtran por `clientId =
  * usuario actual`, así que un provider en modo cliente solo ve las
@@ -63,14 +61,6 @@ export default async function CustomerLayout({ children, params }: CustomerLayou
   if (role === 'admin') {
     redirect({ href: '/admin', locale });
     return null;
-  }
-
-  if (role === 'provider') {
-    const mode = await getUiMode('provider');
-    if (mode === 'provider') {
-      redirect({ href: '/panel', locale });
-      return null;
-    }
   }
 
   // Si el rol vino de los claims, todavía no hemos cargado el `user` y

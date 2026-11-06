@@ -13,6 +13,7 @@ export type ActiveFilterChip =
   | { kind: 'availability' }
   | { kind: 'discount' }
   | { kind: 'when'; value: SearchWhen }
+  | { kind: 'day'; value: string }
   | { kind: 'price'; value: PriceRange }
   | { kind: 'rating'; value: number };
 
@@ -27,6 +28,7 @@ export interface ActiveFiltersState {
   availabilityOnly: boolean;
   discountOnly: boolean;
   when: SearchWhen | null;
+  days: string[];
   priceRange: PriceRange[];
   minRating: number | null;
 }

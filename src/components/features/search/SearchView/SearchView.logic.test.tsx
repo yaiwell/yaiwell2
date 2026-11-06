@@ -37,6 +37,7 @@ function makeInitial(overrides: Partial<SearchViewInitialState> = {}): SearchVie
       availabilityOnly: false,
       discountOnly: false,
       when: null,
+      days: [],
       priceRange: [],
       minRating: null,
     },
@@ -118,6 +119,7 @@ describe('useSearchView — sheet de filtros avanzados', () => {
         minRating: 4,
         discountOnly: false,
         when: null,
+        days: [],
       }),
     );
 
@@ -135,6 +137,7 @@ describe('useSearchView — sheet de filtros avanzados', () => {
         minRating: null,
         discountOnly: true,
         when: null,
+        days: [],
       }),
     );
 

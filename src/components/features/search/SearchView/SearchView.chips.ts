@@ -15,10 +15,12 @@ import type { SearchFilters } from './SearchView.types';
  * construido, así que heredan gratis la conservación de `?near=me`.
  *
  * @param priceRange — rangos de precio activos (para quitar uno solo).
+ * @param days — días elegidos (para quitar uno solo).
  * @param updateFilters — aplica un patch parcial y navega.
  */
 export function useFilterChipHandlers(
   priceRange: PriceRange[],
+  days: string[],
   updateFilters: (patch: Partial<SearchFilters>) => void,
 ) {
   /**
@@ -43,6 +45,9 @@ export function useFilterChipHandlers(
         case 'when':
           updateFilters({ when: null });
           return;
+        case 'day':
+          updateFilters({ days: days.filter((day) => day !== chip.value) });
+          return;
         case 'price':
           updateFilters({
             priceRange: priceRange.filter((p) => p !== chip.value),
@@ -53,7 +58,7 @@ export function useFilterChipHandlers(
           return;
       }
     },
-    [priceRange, updateFilters],
+    [priceRange, days, updateFilters],
   );
 
   const handleClearAllChips = useCallback(() => {
@@ -63,6 +68,7 @@ export function useFilterChipHandlers(
       availabilityOnly: false,
       discountOnly: false,
       when: null,
+      days: [],
       priceRange: [] as PriceRange[],
       minRating: null,
     });

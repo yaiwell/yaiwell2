@@ -244,7 +244,9 @@
       "any": "N’importe quel jour",
       "today": "Aujourd’hui",
       "tomorrow": "Demain",
-      "this-week": "Cette semaine"
+      "this-week": "Cette semaine",
+      "pickDays": "Choisir des jours",
+      "pickDaysHint": "Choisissez jusqu’à {max} jours. Vous verrez les établissements ayant un créneau libre l’un de ces jours."
     }
   },
   "searchAutocomplete": {
@@ -1311,9 +1313,7 @@
     "nav": {
       "ariaLabel": "Navigation de l’espace client",
       "bookings": "Réservations",
-      "favorites": "Favoris",
-      "reviews": "Avis",
-      "profile": "Profil"
+      "settings": "Paramètres"
     },
     "sections": {
       "count": "{count, plural, =0 {Aucun élément} one {# élément} other {# éléments}}",

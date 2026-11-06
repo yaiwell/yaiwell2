@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import { SEARCH_WHEN_OPTIONS } from '@/lib/utils/search-when';
+import { SEARCH_DAYS_MAX, SEARCH_WHEN_OPTIONS } from '@/lib/utils/search-when';
 
 /**
  * Schemas Zod para validar los filtros de búsqueda en cada borde del
@@ -49,6 +49,7 @@ export const searchProvidersFiltersSchema = z.object({
     .transform((v) => v === true || v === '1' || v === 'true')
     .optional(),
   when: z.enum(SEARCH_WHEN_OPTIONS).optional(),
+  days: z.array(z.iso.date()).max(SEARCH_DAYS_MAX).optional(),
   minRating: z.coerce.number().min(0).max(5).optional(),
   priceRange: z.array(priceRangeSchema).optional(),
   bounds: geoBoundsSchema.optional(),

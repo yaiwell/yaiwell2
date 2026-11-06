@@ -244,7 +244,9 @@
       "any": "Beliebiger Tag",
       "today": "Heute",
       "tomorrow": "Morgen",
-      "this-week": "Diese Woche"
+      "this-week": "Diese Woche",
+      "pickDays": "Tage wählen",
+      "pickDaysHint": "Wähle bis zu {max} Tage. Du siehst Anbieter mit einem freien Termin an einem davon."
     }
   },
   "searchAutocomplete": {
@@ -1311,9 +1313,7 @@
     "nav": {
       "ariaLabel": "Navigation im Kundenbereich",
       "bookings": "Buchungen",
-      "favorites": "Favoriten",
-      "reviews": "Bewertungen",
-      "profile": "Profil"
+      "settings": "Einstellungen"
     },
     "sections": {
       "count": "{count, plural, =0 {Keine Einträge} one {# Eintrag} other {# Einträge}}",

@@ -244,7 +244,9 @@
       "any": "Qualsevol dia",
       "today": "Avui",
       "tomorrow": "Demà",
-      "this-week": "Aquesta setmana"
+      "this-week": "Aquesta setmana",
+      "pickDays": "Triar dies",
+      "pickDaysHint": "Tria fins a {max} dies. Veuràs els centres amb hora lliure en algun d’ells."
     }
   },
   "searchAutocomplete": {
@@ -1311,9 +1313,7 @@
     "nav": {
       "ariaLabel": "Navegació de l'àrea client",
       "bookings": "Reserves",
-      "favorites": "Preferits",
-      "reviews": "Valoracions",
-      "profile": "Perfil"
+      "settings": "Ajustos"
     },
     "sections": {
       "count": "{count, plural, =0 {Sense elements} one {# element} other {# elements}}",

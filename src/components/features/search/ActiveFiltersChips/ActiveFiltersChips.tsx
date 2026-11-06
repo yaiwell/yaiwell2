@@ -1,7 +1,9 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+
+import { formatSearchDay } from '@/lib/utils/search-when';
 
 import { buildActiveFilterChips } from './ActiveFiltersChips.logic';
 import { activeFiltersChipsStyles as s } from './ActiveFiltersChips.styles';
@@ -15,6 +17,7 @@ import type { ActiveFilterChip, ActiveFiltersChipsProps } from './ActiveFiltersC
 function useChipLabel() {
   const t = useTranslations('searchFilters.chips');
   const tWhen = useTranslations('search.when');
+  const locale = useLocale();
 
   return (chip: ActiveFilterChip): string => {
     switch (chip.kind) {
@@ -28,6 +31,8 @@ function useChipLabel() {
         return t('discountLabel');
       case 'when':
         return tWhen(chip.value);
+      case 'day':
+        return formatSearchDay(chip.value, locale);
       case 'price':
         return t('priceLabel', { value: chip.value });
       case 'rating':
@@ -52,6 +57,8 @@ function chipKey(chip: ActiveFilterChip): string {
       return 'discount';
     case 'when':
       return `when-${chip.value}`;
+    case 'day':
+      return `day-${chip.value}`;
     case 'price':
       return `price-${chip.value.length}`;
     case 'rating':

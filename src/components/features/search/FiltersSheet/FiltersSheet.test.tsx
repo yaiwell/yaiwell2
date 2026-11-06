@@ -30,6 +30,8 @@ const messages = {
       today: 'Hoy',
       tomorrow: 'Mañana',
       'this-week': 'Esta semana',
+      pickDays: 'Elegir días',
+      pickDaysHint: 'Elige hasta {max} días.',
     },
     slotOffer: {
       filterToggle: 'Con descuento',
@@ -42,7 +44,7 @@ function renderSheet(overrides: Partial<FiltersSheetProps> = {}) {
   const props: FiltersSheetProps = {
     open: true,
     onOpenChange: vi.fn(),
-    value: { priceRange: [], minRating: null, discountOnly: false, when: null },
+    value: { priceRange: [], minRating: null, discountOnly: false, when: null, days: [] },
     onApply: vi.fn(),
     onClear: vi.fn(),
     ...overrides,
@@ -97,7 +99,47 @@ describe('FiltersSheet — «Con descuento»', () => {
       minRating: null,
       discountOnly: true,
       when: null,
+      days: [],
     });
+  });
+
+  it('elige varios días en el calendario y limpia el rango', async () => {
+    const props = renderSheet({
+      value: { priceRange: [], minRating: null, discountOnly: false, when: 'today', days: [] },
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: 'Elegir días' }));
+    const days = document.querySelectorAll<HTMLButtonElement>(
+      '[data-component^="search-day-"]:not([data-component="search-day-picker"])',
+    );
+    await userEvent.click(days[1]);
+    await userEvent.click(days[0]);
+    await userEvent.click(screen.getByRole('button', { name: 'Aplicar filtros' }));
+
+    const applied = vi.mocked(props.onApply).mock.calls[0][0];
+    expect(applied.when).toBeNull();
+    expect(applied.days).toHaveLength(2);
+    // Siempre ordenados, para que la URL no dependa del orden de los clics.
+    expect(applied.days).toEqual([...applied.days].sort());
+  });
+
+  it('elegir un rango descarta los días sueltos', async () => {
+    const props = renderSheet({
+      value: {
+        priceRange: [],
+        minRating: null,
+        discountOnly: false,
+        when: null,
+        days: ['2099-01-01'],
+      },
+    });
+
+    await userEvent.click(screen.getByRole('button', { name: 'Mañana' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Aplicar filtros' }));
+
+    expect(props.onApply).toHaveBeenCalledWith(
+      expect.objectContaining({ when: 'tomorrow', days: [] }),
+    );
   });
 
   it('aplica el rango de días elegido', async () => {
@@ -112,7 +154,7 @@ describe('FiltersSheet — «Con descuento»', () => {
   it('«Limpiar» en móvil incluye el descuento', async () => {
     mockViewport(false);
     const props = renderSheet({
-      value: { priceRange: [], minRating: null, discountOnly: true, when: null },
+      value: { priceRange: [], minRating: null, discountOnly: true, when: null, days: [] },
     });
 
     await userEvent.click(screen.getByRole('button', { name: 'Limpiar' }));
@@ -122,7 +164,7 @@ describe('FiltersSheet — «Con descuento»', () => {
   it('«Limpiar» desde md no toca el descuento, que vive en la barra', async () => {
     mockViewport(true);
     const props = renderSheet({
-      value: { priceRange: [], minRating: null, discountOnly: true, when: null },
+      value: { priceRange: [], minRating: null, discountOnly: true, when: null, days: [] },
     });
 
     await userEvent.click(screen.getByRole('button', { name: 'Limpiar' }));

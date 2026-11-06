@@ -13,7 +13,11 @@ const repoMock = vi.hoisted(() => ({
 
 vi.mock('./availability.repository', () => ({ availabilityRepository: repoMock }));
 
-import { getFirstSlotInRangeByProvider, resolveWhenDays } from './availability.range';
+import {
+  getFirstSlotInRangeByProvider,
+  resolvePickedDays,
+  resolveWhenDays,
+} from './availability.range';
 
 const TZ = 'Europe/Madrid';
 const PROVIDER = '9a1f7c2d-3b4e-4f5a-8b9c-0d1e2f3a4b5c';
@@ -78,6 +82,22 @@ describe('resolveWhenDays', () => {
     // 23:30 UTC del jueves ya es viernes en Madrid.
     const lateNight = new Date('2026-11-05T23:30:00.000Z');
     expect(keys(resolveWhenDays('today', lateNight, TZ))).toEqual(['2026-11-06']);
+  });
+});
+
+describe('resolvePickedDays', () => {
+  // Jueves 5 de noviembre.
+  const NOW = new Date('2026-11-05T10:00:00Z');
+
+  it('ordena y conserva hoy y el último día ofrecido', () => {
+    expect(keys(resolvePickedDays(['2026-12-02', '2026-11-05'], NOW, TZ))).toEqual([
+      '2026-11-05',
+      '2026-12-02',
+    ]);
+  });
+
+  it('descarta días pasados y los que quedan más allá de lo ofrecido', () => {
+    expect(resolvePickedDays(['2026-11-04', '2026-12-03', '2099-01-01'], NOW, TZ)).toEqual([]);
   });
 });
 

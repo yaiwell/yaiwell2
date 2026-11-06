@@ -18,21 +18,11 @@ export const customerShellStyles = {
   identityInfo: 'flex min-w-0 flex-col',
   identityName: 'truncate font-display text-base leading-tight text-foreground',
   identityRole: 'truncate text-xs uppercase tracking-wider text-muted-foreground',
-  nav: 'flex gap-2 overflow-x-auto md:flex-col md:overflow-visible',
+  nav: 'flex gap-2 overflow-x-auto md:flex-col md:gap-1 md:overflow-visible',
   navItem:
-    'inline-flex shrink-0 items-center gap-2 rounded-full border border-border/70 bg-background px-3 py-2 text-sm text-foreground/80 transition-colors duration-150 hover:border-border hover:text-foreground focus-visible:border-border focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] md:rounded-2xl md:px-3.5',
-  navItemActive: 'border-primary/30 bg-primary/10 text-primary hover:text-primary',
-  // Items pendientes de implementar (Fase 1). Visualmente apagados, sin
-  // hover, cursor not-allowed, y con un chip "Próximamente" al lado.
-  // El bg en `bg-muted/40` (no `bg-background/40`) le da presencia mínima
-  // en dark mode — sin esto el contenedor se disuelve sobre la sidebar
-  // `bg-card/60` y el chip interno pesa más que el item entero.
-  navItemDisabled:
-    'inline-flex shrink-0 cursor-not-allowed items-center gap-2 rounded-full border border-border/40 bg-muted/40 px-3 py-2 text-sm text-muted-foreground md:rounded-2xl md:px-3.5',
-  // `whitespace-nowrap` evita que el chip se parta en DE ("Demnächst
-  // verfügbar", 18 chars) cuando la sidebar es estrecha.
-  navItemComingSoon:
-    'ml-1 whitespace-nowrap rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground',
+    'inline-flex shrink-0 items-center gap-2 rounded-full border border-border/70 bg-background px-3 py-2 text-sm text-foreground/80 transition-colors duration-150 hover:border-border hover:text-foreground focus-visible:border-border focus-visible:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] md:w-full md:rounded-xl md:border-transparent md:bg-transparent md:px-3 md:py-2.5 md:hover:border-transparent md:hover:bg-muted',
+  navItemActive:
+    'border-primary/30 bg-primary/10 font-medium text-primary hover:text-primary md:border-transparent md:bg-primary/10 md:hover:bg-primary/10',
   navIcon: 'size-4',
   main: 'flex flex-1 flex-col gap-6',
   pageHeader: 'flex flex-col gap-2',

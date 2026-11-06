@@ -79,10 +79,10 @@ describe('Footer', () => {
     expect(screen.getByRole('link', { name: 'Precios' })).toHaveAttribute('href', '/profesionales');
   });
 
-  it('expone el contacto como mailto con aria-label traducido', () => {
+  it('expone el contacto como mailto con la dirección a la vista', () => {
     renderFooter();
 
-    expect(screen.getByRole('link', { name: 'Contacto' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'hola@yaiwell.com' })).toHaveAttribute(
       'href',
       'mailto:hola@yaiwell.com',
     );

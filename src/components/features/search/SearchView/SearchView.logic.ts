@@ -122,6 +122,7 @@ export function useSearchView(initial: SearchViewInitialState) {
         minRating: value.minRating,
         discountOnly: value.discountOnly,
         when: value.when,
+        days: value.days,
       });
       setFiltersSheetOpen(false);
     },
@@ -137,6 +138,7 @@ export function useSearchView(initial: SearchViewInitialState) {
         priceRange: [] as PriceRange[],
         minRating: null,
         when: null,
+        days: [],
         ...(options.includeDiscount ? { discountOnly: false } : {}),
       });
       setFiltersSheetOpen(false);
@@ -147,6 +149,7 @@ export function useSearchView(initial: SearchViewInitialState) {
   // Chips de filtros activos: handlers aislados en su propio hook.
   const { handleRemoveChip, handleClearAllChips } = useFilterChipHandlers(
     filters.priceRange,
+    filters.days,
     updateFilters,
   );
 
@@ -203,12 +206,16 @@ export function useSearchView(initial: SearchViewInitialState) {
       minRating: filters.minRating,
       discountOnly: filters.discountOnly,
       when: filters.when,
+      days: filters.days,
     }),
-    [filters.priceRange, filters.minRating, filters.discountOnly, filters.when],
+    [filters.priceRange, filters.minRating, filters.discountOnly, filters.when, filters.days],
   );
 
   const hasAdvancedFilters =
-    filters.priceRange.length > 0 || filters.minRating !== null || filters.when !== null;
+    filters.priceRange.length > 0 ||
+    filters.minRating !== null ||
+    filters.when !== null ||
+    filters.days.length > 0;
 
   return {
     // Datos derivados

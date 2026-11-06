@@ -8,6 +8,9 @@
 
 ## 2026-11-06
 
+- **Buscar por días concretos**: en Filtros, «Elegir días» abre un calendario de 4 semanas para marcar hasta 7 días (`?days=`). Salen los centros con hueco en alguno de ellos y cada día es un chip que se puede quitar. Excluye a Hoy/Mañana/Esta semana. El sheet de filtros ahora hace scroll por dentro y «Aplicar» queda siempre a la vista.
+- **Arreglos de cuenta y footer**: «Mis reservas» ya no manda al panel en modo profesional; la barra lateral de cuenta solo enseña destinos reales (Reservas y Ajustes, sin filas «Próximamente»); el idioma de los correos va en línea como el resto de preferencias; footer de escritorio en una fila, con el logo de la cabecera y el correo de contacto a la vista.
+
 - **Año de Premium de regalo en Mallorca**: 50 plazas en la tabla `founder_seats` (migración `9l`, aplicada), asignadas en la primera aprobación. Sin suscripción ni tarjeta; bloquea la venta de planes hasta 24 h antes del final, avisos a 60 y 15 días y al terminar, y baja a Gratis en el cierre diario. Aviso con plazas reales en `/profesionales`, aviso previo en la ficha de admin y fecha del regalo en el panel. Se quitan de los planes las promesas de account manager, soporte en 24 h y onboarding asistido.
 
 ## 2026-10-29

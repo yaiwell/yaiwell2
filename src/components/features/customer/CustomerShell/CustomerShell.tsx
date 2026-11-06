@@ -1,4 +1,4 @@
-import { CalendarDays, Heart, Star, User } from 'lucide-react';
+import { CalendarDays, Settings } from 'lucide-react';
 import Image from 'next/image';
 import type { ComponentType, SVGProps } from 'react';
 import { useTranslations } from 'next-intl';
@@ -10,26 +10,19 @@ import { customerShellStyles as s } from './CustomerShell.styles';
 import type { CustomerNavItem, CustomerShellProps } from './CustomerShell.types';
 
 /**
- * Items de navegación del área cliente.
- *
- * Solo `/mis-reservas` está implementada hoy. Favoritos, reseñas del
- * cliente y perfil están planificadas para Fase 1 y se muestran con
- * `disabled: true` para que el usuario vea el roadmap sin caer en
- * un 404 al pulsar.
+ * Items de navegación del área cliente. Solo destinos que existen: las filas
+ * «Próximamente» prometían funciones sin fecha y desbordaban la tarjeta. Las
+ * valoraciones pendientes ya están en `/mis-reservas` y el perfil, en ajustes.
  */
 const navItems: CustomerNavItem[] = [
   { href: '/mis-reservas', labelKey: 'nav.bookings', iconKey: 'calendar' },
-  { href: '/mis-favoritos', labelKey: 'nav.favorites', iconKey: 'heart', disabled: true },
-  { href: '/mis-resenas', labelKey: 'nav.reviews', iconKey: 'star', disabled: true },
-  { href: '/mi-perfil', labelKey: 'nav.profile', iconKey: 'user', disabled: true },
+  { href: '/cuenta/ajustes', labelKey: 'nav.settings', iconKey: 'settings' },
 ];
 
 /** Mapa de iconKey → componente Lucide. Evita un `if/else` en JSX. */
 const iconMap: Record<CustomerNavItem['iconKey'], ComponentType<SVGProps<SVGSVGElement>>> = {
   calendar: CalendarDays,
-  heart: Heart,
-  star: Star,
-  user: User,
+  settings: Settings,
 };
 
 /**
@@ -57,7 +50,6 @@ function getInitials(displayName: string, fallbackEmail: string): string {
  */
 export function CustomerShell({ children, activePath, identity }: CustomerShellProps) {
   const t = useTranslations('customerArea');
-  const tCommon = useTranslations('common');
   const initials = getInitials(identity.displayName, identity.email);
   // Si no hay displayName explícito caemos al email para no mostrar
   // un nombre vacío en la sidebar.
@@ -92,23 +84,6 @@ export function CustomerShell({ children, activePath, identity }: CustomerShellP
         <nav className={s.nav}>
           {navItems.map((item) => {
             const Icon = iconMap[item.iconKey];
-            // Item pendiente de implementar: render como pill apagado
-            // con chip "Próximamente" en lugar de `<Link>` activo.
-            if (item.disabled) {
-              return (
-                <span
-                  key={item.href}
-                  className={s.navItemDisabled}
-                  aria-disabled="true"
-                  title={tCommon('comingSoon')}
-                  data-component={`customer-nav-${item.iconKey}-disabled`}
-                >
-                  <Icon className={s.navIcon} aria-hidden="true" />
-                  {t(item.labelKey)}
-                  <span className={s.navItemComingSoon}>{tCommon('comingSoon')}</span>
-                </span>
-              );
-            }
             const isActive = activePath === item.href;
             return (
               <Link
